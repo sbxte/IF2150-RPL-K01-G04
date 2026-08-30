@@ -4,20 +4,19 @@
 
 | Informasi | Keterangan |
 |---|---|
-| Kelas | *[Kelas]* |
-| Nomor Kelompok | *[Nomor Kelompok]* |
-| Nama Kelompok | *[Nama Kelompok]* |
-| Nama Perangkat Lunak | *[Nama P/L]* |
+| Kelas | K01 |
+| Nomor Kelompok | G04 |
+| Nama Kelompok | LompatMulai |
+| Nama Perangkat Lunak | "Nama Perangkat Lunak" |
 
 **Anggota Kelompok:**
 
 | NIM | Nama |
 |---|---|
-| *[NIM 1]* | *[Nama Anggota 1]* |
-| *[NIM 2]* | *[Nama Anggota 2]* |
-| *[NIM 3]* | *[Nama Anggota 3]* |
-| *[NIM 4]* | *[Nama Anggota 4]* |
-| *[NIM 5]* | *[Nama Anggota 5]* |
+| 13525052 | Daniel Charisma Christian |
+| 13525061 | Rifqi Irfan Indrawan |
+| 13525082 | Ausa Haadiyaan Mukhtar Yusuf |
+| 13525058 | Farish Firstian Erifiawan |
 
 ---
 
