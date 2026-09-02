@@ -41,11 +41,13 @@ Perkembangan _Internet of Things_ (IoT) membawa banyak dampak, baik itu negatif 
 
 Namun, terdapat beberapa keluhan yang diberikan oleh _review online_ yang diberikan pengguna. Beberapa hal seperti:
 
-- AK1: Aplikasi Riliv tergolong sulit dan kurang sesuai dalam pemakaiannya, terdapat fitur pemesanan konsultasi namun harus mengikuti jadwal yang tersedia dan tidak langsung.
-- AK2: Aplikasi [Bicarakan.id](http://Bicarakan.id) yang memiliki kekurangan pada bug aplikasi yang dapat terjadi kapan saja, seperti terjadi pemesanan yang tulisannya selesai namun gagal, pembuatan akun yang terus gagal, pendaftaran yang menggunakan nomor baru namun dituliskan sudah dipakai.
-- AK3: Sebagian besar layanan konseling memiliki tarif yang dapat tergolong cukup tinggi maka tidak dapat meng-_cover_ keseluruhan demografi
-- AK4: Layanan BetterHelp yang memiliki marketplace konseling memiliki masalah menaruh iklan yang bersangkutan dengan pihak ketiga yang menjual data pribadi pengguna
-- AK5: Chatbot Woebot yang pada awalnya memiliki basis pengguna yang cukup tinggi namun karena perusahaan beralih ke model enterprise pengguna-pengguna tersebut ditinggalkan begitu saja tanpa adanya pengganti
+| ID  | Kekurangan                                                                                                                                                                                                                                                              |
+| --- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| AK1 | Aplikasi Riliv tergolong sulit dan kurang sesuai dalam pemakaiannya, terdapat fitur pemesanan konsultasi namun harus mengikuti jadwal yang tersedia dan tidak langsung.                                                                                                 |
+| AK2 | Aplikasi Bicarakan.id yang memiliki kekurangan pada bug aplikasi yang dapat terjadi kapan saja, seperti terjadi pemesanan yang tulisannya selesai namun gagal, pembuatan akun yang terus gagal, pendaftaran yang menggunakan nomor baru namun dituliskan sudah dipakai. |
+| AK3 | Sebagian besar layanan konseling memiliki tarif yang dapat tergolong cukup tinggi maka tidak dapat meng-_cover_ keseluruhan demografi                                                                                                                                   |
+| AK4 | Layanan BetterHelp yang memiliki marketplace konseling memiliki masalah menaruh iklan yang bersangkutan dengan pihak ketiga yang menjual data pribadi pengguna                                                                                                          |
+| AK5 | Chatbot Woebot yang pada awalnya memiliki basis pengguna yang cukup tinggi namun karena perusahaan beralih ke model enterprise pengguna-pengguna tersebut ditinggalkan begitu saja tanpa adanya pengganti                                                               |
 
 ---
 
@@ -59,57 +61,57 @@ Solusi perangkat lunak yang kami berikan merupakan desktop application yang akan
 
 ### 2.2.1 Asumsi
 
-| ID | Asumsi |
-| --- | --- |
-| AB-A-1 | Pengguna (mahasiswa) memiliki akun Google aktif dan bersedia memberikan izin akses ke Google Calendar mereka untuk keperluan integrasi jadwal |
-| AB-A-2 | Pengguna memiliki koneksi internet yang stabil selama menggunakan aplikasi, mengingat fitur-fitur utama (sinkronisasi kalender, pemesanan konsultasi) bergantung pada komunikasi real-time dengan server  |
-| AB-A-3 | Konselor yang terdaftar bersedia memperbarui ketersediaan jadwal mereka secara berkala melalui sistem |
-| AB-A-4 | Data jadwal dan preferensi yang dimasukkan pengguna (waktu makan, tidur, olahraga) mencerminkan kondisi dan kebutuhan nyata mereka |
-| AB-A-5 | Pengguna memiliki perangkat yang mendukung environment desktop aplikasi (OS dan spesifikasi minimum yang akan ditentukan) |
+| ID     | Asumsi                                                                                                                                                                                                   |
+| ------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| AB-A-1 | Pengguna (mahasiswa) memiliki akun Google aktif dan bersedia memberikan izin akses ke Google Calendar mereka untuk keperluan integrasi jadwal                                                            |
+| AB-A-2 | Pengguna memiliki koneksi internet yang stabil selama menggunakan aplikasi, mengingat fitur-fitur utama (sinkronisasi kalender, pemesanan konsultasi) bergantung pada komunikasi real-time dengan server |
+| AB-A-3 | Konselor yang terdaftar bersedia memperbarui ketersediaan jadwal mereka secara berkala melalui sistem                                                                                                    |
+| AB-A-4 | Data jadwal dan preferensi yang dimasukkan pengguna (waktu makan, tidur, olahraga) mencerminkan kondisi dan kebutuhan nyata mereka                                                                       |
+| AB-A-5 | Pengguna memiliki perangkat yang mendukung environment desktop aplikasi (OS dan spesifikasi minimum yang akan ditentukan)                                                                                |
 
 ### 2.2.2 Regulasi
 
-| ID | Asumsi |
-| --- | --- |
-| AB-R-1 | UUD 1945 pasal 28H ayat (1) |
-| AB-R-2 | UU No. 39/1999 tentang HAM |
-| AB-R-3 | UU No. 3/1966 tentang Kesehatan Jiwa |
-| AB-R-4 | UU No. 18/2014 tentang Kesehatan Jiwa |
+| ID     | Asumsi                                                  |
+| ------ | ------------------------------------------------------- |
+| AB-R-1 | UUD 1945 pasal 28H ayat (1)                             |
+| AB-R-2 | UU No. 39/1999 tentang HAM                              |
+| AB-R-3 | UU No. 3/1966 tentang Kesehatan Jiwa                    |
+| AB-R-4 | UU No. 18/2014 tentang Kesehatan Jiwa                   |
 | AB-R-5 | UU No. 17/2023 tentang Kesehatan (uu kesehatan omnibus) |
-| AB-R-6 | Permenkes No. 54/2017 |
+| AB-R-6 | Permenkes No. 54/2017                                   |
 
 ### 2.2.3 Keterbatasan
 
-| ID | Asumsi |
-| --- | --- |
-| AB-K-1 | Aplikasi bukan pengganti layanan intervensi krisis atau hotline darurat (seperti SEJIWA 119 ext 8\) — tidak dirancang untuk menangani situasi darurat kesehatan mental |
+| ID     | Asumsi                                                                                                                                                                                                                    |
+| ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| AB-K-1 | Aplikasi bukan pengganti layanan intervensi krisis atau hotline darurat (seperti SEJIWA 119 ext 8\) — tidak dirancang untuk menangani situasi darurat kesehatan mental                                                    |
 | AB-K-2 | Fitur integrasi jadwal bergantung pada ketersediaan dan kebijakan API pihak ketiga (Google Calendar API); jika pengguna mencabut izin akses atau layanan API mengalami gangguan, sinkronisasi jadwal tidak akan berfungsi |
-| AB-K-3 | Verifikasi kredensial profesional konselor dilakukan secara manual oleh administrator, bukan otomatis |
-| AB-K-4 | Konselor yang tersedia terbatas pada mitra yang telah terdaftar dan diverifikasi di dalam sistem, bukan direktori terbuka |
-| AB-K-5 | Sebagai aplikasi desktop, rilis awal tidak mencakup versi mobile |
-| AB-K-6 | Aplikasi tidak menyediakan rekam medis elektronik atau fitur diagnosis klinis |
+| AB-K-3 | Verifikasi kredensial profesional konselor dilakukan secara manual oleh administrator, bukan otomatis                                                                                                                     |
+| AB-K-4 | Konselor yang tersedia terbatas pada mitra yang telah terdaftar dan diverifikasi di dalam sistem, bukan direktori terbuka                                                                                                 |
+| AB-K-5 | Sebagai aplikasi desktop, rilis awal tidak mencakup versi mobile                                                                                                                                                          |
+| AB-K-6 | Aplikasi tidak menyediakan rekam medis elektronik atau fitur diagnosis klinis                                                                                                                                             |
 
 ### 2.2.4 Ruang Lingkup Solusi
 
 #### 2.2.4.1 Termasuk dalam ruang lingkup
 
-| ID | Asumsi |
-| --- | --- |
-| AB-RLS-D-1 | Pengaturan dan pengiriman daily affirmations sesuai jadwal yang ditentukan pengguna |
-| AB-RLS-D-2 | Pengingat (reminder) makan, tidur, dan olahraga yang dapat dikustomisasi |
-| AB-RLS-D-3 | Tampilan jadwal harian terintegrasi dengan Google Calendar pengguna (read access) |
+| ID         | Asumsi                                                                                                                                                         |
+| ---------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| AB-RLS-D-1 | Pengaturan dan pengiriman daily affirmations sesuai jadwal yang ditentukan pengguna                                                                            |
+| AB-RLS-D-2 | Pengingat (reminder) makan, tidur, dan olahraga yang dapat dikustomisasi                                                                                       |
+| AB-RLS-D-3 | Tampilan jadwal harian terintegrasi dengan Google Calendar pengguna (read access)                                                                              |
 | AB-RLS-D-4 | Pemesanan sesi konsultasi dengan konselor, termasuk deteksi bentrok (overlap) antara slot yang dipilih dengan event yang sudah ada di Google Calendar pengguna |
-| AB-RLS-D-5 | Panel administrator untuk mengelola ketersediaan konselor dan data pengguna |
+| AB-RLS-D-5 | Panel administrator untuk mengelola ketersediaan konselor dan data pengguna                                                                                    |
 
 #### 2.2.4.2 Di luar ruang lingkup
 
-| ID | Asumsi |
-| --- | --- |
-| AB-RLS-L-1 | Layanan konseling darurat atau intervensi krisis real-time |
-| AB-RLS-L-2 | Rekam medis elektronik atau riwayat diagnosis klinis pengguna |
+| ID         | Asumsi                                                           |
+| ---------- | ---------------------------------------------------------------- |
+| AB-RLS-L-1 | Layanan konseling darurat atau intervensi krisis real-time       |
+| AB-RLS-L-2 | Rekam medis elektronik atau riwayat diagnosis klinis pengguna    |
 | AB-RLS-L-3 | Sistem pembayaran/billing (belum disebutkan sebagai fitur utama) |
-| AB-RLS-L-4 | Aplikasi versi mobile (native Android/iOS) pada rilis awal |
-| AB-RLS-L-5 | Fitur komunitas atau forum antar-pengguna |
+| AB-RLS-L-4 | Aplikasi versi mobile (native Android/iOS) pada rilis awal       |
+| AB-RLS-L-5 | Fitur komunitas atau forum antar-pengguna                        |
 
 ---
 
@@ -136,14 +138,14 @@ Definisikan apa yang ingin dicapai oleh pengguna saat menggunakan sistem ini dal
 
 ## 3.3 Deskripsi Aktivitas
 
-| ID | Aktivitas | Penjelasan | ID User Story |
-| ----- | ----- | ----- | ----- |
-| A-01 | Menyetel daily affirmations | Pengguna dapat mengatur kapan mendapatkan daily affirmations lewat aplikasi. | US-01 |
-| A-02 | Melihat jadwal sehari-hari secara keseluruhan | Pengguna dapat melihat jadwal sehari-hari lewat integrasi dengan google calendar termasuk jadwal reminder dan event-event lain yang ada di jadwal google calendar pengguna. | US-04 |
-| A-03 | Menyetel reminder makan | Pengguna dapat mengatur kapan diberikan reminder lewat aplikasi. | US-02 |
-| A-04 | Menyetel reminder tidur | Pengguna dapat mengatur kapan diberikan reminder lewat aplikasi. | US-03 |
-| A-05 | Mengatur reminder olahraga | Pengguna dapat mengatur kapan diberikan reminder lewat aplikasi. | US-06 |
-| A-06 | Menjadwalkan konsultasi dengan tenaga medis | Pengguna dapat melihat jadwal konsultasi yang tersedia sekaligus melihat apakah jadwal tersebut bertabrakan dengan jadwal yang sudah ada di kalender pengguna di google calendar. | US-05 |
+| ID   | Aktivitas                                     | Penjelasan                                                                                                                                                                        | ID User Story |
+| ---- | --------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------- |
+| A-01 | Menyetel daily affirmations                   | Pengguna dapat mengatur kapan mendapatkan daily affirmations lewat aplikasi.                                                                                                      | US-01         |
+| A-02 | Melihat jadwal sehari-hari secara keseluruhan | Pengguna dapat melihat jadwal sehari-hari lewat integrasi dengan google calendar termasuk jadwal reminder dan event-event lain yang ada di jadwal google calendar pengguna.       | US-04         |
+| A-03 | Menyetel reminder makan                       | Pengguna dapat mengatur kapan diberikan reminder lewat aplikasi.                                                                                                                  | US-02         |
+| A-04 | Menyetel reminder tidur                       | Pengguna dapat mengatur kapan diberikan reminder lewat aplikasi.                                                                                                                  | US-03         |
+| A-05 | Mengatur reminder olahraga                    | Pengguna dapat mengatur kapan diberikan reminder lewat aplikasi.                                                                                                                  | US-06         |
+| A-06 | Menjadwalkan konsultasi dengan tenaga medis   | Pengguna dapat melihat jadwal konsultasi yang tersedia sekaligus melihat apakah jadwal tersebut bertabrakan dengan jadwal yang sudah ada di kalender pengguna di google calendar. | US-05         |
 
 ## 3.4 Model Proses Bisnis
 
