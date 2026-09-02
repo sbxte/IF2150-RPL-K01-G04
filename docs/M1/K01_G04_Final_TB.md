@@ -33,7 +33,16 @@ Dipersiapkan oleh:
 
 ## 1.1 Latar Belakang Masalah
 
-Perkembangan _Internet of Things_ (IoT) membawa banyak dampak, baik itu negatif maupun positif, semua hal yang berkaitan dengan perkembangan teknologi memengaruhi cara masyarakat melakukan kegiatan sehari-hari mereka. IoT memengaruhi banyak sektor dari kehidupan masyarakat, termasuk kesehatan. Salah satu contoh konkret adalah seperti sistem _ticketing_ yang sudah diimplementasikan di berbagai puskesmas saat ini. Hal tersebut juga berhubungan dengan Tujuan Pembangunan Berkelanjutan (SDGs) yang kami ambil, yaitu Kehidupan Sehat dan Sejahtera yang di dalamnya bertujuan untuk memberikan fasilitas kesehatan untuk semua, tanpa memandang ekonomi. Layanan puskesmas tersebut membantu berbagai macam masyarakat dengan latar belakang ekonomi yang dapat tergolong kurang. Tentu, kehadiran puskesmas sendiri sudah membantu berbagai kaum masyarakat dengan memberikan bantuan kesehatan yang cukup. Namun, dengan adanya perkembagan IoT yang semakin berkembang pesat, diperlukan inovasi supaya proses pemeriksaan kesehatan maupun pemberdayaan kesehatan masyarakat terlaksana seefisien dan seefektif mungkin.
+Kesehatan mental itu penting. Namun, masyarakat Indonesia cenderung untuk mengabaikan hal ini. Buktinya, pergi ke psikolog untuk terapi seringkali dipandang sebagai hal yang tabu dan dianggap melemahkan diri. 
+
+Selain itu, jumlah kasus bunuh diri di Indonesia cukup tinggi, terutama yang terjadi pada remaja dan mahasiswa. Estimasi IHME dan Global Burden of Disease menyatakan, pada tahun 2023 untuk setiap 100.000 orang, terjadi sekitar 2 kematian akibat bunuh diri di Indonesia. 
+
+Di samping kasus bunuh diri, kondisi mental yang kurang ideal menurunkan tingkat produktivitas dan kualitas aktivitas sosial. Kedua faktor ini sangat penting bagi mahasiswa, target utama produk kami, untuk mencapai perkuliahan yang optimal. 
+
+Kami ingin mengaitkan latar belakang ini dengan poin ketiga Tujuan Pengembangan Bersama (_Sustainable Development Goals_ [SDGs]), yaitu kehidupan yang sehat dan sejahtera. Perserikatan Bangsa-Bangsa telah mencanangkan sejumlah SDG yang perlu pemerintah dan masyarakat dunia capai sebelum tahun 2030. Namun, pada tahun 2024, terlaporkan bahwa hanya 17% target SDG telah tercapai. 
+
+Dari latar belakang ini, diharapkan solusi perangkat lunak ini dapat menjadi sarana untuk menggiatkan kesadaran akan kesehatan mental yang baik dan ketercapaian bersama dalam SDGs di lingkungan kami sebagai mahasiswa, serta memperkaya alternatif solusi yang telah ada.
+
 
 ## 1.2 Analisis Kondisi Saat Ini
 
@@ -119,7 +128,11 @@ Solusi perangkat lunak yang kami berikan merupakan desktop application yang akan
 
 ## 3.1 Identifikasi Aktor
 
-Buatlah daftar seluruh aktor (pengguna) yang akan berinteraksi langsung dengan sistem solusi yang kalian kembangkan. Berikan penjelasan singkat mengenai peran dan karakteristik dari masing-masing aktor tersebut.
+| Aktor | Deskripsi |
+| ----- | ----- |
+| Mahasiswa | Pengguna ini berlaku sebagai pengguna utama dari aplikasi ini. |
+| Administrator | Pengguna ini berperan untuk merawat dan mengelola keberjalanan dari aplikasi ini. |
+| Konselor | Pengguna ini akan mengatur jadwal ketersediaan untuk sesi konseling di dalam aplikasi ini. |
 
 | Aktor   | Deskripsi                                                                                                                                                                                                                         |
 | :------ | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
