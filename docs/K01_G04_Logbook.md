@@ -31,18 +31,15 @@
 
 **Periode:** [Tanggal Mulai] - [Tanggal Selesai]
 
-| Tanggal      | Nama Anggota                   | Deskripsi Pekerjaan                                              | Durasi (Jam) | Status        | Kendala / _Blocker_ |
-| :----------- | :----------------------------- | :--------------------------------------------------------------- | :----------- | :------------ | :------------------ |
-| _01-09-2026_ | _Farish Firstian Erifiawan_    | _Pembuatan Latar Belakang Masalah, Identifikasi Aktor_           | _6_          | _On Progress_ | _-_                 |
-| _01-09-2026_ | _Rifqi Irfan Indrawan_         | _Pembuatan Deskripsi Perangkat Lunak, Analisis Kondisi Saat Ini_ | _4_          | _Done_        | _-_                 |
-| _01-09-2026_ | Daniel Charisma Christian\_    | _Pembuatan Asumsi dan Batasan, Deskripsi Aktivitas_              | _6_          | _On Progress_ | _-_                 |
-| _01-09-2026_ | _Ausa Haadiyaan Mukhtar Yusuf_ | _Pembuatan Kebutuhan Pengguna Awal, Model Proses Bisnis_         | _6_          | _On Progress_ | _-_                 |
-
-| | | | | | | |
+| Tanggal      | Nama Anggota                   | Deskripsi Pekerjaan                                              | Durasi (Jam) | Status | Kendala / _Blocker_ |
+| :----------- | :----------------------------- | :--------------------------------------------------------------- | :----------- | :----- | :------------------ |
+| _01-09-2026_ | _Farish Firstian Erifiawan_    | _Pembuatan Latar Belakang Masalah, Identifikasi Aktor_           | _6_          | _Done_ | _-_                 |
+| _01-09-2026_ | _Rifqi Irfan Indrawan_         | _Pembuatan Deskripsi Perangkat Lunak, Analisis Kondisi Saat Ini_ | _4_          | _Done_ | _-_                 |
+| _01-09-2026_ | Daniel Charisma Christian\_    | _Pembuatan Asumsi dan Batasan, Deskripsi Aktivitas_              | _5_          | _Done_ | _-_                 |
+| _01-09-2026_ | _Ausa Haadiyaan Mukhtar Yusuf_ | _Pembuatan Kebutuhan Pengguna Awal, Model Proses Bisnis_         | _3_          | _Done_ | _-_                 |
 
 **Catatan/Evaluasi Milestone 1:**
 
 - Tidak ada catatan/evaluasi.
 
 ---
-
