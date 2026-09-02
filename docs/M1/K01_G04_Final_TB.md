@@ -126,7 +126,11 @@ Solusi perangkat lunak yang kami berikan merupakan desktop application yang akan
 
 ## 3.1 Identifikasi Aktor
 
-Buatlah daftar seluruh aktor (pengguna) yang akan berinteraksi langsung dengan sistem solusi yang kalian kembangkan. Berikan penjelasan singkat mengenai peran dan karakteristik dari masing-masing aktor tersebut.
+| Aktor | Deskripsi |
+| ----- | ----- |
+| Mahasiswa | Pengguna ini berlaku sebagai pengguna utama dari aplikasi ini. |
+| Administrator | Pengguna ini berperan untuk merawat dan mengelola keberjalanan dari aplikasi ini. |
+| Konselor | Pengguna ini akan mengatur jadwal ketersediaan untuk sesi konseling di dalam aplikasi ini. |
 
 | Aktor   | Deskripsi                                                                                                                                                                                                                         |
 | :------ | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
