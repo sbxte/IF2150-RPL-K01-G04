@@ -133,11 +133,6 @@ Solusi perangkat lunak yang kami berikan merupakan desktop application yang akan
 | Administrator | Pengguna ini berperan untuk merawat dan mengelola keberjalanan dari aplikasi ini.          |
 | Konselor      | Pengguna ini akan mengatur jadwal ketersediaan untuk sesi konseling di dalam aplikasi ini. |
 
-| Aktor   | Deskripsi                                                                                                                                                                                                                         |
-| :------ | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| _Kasir_ | _Pengguna ini bertindak sebagai pihak yang bertanggung jawab untuk memproses transaksi harian dan melayani pembayaran pelanggan. Karakteristik dari pengguna ini adalah mengutamakan kecepatan dan keakuratan saat bertransaksi._ |
-| ...     | ...                                                                                                                                                                                                                               |
-
 ## 3.2 Kebutuhan Pengguna Awal
 
 Definisikan apa yang ingin dicapai oleh pengguna saat menggunakan sistem ini dalam format _User Story_ (Sebagai [Aktor], saya ingin [Aktivitas/Kebutuhan], sehingga [Tujuan/Nilai]). Pastikan kalian berfokus pada "apa yang ingin dilakukan pengguna".
