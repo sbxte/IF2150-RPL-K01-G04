@@ -1,45 +1,48 @@
-# Logbook Pekerjaan 
+# Logbook Pekerjaan
 
 ## Tugas Besar IF2150 - Rekayasa Perangkat Lunak
 
-| Informasi | Keterangan |
-|---|---|
-| Kelas | K01 |
-| Nomor Kelompok | G04 |
-| Nama Kelompok | LompatMulai |
+| Informasi            | Keterangan             |
+| -------------------- | ---------------------- |
+| Kelas                | K01                    |
+| Nomor Kelompok       | G04                    |
+| Nama Kelompok        | LompatMulai            |
 | Nama Perangkat Lunak | "Nama Perangkat Lunak" |
 
 **Anggota Kelompok:**
 
-| NIM | Nama |
-|---|---|
-| 13525052 | Daniel Charisma Christian |
-| 13525061 | Rifqi Irfan Indrawan |
+| NIM      | Nama                         |
+| -------- | ---------------------------- |
+| 13525052 | Daniel Charisma Christian    |
+| 13525061 | Rifqi Irfan Indrawan         |
 | 13525082 | Ausa Haadiyaan Mukhtar Yusuf |
-| 13525058 | Farish Firstian Erifiawan |
+| 13525058 | Farish Firstian Erifiawan    |
 
 ---
 
 ### Daftar Isi
-* [Milestone 1](#milestone-1)
-* Notes: Copy bagian Daftar Isi seperti Milestone 1 untuk Milestone berikutnya, contoh ``* [Milestone 2](#milestone-2)``. Ketika Daftar isi diklik maka akan langsung diarahkan ke bagian bawah sesuai dengan Milestone tujuan.
 
+- [Milestone 1](#milestone-1)
+- Notes: Copy bagian Daftar Isi seperti Milestone 1 untuk Milestone berikutnya, contoh `* [Milestone 2](#milestone-2)`. Ketika Daftar isi diklik maka akan langsung diarahkan ke bagian bawah sesuai dengan Milestone tujuan.
 
 ---
 
 ### Milestone 1
+
 **Periode:** [Tanggal Mulai] - [Tanggal Selesai]
 
-| Tanggal | Nama Anggota | Deskripsi Pekerjaan | Durasi (Jam) | Status | Kendala / *Blocker* | 
-| :--- | :--- | :--- | :--- | :--- | :--- | 
-| *04-05-2026* | *[Nama Mahasiswa]* | *[Jelaskan Pekerjaan secara Singkat]* | *[Durasi Pengerjaan]* | *[On Progress/Done]* | [Kendala yang dialami, jika tidak ada cukup tandai "-"] | 
-| *05-05-2026* | *John Doe* | *Mendesain diagram kelas* | *3* | *Done* | *-* | 
+| Tanggal      | Nama Anggota                   | Deskripsi Pekerjaan                                              | Durasi (Jam) | Status        | Kendala / _Blocker_ |
+| :----------- | :----------------------------- | :--------------------------------------------------------------- | :----------- | :------------ | :------------------ |
+| _01-09-2026_ | _Farish Firstian Erifiawan_    | _Pembuatan Latar Belakang Masalah, Identifikasi Aktor_           | _6_          | _On Progress_ | _-_                 |
+| _01-09-2026_ | _Rifqi Irfan Indrawan_         | _Pembuatan Deskripsi Perangkat Lunak, Analisis Kondisi Saat Ini_ | _4_          | _Done_        | _-_                 |
+| _01-09-2026_ | Daniel Charisma Christian\_    | _Pembuatan Asumsi dan Batasan, Deskripsi Aktivitas_              | _6_          | _On Progress_ | _-_                 |
+| _01-09-2026_ | _Ausa Haadiyaan Mukhtar Yusuf_ | _Pembuatan Kebutuhan Pengguna Awal, Model Proses Bisnis_         | _6_          | _On Progress_ | _-_                 |
+
 | | | | | | | |
 
 **Catatan/Evaluasi Milestone 1:**
-* *(Isi jika ada catatan khusus untuk asisten atau evaluasi singkat kerja tim)*
+
+- Tidak ada catatan/evaluasi.
 
 ---
 
-
-``Gunakan format penulisan Logbook yang sama untuk setiap Milestone dan pastikan pembuatan Daftar Isi juga sudah sesuai sebelum Logbook dikumpulkan. ``
