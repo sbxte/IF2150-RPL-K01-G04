@@ -2,36 +2,34 @@
 
 ## Tugas Besar IF2150 - Rekayasa Perangkat Lunak
 
-| Informasi | Keterangan |
-| --- | --- |
-| **Hari** | *\[Hari\]* |
-| **Tanggal** | *\[DD/MM/YYYY\]* |
-| **Kelas** | *\[Kelas\]* |
-| **Nomor Kelompok** | *\[Nomor Kelompok\]*  |
-| **Nama Kelompok** | *\[Nama Kelompok\]*  |
-| **Nama Perangkat Lunak** | *\[Nama P/L\]*  |
-| **Dokumen** | *\[Nama Dokumen yang diasistensikan\]*  |
+| Informasi                | Keterangan        |
+| ------------------------ | ----------------- |
+| **Hari**                 | _\[Selasa\]_      |
+| **Tanggal**              | _\[01/09/2026\]_  |
+| **Kelas**                | _\[K01\]_         |
+| **Nomor Kelompok**       | _\[4\]_           |
+| **Nama Kelompok**        | _\[LompatMulai\]_ |
+| **Nama Perangkat Lunak** | _\[Sehati\]_      |
+| **Dokumen**              | _\[K01_G04_TB\]_  |
 
 ### Anggota Kelompok
 
-| NIM | Nama |
-|---|---|
-| 13525052 | Daniel Charisma Christian |
-| 13525061 | Rifqi Irfan Indrawan |
+| NIM      | Nama                         |
+| -------- | ---------------------------- |
+| 13525052 | Daniel Charisma Christian    |
+| 13525061 | Rifqi Irfan Indrawan         |
 | 13525082 | Ausa Haadiyaan Mukhtar Yusuf |
-| 13525058 | Farish Firstian Erifiawan |
+| 13525058 | Farish Firstian Erifiawan    |
 
 ### Catatan
 
-| Catatan |
-| --- |
-| 1. *\[Berikan catatan hasil asistensi\]*  |
-| 2. ... |
-| 3. ... |
-| 4. ... |
-
-**Notes for this section:**  
-*Catatan dapat dituliskan dalam bentuk paragraf atau poin-poin, disesuaikan saja.* 
+| Catatan                                                                                            |
+| -------------------------------------------------------------------------------------------------- |
+| 1. Latar belakang perlu data yang konkret                                                          |
+| 2. Bagian deskripsi perangkat lunak perlu dipertegas (karena kita cuman bikin mockup frontend dlu) |
+| 3. Asumsi berikan sesuai dengan deskripsi perangkat lunak                                          |
+| 4. Model Proses Bisnis ada 3 Kolom                                                                 |
+| 5. Deksripsi Aktivitas didapat dari Kebutuhan Awal Aktor                                           |
 
 ## Dokumentasi
 
