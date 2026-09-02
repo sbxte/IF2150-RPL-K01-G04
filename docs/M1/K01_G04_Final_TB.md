@@ -161,9 +161,9 @@ Definisikan apa yang ingin dicapai oleh pengguna saat menggunakan sistem ini dal
   </p>
 <p align="center">
 <i>Gambar 1. Model Proses Bisnis Sehati</i>
+<br>
+www.drawio.com
 </p>
-
-draw.io (to be updated)
 
 # Referensi
 
