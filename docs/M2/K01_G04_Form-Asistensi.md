@@ -25,7 +25,7 @@
 
 | Catatan                                  |
 | ---------------------------------------- |
-| 1. _\[Berikan catatan hasil asistensi\]_ |
+| 1. Untuk kebutuhan umum, apakah dapat mendefinisikan kebutuhan untuk >1 kebutuhan, seperti keseluruhan aplikasi harus disetujui dengan aturan Komdigi |
 | 2. ...                                   |
 | 3. ...                                   |
 | 4. ...                                   |
