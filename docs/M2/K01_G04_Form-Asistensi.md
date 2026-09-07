@@ -2,15 +2,15 @@
 
 ## Tugas Besar IF2150 - Rekayasa Perangkat Lunak
 
-| Informasi | Keterangan |
-| --- | --- |
-| **Hari** | *\[Hari\]* |
-| **Tanggal** | *\[DD/MM/YYYY\]* |
-| **Kelas** | *\[Kelas\]* |
-| **Nomor Kelompok** | *\[Nomor Kelompok\]*  |
-| **Nama Kelompok** | *\[Nama Kelompok\]*  |
-| **Nama Perangkat Lunak** | *\[Nama P/L\]*  |
-| **Dokumen** | *\[Nama Dokumen yang diasistensikan\]*  |
+| Informasi                | Keterangan    |
+| ------------------------ | ------------- |
+| **Hari**                 | Senin         |
+| **Tanggal**              | 07/09/2026    |
+| **Kelas**                | K01           |
+| **Nomor Kelompok**       | G04           |
+| **Nama Kelompok**        | LompatMulai   |
+| **Nama Perangkat Lunak** | "Sehati"      |
+| **Dokumen**              | K01_G04_RG.md |
 
 ### Anggota Kelompok
 
@@ -23,15 +23,15 @@
 
 ### Catatan
 
-| Catatan |
-| --- |
-| 1. *\[Berikan catatan hasil asistensi\]*  |
-| 2. ... |
-| 3. ... |
-| 4. ... |
+| Catatan                                  |
+| ---------------------------------------- |
+| 1. _\[Berikan catatan hasil asistensi\]_ |
+| 2. ...                                   |
+| 3. ...                                   |
+| 4. ...                                   |
 
 **Notes for this section:**  
-*Catatan dapat dituliskan dalam bentuk paragraf atau poin-poin, disesuaikan saja.* 
+_Catatan dapat dituliskan dalam bentuk paragraf atau poin-poin, disesuaikan saja._
 
 ## Dokumentasi
 
