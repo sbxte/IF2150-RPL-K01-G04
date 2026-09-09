@@ -23,15 +23,22 @@
 
 ### Catatan
 
-| Catatan                                  |
-| ---------------------------------------- |
-| 1. Untuk kebutuhan umum, apakah dapat mendefinisikan kebutuhan untuk >1 kebutuhan, seperti keseluruhan aplikasi harus disetujui dengan aturan Komdigi |
-| 2. ...                                   |
-| 3. ...                                   |
-| 4. ...                                   |
+Masih ada yang kurang pada konten dokumen _milestone_ 1, terutama pada Bab 3:
+1. Identifikasi aktor tidak konsisten deskripsinya.
+2. Aktor administrator lebih baik dihilangkan saja
+3. Deskripsi pengguna dan kebutuhan pengguna dirasa kurang singkat, padat, dan jelas
+4. Kalaupun aktor administrator tetap dimasukkan, pengisian jadwal lebih baik dipindahkan tanggung jawabnya ke administrator daripada ke konselor
+5. Diagram model proses bisnis masih belum benar (perlu ditambahkan semua aktor dan keterlibatannya)
 
-**Notes for this section:**  
-_Catatan dapat dituliskan dalam bentuk paragraf atau poin-poin, disesuaikan saja._
+Tidak perlu merevisi dokumen _milestone_ 1.
+
+Untuk _milestone_ 2:
+1. Daftar perubahan diisi rincian revisi dan perbaikan dari _milestone_ sebelumnya
+2. Sekurang-kurangnya di bagian Pemetaan Kebutuhan, ditambahkan satu _Business_
+3. Keterangan 'P/L' bermaksud apakah fitur difasilitasi oleh perangkat lunak
+4. Tidak perlu mendetailkan _compliance_ dengan aturan Kemenkes
+5. Untuk setiap fitur dengan jawaban 'Ya' pada kolom 'P/L' nya Ya, fitur tersebut harus dirincikan di KF
+6. KNF bukan fitur konkret
 
 ## Dokumentasi
 
