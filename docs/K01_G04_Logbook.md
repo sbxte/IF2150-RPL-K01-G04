@@ -23,13 +23,13 @@
 ### Daftar Isi
 
 - [Milestone 1](#milestone-1)
-- Notes: Copy bagian Daftar Isi seperti Milestone 1 untuk Milestone berikutnya, contoh `* [Milestone 2](#milestone-2)`. Ketika Daftar isi diklik maka akan langsung diarahkan ke bagian bawah sesuai dengan Milestone tujuan.
+- [Milestone 2](#milestone-2)
 
 ---
 
 ### Milestone 1
 
-**Periode:** [Tanggal Mulai] - [Tanggal Selesai]
+**Periode:** [26 Agustus 2026] - [2 September 2026]
 
 | Tanggal      | Nama Anggota                   | Deskripsi Pekerjaan                                              | Durasi (Jam) | Status | Kendala / _Blocker_ |
 | :----------- | :----------------------------- | :--------------------------------------------------------------- | :----------- | :----- | :------------------ |
@@ -43,3 +43,18 @@
 - Tidak ada catatan/evaluasi.
 
 ---
+
+### Milestone 2
+
+**Periode**: [2 September 2026] - [9 September 2026]
+
+| Tanggal      | Nama Anggota                   | Deskripsi Pekerjaan                                        | Durasi (Jam) | Status        | Kendala / _Blocker_ |
+| :----------- | :----------------------------- | :--------------------------------------------------------- | :----------- | :------------ | :------------------ |
+| _08-09-2026_ | _Farish Firstian Erifiawan_    | _Revisi Identifikasi Aktor, Kebutuhan Pengguna Awal_       | _6_          | _On Progress_ | _-_                 |
+| _08-09-2026_ | _Rifqi Irfan Indrawan_         | _Revisi Deskripsi Aktivitas, Pembuatan Pemetaan Kebutuhan_ | _4_          | _On Progress_ | _-_                 |
+| _08-09-2026_ | Daniel Charisma Christian\_    | _Pembuatan Kebutuhan Fungsional_                           | _5_          | _On Progress_ | _-_                 |
+| _08-09-2026_ | _Ausa Haadiyaan Mukhtar Yusuf_ | _Pembuatan Kebutuhan Non Fungsional_                       | _3_          | _On Progress_ | _-_                 |
+
+**Catatan/Evaluasi Milestone 2:**
+
+- Tidak ada catatan/evaluasi.
