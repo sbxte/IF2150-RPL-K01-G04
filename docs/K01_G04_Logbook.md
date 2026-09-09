@@ -51,7 +51,7 @@
 | Tanggal      | Nama Anggota                   | Deskripsi Pekerjaan                                        | Durasi (Jam) | Status        | Kendala / _Blocker_ |
 | :----------- | :----------------------------- | :--------------------------------------------------------- | :----------- | :------------ | :------------------ |
 | _08-09-2026_ | _Farish Firstian Erifiawan_    | _Revisi Identifikasi Aktor, Kebutuhan Pengguna Awal_       | _6_          | _On Progress_ | _-_                 |
-| _08-09-2026_ | _Rifqi Irfan Indrawan_         | _Revisi Deskripsi Aktivitas, Pembuatan Pemetaan Kebutuhan_ | _4_          | _On Progress_ | _-_                 |
+| _08-09-2026_ | _Rifqi Irfan Indrawan_         | _Revisi Deskripsi Aktivitas, Pembuatan Pemetaan Kebutuhan_ | _3_          | _Done_        | _-_                 |
 | _08-09-2026_ | Daniel Charisma Christian\_    | _Pembuatan Kebutuhan Fungsional_                           | _5_          | _On Progress_ | _-_                 |
 | _08-09-2026_ | _Ausa Haadiyaan Mukhtar Yusuf_ | _Pembuatan Kebutuhan Non Fungsional_                       | _3_          | _On Progress_ | _-_                 |
 
