@@ -42,11 +42,10 @@ Untuk _milestone_ 2:
 
 ## Dokumentasi
 
-<!-- ![](./assets/foto-asistensi.jpg) -->
 <p align="center">
-  <img src="./assets/foto-asistensi.jpg" width="100%">
+  <img src="./assets/dokum-asistensi.png" width="100%">
 </p>
 
 <p align="center">
-  <i>Gambar 1. Dokumentasi kegiatan asistensi.</i>
+  <i>Gambar 1. Dokumentasi kegiatan asistensi <span>milestone</span> 2.</i>
 </p>
