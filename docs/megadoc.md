@@ -228,27 +228,26 @@ Melalui “Sehati”, pengguna utama diharapkan untuk bisa memesan jadwal sesi t
 ### 2.4 Kebutuhan Fungsional (KF)
 
 | ID KF | ID Kebutuhan | Penjelasan |
-| ----- | ------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| --- | --- | --- |
 | KF-01 | R-01 | Sistem menyediakan opsi untuk menyetel waktu pengiriman _daily affirmations_ dan dapat mengirim notifikasi _daily affirmations_ di waktu yang disetel |
 | KF-02 | R-02 | Segala setelan dan preferensi yang dibuat oleh pengguna dapat disimpan melalui _cookies_ oleh sistem |
-| KF-03 | R-03 | Sistem dapat mengambil data Google Calendar pengguna melalui API yang tersedia dan menampilkannya di antarmuka |
-| KF-04 | R-04 | Sistem dapat mengambil data Google Calendar pengguna melalui API yang tersedia dan menampilkannya di antarmuka |
-| KF-05 | R-05 | Sistem menyediakan opsi untuk menyetel waktu pengiriman pengingat makan dan dapat mengirim pengingatnya di waktu yang disetel |
-| KF-06 | R-06 | Sistem menyediakan opsi untuk menyetel waktu pengiriman pengingat tidur dan dapat mengirim pengingatnya di waktu yang disetel |
-| KF-07 | R-07 | Sistem menyediakan opsi untuk menyetel waktu pengiriman pengingat olahraga dan dapat mengirim pengingatnya di waktu yang disetel |
-| KF-08 | R-08 | Sistem memberikan tampilan notifikasi di mana pun user berada dalam aplikasi, dilengkapi juga dengan konten seperti label yang diberikan pengguna |
-| KF-09 | R-08 | P/L harus dapat diakses secara terus menerus dengan uptime minimal 90% |
-| KF-10 | R-09 | Sistem dapat menampilkan kalender yang telah terintegrasi dengan Google Calendar pengguna lalu memberikan kalender gabungan dengan data jadwal sesi konsultasi yang terdapat di database |
-| KF-11 | R-10 | Sistem dapat mengambil data jadwal dari database dan dapat ditampilkan data tersebut ke pengguna |
-| KF-12 | R-11 | Sistem dapat menyimpan data jadwal sesi konsultasi ke dalam database. |
-| KF-13 | R-12 | Sistem dapat memodifikasi jadwal tanpa merubah Source codenya |
-| KF-14 | R-14 | Sistem dapat menampilkan daftar pertanyaan yang sering diajukan (FAQ) pada aplikasi. |
-| KF-15 | R-15 | Sistem menyediakan fitur bagi pengguna untuk memberikan umpan balik terhadap aplikasi. |
-| KF-16 | R-17 | Sistem dapat menampilkan status server (up/down) kepada administrator. |
-| KF-17 | R-19 | Sistem dapat menerima umpan balik dari pengguna dan memungkinkan administrator memberikan tanggapan terhadap umpan balik tersebut. |
-| KF-18 | R-21 | P/L harus menjamin kerahasiaan dan keamanan data pribadi |
-| KF-19 | R-22 | P/L Harus mempunya UI yang intuitif bagi demografis mahasiswa umur 18-24 tahun |
-| KF-20 | R-23 | Sistem dapat memverifikasi identitas pengguna melalui login akun Google dan memberikan akses ke aplikasi setelah autentikasi berhasil. |
+| KF-03 | R-03, R-04 | Sistem dapat mengambil data Google Calendar pengguna melalui API yang tersedia dan menampilkannya di antarmuka |
+| KF-04 | R-05 | Sistem menyediakan opsi untuk menyetel waktu pengiriman pengingat makan dan dapat mengirim pengingatnya di waktu yang disetel |
+| KF-05 | R-06 | Sistem menyediakan opsi untuk menyetel waktu pengiriman pengingat tidur dan dapat mengirim pengingatnya di waktu yang disetel |
+| KF-06 | R-07 | Sistem menyediakan opsi untuk menyetel waktu pengiriman pengingat olahraga dan dapat mengirim pengingatnya di waktu yang disetel |
+| KF-07 | R-08 | Sistem memberikan tampilan notifikasi di mana pun user berada dalam aplikasi, dilengkapi juga dengan konten seperti label yang diberikan pengguna |
+| KF-08 | R-08 | P/L harus dapat diakses secara terus menerus dengan uptime minimal 90% |
+| KF-09 | R-09 | Sistem dapat menampilkan kalender yang telah terintegrasi dengan Google Calendar pengguna lalu memberikan kalender gabungan dengan data jadwal sesi konsultasi yang terdapat di database |
+| KF-10 | R-10 | Sistem dapat mengambil data jadwal dari database dan dapat ditampilkan data tersebut ke pengguna |
+| KF-11 | R-11 | Sistem dapat menyimpan data jadwal sesi konsultasi ke dalam database. |
+| KF-12 | R-12 | Sistem dapat memodifikasi jadwal tanpa merubah Source codenya |
+| KF-13 | R-14 | Sistem dapat menampilkan daftar pertanyaan yang sering diajukan (FAQ) pada aplikasi. |
+| KF-14 | R-15 | Sistem menyediakan fitur bagi pengguna untuk memberikan umpan balik terhadap aplikasi. |
+| KF-15 | R-17 | Sistem dapat menampilkan status server (up/down) kepada administrator. |
+| KF-16 | R-19 | Sistem dapat menerima umpan balik dari pengguna dan memungkinkan administrator memberikan tanggapan terhadap umpan balik tersebut. |
+| KF-17 | R-21 | P/L harus menjamin kerahasiaan dan keamanan data pribadi |
+| KF-18 | R-22 | P/L Harus mempunya UI yang intuitif bagi demografis mahasiswa umur 18-24 tahun |
+| KF-19 | R-23 | Sistem dapat memverifikasi identitas pengguna melalui login akun Google dan memberikan akses ke aplikasi setelah autentikasi berhasil. |
 
 ### 2.5 Kebutuhan Non-Fungsional (KNF)
 
