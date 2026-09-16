@@ -7,42 +7,41 @@ CLASS DIAGRAM
 </h1>
 <br>
 
-## *Nama Perangkat Lunak*
+## Sehati
 
-### Untuk: *[Nama Asisten]*
+### Untuk: Aurelia Jennifer Gunawan
 
 Dipersiapkan oleh:
-| Informasi | Keterangan |
-| --- | --- |
-| Kelas | *\[Kelas\]* |
-| Kelompok | *\[Nomor Kelompok\]*  |
 
-| NIM | Nama |
-|---|---|
-| *[NIM 1]* | *[Nama Anggota 1]* |
-| *[NIM 2]* | *[Nama Anggota 2]* |
-| *[NIM 3]* | *[Nama Anggota 3]* |
-| *[NIM 4]* | *[Nama Anggota 4]* |
-| *[NIM 5]* | *[Nama Anggota 5]* |
+| Informasi | Keterangan |
+| --------- | ---------- |
+| Kelas     | K01        |
+| Kelompok  | G04        |
+
+| NIM      | Nama                         |
+| -------- | ---------------------------- |
+| 13525052 | Daniel Charisma Christian    |
+| 13525061 | Rifqi Irfan Indrawan         |
+| 13525082 | Ausa Haadiyaan Mukhtar Yusuf |
+| 13525058 | Farish Firstian Erifiawan    |
+
 ---
 
 ## Daftar Perubahan
 
-| Revisi | Deskripsi |
-| :--- | :--- |
-| *A* | *Deskripsikan perubahan yang dilakukan dari dokumen sebelumnya pada dokumen ini. Jika tidak terdapat perubahan, harap kosongkan tabel.* |
-| *B* |  |
-| *C* |  |
-| ... |  |
+| Revisi | Deskripsi                                                                                                                               |
+| :----- | :-------------------------------------------------------------------------------------------------------------------------------------- |
+| _A_    | _Deskripsikan perubahan yang dilakukan dari dokumen sebelumnya pada dokumen ini. Jika tidak terdapat perubahan, harap kosongkan tabel._ |
+| _B_    |                                                                                                                                         |
+| _C_    |                                                                                                                                         |
+| ...    |                                                                                                                                         |
 
 <br>
 <br>
 
 # BAB 1: Deskripsi Perangkat Lunak
 
-Tuliskan overview perangkat lunak dalam narasi yang dapat memberikan gambaran tentang konteks perangkat lunak aplikasi Anda.
-
-Pada bagian ini, Anda diperbolehkan untuk menyalin dari dokumen sebelumnya.
+Melalui “Sehati”, pengguna utama diharapkan untuk bisa memesan jadwal sesi terapi, utamanya. Selain itu, ada aksi-aksi tambahan yang dapat dilakukan, seperti melihat daily affirmation dan pengingat makan, olahraga, dan tidur. Bagi konselor, mereka bisa mendaftarkan diri dan menjadwalkan sesi terapi.
 
 ---
 
@@ -50,25 +49,24 @@ Pada bagian ini, Anda diperbolehkan untuk menyalin dari dokumen sebelumnya.
 
 ## 2.1 Kebutuhan Fungsional
 
-Salin ulang seluruh Kebutuhan Fungsional (KF) yang telah dirumuskan pada dokumen sebelumnya, lengkap dengan ID KF, ID Kebutuhan (mengacu ke ID pada tabel Pemetaan Kebutuhan di dokumen *Requirement Gathering*), dan penjelasannya.
-
-Pada bagian ini, Anda diperbolehkan untuk menyalin dari dokumen sebelumnya.
-
-<sub> ***Catatan***: *Kebutuhan ditulis mengikuti pola EARS. Pada contoh di bawah, sebagian besar KF dipicu oleh satu aksi pelanggan, sehingga memakai pola event-driven "Ketika ⟨pemicu⟩, sistem harus ⟨respons⟩".*
+<sub> _**Catatan**_: _Kebutuhan ditulis mengikuti pola EARS. Pada contoh di bawah, sebagian besar KF dipicu oleh satu aksi pelanggan, sehingga memakai pola event-driven "Ketika ⟨pemicu⟩, sistem harus ⟨respons⟩"._
 <sub>
 
 Tabel 2.1. Daftar Kebutuhan Fungsional
 
-| ID KF | ID Kebutuhan | Penjelasan |
-| :--- | :--- | :--- |
-| *KF01* | *R01* | *Ketika pelanggan membuka halaman katalog, sistem harus menampilkan daftar produk yang tersedia.* |
-| *KF02* | *R02* | *Ketika pelanggan memilih "Tambah ke Keranjang" pada suatu produk, sistem harus menyimpan produk tersebut ke dalam keranjang pelanggan.* |
-| *KF03* | *R03* | *Ketika pelanggan menekan tombol checkout, sistem harus menampilkan pilihan metode pembayaran yang tersedia.* |
-| *KF04* | *R04* | *Ketika pelanggan memilih metode pembayaran, sistem harus mengirimkan permintaan otorisasi beserta nominal tagihan dan ID pesanan ke payment gateway (dummy).* |
-| *KF05* | *R04* | *Ketika payment gateway (dummy) mengembalikan status pembayaran berhasil, sistem harus memperbarui status pesanan menjadi "Lunas" dan menampilkan notifikasi pembayaran berhasil.* |
-| *KF06* | *R05* | *Ketika pelanggan membuka menu riwayat pesanan, sistem harus menampilkan daftar pesanan beserta statusnya.* |
-| *KFXX* | *...* | *...* |
-
+ ID KF | ID Kebutuhan     | Penjelasan                                                                                                                                                                               |
+| ----- | ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| KF-01 | R-01             | Sistem menyediakan opsi untuk menyetel waktu pengiriman _daily affirmations_ dan dapat mengirim notifikasi _daily affirmations_ di waktu yang disetel                                    |
+| KF-02 | R-03             | Sistem dapat mengambil data Google Calendar pengguna melalui API yang tersedia dan menampilkannya di antarmuka                                                                           |
+| KF-03 | R-04, R-05, R-06 | Sistem menyediakan opsi untuk menyetel waktu pengiriman pengingat makan, tidur, olahraga dan dapat mengirim pengingatnya di waktu yang disetel                                           |
+| KF-04 | R-07             | Sistem memberikan tampilan notifikasi di mana pun user berada dalam aplikasi, dilengkapi juga dengan konten seperti label yang diberikan pengguna                                        |
+| KF-05 | R-08             | Sistem dapat menampilkan kalender yang telah terintegrasi dengan Google Calendar pengguna lalu memberikan kalender gabungan dengan data jadwal sesi konsultasi yang terdapat di database |
+| KF-06 | R-09, R-10       | Sistem dapat mengambil data jadwal dari database dan dapat ditampilkan data tersebut ke pengguna                                                                                         |
+| KF-07 | R-12             | Sistem dapat menampilkan daftar pertanyaan yang sering diajukan (FAQ) pada aplikasi.                                                                                                     |
+| KF-08 | R-14             | Sistem menyediakan fitur bagi pengguna untuk memberikan umpan balik terhadap aplikasi.                                                                                                   |
+| KF-09 | R-15             | Sistem dapat menampilkan status server (up/down) kepada administrator.                                                                                                                   |
+| KF-10 | R-17             | Sistem dapat memberikan akses kepada administrator untuk memberikan tanggapan/feedback terhadap umpan balik pengguna.                                                                    |
+| KF-11 | R-22             | Sistem dapat memverifikasi identitas pengguna melalui login akun Google dan memberikan akses ke aplikasi setelah autentikasi berhasil.                                                   |
 
 ---
 
@@ -76,31 +74,30 @@ Tabel 2.1. Daftar Kebutuhan Fungsional
 
 ## 3.1 Identifikasi Aktor
 
-Tuliskan kembali daftar aktor yang terlibat dan deskripsi perannya dalam perangkat lunak (P/L). Deskripsi peran harus menjelaskan wewenang aktor tersebut dalam perangkat lunak. Perlu diingat bahwa aktor yang dimaksud adalah pengguna yang berinteraksi langsung dengan P/L. Komponen seperti database, payment gateway, atau library bukan aktor.
-
-Pada bagian ini, Anda diperbolehkan untuk menyalin dari dokumen sebelumnya.
-
-| Aktor | Deskripsi |
-| :--- | :--- |
-| *Pelanggan* | *Pengguna yang memesan produk, mengelola keranjang, dan menyelesaikan pembayaran melalui sistem.* |
-| *...* | *...* |
+| Aktor         | Deskripsi                                                                                                                                             |
+| ------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Mahasiswa     | Pengguna ini akan menggunakan fitur-fitur pengingat makan, olahraga, dan tidur serta mendapatkan daily affirmations dan dapat memesan sesi konsultasi |
+| Administrator | Pengguna ini akan menambahkan jadwal konsultasi sesuai jadwal yang terdapat pada informasi konsultan.                                                 |
 
 ## 3.2 Identifikasi Use Case
 
-Use case berfungsi untuk mendeskripsikan interaksi aktor-aktor yang terlibat dengan sistem. Isi daftar use case dan deskripsi singkatnya dalam tabel di bawah.
-
-Pada bagian ini, Anda diperbolehkan untuk menyalin dari dokumen sebelumnya.
-
-| ID UC | Nama Use Case | Deskripsi Singkat | Aktor | ID KF |
-| :--- | :--- | :--- | :--- | :--- |
-| *UC01* | *Memesan Produk* | *Pelanggan memilih produk hingga pesanan tersimpan di sistem.* | *Pelanggan* | *KF01, KF02* |
-| *UC02* | *Melihat Keranjang* | *Pelanggan melihat daftar item yang telah dipilih sebelum checkout.* | *Pelanggan* | *KF02* |
-| *UC03* | *Melakukan Pembayaran* | *Pelanggan menyelesaikan pembayaran atas pesanan yang dibuat.* | *Pelanggan* | *KF03, KF04, KF05* |
-| *UC04* | *Memilih Metode Pembayaran* | *Pelanggan memilih metode pembayaran alternatif (kartu atau e-wallet).* | *Pelanggan* | *KF03* |
-| *UC05* | *Melihat Riwayat Pesanan* | *Pelanggan melihat daftar pesanan yang pernah dibuat beserta statusnya.* | *Pelanggan* | *KF06* |
-| *...* | *...* | *...* | *...* | *...* |
+| ID UC | Nama Use Case                 | Deskripsi Singkat                                                                                           | Aktor Terlibat           | ID KF Terkait       |
+| ----- | ----------------------------- | ----------------------------------------------------------------------------------------------------------- | ------------------------ | ------------------- |
+| UC-01 | Menyetel Daily Affirmations   | Mahasiswa mengatur waktu penerimaan daily affirmations dan menerima notifikasinya.                          | Mahasiswa                | KF-01, KF-02        |
+| UC-02 | Menyetel Pengingat Kesehatan  | Mahasiswa mengatur waktu pengingat makan, tidur, dan olahraga, serta menerima notifikasinya.                | Mahasiswa                | KF-03, KF-04        |
+| UC-03 | Melihat Kalender Terintegrasi | Mahasiswa melihat jadwal gabungan antara Google Calendar dan jadwal sesi konsultasi dalam satu tampilan.    | Mahasiswa                | KF-02, KF-05, KF-06 |
+| UC-04 | Memesan Sesi Konsultasi       | Mahasiswa memilih dan memesan sesi konsultasi pada jadwal yang tersedia.                                    | Mahasiswa                | KF-05, KF-06        |
+| UC-05 | Mengelola Jadwal Konsultan    | Administrator memasukkan dan memperbarui jadwal sesi konsultasi ke dalam sistem tanpa mengubah source code. | Administrator            | KF-06               |
+| UC-06 | Melihat FAQ                   | Mahasiswa membuka dan mencari daftar pertanyaan yang sering diajukan.                                       | Mahasiswa                | KF-07               |
+| UC-07 | Mengelola FAQ                 | Administrator menambah, mengubah, atau menghapus daftar FAQ.                                                | Administrator            | KF-07               |
+| UC-08 | Memberikan Umpan Balik        | Mahasiswa mengirimkan umpan balik terhadap aplikasi.                                                        | Mahasiswa                | KF-08               |
+| UC-09 | Menanggapi Umpan Balik        | Administrator melihat dan memberikan tanggapan atas umpan balik yang masuk.                                 | Administrator            | KF-10               |
+| UC-10 | Memantau Status Server        | Administrator memeriksa status up/down server secara berkala.                                               | Administrator            | KF-09               |
+| UC-11 | Masuk Melalui Akun Google     | Pengguna login ke aplikasi menggunakan akun Google sebelum mengakses fitur lainnya.                         | Mahasiswa, Administrator | KF-11               |
+| UC-12 | Form Pengajuan pertanyaan     | Pengguna mengajukan pertanyaan diluar yang ada di FAQ                                                       | Mahasiswa                | KF-07               |
 
 ## 3.3 Use Case Diagram
+
 Buatlah diagram use case keseluruhan berdasarkan identifikasi use case beserta aktor yang melakukan use case tersebut. Perhatikan garis `<<extend>>` dan `<<include>>`.
 
 Pada bagian ini, Anda diperbolehkan untuk menyalin dari dokumen sebelumnya.
@@ -115,90 +112,194 @@ Pada bagian ini, Anda diperbolehkan untuk menyalin dari dokumen sebelumnya.
 <br>
 
 ## 3.4 Skenario Use Case
-Salin ulang skenario **setiap** use case (skenario normal dan alternatif) dari dokumen *Use Case & Scenario Use Case*. Skenario ini menjadi dasar penentuan atribut dan metode/operasi kelas pada BAB 4.
-
-Pada bagian ini, Anda diperbolehkan untuk menyalin dari dokumen sebelumnya.
 
 ### 3.4.1 Skenario UC01
 
-**Nama Use Case:** *Memesan Produk*
+**Nama Use Case:** _Melakukan Pembayaran Digital_
 
 **Skenario Normal**
 
-| No | Aksi Aktor | Reaksi Perangkat Lunak |
-| :--- | :--- | :--- |
-| 1 | *Pelanggan memilih produk dari katalog* | *Sistem menampilkan detail produk dan menambahkannya ke keranjang* |
-| 2 | *Pelanggan menekan tombol checkout* | *Sistem membuat pesanan baru dari isi keranjang dan menampilkan ringkasan pesanan* |
-| ... | *...* | *...* |
+| No  | Aksi Aktor                                              | Reaksi Perangkat Lunak                                                                                                                    |
+| --- | ------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | _Pelanggan memilih menu checkout_                       | _Sistem menampilkan ringkasan pesanan dan pilihan metode pembayaran_                                                                      |
+| 2   | _Pelanggan memilih metode pembayaran (misal: e-wallet)_ | _Sistem mengarahkan pelanggan ke halaman konfirmasi e-wallet_                                                                             |
+| 3   | _Pelanggan mengonfirmasi pembayaran_                    | _Sistem menerima respons pembayaran berhasil, memperbarui status pesanan menjadi "Lunas", dan menampilkan notifikasi pembayaran berhasil_ |
 
-**Skenario Alternatif 1: Produk Tidak Tersedia**
+<br>
 
-| No | Aksi Aktor | Reaksi Perangkat Lunak |
-| :--- | :--- | :--- |
-| 1 | *Pelanggan memilih produk dari katalog* | *Sistem menampilkan pesan "Produk tidak tersedia" karena stok habis* |
-| 2 | *Pelanggan memilih produk lain* | *Sistem kembali ke langkah 1 skenario normal* |
-| ... | *...* | *...* |
+**Skenario Alternatif 1: Otorisasi Pembayaran Gagal**
 
-### 3.4.3 Skenario UC03
+| No  | Aksi Aktor                                              | Reaksi Perangkat Lunak                                                                                                                                     |
+| --- | ------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | _Pelanggan memilih menu checkout_                       | _Sistem menampilkan ringkasan pesanan dan pilihan metode pembayaran_                                                                                       |
+| 2   | _Pelanggan memilih metode pembayaran (misal: e-wallet)_ | _Sistem mengarahkan pelanggan ke halaman konfirmasi e-wallet_                                                                                              |
+| 3   | _Pelanggan mengonfirmasi pembayaran_                    | _Sistem menerima respons pembayaran gagal (misal: saldo tidak cukup). Sistem menampilkan pesan error dan meminta pelanggan memilih metode pembayaran lain_ |
+| 4   | _Pelanggan memilih metode pembayaran lain_              | _Sistem kembali ke langkah 2 skenario normal_                                                                                                              |
 
-**Nama Use Case:** *Melakukan Pembayaran*
+### 3.4.2 Skenario UC02
+
+**Nama Use Case:** _Memverifikasi Status Pembayaran_
 
 **Skenario Normal**
 
-| No | Aksi Aktor | Reaksi Perangkat Lunak |
-| :--- | :--- | :--- |
-| 1 | *Pelanggan menekan tombol "Bayar" pada ringkasan pesanan* | *Sistem menampilkan pilihan metode pembayaran yang tersedia (mis. Kartu, E-Wallet)* |
-| 2 | *Pelanggan memilih salah satu metode pembayaran* | *Sistem mengirimkan permintaan otorisasi ke payment gateway (dummy) sesuai metode yang dipilih* |
-| 3 | *-* | *Payment gateway (dummy) mengembalikan status pembayaran berhasil; sistem memperbarui status pesanan menjadi "Lunas" dan menampilkan notifikasi pembayaran berhasil* |
-| ... | *...* | *...* |
+| No  | Aksi Aktor                              | Reaksi Perangkat Lunak                                                    |
+| --- | --------------------------------------- | ------------------------------------------------------------------------- |
+| 1   | _Kasir memasukkan ID Pesanan pelanggan_ | _Sistem menampilkan status pembayaran ("Lunas") beserta detail transaksi_ |
 
-**Skenario Alternatif 1: Pembayaran Dummy Gagal**
+<br>
 
-| No | Aksi Aktor | Reaksi Perangkat Lunak |
-| :--- | :--- | :--- |
-| 1 | *Pelanggan menekan tombol "Bayar" pada ringkasan pesanan* | *Sistem menampilkan pilihan metode pembayaran yang tersedia* |
-| 2 | *Pelanggan memilih salah satu metode pembayaran* | *Sistem mengirimkan permintaan otorisasi ke payment gateway (dummy), yang mengembalikan status gagal (mis. saldo e-wallet dummy tidak mencukupi)* |
-| 3 | *Pelanggan memilih untuk mencoba lagi atau memilih metode lain* | *Sistem kembali ke langkah 1 skenario normal* |
-| ... | *...* | *...* |
+**Skenario Alternatif 1: ID Pesanan Tidak Ditemukan**
 
-<sub>*Lanjutkan pola 3.4.x ini untuk setiap ID UC pada 3.2, sampai seluruh use case tercakup.*<sub>
+| No  | Aksi Aktor                                         | Reaksi Perangkat Lunak                                                                     |
+| --- | -------------------------------------------------- | ------------------------------------------------------------------------------------------ |
+| 1   | _Kasir memasukkan ID Pesanan yang salah/tidak ada_ | _Sistem menampilkan pesan "ID Pesanan tidak ditemukan" dan meminta kasir memasukkan ulang_ |
+
+### 3.4.6 Skenario UC-06
+
+**Nama Use Case:** Melihat FAQ
+
+**Skenario Normal**
+
+| No  | Aksi Aktor                                     | Reaksi Perangkat Lunak                                    |
+| --- | ---------------------------------------------- | --------------------------------------------------------- |
+| 1   | Mahasiswa mencari pertanyaan di search bar FAQ | Sistem menunjukkan pertanyaan dan jawaban yang disediakan |
+
+<br>
+
+\*\*Skenario Alternatif 1: Tidak ada pertanyaan yang dicari pengguna
+
+| No  | Aksi Aktor                                     | Reaksi Perangkat Lunak                                                                                          |
+| --- | ---------------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
+| 1   | Mahasiswa mencari pertanyaan di search bar FAQ | Sistem tidak menunjukkan pertanyaan yang dicari mahasiswa, lalu menawarkan untuk mengajukan pertanyaan di forum |
+
+### 3.4.7 Skenario UC-07
+
+**Nama Use Case:** Mengelola FAQ
+
+**Skenario Normal**
+
+| No  | Aksi Aktor                                        | Reaksi Perangkat Lunak                                                        |
+| --- | ------------------------------------------------- | ----------------------------------------------------------------------------- |
+| 1   | Admin menambahkan pertanyaan dan jawaban di FAQ   | Sistem berhasil menambahkan pertanyaan & jawabannya di database               |
+| 2   | Admin mengurangi pertanyaan di FAQ                | Sistem berhasil menghapus pertanyaan (dan jawabannya) dari database           |
+| 3   | Admin mengubah pertanyaan dan/atau jawaban di FAQ | Sistem berhasil menyimpan perubahan pertanyaan dan/atau jawaban pada database |
+
+<br>
+
+\*\*Skenario Alternatif 1: Tidak ada pertanyaan maupun jawaban yang berhasil disimpan
+
+| No  | Aksi Aktor                                        | Reaksi Perangkat Lunak                                                     |
+| --- | ------------------------------------------------- | -------------------------------------------------------------------------- |
+| 1   | Admin menambahkan pertanyaan dan jawaban di FAQ   | Sistem tidak menambahkan pertanyaan maupun jawabannya di database          |
+| 2   | Admin mengurangi pertanyaan di FAQ                | Sistem tidak menghapus pertanyaan (dan jawabannya) dari database           |
+| 3   | Admin mengubah pertanyaan dan/atau jawaban di FAQ | Sistem tidak menyimpan perubahan pertanyaan dan/atau jawaban pada database |
+
+### 3.4.8 Skenario UC-08
+
+**Nama Use Case:** Memberikan Umpan Balik
+
+**Skenario Normal**
+
+| No  | Aksi Aktor                                                      | Reaksi Perangkat Lunak                                  |
+| --- | --------------------------------------------------------------- | ------------------------------------------------------- |
+| 1   | Mahasiswa memberikan umpan balik di forum pemberian umpan balik | Sistem menerima dan menyimpan umpan balik pada database |
+
+<br>
+
+\*\*Skenario Alternatif 1: Umpan balik tidak disimpan pada database
+
+| No  | Aksi Aktor                                                      | Reaksi Perangkat Lunak                                              |
+| --- | --------------------------------------------------------------- | ------------------------------------------------------------------- |
+| 1   | Mahasiswa memberikan umpan balik di forum pemberian umpan balik | Sistem tidak menerima dan tidak menyimpan umpan balik pada database |
+
+### 3.4.9 Skenario UC-09
+
+**Nama Use Case:** Menanggapi Umpan Balik
+
+**Skenario Normal**
+
+| No  | Aksi Aktor                                                               | Reaksi Perangkat Lunak                                         |
+| --- | ------------------------------------------------------------------------ | -------------------------------------------------------------- |
+| 1   | Admin memberikan tanggapan pada umpan balik yang diterima oleh mahasiswa | Sistem menunjukkan jawaban dari tanggapan yang diberikan admin |
+
+<br>
+
+\*\*Skenario Alternatif 1: Tanggapan umpan balik tidak berhasil ditampilkan
+
+| No  | Aksi Aktor                                                               | Reaksi Perangkat Lunak                                  |
+| --- | ------------------------------------------------------------------------ | ------------------------------------------------------- |
+| 1   | Admin memberikan tanggapan pada umpan balik yang diterima oleh mahasiswa | Sistem tidak menunjukkan konten pada tampilan mahasiswa |
+
+### 3.4.10 Skenario UC-10
+
+**Nama Use Case:** Memantau Status Server
+
+**Skenario Normal**
+
+| No  | Aksi Aktor                          | Reaksi Perangkat Lunak                  |
+| --- | ----------------------------------- | --------------------------------------- |
+| 1   | Admin melihat status uptime website | Sistem memberikan status uptime website |
+| 2   | Admin melihat status uptime server  | Sistem menunjukkan status uptime server |
+
+<br>
+
+### 3.4.11 Skenario UC-11
+
+**Nama Use Case:** Masuk Melalui Akun Google
+
+**Skenario Normal**
+
+| No  | Aksi Aktor                                         | Reaksi Perangkat Lunak                                         |
+| --- | -------------------------------------------------- | -------------------------------------------------------------- |
+| 1   | Mahasiswa melakukan autentikasi dengan akun Google | Sistem menampilkan tampilan selanjutnya setelah login berhasil |
+
+<br>
+
+\*\*Skenario Alternatif 1: OAuth Google tidak berfungsi saat login
+
+| No  | Aksi Aktor                                         | Reaksi Perangkat Lunak                                                          |
+| --- | -------------------------------------------------- | ------------------------------------------------------------------------------- |
+| 1   | Mahasiswa melakukan autentikasi dengan akun Google | Sistem tidak melakukan login untuk mahasiswa, mahasiswa kembali ke login screen |
 
 ---
 
 # BAB 4: Diagram Kelas
+
 Bagian ini berisi identifikasi kelas dan pemodelan struktur kelas yang diperlukan untuk merealisasikan use case pada BAB 3. Gunakan skenario use case (3.4) sebagai dasar untuk menentukan kelas, atribut, metode, dan hubungan antarkelas.
 
 ## 4.1 Identifikasi Kelas
+
 Identifikasi seluruh kelas yang diperlukan berdasarkan use case dan skenarionya. Satu kelas boleh terkait dengan lebih dari satu use case.
 
-| ID Kelas | Nama Kelas | Deskripsi Kelas | ID Use Case |
-| :--- | :--- | :--- | :--- |
-| *C01* | *Pelanggan* | *Menyimpan data akun pelanggan yang membuat pesanan.* | *UC01, UC05* |
-| *C02* | *Pesanan* | *Menyimpan data pesanan beserta status pembayarannya.* | *UC01, UC03, UC05* |
-| *C03* | *Keranjang* | *Menyimpan sementara item yang dipilih sebelum checkout.* | *UC01, UC02* |
-| *C04* | *MetodePembayaran* | *Kelas abstrak yang merepresentasikan metode pembayaran yang dipilih pelanggan.* | *UC03, UC04* |
-| *C05* | *Kartu* | *Merealisasikan pembayaran melalui kartu kredit/debit dengan mengirimkan permintaan ke payment gateway (dummy).* | *UC03, UC04* |
-| *C06* | *EWallet* | *Merealisasikan pembayaran melalui e-wallet, termasuk pengecekan saldo, dengan mengirimkan permintaan ke payment gateway (dummy).* | *UC03, UC04* |
-| *C07* | *RiwayatTransaksi* | *Menyimpan catatan transaksi beserta status yang dikembalikan payment gateway (dummy).* | *UC03, UC05* |
-| *...* | *...* | *...* | *...* |
+| ID Kelas | Nama Kelas         | Deskripsi Kelas                                                                                                                    | ID Use Case        |
+| :------- | :----------------- | :--------------------------------------------------------------------------------------------------------------------------------- | :----------------- |
+| _C01_    | _Pelanggan_        | _Menyimpan data akun pelanggan yang membuat pesanan._                                                                              | _UC01, UC05_       |
+| _C02_    | _Pesanan_          | _Menyimpan data pesanan beserta status pembayarannya._                                                                             | _UC01, UC03, UC05_ |
+| _C03_    | _Keranjang_        | _Menyimpan sementara item yang dipilih sebelum checkout._                                                                          | _UC01, UC02_       |
+| _C04_    | _MetodePembayaran_ | _Kelas abstrak yang merepresentasikan metode pembayaran yang dipilih pelanggan._                                                   | _UC03, UC04_       |
+| _C05_    | _Kartu_            | _Merealisasikan pembayaran melalui kartu kredit/debit dengan mengirimkan permintaan ke payment gateway (dummy)._                   | _UC03, UC04_       |
+| _C06_    | _EWallet_          | _Merealisasikan pembayaran melalui e-wallet, termasuk pengecekan saldo, dengan mengirimkan permintaan ke payment gateway (dummy)._ | _UC03, UC04_       |
+| _C07_    | _RiwayatTransaksi_ | _Menyimpan catatan transaksi beserta status yang dikembalikan payment gateway (dummy)._                                            | _UC03, UC05_       |
+| _..._    | _..._              | _..._                                                                                                                              | _..._              |
 
 Pastikan setiap kelas memiliki tanggung jawab yang jelas dan memang diperlukan untuk merealisasikan fungsi yang dimodelkan. Hindari kelas yang tidak memiliki keterkaitan dengan KF atau use case manapun.
 
 ## 4.2 Diagram Kelas per Use Case
+
 Buat diagram kelas untuk setiap use case pada 3.2.
 
 ### 4.2.1 Use Case UC01
 
-**Nama Use Case:** *Memesan Produk*
+**Nama Use Case:** _Memesan Produk_
 
 #### Identifikasi Kelas
 
-| ID Kelas | Nama Kelas | Deskripsi Kelas |
-| :--- | :--- | :--- |
-| *C01* | *Pelanggan* | *Menyimpan data akun pelanggan yang membuat pesanan.* |
-| *C02* | *Pesanan* | *Menyimpan data pesanan yang dibuat dari isi keranjang.* |
-| *C03* | *Keranjang* | *Menyimpan sementara item yang dipilih sebelum checkout.* |
-| *...* | *...* | *...* |
+| ID Kelas | Nama Kelas  | Deskripsi Kelas                                           |
+| :------- | :---------- | :-------------------------------------------------------- |
+| _C01_    | _Pelanggan_ | _Menyimpan data akun pelanggan yang membuat pesanan._     |
+| _C02_    | _Pesanan_   | _Menyimpan data pesanan yang dibuat dari isi keranjang._  |
+| _C03_    | _Keranjang_ | _Menyimpan sementara item yang dipilih sebelum checkout._ |
+| _..._    | _..._       | _..._                                                     |
 
 #### Diagram Kelas
 
@@ -212,11 +313,11 @@ Buat diagram kelas untuk setiap use case pada 3.2.
 
 Pada diagram kelas, cukup tampilkan nama kelas saja. Atribut dan metode/operasi milik setiap kelas dapat dituliskan pada tabel di bawah ini. Pastikan hubungan antarkelas menggunakan jenis relasi yang sesuai (asosiasi, agregasi, komposisi, generalisasi, atau dependensi).
 
-| ID Kelas | Nama Kelas | Atribut | Metode/Operasi |
-| :--- | :--- | :--- | :--- |
-| *C02* | *Pesanan* | *idPesanan, total, status* | *buatPesanan(), hitungTotal()* |
-| *C03* | *Keranjang* | *daftarItem* | *tambahItem(), checkout()* |
-| *...* | *...* | *...* | *...* |
+| ID Kelas | Nama Kelas  | Atribut                    | Metode/Operasi                 |
+| :------- | :---------- | :------------------------- | :----------------------------- |
+| _C02_    | _Pesanan_   | _idPesanan, total, status_ | _buatPesanan(), hitungTotal()_ |
+| _C03_    | _Keranjang_ | _daftarItem_               | _tambahItem(), checkout()_     |
+| _..._    | _..._       | _..._                      | _..._                          |
 
 > Lanjutkan pola **4.2.x** untuk setiap use case pada 3.2.
 
@@ -232,32 +333,33 @@ Gabungkan seluruh kelas dan hubungan antarkelas dari diagram kelas setiap use ca
 </p>
 <br>
 
-| ID Kelas | Nama Kelas | Atribut | Metode/Operasi |
-| :--- | :--- | :--- | :--- |
-| *C01* | *Pelanggan* | *idPelanggan, nama, email* | *lihatRiwayatPesanan()* |
-| *C02* | *Pesanan* | *idPesanan, total, status* | *hitungTotal(), perbaruiStatus()* |
-| *C03* | *Keranjang* | *daftarItem* | *tambahItem(), checkout()* |
-| *C04* | *MetodePembayaran* | *-* | *kirimKePaymentGatewayDummy()* |
-| *C05* | *Kartu* | *nomorKartu, masaBerlaku* | *kirimKePaymentGatewayDummy()* |
-| *C06* | *EWallet* | *saldo, idAkun* | *cekSaldo(), kirimKePaymentGatewayDummy()* |
-| *C07* | *RiwayatTransaksi* | *idTransaksi, waktu, status* | *catatTransaksi(), tampilkanNotifikasi()* |
-| *...* | *...* | *...* | *...* |
+| ID Kelas | Nama Kelas         | Atribut                      | Metode/Operasi                             |
+| :------- | :----------------- | :--------------------------- | :----------------------------------------- |
+| _C01_    | _Pelanggan_        | _idPelanggan, nama, email_   | _lihatRiwayatPesanan()_                    |
+| _C02_    | _Pesanan_          | _idPesanan, total, status_   | _hitungTotal(), perbaruiStatus()_          |
+| _C03_    | _Keranjang_        | _daftarItem_                 | _tambahItem(), checkout()_                 |
+| _C04_    | _MetodePembayaran_ | _-_                          | _kirimKePaymentGatewayDummy()_             |
+| _C05_    | _Kartu_            | _nomorKartu, masaBerlaku_    | _kirimKePaymentGatewayDummy()_             |
+| _C06_    | _EWallet_          | _saldo, idAkun_              | _cekSaldo(), kirimKePaymentGatewayDummy()_ |
+| _C07_    | _RiwayatTransaksi_ | _idTransaksi, waktu, status_ | _catatTransaksi(), tampilkanNotifikasi()_  |
+| _..._    | _..._              | _..._                        | _..._                                      |
 
 ---
 
 # BAB 5: Traceability
+
 Cocokkan setiap kebutuhan fungsional, use case, dengan diagram kelas yang mendukung atau mengimplementasikan kebutuhan tersebut.
 
-| ID Kelas | ID Use Case | ID KF |
-| :--- | :--- | :--- |
-| *C01* | *UC01, UC05* | *KF01, KF06* |
-| *C02* | *UC01, UC03, UC05* | *KF01, KF02, KF05, KF06* |
-| *C03* | *UC01, UC02* | *KF01, KF02* |
-| *C04* | *UC03, UC04* | *KF03* |
-| *C05* | *UC03, UC04* | *KF03* |
-| *C06* | *UC03, UC04* | *KF03, KF04* |
-| *C07* | *UC03, UC05* | *KF04, KF05* |
-| *...* | *...* | *...* |
+| ID Kelas | ID Use Case        | ID KF                    |
+| :------- | :----------------- | :----------------------- |
+| _C01_    | _UC01, UC05_       | _KF01, KF06_             |
+| _C02_    | _UC01, UC03, UC05_ | _KF01, KF02, KF05, KF06_ |
+| _C03_    | _UC01, UC02_       | _KF01, KF02_             |
+| _C04_    | _UC03, UC04_       | _KF03_                   |
+| _C05_    | _UC03, UC04_       | _KF03_                   |
+| _C06_    | _UC03, UC04_       | _KF03, KF04_             |
+| _C07_    | _UC03, UC05_       | _KF04, KF05_             |
+| _..._    | _..._              | _..._                    |
 
 ---
 

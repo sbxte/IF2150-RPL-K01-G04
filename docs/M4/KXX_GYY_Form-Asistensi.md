@@ -2,37 +2,36 @@
 
 ## Tugas Besar IF2150 - Rekayasa Perangkat Lunak
 
-| Informasi | Keterangan |
-| --- | --- |
-| **Hari** | *\[Hari\]* |
-| **Tanggal** | *\[DD/MM/YYYY\]* |
-| **Kelas** | *\[Kelas\]* |
-| **Nomor Kelompok** | *\[Nomor Kelompok\]*  |
-| **Nama Kelompok** | *\[Nama Kelompok\]*  |
-| **Nama Perangkat Lunak** | *\[Nama P/L\]*  |
-| **Dokumen** | *\[Nama Dokumen yang diasistensikan\]*  |
+| Informasi                | Keterangan       |
+| ------------------------ | ---------------- |
+| **Hari**                 | _\[Hari\]_       |
+| **Tanggal**              | _\[DD/MM/YYYY\]_ |
+| **Kelas**                | K01              |
+| **Nomor Kelompok**       | G04              |
+| **Nama Kelompok**        | LompatMulai      |
+| **Nama Perangkat Lunak** | Sehati           |
+| **Dokumen**              | K01_G04_CD.md    |
 
 ### Anggota Kelompok
 
-| NIM | Nama |
-| --- | --- |
-| *\[NIM 1\]* | *\[Nama Anggota 1\]* |
-| *\[NIM 2\]* | *\[Nama Anggota 2\]* |
-| *\[NIM 3\]* | *\[Nama Anggota 3\]* |
-| *\[NIM 4\]* | *\[Nama Anggota 4\]* |
-| *\[NIM 5\]* | *\[Nama Anggota 5\]* |
+| NIM      | Nama                         |
+| -------- | ---------------------------- |
+| 13525052 | Daniel Charisma Christian    |
+| 13525061 | Rifqi Irfan Indrawan         |
+| 13525082 | Ausa Haadiyaan Mukhtar Yusuf |
+| 13525058 | Farish Firstian Erifiawan    |
 
 ### Catatan
 
-| Catatan |
-| --- |
-| 1. *\[Berikan catatan hasil asistensi\]*  |
-| 2. ... |
-| 3. ... |
-| 4. ... |
+| Catatan                                  |
+| ---------------------------------------- |
+| 1. _\[Berikan catatan hasil asistensi\]_ |
+| 2. ...                                   |
+| 3. ...                                   |
+| 4. ...                                   |
 
 **Notes for this section:**  
-*Catatan dapat dituliskan dalam bentuk paragraf atau poin-poin, disesuaikan saja.* 
+_Catatan dapat dituliskan dalam bentuk paragraf atau poin-poin, disesuaikan saja._
 
 ## Dokumentasi
 
