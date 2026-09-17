@@ -228,27 +228,19 @@ Melalui “Sehati”, pengguna utama diharapkan untuk bisa memesan jadwal sesi t
 
 ### 2.4 Kebutuhan Fungsional (KF)
 
-| ID KF | ID Kebutuhan | Penjelasan                                                                                                                                                                               |
-| ----- | ------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| KF-01 | R-01         | Sistem menyediakan opsi untuk menyetel waktu pengiriman _daily affirmations_ dan dapat mengirim notifikasi _daily affirmations_ di waktu yang disetel                                    |
-| KF-02 | R-02         | Segala setelan dan preferensi yang dibuat oleh pengguna dapat disimpan melalui _cookies_ oleh sistem                                                                                     |
-| KF-03 | R-03, R-04   | Sistem dapat mengambil data Google Calendar pengguna melalui API yang tersedia dan menampilkannya di antarmuka                                                                           |
-| KF-04 | R-05         | Sistem menyediakan opsi untuk menyetel waktu pengiriman pengingat makan dan dapat mengirim pengingatnya di waktu yang disetel                                                            |
-| KF-05 | R-06         | Sistem menyediakan opsi untuk menyetel waktu pengiriman pengingat tidur dan dapat mengirim pengingatnya di waktu yang disetel                                                            |
-| KF-06 | R-07         | Sistem menyediakan opsi untuk menyetel waktu pengiriman pengingat olahraga dan dapat mengirim pengingatnya di waktu yang disetel                                                         |
-| KF-07 | R-08         | Sistem memberikan tampilan notifikasi di mana pun user berada dalam aplikasi, dilengkapi juga dengan konten seperti label yang diberikan pengguna                                        |
-| KF-08 | R-08         | P/L harus dapat diakses secara terus menerus dengan uptime minimal 90%                                                                                                                   |
-| KF-09 | R-09         | Sistem dapat menampilkan kalender yang telah terintegrasi dengan Google Calendar pengguna lalu memberikan kalender gabungan dengan data jadwal sesi konsultasi yang terdapat di database |
-| KF-10 | R-10         | Sistem dapat mengambil data jadwal dari database dan dapat ditampilkan data tersebut ke pengguna                                                                                         |
-| KF-11 | R-11         | Sistem dapat menyimpan data jadwal sesi konsultasi ke dalam database.                                                                                                                    |
-| KF-12 | R-12         | Sistem dapat memodifikasi jadwal tanpa merubah Source codenya                                                                                                                            |
-| KF-13 | R-14         | Sistem dapat menampilkan daftar pertanyaan yang sering diajukan (FAQ) pada aplikasi.                                                                                                     |
-| KF-14 | R-15         | Sistem menyediakan fitur bagi pengguna untuk memberikan umpan balik terhadap aplikasi.                                                                                                   |
-| KF-15 | R-17         | Sistem dapat menampilkan status server (up/down) kepada administrator.                                                                                                                   |
-| KF-16 | R-19         | Sistem dapat menerima umpan balik dari pengguna dan memungkinkan administrator memberikan tanggapan terhadap umpan balik tersebut.                                                       |
-| KF-17 | R-21         | P/L harus menjamin kerahasiaan dan keamanan data pribadi                                                                                                                                 |
-| KF-18 | R-22         | P/L Harus mempunya UI yang intuitif bagi demografis mahasiswa umur 18-24 tahun                                                                                                           |
-| KF-19 | R-23         | Sistem dapat memverifikasi identitas pengguna melalui login akun Google dan memberikan akses ke aplikasi setelah autentikasi berhasil.                                                   |
+| ID KF | ID Kebutuhan     | Penjelasan                                                                                                                                                                               |
+| ----- | ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| KF-01 | R-01             | Sistem menyediakan opsi untuk menyetel waktu pengiriman _daily affirmations_ dan dapat mengirim notifikasi _daily affirmations_ di waktu yang disetel                                    |
+| KF-02 | R-03             | Sistem dapat mengambil data Google Calendar pengguna melalui API yang tersedia dan menampilkannya di antarmuka                                                                           |
+| KF-03 | R-04, R-05, R-06 | Sistem menyediakan opsi untuk menyetel waktu pengiriman pengingat makan, tidur, olahraga dan dapat mengirim pengingatnya di waktu yang disetel                                           |
+| KF-04 | R-07             | Sistem memberikan tampilan notifikasi di mana pun user berada dalam aplikasi, dilengkapi juga dengan konten seperti label yang diberikan pengguna                                        |
+| KF-05 | R-08             | Sistem dapat menampilkan kalender yang telah terintegrasi dengan Google Calendar pengguna lalu memberikan kalender gabungan dengan data jadwal sesi konsultasi yang terdapat di database |
+| KF-06 | R-09, R-10       | Sistem dapat mengambil data jadwal dari database dan dapat ditampilkan data tersebut ke pengguna                                                                                         |
+| KF-07 | R-12             | Sistem dapat menampilkan daftar pertanyaan yang sering diajukan (FAQ) pada aplikasi.                                                                                                     |
+| KF-08 | R-14             | Sistem menyediakan fitur bagi pengguna untuk memberikan umpan balik terhadap aplikasi.                                                                                                   |
+| KF-09 | R-15             | Sistem dapat menampilkan status server (up/down) kepada administrator.                                                                                                                   |
+| KF-10 | R-17             | Sistem dapat memberikan akses kepada administrator untuk memberikan tanggapan/feedback terhadap umpan balik pengguna.                                                                    |
+| KF-11 | R-22             | Sistem dapat memverifikasi identitas pengguna melalui login akun Google dan memberikan akses ke aplikasi setelah autentikasi berhasil.                                                   |
 
 ### 2.5 Kebutuhan Non-Fungsional (KNF)
 
@@ -270,4 +262,188 @@ Melalui “Sehati”, pengguna utama diharapkan untuk bisa memesan jadwal sesi t
 
 # M3: Use Cases
 
-TODO: fill out
+## 3.1 Identifikasi Aktor
+
+| Aktor         | Deskripsi                                                                                                                                             |
+| ------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Mahasiswa     | Pengguna ini akan menggunakan fitur-fitur pengingat makan, olahraga, dan tidur serta mendapatkan daily affirmations dan dapat memesan sesi konsultasi |
+| Administrator | Pengguna ini akan menambahkan jadwal konsultasi sesuai jadwal yang terdapat pada informasi konsultan.                                                 |
+
+## 3.2 Identifikasi Use Case
+
+| ID UC | Nama Use Case                 | Deskripsi Singkat                                                                                           | Aktor Terlibat           | ID KF Terkait       |
+| ----- | ----------------------------- | ----------------------------------------------------------------------------------------------------------- | ------------------------ | ------------------- |
+| UC-01 | Menyetel Daily Affirmations   | Mahasiswa mengatur waktu penerimaan daily affirmations dan menerima notifikasinya.                          | Mahasiswa                | KF-01, KF-02        |
+| UC-02 | Menyetel Pengingat Kesehatan  | Mahasiswa mengatur waktu pengingat makan, tidur, dan olahraga, serta menerima notifikasinya.                | Mahasiswa                | KF-03, KF-04        |
+| UC-03 | Melihat Kalender Terintegrasi | Mahasiswa melihat jadwal gabungan antara Google Calendar dan jadwal sesi konsultasi dalam satu tampilan.    | Mahasiswa                | KF-02, KF-05, KF-06 |
+| UC-04 | Memesan Sesi Konsultasi       | Mahasiswa memilih dan memesan sesi konsultasi pada jadwal yang tersedia.                                    | Mahasiswa                | KF-05, KF-06        |
+| UC-05 | Mengelola Jadwal Konsultan    | Administrator memasukkan dan memperbarui jadwal sesi konsultasi ke dalam sistem tanpa mengubah source code. | Administrator            | KF-06               |
+| UC-06 | Melihat FAQ                   | Mahasiswa membuka dan mencari daftar pertanyaan yang sering diajukan.                                       | Mahasiswa                | KF-07               |
+| UC-07 | Mengelola FAQ                 | Administrator menambah, mengubah, atau menghapus daftar FAQ.                                                | Administrator            | KF-07               |
+| UC-08 | Memberikan Umpan Balik        | Mahasiswa mengirimkan umpan balik terhadap aplikasi.                                                        | Mahasiswa                | KF-08               |
+| UC-09 | Menanggapi Umpan Balik        | Administrator melihat dan memberikan tanggapan atas umpan balik yang masuk.                                 | Administrator            | KF-10               |
+| UC-10 | Memantau Status Server        | Administrator memeriksa status up/down server secara berkala.                                               | Administrator            | KF-09               |
+| UC-11 | Masuk Melalui Akun Google     | Pengguna login ke aplikasi menggunakan akun Google sebelum mengakses fitur lainnya.                         | Mahasiswa, Administrator | KF-11               |
+| UC-12 | Form Pengajuan pertanyaan     | Pengguna mengajukan pertanyaan diluar yang ada di FAQ                                                       | Mahasiswa                | KF-07               |
+
+## 3.3 Use Case Diagram
+
+<br>
+
+<p align="center">
+<img alt="Use Case Diagram di DRAW.IO" src="/docs/M3/assets/diagram/UCD.png" width="70%">
+</p>
+<p align="center">
+<i>Gambar 1. Use case Diagram</i>
+</p>
+<br>
+
+## 3.4 Skenario Use Case
+
+### 3.4.1 Skenario UC01
+
+**Nama Use Case:** _Melakukan Pembayaran Digital_
+
+**Skenario Normal**
+
+| No | Aksi Aktor | Reaksi Perangkat Lunak |
+| --- | --- | --- |
+| 1 | _Pelanggan memilih menu checkout_ | _Sistem menampilkan ringkasan pesanan dan pilihan metode pembayaran_ |
+| 2 | _Pelanggan memilih metode pembayaran (misal: e-wallet)_ | _Sistem mengarahkan pelanggan ke halaman konfirmasi e-wallet_ |
+| 3 | _Pelanggan mengonfirmasi pembayaran_ | _Sistem menerima respons pembayaran berhasil, memperbarui status pesanan menjadi "Lunas", dan menampilkan notifikasi pembayaran berhasil_ |
+
+<br>
+
+**Skenario Alternatif 1: Otorisasi Pembayaran Gagal**
+
+| No | Aksi Aktor | Reaksi Perangkat Lunak |
+| --- | --- | --- |
+| 1 | _Pelanggan memilih menu checkout_ | _Sistem menampilkan ringkasan pesanan dan pilihan metode pembayaran_ |
+| 2 | _Pelanggan memilih metode pembayaran (misal: e-wallet)_ | _Sistem mengarahkan pelanggan ke halaman konfirmasi e-wallet_ |
+| 3 | _Pelanggan mengonfirmasi pembayaran_ | _Sistem menerima respons pembayaran gagal (misal: saldo tidak cukup). Sistem menampilkan pesan error dan meminta pelanggan memilih metode pembayaran lain_ |
+| 4 | _Pelanggan memilih metode pembayaran lain_ | _Sistem kembali ke langkah 2 skenario normal_ |
+
+### 3.4.2 Skenario UC02
+
+**Nama Use Case:** _Memverifikasi Status Pembayaran_
+
+**Skenario Normal**
+
+| No | Aksi Aktor | Reaksi Perangkat Lunak |
+| --- | --- | --- |
+| 1 | _Kasir memasukkan ID Pesanan pelanggan_ | _Sistem menampilkan status pembayaran ("Lunas") beserta detail transaksi_ |
+
+<br>
+
+**Skenario Alternatif 1: ID Pesanan Tidak Ditemukan**
+
+| No | Aksi Aktor | Reaksi Perangkat Lunak |
+| --- | --- | --- |
+| 1 | _Kasir memasukkan ID Pesanan yang salah/tidak ada_ | _Sistem menampilkan pesan "ID Pesanan tidak ditemukan" dan meminta kasir memasukkan ulang_ |
+
+### 3.4.6 Skenario UC-06
+
+**Nama Use Case:** Melihat FAQ
+
+**Skenario Normal**
+
+| No | Aksi Aktor | Reaksi Perangkat Lunak |
+| --- | --- | --- |
+| 1 | Mahasiswa mencari pertanyaan di search bar FAQ | Sistem menunjukkan pertanyaan dan jawaban yang disediakan |
+
+<br>
+
+\*\*Skenario Alternatif 1: Tidak ada pertanyaan yang dicari pengguna
+
+| No | Aksi Aktor | Reaksi Perangkat Lunak |
+| --- | --- | --- |
+| 1 | Mahasiswa mencari pertanyaan di search bar FAQ | Sistem tidak menunjukkan pertanyaan yang dicari mahasiswa, lalu menawarkan untuk mengajukan pertanyaan di forum |
+
+### 3.4.7 Skenario UC-07
+
+**Nama Use Case:** Mengelola FAQ
+
+**Skenario Normal**
+
+| No | Aksi Aktor | Reaksi Perangkat Lunak |
+| --- | --- | --- |
+| 1 | Admin menambahkan pertanyaan dan jawaban di FAQ | Sistem berhasil menambahkan pertanyaan & jawabannya di database |
+| 2 | Admin mengurangi pertanyaan di FAQ | Sistem berhasil menghapus pertanyaan (dan jawabannya) dari database |
+| 3 | Admin mengubah pertanyaan dan/atau jawaban di FAQ | Sistem berhasil menyimpan perubahan pertanyaan dan/atau jawaban pada database |
+
+<br>
+
+\*\*Skenario Alternatif 1: Tidak ada pertanyaan maupun jawaban yang berhasil disimpan
+
+| No | Aksi Aktor | Reaksi Perangkat Lunak |
+| --- | --- | --- |
+| 1 | Admin menambahkan pertanyaan dan jawaban di FAQ | Sistem tidak menambahkan pertanyaan maupun jawabannya di database |
+| 2 | Admin mengurangi pertanyaan di FAQ | Sistem tidak menghapus pertanyaan (dan jawabannya) dari database |
+| 3 | Admin mengubah pertanyaan dan/atau jawaban di FAQ | Sistem tidak menyimpan perubahan pertanyaan dan/atau jawaban pada database |
+
+### 3.4.8 Skenario UC-08
+
+**Nama Use Case:** Memberikan Umpan Balik
+
+**Skenario Normal**
+
+| No | Aksi Aktor | Reaksi Perangkat Lunak |
+| --- | --- | --- |
+| 1 | Mahasiswa memberikan umpan balik di forum pemberian umpan balik | Sistem menerima dan menyimpan umpan balik pada database |
+
+<br>
+
+\*\*Skenario Alternatif 1: Umpan balik tidak disimpan pada database
+
+| No | Aksi Aktor | Reaksi Perangkat Lunak |
+| --- | --- | --- |
+| 1 | Mahasiswa memberikan umpan balik di forum pemberian umpan balik | Sistem tidak menerima dan tidak menyimpan umpan balik pada database |
+
+### 3.4.9 Skenario UC-09
+
+**Nama Use Case:** Menanggapi Umpan Balik
+
+**Skenario Normal**
+
+| No | Aksi Aktor | Reaksi Perangkat Lunak |
+| --- | --- | --- |
+| 1 | Admin memberikan tanggapan pada umpan balik yang diterima oleh mahasiswa | Sistem menunjukkan jawaban dari tanggapan yang diberikan admin |
+
+<br>
+
+\*\*Skenario Alternatif 1: Tanggapan umpan balik tidak berhasil ditampilkan
+
+| No | Aksi Aktor | Reaksi Perangkat Lunak |
+| --- | --- | --- |
+| 1 | Admin memberikan tanggapan pada umpan balik yang diterima oleh mahasiswa | Sistem tidak menunjukkan konten pada tampilan mahasiswa |
+
+### 3.4.10 Skenario UC-10
+
+**Nama Use Case:** Memantau Status Server
+
+**Skenario Normal**
+
+| No | Aksi Aktor | Reaksi Perangkat Lunak |
+| --- | --- | --- |
+| 1 | Admin melihat status uptime website | Sistem memberikan status uptime website |
+| 2 | Admin melihat status uptime server | Sistem menunjukkan status uptime server |
+
+<br>
+
+### 3.4.11 Skenario UC-11
+
+**Nama Use Case:** Masuk Melalui Akun Google
+
+**Skenario Normal**
+
+| No | Aksi Aktor | Reaksi Perangkat Lunak |
+| --- | --- | --- |
+| 1 | Mahasiswa melakukan autentikasi dengan akun Google | Sistem menampilkan tampilan selanjutnya setelah login berhasil |
+
+<br>
+
+\*\*Skenario Alternatif 1: OAuth Google tidak berfungsi saat login
+
+| No | Aksi Aktor | Reaksi Perangkat Lunak |
+| --- | --- | --- |
+| 1 | Mahasiswa melakukan autentikasi dengan akun Google | Sistem tidak melakukan login untuk mahasiswa, mahasiswa kembali ke login screen |
