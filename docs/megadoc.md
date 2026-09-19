@@ -250,8 +250,7 @@ Melalui “Sehati”, pengguna utama diharapkan untuk bisa memesan jadwal sesi t
 | KNF-02 | R-19         | Security        | P/L harus menjamin kerahasiaan dan keamanan data dari pihak tak berwenang |
 | KNF-03 | R-20         | Ergonomy        | P/L dapat dengan mudah digunakan untuk mahasiswa 18-24 tahum              |
 | KNF-04 | R-09         | Reliability     | P/L dapat memberikan feedback menuju administrator                        |
-| KNF-05 | R-20         | Ergonomy        | P/L Harus mempunyai UI yang intuitif bagi demografis mahasiswa umur 18-24 |
-| KNF-06 | R-11         | Maintainability | Sistem dapat memodifikasi jadwal tanpa merubah Source Kode                |
+| KNF-05 | R-11         | Maintainability | Sistem dapat memodifikasi jadwal tanpa merubah Source Kode                |
 
 <br>
 
