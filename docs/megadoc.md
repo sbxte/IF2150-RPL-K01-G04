@@ -298,46 +298,112 @@ Melalui “Sehati”, pengguna utama diharapkan untuk bisa memesan jadwal sesi t
 
 ## 3.4 Skenario Use Case
 
-### 3.4.1 Skenario UC01
+### 3.4.1 Skenario UC-01
 
-**Nama Use Case:** _Melakukan Pembayaran Digital_
-
-**Skenario Normal**
-
-| No | Aksi Aktor | Reaksi Perangkat Lunak |
-| --- | --- | --- |
-| 1 | _Pelanggan memilih menu checkout_ | _Sistem menampilkan ringkasan pesanan dan pilihan metode pembayaran_ |
-| 2 | _Pelanggan memilih metode pembayaran (misal: e-wallet)_ | _Sistem mengarahkan pelanggan ke halaman konfirmasi e-wallet_ |
-| 3 | _Pelanggan mengonfirmasi pembayaran_ | _Sistem menerima respons pembayaran berhasil, memperbarui status pesanan menjadi "Lunas", dan menampilkan notifikasi pembayaran berhasil_ |
-
-<br>
-
-**Skenario Alternatif 1: Otorisasi Pembayaran Gagal**
-
-| No | Aksi Aktor | Reaksi Perangkat Lunak |
-| --- | --- | --- |
-| 1 | _Pelanggan memilih menu checkout_ | _Sistem menampilkan ringkasan pesanan dan pilihan metode pembayaran_ |
-| 2 | _Pelanggan memilih metode pembayaran (misal: e-wallet)_ | _Sistem mengarahkan pelanggan ke halaman konfirmasi e-wallet_ |
-| 3 | _Pelanggan mengonfirmasi pembayaran_ | _Sistem menerima respons pembayaran gagal (misal: saldo tidak cukup). Sistem menampilkan pesan error dan meminta pelanggan memilih metode pembayaran lain_ |
-| 4 | _Pelanggan memilih metode pembayaran lain_ | _Sistem kembali ke langkah 2 skenario normal_ |
-
-### 3.4.2 Skenario UC02
-
-**Nama Use Case:** _Memverifikasi Status Pembayaran_
+**Nama Use Case:** _Menyetel_ Daily Affirmations
 
 **Skenario Normal**
 
-| No | Aksi Aktor | Reaksi Perangkat Lunak |
-| --- | --- | --- |
-| 1 | _Kasir memasukkan ID Pesanan pelanggan_ | _Sistem menampilkan status pembayaran ("Lunas") beserta detail transaksi_ |
+| No  | Aksi Aktor                                                      | Reaksi Perangkat Lunak                                           |
+| --- | --------------------------------------------------------------- | ---------------------------------------------------------------- |
+| 1   | Mahasiswa memasukkan input waktu pengiriman _daily affirmation_ | Sistem menampilkan input pada _input box_                        |
+| 2   | Mahasiswa mengklik tombol konfirmasi                            | Sistem menyimpan preferensi waktu pengiriman _daily affirmation_ |
 
 <br>
 
-**Skenario Alternatif 1: ID Pesanan Tidak Ditemukan**
+**Skenario Alternatif 1: Sistem tidak mampu menyimpan setelan**
 
-| No | Aksi Aktor | Reaksi Perangkat Lunak |
-| --- | --- | --- |
-| 1 | _Kasir memasukkan ID Pesanan yang salah/tidak ada_ | _Sistem menampilkan pesan "ID Pesanan tidak ditemukan" dan meminta kasir memasukkan ulang_ |
+| No  | Aksi Aktor                                                      | Reaksi Perangkat Lunak                                                                                     |
+| --- | --------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| 1   | Mahasiswa memasukkan input waktu pengiriman _daily affirmation_ | Sistem menampilkan input pada _input box_                                                                  |
+| 2   | Mahasiswa mengklik tombol konfirmasi                            | Sistem tidak dapat menyimpan preferensi waktu pengiriman _daily affirmation_ dan menampilkan pesan _error_ |
+
+### 3.4.2 Skenario UC-02
+
+**Nama Use Case:** _Menyetel Pengingat Kesehatan_
+
+**Skenario Normal**
+
+| No  | Aksi Aktor                                                      | Reaksi Perangkat Lunak                                           |
+| --- | --------------------------------------------------------------- | ---------------------------------------------------------------- |
+| 1   | Mahasiswa memasukkan input waktu pengiriman pengingat kesehatan | Sistem menampilkan input pada _input box_                        |
+| 2   | Mahasiswa mengklik tombol konfirmasi                            | Sistem menyimpan preferensi waktu pengiriman pengingat kesehatan |
+
+<br>
+
+**Skenario Alternatif 1: Sistem tidak mampu menyimpan setelan**
+
+| No  | Aksi Aktor                                                      | Reaksi Perangkat Lunak                                                                                     |
+| --- | --------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| 1   | Mahasiswa memasukkan input waktu pengiriman pengingat kesehatan | Sistem menampilkan input pada _input box_                                                                  |
+| 2   | Mahasiswa mengklik tombol konfirmasi                            | Sistem tidak dapat menyimpan preferensi waktu pengiriman pengingat kesehatan dan menampilkan pesan _error_ |
+
+### 3.4.3 Skenario UC-03
+
+**Nama Use Case:** _Melihat Kalender Terintegrasi_
+
+**Skenario Normal**
+
+| No  | Aksi Aktor                                 | Reaksi Perangkat Lunak                                         |
+| --- | ------------------------------------------ | -------------------------------------------------------------- |
+| 1   | Mahasiswa mengklik tombol "Lihat Kalender" | Sistem menampilkan kalender dengan data-data _event_ mahasiswa |
+
+<br>
+
+**Skenario Alternatif 1: Sistem tidak mampu mengambil data _event_**
+
+| No  | Aksi Aktor                                 | Reaksi Perangkat Lunak                                                                                                              |
+| --- | ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | Mahasiswa mengklik tombol "Lihat Kalender" | Sistem tidak menampilkan kalender dengan data-data _event_ mahasiswa dan menyediakan pesan _error_ dan tombol untuk mengulangi aksi |
+| 2   | Mahasiswa mengklik tombol "Refresh"        | Jika gagal, sama seperti no. 1. Jika berhasil, sistem bereaksi pada skenario normal                                                 |
+
+### 3.4.4 Skenario UC-04
+
+**Nama Use Case:** _Memesan Sesi Konsultasi_
+
+| No  | Aksi Aktor                                      | Reaksi Perangkat Lunak                                                                               |
+| --- | ----------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| 1   | Mahasiswa mengklik tombol "Pesan Sesi"          | Sistem menampilkan kalender dengan data-data _event_ mahasiswa dan jadwal konsultasi                 |
+| 2   | Mahasiswa mengklik salah satu jadwal konsultasi | Sistem menampilkan informasi mengenai jadwal konsultasi tersebut dan menyediakan tombol "Konfirmasi" |
+| 3   | Mahasiswa mengklik tombol "Konfirmasi"          | Sistem mengingat bahwa pengguna tersebut memesan sesi konsultasi yang dikonfirmasi                   |
+
+**Skenario Alternatif 1: Sistem tidak mampu mengambil data jadwal konsultasi**
+
+| No  | Aksi Aktor                             | Reaksi Perangkat Lunak                                                                                                                                         |
+| --- | -------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | Mahasiswa mengklik tombol "Pesan Sesi" | Sistem tidak menampilkan kalender dengan data jadwal konsultasi dan/atau data _event_ mahasiswa dan menyediakan pesan _error_ dan tombol untuk mengulangi aksi |
+| 2   | Mahasiswa mengklik tombol "Refresh"    | Jika gagal, sama seperti no. 1. Jika berhasil, sistem bereaksi pada skenario normal                                                                            |
+
+**Skenario Alternatif 2: Sistem tidak mampu menyimpan jadwal konsultasi yang dipesan**
+
+| No  | Aksi Aktor                             | Reaksi Perangkat Lunak                                                                                                                               |
+| --- | -------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | Mahasiswa mengklik tombol "Konfirmasi" | Sistem tidak menyimpan pesanan dan menampilkan pesan _error_. Jika ingin mengulangi, mahasiswa hanya perlu mengklik tombol "Konfirmasi" sekali lagi. |
+
+### 3.4.5 Skenario UC-05
+
+**Nama Use Case:** _Mengelola Jadwal Konsultan_
+
+**Skenario Normal**
+
+| No  | Aksi Aktor                                                                                | Reaksi Perangkat Lunak                                         |
+| --- | ----------------------------------------------------------------------------------------- | -------------------------------------------------------------- |
+| 1   | Administrator membuka _dashboard_ untuk mengelola jadwal konsultasi                       | Sistem menampilkan kalender dengan data-data jadwal konsultasi |
+| 2   | Administrator mengklik salah satu jadwal konsultasi di _dashboard_                        | Sistem menampilkan laman untuk mengedit data jadwal konsultasi |
+| 3   | Administrator memasukkan perubahan pada jadwal di laman edit dan mengklik tombol "Simpan" | Sistem menyimpan perubahan jadwal konsultasi                   |
+
+**Skenario Alternatif 1: Sistem tidak mampu mengambil data jadwal konsultasi**
+
+| No  | Aksi Aktor                                                          | Reaksi Perangkat Lunak                                                                                                         |
+| --- | ------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| 1   | Administrator membuka _dashboard_ untuk mengelola jadwal konsultasi | Sistem tidak menampilkan kalender dengan data jadwal konsultasi dan menyediakan pesan _error_ dan tombol untuk mengulangi aksi |
+| 2   | Administrator mengklik tombol "Refresh"                             | Jika gagal, sama seperti no. 1. Jika berhasil, sistem bereaksi pada skenario normal                                            |
+
+**Skenario Alternatif 2: Sistem tidak mampu mengedit data jadwal konsultasi**
+
+| No  | Aksi Aktor                                                                                | Reaksi Perangkat Lunak                                                                                                                                       |
+| --- | ----------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 1   | Administrator memasukkan perubahan pada jadwal di laman edit dan mengklik tombol "Simpan" | Sistem tidak menyimpan pergantian data dan menyediakan pesan _error_. Jika ingin mengulangi, administrator hanya perlu mengklik tombol "Simpan" sekali lagi. |
 
 ### 3.4.6 Skenario UC-06
 
@@ -345,17 +411,17 @@ Melalui “Sehati”, pengguna utama diharapkan untuk bisa memesan jadwal sesi t
 
 **Skenario Normal**
 
-| No | Aksi Aktor | Reaksi Perangkat Lunak |
-| --- | --- | --- |
-| 1 | Mahasiswa mencari pertanyaan di search bar FAQ | Sistem menunjukkan pertanyaan dan jawaban yang disediakan |
+| No  | Aksi Aktor                                     | Reaksi Perangkat Lunak                                    |
+| --- | ---------------------------------------------- | --------------------------------------------------------- |
+| 1   | Mahasiswa mencari pertanyaan di search bar FAQ | Sistem menunjukkan pertanyaan dan jawaban yang disediakan |
 
 <br>
 
 \*\*Skenario Alternatif 1: Tidak ada pertanyaan yang dicari pengguna
 
-| No | Aksi Aktor | Reaksi Perangkat Lunak |
-| --- | --- | --- |
-| 1 | Mahasiswa mencari pertanyaan di search bar FAQ | Sistem tidak menunjukkan pertanyaan yang dicari mahasiswa, lalu menawarkan untuk mengajukan pertanyaan di forum |
+| No  | Aksi Aktor                                     | Reaksi Perangkat Lunak                                                                                          |
+| --- | ---------------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
+| 1   | Mahasiswa mencari pertanyaan di search bar FAQ | Sistem tidak menunjukkan pertanyaan yang dicari mahasiswa, lalu menawarkan untuk mengajukan pertanyaan di forum |
 
 ### 3.4.7 Skenario UC-07
 
@@ -363,21 +429,21 @@ Melalui “Sehati”, pengguna utama diharapkan untuk bisa memesan jadwal sesi t
 
 **Skenario Normal**
 
-| No | Aksi Aktor | Reaksi Perangkat Lunak |
-| --- | --- | --- |
-| 1 | Admin menambahkan pertanyaan dan jawaban di FAQ | Sistem berhasil menambahkan pertanyaan & jawabannya di database |
-| 2 | Admin mengurangi pertanyaan di FAQ | Sistem berhasil menghapus pertanyaan (dan jawabannya) dari database |
-| 3 | Admin mengubah pertanyaan dan/atau jawaban di FAQ | Sistem berhasil menyimpan perubahan pertanyaan dan/atau jawaban pada database |
+| No  | Aksi Aktor                                        | Reaksi Perangkat Lunak                                                        |
+| --- | ------------------------------------------------- | ----------------------------------------------------------------------------- |
+| 1   | Admin menambahkan pertanyaan dan jawaban di FAQ   | Sistem berhasil menambahkan pertanyaan & jawabannya di database               |
+| 2   | Admin mengurangi pertanyaan di FAQ                | Sistem berhasil menghapus pertanyaan (dan jawabannya) dari database           |
+| 3   | Admin mengubah pertanyaan dan/atau jawaban di FAQ | Sistem berhasil menyimpan perubahan pertanyaan dan/atau jawaban pada database |
 
 <br>
 
 \*\*Skenario Alternatif 1: Tidak ada pertanyaan maupun jawaban yang berhasil disimpan
 
-| No | Aksi Aktor | Reaksi Perangkat Lunak |
-| --- | --- | --- |
-| 1 | Admin menambahkan pertanyaan dan jawaban di FAQ | Sistem tidak menambahkan pertanyaan maupun jawabannya di database |
-| 2 | Admin mengurangi pertanyaan di FAQ | Sistem tidak menghapus pertanyaan (dan jawabannya) dari database |
-| 3 | Admin mengubah pertanyaan dan/atau jawaban di FAQ | Sistem tidak menyimpan perubahan pertanyaan dan/atau jawaban pada database |
+| No  | Aksi Aktor                                        | Reaksi Perangkat Lunak                                                     |
+| --- | ------------------------------------------------- | -------------------------------------------------------------------------- |
+| 1   | Admin menambahkan pertanyaan dan jawaban di FAQ   | Sistem tidak menambahkan pertanyaan maupun jawabannya di database          |
+| 2   | Admin mengurangi pertanyaan di FAQ                | Sistem tidak menghapus pertanyaan (dan jawabannya) dari database           |
+| 3   | Admin mengubah pertanyaan dan/atau jawaban di FAQ | Sistem tidak menyimpan perubahan pertanyaan dan/atau jawaban pada database |
 
 ### 3.4.8 Skenario UC-08
 
@@ -385,17 +451,17 @@ Melalui “Sehati”, pengguna utama diharapkan untuk bisa memesan jadwal sesi t
 
 **Skenario Normal**
 
-| No | Aksi Aktor | Reaksi Perangkat Lunak |
-| --- | --- | --- |
-| 1 | Mahasiswa memberikan umpan balik di forum pemberian umpan balik | Sistem menerima dan menyimpan umpan balik pada database |
+| No  | Aksi Aktor                                                      | Reaksi Perangkat Lunak                                  |
+| --- | --------------------------------------------------------------- | ------------------------------------------------------- |
+| 1   | Mahasiswa memberikan umpan balik di forum pemberian umpan balik | Sistem menerima dan menyimpan umpan balik pada database |
 
 <br>
 
 \*\*Skenario Alternatif 1: Umpan balik tidak disimpan pada database
 
-| No | Aksi Aktor | Reaksi Perangkat Lunak |
-| --- | --- | --- |
-| 1 | Mahasiswa memberikan umpan balik di forum pemberian umpan balik | Sistem tidak menerima dan tidak menyimpan umpan balik pada database |
+| No  | Aksi Aktor                                                      | Reaksi Perangkat Lunak                                              |
+| --- | --------------------------------------------------------------- | ------------------------------------------------------------------- |
+| 1   | Mahasiswa memberikan umpan balik di forum pemberian umpan balik | Sistem tidak menerima dan tidak menyimpan umpan balik pada database |
 
 ### 3.4.9 Skenario UC-09
 
@@ -403,17 +469,17 @@ Melalui “Sehati”, pengguna utama diharapkan untuk bisa memesan jadwal sesi t
 
 **Skenario Normal**
 
-| No | Aksi Aktor | Reaksi Perangkat Lunak |
-| --- | --- | --- |
-| 1 | Admin memberikan tanggapan pada umpan balik yang diterima oleh mahasiswa | Sistem menunjukkan jawaban dari tanggapan yang diberikan admin |
+| No  | Aksi Aktor                                                               | Reaksi Perangkat Lunak                                         |
+| --- | ------------------------------------------------------------------------ | -------------------------------------------------------------- |
+| 1   | Admin memberikan tanggapan pada umpan balik yang diterima oleh mahasiswa | Sistem menunjukkan jawaban dari tanggapan yang diberikan admin |
 
 <br>
 
 \*\*Skenario Alternatif 1: Tanggapan umpan balik tidak berhasil ditampilkan
 
-| No | Aksi Aktor | Reaksi Perangkat Lunak |
-| --- | --- | --- |
-| 1 | Admin memberikan tanggapan pada umpan balik yang diterima oleh mahasiswa | Sistem tidak menunjukkan konten pada tampilan mahasiswa |
+| No  | Aksi Aktor                                                               | Reaksi Perangkat Lunak                                  |
+| --- | ------------------------------------------------------------------------ | ------------------------------------------------------- |
+| 1   | Admin memberikan tanggapan pada umpan balik yang diterima oleh mahasiswa | Sistem tidak menunjukkan konten pada tampilan mahasiswa |
 
 ### 3.4.10 Skenario UC-10
 
@@ -421,10 +487,10 @@ Melalui “Sehati”, pengguna utama diharapkan untuk bisa memesan jadwal sesi t
 
 **Skenario Normal**
 
-| No | Aksi Aktor | Reaksi Perangkat Lunak |
-| --- | --- | --- |
-| 1 | Admin melihat status uptime website | Sistem memberikan status uptime website |
-| 2 | Admin melihat status uptime server | Sistem menunjukkan status uptime server |
+| No  | Aksi Aktor                          | Reaksi Perangkat Lunak                  |
+| --- | ----------------------------------- | --------------------------------------- |
+| 1   | Admin melihat status uptime website | Sistem memberikan status uptime website |
+| 2   | Admin melihat status uptime server  | Sistem menunjukkan status uptime server |
 
 <br>
 
@@ -434,14 +500,14 @@ Melalui “Sehati”, pengguna utama diharapkan untuk bisa memesan jadwal sesi t
 
 **Skenario Normal**
 
-| No | Aksi Aktor | Reaksi Perangkat Lunak |
-| --- | --- | --- |
-| 1 | Mahasiswa melakukan autentikasi dengan akun Google | Sistem menampilkan tampilan selanjutnya setelah login berhasil |
+| No  | Aksi Aktor                                         | Reaksi Perangkat Lunak                                         |
+| --- | -------------------------------------------------- | -------------------------------------------------------------- |
+| 1   | Mahasiswa melakukan autentikasi dengan akun Google | Sistem menampilkan tampilan selanjutnya setelah login berhasil |
 
 <br>
 
 \*\*Skenario Alternatif 1: OAuth Google tidak berfungsi saat login
 
-| No | Aksi Aktor | Reaksi Perangkat Lunak |
-| --- | --- | --- |
-| 1 | Mahasiswa melakukan autentikasi dengan akun Google | Sistem tidak melakukan login untuk mahasiswa, mahasiswa kembali ke login screen |
+| No  | Aksi Aktor                                         | Reaksi Perangkat Lunak                                                          |
+| --- | -------------------------------------------------- | ------------------------------------------------------------------------------- |
+| 1   | Mahasiswa melakukan autentikasi dengan akun Google | Sistem tidak melakukan login untuk mahasiswa, mahasiswa kembali ke login screen |
