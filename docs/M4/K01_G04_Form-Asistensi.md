@@ -2,15 +2,15 @@
 
 ## Tugas Besar IF2150 - Rekayasa Perangkat Lunak
 
-| Informasi                | Keterangan       |
-| ------------------------ | ---------------- |
-| **Hari**                 | _\[Hari\]_       |
-| **Tanggal**              | _\[DD/MM/YYYY\]_ |
-| **Kelas**                | K01              |
-| **Nomor Kelompok**       | G04              |
-| **Nama Kelompok**        | LompatMulai      |
-| **Nama Perangkat Lunak** | Sehati           |
-| **Dokumen**              | K01_G04_CD.md    |
+| Informasi                | Keterangan  |
+| ------------------------ | ----------- |
+| **Hari**                 | Jumat       |
+| **Tanggal**              | 18/09/2026  |
+| **Kelas**                | K01         |
+| **Nomor Kelompok**       | G04         |
+| **Nama Kelompok**        | LompatMulai |
+| **Nama Perangkat Lunak** | Sehati      |
+| **Dokumen**              | -           |
 
 ### Anggota Kelompok
 
@@ -23,23 +23,6 @@
 
 ### Catatan
 
-| Catatan                                  |
-| ---------------------------------------- |
-| 1. _\[Berikan catatan hasil asistensi\]_ |
-| 2. ...                                   |
-| 3. ...                                   |
-| 4. ...                                   |
+Asistensi ini merupakan asistensi bersama seluruh kelompok Tugas Besar IF2150 - Rekayasa Perangkat Lunak. Dibahas mengenai konten apa saja yang harus dikumpulkan untuk _milestone_ 4, terutama pada bagian diagram kelas dan _traceability_.
 
-**Notes for this section:**  
-_Catatan dapat dituliskan dalam bentuk paragraf atau poin-poin, disesuaikan saja._
-
-## Dokumentasi
-
-<!-- ![](./assets/foto-asistensi.jpg) -->
-<p align="center">
-  <img src="./assets/foto-asistensi.jpg" width="100%">
-</p>
-
-<p align="center">
-  <i>Gambar 1. Dokumentasi kegiatan asistensi.</i>
-</p>
+### Dokumentasi
