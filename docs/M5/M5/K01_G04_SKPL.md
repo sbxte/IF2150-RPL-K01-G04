@@ -74,7 +74,7 @@ Tabel 1.4. Aturan Penomoran
 | _Aktor_                    | _AXX_     |            |
 | _Use Case_                 | _UCXX_    |            |
 | _Kelas_                    | _CXX_     |            |
-| _..._                      | _..._     |
+| _..._                      | _..._     |            |
 
 ## 1.5 Referensi
 
