@@ -39,50 +39,81 @@ Dipersiapkan oleh:
 
 ## 1.1 Tujuan Penulisan Dokumen
 
-Tuliskan dengan ringkas tujuan dokumen SKPL ini dibuat dan siapa saja yang akan menggunakan dokumen ini.
+Dokumen Spesifikasi Kebutuhan Perangkat Lunak (SKPL) ini menjabarkan kebutuhan perangkat lunak Sehati: deskripsi sistem, kebutuhan fungsional dan non-fungsional, pemodelan *use case*, pemodelan kelas, dan keterlacakan (*traceability*) antara kelas, *use case*, dan kebutuhan fungsional. Dokumen ini menjadi acuan tentang apa yang harus dilakukan Sehati sebelum perancangan dan implementasi dimulai.
+
+Pengguna dokumen ini adalah tim pengembang (Kelompok G04, Kelas K01), yang memakainya sebagai dasar perancangan, implementasi, dan pengujian, serta Aurelia Jennifer Gunawan, yang meninjau kesesuaian dan kelengkapan spesifikasi.
 
 ## 1.2 Lingkup Masalah
 
-Tuliskan dengan ringkas nama aplikasi dan deskripsi singkatnya. Bagian ini maksimal berisi satu paragraf, dapat diringkas dari BAB 1 _Analisis Permasalahan_ pada dokumen _Topic Brainstorming_.
+Sehati adalah perangkat lunak untuk menjaga kesehatan mental dan kesejahteraan mahasiswa, sesuai dengan SDG 3 (kehidupan sehat dan sejahtera). Di Indonesia, kesehatan mental masih sering diabaikan dan terapi psikologis dianggap tabu. Kasus bunuh diri juga tinggi, terutama pada remaja dan mahasiswa, dengan estimasi sekitar 2 kematian per 100.000 penduduk pada tahun 2023 menurut IHME dan *Global Burden of Disease*. Kondisi mental yang kurang baik turut menurunkan produktivitas dan kualitas aktivitas sosial. Ulasan pengguna atas aplikasi serupa memuat keluhan tentang penggunaan yang sulit, jadwal konsultasi yang kaku, *bug*, tarif tinggi, iklan pihak ketiga yang menjual data pribadi pengguna, dan pengguna yang ditinggalkan tanpa pengganti ketika layanan beralih ke model *enterprise*. Sehati menargetkan mahasiswa dan menyediakan *daily affirmations*, pengingat makan, tidur, dan olahraga, tampilan jadwal harian yang terhubung dengan Google Calendar, serta pemesanan sesi konsultasi yang mengecek bentrok dengan jadwal di kalender pengguna.
 
 ## 1.3 Definisi, Istilah, dan Singkatan
 
-Semua definisi dan singkatan yang digunakan dalam dokumen ini beserta penjelasannya.
-
 Tabel 1.3. Definisi Istilah dan Singkatan
 
-| Singkatan, Akronim, atau Istilah | Penjelasan                                                                                                                                                            |
-| -------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| _P/L_                            | _Singkatan dari Perangkat Lunak, yaitu aplikasi yang memberikan perintah kepada komputer untuk menjalankan tugas tertentu._                                           |
-| _SKPL_                           | _Singkatan dari Spesifikasi Kebutuhan Perangkat Lunak, yaitu dokumen yang merangkum kriteria-kriteria yang diperlukan untuk membangun aplikasi menjalankan tugasnya._ |
-| _KF_                             | _Singkatan dari Kebutuhan Fungsional._                                                                                                                                |
-| _KNF_                            | _Singkatan dari Kebutuhan Non-Fungsional._                                                                                                                            |
-| _UC_                             | _Singkatan dari Use Case._                                                                                                                                            |
-| _EARS_                           | _Easy Approach to Requirements Syntax, yaitu pola penulisan kebutuhan agar konsisten dan mudah diuji._                                                                |
-| _..._                            | _..._                                                                                                                                                                 |
+| Singkatan, Akronim, atau Istilah | Penjelasan |
+| --- | --- |
+| P/L | Singkatan dari Perangkat Lunak, yaitu aplikasi yang memberikan perintah kepada komputer untuk menjalankan tugas tertentu. |
+| SKPL | Singkatan dari Spesifikasi Kebutuhan Perangkat Lunak, yaitu dokumen yang merangkum kriteria-kriteria yang diperlukan untuk membangun aplikasi menjalankan tugasnya. |
+| KF | Singkatan dari Kebutuhan Fungsional, yaitu kebutuhan yang menjelaskan apa yang harus dapat dilakukan oleh sistem. |
+| KNF | Singkatan dari Kebutuhan Non-Fungsional, yaitu kebutuhan yang menjelaskan kualitas sistem, seperti ketersediaan, keamanan, dan kemudahan penggunaan. |
+| UC | Singkatan dari *Use Case*, yaitu gambaran interaksi antara aktor dan sistem untuk mencapai suatu tujuan. |
+| UML | Singkatan dari *Unified Modeling Language*, yaitu bahasa pemodelan standar yang digunakan untuk membuat *use case diagram* dan diagram kelas. |
+| SDG | Singkatan dari *Sustainable Development Goals* (Tujuan Pengembangan Berkelanjutan), yaitu 17 tujuan global yang dicanangkan PBB. SDG 3 berfokus pada kehidupan yang sehat dan sejahtera. |
+| Sehati | Nama perangkat lunak yang dikembangkan untuk mendukung kesehatan mental dan kesejahteraan mahasiswa. |
+| Mahasiswa | Aktor pengguna utama Sehati yang menggunakan pengingat, *daily affirmations*, jadwal, dan pemesanan sesi konsultasi. |
+| Administrator | Aktor yang mengelola Sehati, termasuk memasukkan jadwal konsultan, mengelola FAQ dan umpan balik, serta memantau status *server*. |
+| Konsultan | Tenaga profesional yang menyediakan sesi konsultasi. Konsultan bukan aktor sistem; data dan jadwalnya dikelola oleh Administrator. |
+| *Daily Affirmations* | Pesan positif yang dikirimkan kepada pengguna pada waktu yang diatur pengguna untuk menjaga suasana hati dan kepercayaan diri. |
+| Pengingat | Notifikasi dengan waktu yang diatur pengguna untuk makan, tidur, dan berolahraga. |
+| Notifikasi | Pesan yang ditampilkan sistem kepada pengguna, misalnya untuk *daily affirmations* dan pengingat. |
+| Google Calendar | Layanan kalender milik Google yang datanya diintegrasikan ke Sehati untuk menampilkan jadwal pengguna. |
+| API | Singkatan dari *Application Programming Interface*, yaitu antarmuka yang memungkinkan satu perangkat lunak berkomunikasi dengan perangkat lunak lain, misalnya Google Calendar API. |
+| OAuth | Protokol otorisasi yang memungkinkan aplikasi mendapat akses terbatas ke akun pengguna di layanan lain (misalnya Google) tanpa mengetahui kata sandi pengguna. |
+| Autentikasi | Proses memverifikasi identitas pengguna sebelum diberi akses ke aplikasi. Pada Sehati, autentikasi dilakukan melalui akun Google. |
+| *Free/busy* | Informasi rentang waktu pengguna yang sibuk atau kosong pada kalender, tanpa rincian acaranya. Dipakai untuk mendeteksi bentrok jadwal. |
+| Bentrok jadwal | Kondisi ketika waktu sesi konsultasi yang dipilih tumpang tindih dengan acara lain di kalender pengguna. |
+| *Database* | Basis data tempat sistem menyimpan data seperti jadwal konsultasi, FAQ, dan umpan balik. |
+| *Server* | Komponen sistem yang menjalankan logika aplikasi dan melayani permintaan dari pengguna. |
+| *Uptime* | Persentase waktu sistem dapat diakses dan beroperasi dalam suatu periode. |
+| FAQ | Singkatan dari *Frequently Asked Questions*, yaitu daftar pertanyaan yang sering diajukan beserta jawabannya. |
+| Umpan balik | Masukan dari pengguna terhadap aplikasi, yang dapat ditanggapi oleh Administrator. |
+| *Traceability* | Keterlacakan hubungan antara kelas, *use case*, dan kebutuhan fungsional. |
 
 ## 1.4 Aturan Penomoran
 
-Tuliskan aturan penomoran (ID) yang digunakan dalam dokumen ini. Gunakan pola ID yang **sama** dengan yang sudah dipakai pada dokumen-dokumen sebelumnya, jangan membuat pola baru di dokumen ini.
-
 Tabel 1.4. Aturan Penomoran
 
-| Hal/Bagian                 | Penomoran | Keterangan |
-| -------------------------- | --------- | ---------- |
-| _Kebutuhan Fungsional_     | _KFXX_    |            |
-| _Kebutuhan Non-Fungsional_ | _KNFXX_   |            |
-| _Aktor_                    | _AXX_     |            |
-| _Use Case_                 | _UCXX_    |            |
-| _Kelas_                    | _CXX_     |            |
-| _..._                      | _..._     |            |
+| Hal/Bagian | Penomoran | Keterangan |
+| --- | --- | --- |
+| Kebutuhan | R-XX | Huruf R, tanda hubung, lalu nomor urut dua digit mulai dari 01 (contoh: R-01). Dipakai pada kolom ID Kebutuhan. |
+| Kebutuhan Fungsional | KF-XX | Nomor urut dua digit mulai dari 01 (contoh: KF-01). |
+| Kebutuhan Non-Fungsional | KNF-XX | Nomor urut dua digit mulai dari 01 (contoh: KNF-01). |
+| Aktivitas | A-XX | Nomor urut dua digit mulai dari 01 (contoh: A-01), sesuai dokumen *Requirement Gathering*. |
+| *User Story* | US-XX | Nomor urut dua digit mulai dari 01 (contoh: US-01), sesuai dokumen *Requirement Gathering*. |
+| *Use Case* | UC-XX | Nomor urut dua digit mulai dari 01 (contoh: UC-01). |
+| Kelas | C-XX | Nomor urut dua digit mulai dari 01 (contoh: C-01). |
+| Aktor | Tidak ada | Aktor tidak diberi ID dan dirujuk dengan namanya (Mahasiswa, Administrator). |
 
 ## 1.5 Referensi
 
-Dokumentasi P/L yang dirujuk oleh dokumen ini. Referensi dapat berupa buku, panduan, ataupun dokumentasi lain yang dipakai dalam pengembangan P/L ini.
+1. Kelompok G04 K01, dokumen *Topic Brainstorming*, *Requirement Gathering*, *Use Case & Scenario Use Case*, dan *Class Diagram* untuk Sehati, IF2150 Rekayasa Perangkat Lunak.
+2. Google, *Google Calendar API Documentation*. https://developers.google.com/calendar
+3. Google, *Google Identity: OAuth 2.0*. https://developers.google.com/identity/protocols/oauth2
+4. Our World in Data, *Suicide death rates* (data IHME/*Global Burden of Disease*). https://ourworldindata.org/grapher/suicide-death-rates
+5. UNDP, *Sustainable Development Goals: Good Health and Well-being*. https://www.undp.org/sustainable-development-goals/good-health
+6. Alat pembuatan diagram UML: draw.io (https://www.drawio.com/) dan StarUML (https://staruml.io/).
 
 ## 1.6 Deskripsi Umum Dokumen (Ikhtisar)
 
-Tuliskan sistematika pembahasan dokumen SKPL ini secara runut (misalnya: BAB 2 membahas deskripsi umum P/L, BAB 3 membahas kebutuhan fungsional dan non-fungsional, dst).
+Dokumen SKPL ini terdiri dari enam bab. 
+BAB 1 berisi tujuan penulisan, lingkup masalah, definisi dan singkatan, aturan penomoran, referensi, dan ikhtisar dokumen. 
+BAB 2 menguraikan deskripsi umum sistem dan proses bisnis, deskripsi umum P/L, pengguna dan kebutuhannya, batasan P/L, serta lingkungan operasi. 
+BAB 3 memuat kebutuhan fungsional (KF) dan kebutuhan non-fungsional (KNF). 
+BAB 4 memodelkan *use case*: aktor, daftar *use case*, *use case diagram*, dan skenario tiap *use case*. 
+BAB 5 memodelkan kelas melalui identifikasi kelas, diagram kelas per *use case*, dan diagram kelas keseluruhan. 
+BAB 6 memetakan hubungan antara kelas, *use case*, dan KF. 
+Bagian Referensi di akhir dokumen mendaftar sumber yang dipakai.
 
 ---
 
