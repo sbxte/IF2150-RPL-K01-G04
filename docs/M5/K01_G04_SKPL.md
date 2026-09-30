@@ -123,7 +123,7 @@ Bagian Referensi di akhir dokumen mendaftar sumber yang dipakai.
 
 Melalui “Sehati”, pengguna utama diharapkan untuk bisa memesan jadwal sesi terapi, utamanya. Selain itu, ada aksi-aksi tambahan yang dapat dilakukan, seperti melihat daily affirmation dan pengingat makan, olahraga, dan tidur. Semua ini dilakukan melalui akun (?).
 <p align="center">
-<img alt="Contoh Activity Diagram" src="./assets/diagram/diagram-act-1.avif" width="70%">
+<img alt="Model proses bisnis" src="./assets/diagram/SwimlaneRPL.drawio.png" width="70%">
 </p>
 <p align="center">
 <i>Gambar 1. Contoh Activity Diagram Proses Bisnis</i>
