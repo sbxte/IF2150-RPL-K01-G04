@@ -121,8 +121,7 @@ Bagian Referensi di akhir dokumen mendaftar sumber yang dipakai.
 
 ## 2.1 Deskripsi Umum Sistem
 
-Bagian ini dapat disalin dari BAB 1.1 _Deskripsi Umum Sistem_ pada dokumen _Requirement Gathering_, disesuaikan bila ada perubahan alur bisnis. Lengkapi dengan gambaran proses bisnis dalam bentuk _Activity Diagram_ (boleh disalin dan diperbarui dari 3.3 _Model Proses Bisnis_ pada dokumen _Topic Brainstorming_).
-
+Melalui “Sehati”, pengguna utama diharapkan untuk bisa memesan jadwal sesi terapi, utamanya. Selain itu, ada aksi-aksi tambahan yang dapat dilakukan, seperti melihat daily affirmation dan pengingat makan, olahraga, dan tidur. Semua ini dilakukan melalui akun (?).
 <p align="center">
 <img alt="Contoh Activity Diagram" src="./assets/diagram/diagram-act-1.avif" width="70%">
 </p>
@@ -131,10 +130,7 @@ Bagian ini dapat disalin dari BAB 1.1 _Deskripsi Umum Sistem_ pada dokumen _Requ
 </p>
 
 ## 2.2 Deskripsi Umum Perangkat Lunak
-
-Diisi dengan deskripsi umum perangkat lunak untuk mendukung proses bisnis yang telah diuraikan pada sub-bab sebelumnya. Uraian harus menunjukkan lingkup perangkat lunak, mencakup keterkaitan perangkat lunak dengan sistem lain di luar (misalnya _Payment Gateway_ atau layanan pihak ketiga lain yang dipakai).
-
-_Contoh narasi:_ "_[Nama P/L]_ merupakan aplikasi _[deskripsi singkat]_ yang berinteraksi dengan _Payment Gateway (dummy)_ untuk memproses otorisasi pembayaran. Sistem menerima input dari _Pelanggan_ melalui antarmuka aplikasi dan mengirimkan permintaan transaksi ke _Payment Gateway_ setiap kali pelanggan melakukan checkout."
+Solusi perangkat lunak yang kami berikan merupakan desktop application yang akan mempromosikan well-being pengguna. Solusi tersebut merupakan solusi yang berkaitan dengan SDG kami yaitu SDG 3, ensure healthy lives and promote well-being for all at all ages. Aplikasi kami akan memfokuskan target berupa mahasiswa sebagai target pengguna, mengingat latar belakang kami yang masih menargetkan kalangan secara umum dan kami rasa hal tersebut masih kurang, maka dari itu kami memfokuskan target pengguna kami adalah mahasiswa. Penargetan tersebut juga akan membantu kami untuk memfokuskan/mempersempit operasional ke dalam kajian mahasiswa saja. Fitur-fitur utama yang kami berupa daily affirmations, pengingat waktu makan, tidur, dan juga pembantu jadwal serta pemesanan sesi konsultasi.
 
 ## 2.3 Pengguna dan Kebutuhan Pengguna Perangkat Lunak
 
@@ -145,12 +141,25 @@ _Contoh narasi:_ "_[Nama P/L]_ merupakan aplikasi _[deskripsi singkat]_ yang ber
 
 ## 2.4 Batasan Perangkat Lunak
 
-Batasan yang harus dituliskan, di antaranya:
+##### 2.2.4.1 Termasuk dalam ruang lingkup
 
-1. _P/L harus memakai file data/API dari sistem lain (sebutkan, misal Payment Gateway dummy)._
-2. _P/L harus memakai format data yang sama dengan sistem lain._
-3. _P/L harus berfungsi pada platform tertentu (misal: web browser modern, atau desktop Windows dan Linux)._
-4. _..._
+| ID         | Asumsi                                                                                                                                                         |
+| ---------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| AB-RLS-D-1 | Pengaturan dan pengiriman daily affirmations sesuai jadwal yang ditentukan pengguna                                                                            |
+| AB-RLS-D-2 | Pengingat (reminder) makan, tidur, dan olahraga yang dapat dikustomisasi                                                                                       |
+| AB-RLS-D-3 | Tampilan jadwal harian terintegrasi dengan Google Calendar pengguna (read access)                                                                              |
+| AB-RLS-D-4 | Pemesanan sesi konsultasi dengan konselor, termasuk deteksi bentrok (overlap) antara slot yang dipilih dengan event yang sudah ada di Google Calendar pengguna |
+| AB-RLS-D-5 | Panel administrator untuk mengelola ketersediaan konselor dan data pengguna                                                                                    |
+
+##### 2.2.4.2 Di luar ruang lingkup
+
+| ID         | Asumsi                                                           |
+| ---------- | ---------------------------------------------------------------- |
+| AB-RLS-L-1 | Layanan konseling darurat atau intervensi krisis real-time       |
+| AB-RLS-L-2 | Rekam medis elektronik atau riwayat diagnosis klinis pengguna    |
+| AB-RLS-L-3 | Sistem pembayaran/billing (belum disebutkan sebagai fitur utama) |
+| AB-RLS-L-4 | Aplikasi versi mobile (native Android/iOS) pada rilis awal       |
+| AB-RLS-L-5 | Fitur komunitas atau forum antar-pengguna                        |
 
 ## 2.5 Lingkungan Operasi Perangkat Lunak
 
