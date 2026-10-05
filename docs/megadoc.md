@@ -1,3 +1,33 @@
+# Kamus Istillah
+
+| Singkatan, Akronim, atau Istilah | Penjelasan |
+| --- | --- |
+| P/L | Singkatan dari Perangkat Lunak, yaitu aplikasi yang memberikan perintah kepada komputer untuk menjalankan tugas tertentu. |
+| SKPL | Singkatan dari Spesifikasi Kebutuhan Perangkat Lunak, yaitu dokumen yang merangkum kriteria-kriteria yang diperlukan untuk membangun aplikasi menjalankan tugasnya. |
+| KF | Singkatan dari Kebutuhan Fungsional, yaitu kebutuhan yang menjelaskan apa yang harus dapat dilakukan oleh sistem. |
+| KNF | Singkatan dari Kebutuhan Non-Fungsional, yaitu kebutuhan yang menjelaskan kualitas sistem, seperti ketersediaan, keamanan, dan kemudahan penggunaan. |
+| UC | Singkatan dari *Use Case*, yaitu gambaran interaksi antara aktor dan sistem untuk mencapai suatu tujuan. |
+| UML | Singkatan dari *Unified Modeling Language*, yaitu bahasa pemodelan standar yang digunakan untuk membuat *use case diagram* dan diagram kelas. |
+| SDG | Singkatan dari *Sustainable Development Goals* (Tujuan Pengembangan Berkelanjutan), yaitu 17 tujuan global yang dicanangkan PBB. SDG 3 berfokus pada kehidupan yang sehat dan sejahtera. |
+| Sehati | Nama perangkat lunak yang dikembangkan untuk mendukung kesehatan mental dan kesejahteraan mahasiswa. |
+| Mahasiswa | Aktor pengguna utama Sehati yang menggunakan pengingat, *daily affirmations*, jadwal, dan pemesanan sesi konsultasi. |
+| Administrator | Aktor yang mengelola Sehati, termasuk memasukkan jadwal konsultan, mengelola FAQ dan umpan balik, serta memantau status *server*. |
+| Konsultan | Tenaga profesional yang menyediakan sesi konsultasi. Konsultan bukan aktor sistem; data dan jadwalnya dikelola oleh Administrator. |
+| *Daily Affirmations* | Pesan positif yang dikirimkan kepada pengguna pada waktu yang diatur pengguna untuk menjaga suasana hati dan kepercayaan diri. |
+| Pengingat | Notifikasi dengan waktu yang diatur pengguna untuk makan, tidur, dan berolahraga. |
+| Notifikasi | Pesan yang ditampilkan sistem kepada pengguna, misalnya untuk *daily affirmations* dan pengingat. |
+| Google Calendar | Layanan kalender milik Google yang datanya diintegrasikan ke Sehati untuk menampilkan jadwal pengguna. |
+| API | Singkatan dari *Application Programming Interface*, yaitu antarmuka yang memungkinkan satu perangkat lunak berkomunikasi dengan perangkat lunak lain, misalnya Google Calendar API. |
+| OAuth | Protokol otorisasi yang memungkinkan aplikasi mendapat akses terbatas ke akun pengguna di layanan lain (misalnya Google) tanpa mengetahui kata sandi pengguna. |
+| Autentikasi | Proses memverifikasi identitas pengguna sebelum diberi akses ke aplikasi. Pada Sehati, autentikasi dilakukan melalui akun Google. |
+| *Free/busy* | Informasi rentang waktu pengguna yang sibuk atau kosong pada kalender, tanpa rincian acaranya. Dipakai untuk mendeteksi bentrok jadwal. |
+| Bentrok jadwal | Kondisi ketika waktu sesi konsultasi yang dipilih tumpang tindih dengan acara lain di kalender pengguna. |
+| *Database* | Basis data tempat sistem menyimpan data seperti jadwal konsultasi, FAQ, dan umpan balik. |
+| *Server* | Komponen sistem yang menjalankan logika aplikasi dan melayani permintaan dari pengguna. |
+| *Uptime* | Persentase waktu sistem dapat diakses dan beroperasi dalam suatu periode. |
+| FAQ | Singkatan dari *Frequently Asked Questions*, yaitu daftar pertanyaan yang sering diajukan beserta jawabannya. |
+| Umpan balik | Masukan dari pengguna terhadap aplikasi, yang dapat ditanggapi oleh Administrator. |
+| *Traceability* | Keterlacakan hubungan antara kelas, *use case*, dan kebutuhan fungsional. |
 
 # Latar Belakang
 
@@ -25,13 +55,35 @@ Namun, terdapat beberapa keluhan yang diberikan oleh _review online_ yang diberi
 | AK-4 | Layanan BetterHelp yang memiliki marketplace konseling memiliki masalah menaruh iklan yang bersangkutan dengan pihak ketiga yang menjual data pribadi pengguna.                                                                                                         |
 | AK-5 | Chatbot Woebot yang pada awalnya memiliki basis pengguna yang cukup tinggi namun karena perusahaan beralih ke model enterprise pengguna-pengguna tersebut ditinggalkan begitu saja tanpa adanya pengganti.                                                              |
 
+# Aturan Penomoran
+
+| Hal/Bagian | Penomoran | Keterangan |
+| --- | --- | --- |
+| Kebutuhan | R-XX | Huruf R, tanda hubung, lalu nomor urut dua digit mulai dari 01 (contoh: R-01). Dipakai pada kolom ID Kebutuhan. |
+| Kebutuhan Fungsional | KF-XX | Nomor urut dua digit mulai dari 01 (contoh: KF-01). |
+| Kebutuhan Non-Fungsional | KNF-XX | Nomor urut dua digit mulai dari 01 (contoh: KNF-01). |
+| Aktivitas | A-XX | Nomor urut dua digit mulai dari 01 (contoh: A-01), sesuai dokumen *Requirement Gathering*. |
+| *User Story* | US-XX | Nomor urut dua digit mulai dari 01 (contoh: US-01), sesuai dokumen *Requirement Gathering*. |
+| *Use Case* | UC-XX | Nomor urut dua digit mulai dari 01 (contoh: UC-01). |
+| Kelas | C-XX | Nomor urut dua digit mulai dari 01 (contoh: C-01). |
+| Aktor | Tidak ada | Aktor tidak diberi ID dan dirujuk dengan namanya (Mahasiswa, Administrator). |
+
+
 # Analisis Solusi
 
-### Deskripsi Perangkat Lunak
+## Deskripsi Perangkat Lunak
 
 Solusi perangkat lunak yang kami berikan merupakan desktop application yang akan mempromosikan well-being pengguna. Solusi tersebut merupakan solusi yang berkaitan dengan SDG kami yaitu SDG 3, ensure healthy lives and promote well-being for all at all ages. Aplikasi kami akan memfokuskan target berupa mahasiswa sebagai target pengguna, mengingat latar belakang kami yang masih menargetkan kalangan secara umum dan kami rasa hal tersebut masih kurang, maka dari itu kami memfokuskan target pengguna kami adalah mahasiswa. Penargetan tersebut juga akan membantu kami untuk memfokuskan/mempersempit operasional ke dalam kajian mahasiswa saja. Fitur-fitur utama yang kami berupa daily affirmations, pengingat waktu makan, tidur, dan juga pembantu jadwal serta pemesanan sesi konsultasi.
 
-### Asumsi dan Batasan
+Melalui “Sehati”, pengguna utama diharapkan untuk bisa memesan jadwal sesi terapi, utamanya. Selain itu, ada aksi-aksi tambahan yang dapat dilakukan, seperti melihat daily affirmation dan pengingat makan, olahraga, dan tidur. Semua ini dilakukan melalui akun (?).
+<p align="center">
+<img alt="Model proses bisnis" src="/docs/M5/assets/diagram/SwimlaneRPL.drawio.png" width="70%">
+</p>
+<p align="center">
+<i>Gambar 1. Contoh Activity Diagram Proses Bisnis</i>
+</p>
+
+## Asumsi dan Batasan
 
 | ID | Asumsi |
 | ------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -83,7 +135,6 @@ Solusi perangkat lunak yang kami berikan merupakan desktop application yang akan
 | ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Mahasiswa     | Pengguna ini akan menggunakan fitur-fitur pengingat makan, olahraga, dan tidur serta mendapatkan _daily affirmations_ dan dapat memesan sesi konsultasi |
 | Administrator | Pengguna ini akan menambahkan jadwal konsultasi sesuai jadwal yang terdapat pada informasi konsultan.                                                   |
-
 
 ### Kebutuhan Pengguna Awal
 
@@ -157,13 +208,12 @@ Solusi perangkat lunak yang kami berikan merupakan desktop application yang akan
 | KF-10 | R-17             | Sistem dapat memberikan akses kepada administrator untuk memberikan tanggapan/feedback terhadap umpan balik pengguna.                                                                      |
 | KF-11 | R-22             | Sistem dapat memverifikasi identitas pengguna melalui _log in_ akun Google dan memberikan akses ke aplikasi setelah autentikasi berhasil.                                                  |
 
-| ID KNF | ID Kebutuhan | Parameter       | Deskripsi Kebutuhan                                                       |
-| ------ | ------------ | --------------- | ------------------------------------------------------------------------- |
-| KNF-01 | R-08         | Availability    | P/L dapat tersedia setiap saat dengan minimal uptime 90%                  |
-| KNF-02 | R-19         | Security        | P/L harus menjamin kerahasiaan dan keamanan data dari pihak tak berwenang |
-| KNF-03 | R-20         | Ergonomy        | P/L dapat dengan mudah digunakan untuk mahasiswa 18-24 tahum              |
-| KNF-04 | R-09         | Reliability     | P/L dapat memberikan feedback menuju administrator                        |
-| KNF-05 | R-11         | Maintainability | Sistem dapat memodifikasi jadwal tanpa merubah Source Kode                |
+| ID KNF | ID Kebutuhan | Parameter    | Deskripsi Kebutuhan                                         |
+| ------ | ------------ | ------------ | ----------------------------------------------------------- |
+| KNF-01 | R-08         | Availability | P/L dapat tersedia setiap saat dengan minimal uptime 90%    |
+| KNF-02 | R-29         | Security     | P/L hdapat mengamankan datanya dari pihak tak berwenang     |
+| KNF-03 | R-20         | Ergonomy     | P/L dapat dengan mudah digunakan untuk mahasiswa 8-24 tahum |
+| KNF-04 | R-09         | Reliability  | P/L dapat memberikan feedback menuju administrator          |
 
 - [https://www.geeksforgeeks.org/software-engineering/software-engineering-software-maintenance/](https://www.geeksforgeeks.org/software-engineering/software-engineering-software-maintenance/)
 
@@ -215,15 +265,12 @@ www.drawio.com
 
 ## Use Case Diagram
 
-<br>
-
 <p align="center">
 <img alt="Use Case Diagram di DRAW.IO" src="/docs/M3/assets/diagram/UCD.png" width="70%">
 </p>
 <p align="center">
 <i>Gambar 1. Use case Diagram</i>
 </p>
-<br>
 
 ## Skenario Use Case
 
@@ -346,7 +393,7 @@ www.drawio.com
 
 <br>
 
-\*\*Skenario Alternatif 1: Tidak ada pertanyaan yang dicari pengguna
+**Skenario Alternatif 1: Tidak ada pertanyaan yang dicari pengguna**
 
 | No  | Aksi Aktor                                     | Reaksi Perangkat Lunak                                                                                          |
 | --- | ---------------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
@@ -366,7 +413,7 @@ www.drawio.com
 
 <br>
 
-\*\*Skenario Alternatif 1: Tidak ada pertanyaan maupun jawaban yang berhasil disimpan
+**Skenario Alternatif 1: Tidak ada pertanyaan maupun jawaban yang berhasil disimpan**
 
 | No  | Aksi Aktor                                        | Reaksi Perangkat Lunak                                                       |
 | --- | ------------------------------------------------- | ---------------------------------------------------------------------------- |
@@ -386,7 +433,7 @@ www.drawio.com
 
 <br>
 
-\*\*Skenario Alternatif 1: Umpan balik tidak disimpan pada _database_
+**Skenario Alternatif 1: Umpan balik tidak disimpan pada _database_**
 
 | No  | Aksi Aktor                                                      | Reaksi Perangkat Lunak                                                |
 | --- | --------------------------------------------------------------- | --------------------------------------------------------------------- |
@@ -404,7 +451,7 @@ www.drawio.com
 
 <br>
 
-\*\*Skenario Alternatif 1: Tanggapan umpan balik tidak berhasil ditampilkan
+**Skenario Alternatif 1: Tanggapan umpan balik tidak berhasil ditampilkan**
 
 | No  | Aksi Aktor                                                               | Reaksi Perangkat Lunak                                  |
 | --- | ------------------------------------------------------------------------ | ------------------------------------------------------- |
@@ -435,7 +482,7 @@ www.drawio.com
 
 <br>
 
-\*\*Skenario Alternatif 1: OAuth Google tidak berfungsi saat _log in_
+**Skenario Alternatif 1: OAuth Google tidak berfungsi saat _log in_**
 
 | No  | Aksi Aktor                                         | Reaksi Perangkat Lunak                                                                |
 | --- | -------------------------------------------------- | ------------------------------------------------------------------------------------- |
@@ -453,7 +500,7 @@ www.drawio.com
 
 <br>
 
-\*\*Skenario Alternatif 1: Pertanyaan tidak tersimpan di database
+**Skenario Alternatif 1: Pertanyaan tidak tersimpan di database**
 
 | No  | Aksi Aktor                                          | Reaksi Perangkat Lunak                                                                                            |
 | --- | --------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
@@ -496,7 +543,7 @@ www.drawio.com
 **Diagram Kelas**
 
 <p align="center">
-<img alt="Class Diagram UC-01" src="/docs/M4/assets/diagram/UC-01_diagram.png" width="70%">
+<img alt="Class Diagram UC-01" src="/docs/M5/assets/diagram/UC-01_diagram.png" width="70%">
 </p>
 <p align="center">
 <i>Gambar 2. Diagram Kelas _Use Case_ UC-01</i>
@@ -524,7 +571,7 @@ www.drawio.com
 **Diagram Kelas**
 
 <p align="center">
-<img alt="Class Diagram UC-02" src="/docs/M4/assets/diagram/UC-02_diagram.png" width="70%">
+<img alt="Class Diagram UC-02" src="/docs/M5/assets/diagram/UC-02_diagram.png" width="70%">
 </p>
 <p align="center">
 <i>Gambar 3. Diagram Kelas _Use Case_ UC-02</i>
@@ -552,7 +599,7 @@ www.drawio.com
 **Diagram Kelas**
 
 <p align="center">
-<img alt="Class Diagram UC-03" src="/docs/M4/assets/diagram/UC-03_diagram.png" width="70%">
+<img alt="Class Diagram UC-03" src="/docs/M5/assets/diagram/UC-03_diagram.png" width="70%">
 </p>
 <p align="center">
 <i>Gambar 4. Diagram Kelas _Use Case_ UC-03</i>
@@ -610,7 +657,7 @@ www.drawio.com
 #### Diagram Kelas
 
 <p align="center">
-<img alt="Class Diagram UC-05" src="/docs/M4/assets/diagram/UC-05_diagram.png" width="70%">
+<img alt="Class Diagram UC-05" src="/docs/M5/assets/diagram/UC-05_diagram.png" width="70%">
 </p>
 <p align="center">
 <i>Gambar 6. Diagram Kelas _Use Case_ UC-05</i>
@@ -637,7 +684,7 @@ www.drawio.com
 *Diagram Kelas**
 
 <p align="center">
-<img alt="Class Diagram UC-06" src="/docs/M4/assets/diagram/UC-06_diagram.png" width="70%">
+<img alt="Class Diagram UC-06" src="/docs/M5/assets/diagram/UC-06_diagram.png" width="70%">
 </p>
 <p align="center">
 <i>Gambar 7. Diagram Kelas _Use Case_ UC-06</i>
@@ -663,7 +710,7 @@ www.drawio.com
 **Diagram Kelas**
 
 <p align="center">
-<img alt="Class Diagram UC-07" src="/docs/M4/assets/diagram/UC-07_diagram.png" width="70%">
+<img alt="Class Diagram UC-07" src="/docs/M5/assets/diagram/UC-07_diagram.png" width="70%">
 </p>
 <p align="center">
 <i>Gambar 8. Diagram Kelas _Use Case_ UC-07</i>
@@ -689,7 +736,7 @@ www.drawio.com
 **Diagram Kelas**
 
 <p align="center">
-<img alt="Class Diagram UC-08" src="/docs/M4/assets/diagram/UC-08_diagram.png" width="70%">
+<img alt="Class Diagram UC-08" src="/docs/M5/assets/diagram/UC-08_diagram.png" width="70%">
 </p>
 <p align="center">
 <i>Gambar 9. Diagram Kelas _Use Case_ UC-08</i>
@@ -715,7 +762,7 @@ www.drawio.com
 **Diagram Kelas**
 
 <p align="center">
-<img alt="Class Diagram UC-09" src="/docs/M4/assets/diagram/UC-09_diagram.png" width="70%">
+<img alt="Class Diagram UC-09" src="/docs/M5/assets/diagram/UC-09_diagram.png" width="70%">
 </p>
 <p align="center">
 <i>Gambar 10. Diagram Kelas _Use Case_ UC-09</i>
@@ -741,7 +788,7 @@ www.drawio.com
 **Diagram Kelas**
 
 <p align="center">
-<img alt="Class Diagram UC-10" src="/docs/M4/assets/diagram/UC-10_diagram.png" width="70%">
+<img alt="Class Diagram UC-10" src="/docs/M5/assets/diagram/UC-10_diagram.png" width="70%">
 </p>
 <p align="center">
 <i>Gambar 11. Diagram Kelas _Use Case_ UC-10</i>
@@ -769,7 +816,7 @@ www.drawio.com
 **Diagram Kelas**
 
 <p align="center">
-<img alt="Class Diagram UC-11" src="/docs/M4/assets/diagram/UC-11_diagram.png" width="70%">
+<img alt="Class Diagram UC-11" src="/docs/M5/assets/diagram/UC-11_diagram.png" width="70%">
 </p>
 <p align="center">
 <i>Gambar 12. Diagram Kelas _Use Case_ UC-11</i>
@@ -790,14 +837,14 @@ www.drawio.com
 **Identifikasi Kelas**
 
 | ID Kelas | Nama Kelas          | Deskripsi Kelas                                                        |
-| :------- | :------------------ | :--------------------------------------------------------------------- |
+| -------- | ------------------- | ---------------------------------------------------------------------- |
 | C-02     | Mahasiswa           | Merealisasikan Pengguna; merepresentasikan pengguna utama aplikasi.    |
 | C-13     | PengajuanPertanyaan | Menyimpan pertanyaan yang diajukan pengguna di luar FAQ yang tersedia. |
 
 **Diagram Kelas**
 
 <p align="center">
-<img alt="Class Diagram UC-12" src="/docs/M4/assets/diagram/UC-12_diagram.png" width="70%">
+<img alt="Class Diagram UC-12" src="/docs/M5/assets/diagram/UC-12_diagram.png" width="70%">
 </p>
 <p align="center">
 <i>Gambar 13. Diagram Kelas _Use Case_ UC-12</i>
@@ -805,7 +852,7 @@ www.drawio.com
 <br>
 
 | ID Kelas | Nama Kelas          | Atribut                     | Metode/Operasi     |
-| :------- | :------------------ | :-------------------------- | :----------------- |
+| -------- | ------------------- | --------------------------- | ------------------ |
 | C-02     | Mahasiswa           | nim                         | -                  |
 | C-13     | PengajuanPertanyaan | idPertanyaan, isiPertanyaan | ajukanPertanyaan() |
 
@@ -836,6 +883,16 @@ www.drawio.com
 | C-13     | PengajuanPertanyaan   | idPertanyaan, isiPertanyaan   | ajukanPertanyaan()                               |
 | C-14     | UmpanBalik            | idUmpanBalik, isi, tanggapan  | kirimUmpanBalik(), berikanTanggapan()            |
 | C-15     | Status*Server*        | statusUptime, waktuCek        | cekStatusServer(), tampilkanStatus()             |
+
+**Referensi**
+
+- Diagram UML: [https://www.drawio.com/](https://www.drawio.com/), [https://staruml.io/](https://staruml.io/)
+- Kelompok G04 K01, dokumen *Topic Brainstorming*, *Requirement Gathering*, *Use Case & Scenario Use Case*, dan *Class Diagram* untuk Sehati, IF2150 Rekayasa Perangkat Lunak.
+- Google, *Google Calendar API Documentation*. https://developers.google.com/calendar
+- Google, *Google Identity: OAuth 2.0*. https://developers.google.com/identity/protocols/oauth2
+- Our World in Data, *Suicide death rates* (data IHME/*Global Burden of Disease*). https://ourworldindata.org/grapher/suicide-death-rates
+- UNDP, *Sustainable Development Goals: Good Health and Well-being*. https://www.undp.org/sustainable-development-goals/good-health
+- Alat pembuatan diagram UML: draw.io (https://www.drawio.com/) dan StarUML (https://staruml.io/).
 
 ## Traceability Struktur Kelas
 
