@@ -1,8 +1,5 @@
-# M1: Topic Brainstorming
 
-## BAB 1: Analisis Permasalahan
-
-### 1.1 Latar Belakang Masalah
+# Latar Belakang
 
 Kesehatan mental itu penting. Namun, masyarakat Indonesia cenderung untuk mengabaikan hal ini. Buktinya, pergi ke psikolog untuk terapi seringkali dipandang sebagai hal yang tabu dan dianggap melemahkan diri.
 
@@ -14,7 +11,7 @@ Kami ingin mengaitkan latar belakang ini dengan poin ketiga Tujuan Pengembangan 
 
 Dari latar belakang ini, diharapkan solusi perangkat lunak ini dapat menjadi sarana untuk menggiatkan kesadaran akan kesehatan mental yang baik dan ketercapaian bersama dalam SDGs di lingkungan kami sebagai mahasiswa, serta memperkaya alternatif solusi yang telah ada.
 
-### 1.2 Analisis Kondisi Saat Ini
+# Analisis Kondisi Saat Ini
 
 [Riliv](https://riliv.co/), [bicarakan.id](http://Bicarakan.id), KALM, 7 Cups, [Headspace](https://www.headspace.com/), BetterHelp, dan Woebot menawarkan beberapa solusi perangkat lunak yang telah dikembangkan sebelumnya. Ada pun _hotline_ yang disediakan oleh pemerintah (SEJIWA, yang dapat diakses via nomor telepon 119 _extension_ 8\) dan lembaga lainnya, seperti LISA Suicide Prevention Helpline, yang diprakarsai oleh 11 LSM dalam kolektif Bali Bersama Bisa.
 
@@ -28,19 +25,15 @@ Namun, terdapat beberapa keluhan yang diberikan oleh _review online_ yang diberi
 | AK-4 | Layanan BetterHelp yang memiliki marketplace konseling memiliki masalah menaruh iklan yang bersangkutan dengan pihak ketiga yang menjual data pribadi pengguna.                                                                                                         |
 | AK-5 | Chatbot Woebot yang pada awalnya memiliki basis pengguna yang cukup tinggi namun karena perusahaan beralih ke model enterprise pengguna-pengguna tersebut ditinggalkan begitu saja tanpa adanya pengganti.                                                              |
 
----
+# Analisis Solusi
 
-## BAB 2: Analisis Solusi
-
-### 2.1 Deskripsi Perangkat Lunak
+### Deskripsi Perangkat Lunak
 
 Solusi perangkat lunak yang kami berikan merupakan desktop application yang akan mempromosikan well-being pengguna. Solusi tersebut merupakan solusi yang berkaitan dengan SDG kami yaitu SDG 3, ensure healthy lives and promote well-being for all at all ages. Aplikasi kami akan memfokuskan target berupa mahasiswa sebagai target pengguna, mengingat latar belakang kami yang masih menargetkan kalangan secara umum dan kami rasa hal tersebut masih kurang, maka dari itu kami memfokuskan target pengguna kami adalah mahasiswa. Penargetan tersebut juga akan membantu kami untuk memfokuskan/mempersempit operasional ke dalam kajian mahasiswa saja. Fitur-fitur utama yang kami berupa daily affirmations, pengingat waktu makan, tidur, dan juga pembantu jadwal serta pemesanan sesi konsultasi.
 
-### 2.2 Asumsi dan Batasan
+### Asumsi dan Batasan
 
-#### 2.2.1 Asumsi
-
-| ID     | Asumsi                                                                                                                                                                                                   |
+| ID | Asumsi |
 | ------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | AB-A-1 | Pengguna (mahasiswa) memiliki akun Google aktif dan bersedia memberikan izin akses ke Google Calendar mereka untuk keperluan integrasi jadwal                                                            |
 | AB-A-2 | Pengguna memiliki koneksi internet yang stabil selama menggunakan aplikasi, mengingat fitur-fitur utama (sinkronisasi kalender, pemesanan konsultasi) bergantung pada komunikasi real-time dengan server |
@@ -48,9 +41,7 @@ Solusi perangkat lunak yang kami berikan merupakan desktop application yang akan
 | AB-A-4 | Data jadwal dan preferensi yang dimasukkan pengguna (waktu makan, tidur, olahraga) mencerminkan kondisi dan kebutuhan nyata mereka                                                                       |
 | AB-A-5 | Pengguna memiliki perangkat yang mendukung environment desktop aplikasi (OS dan spesifikasi minimum yang akan ditentukan)                                                                                |
 
-#### 2.2.2 Regulasi
-
-| ID     | Asumsi                                                  |
+| ID | Regulasi |
 | ------ | ------------------------------------------------------- |
 | AB-R-1 | UUD 1945 pasal 28H ayat (1)                             |
 | AB-R-2 | UU No. 39/1999 tentang HAM                              |
@@ -59,9 +50,7 @@ Solusi perangkat lunak yang kami berikan merupakan desktop application yang akan
 | AB-R-5 | UU No. 17/2023 tentang Kesehatan (uu kesehatan omnibus) |
 | AB-R-6 | Permenkes No. 54/2017                                   |
 
-#### 2.2.3 Keterbatasan
-
-| ID     | Asumsi                                                                                                                                                                                                                    |
+| ID | Kebutuhan |
 | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | AB-K-1 | Aplikasi bukan pengganti layanan intervensi krisis atau hotline darurat (seperti SEJIWA 119 ext 8\) — tidak dirancang untuk menangani situasi darurat kesehatan mental                                                    |
 | AB-K-2 | Fitur integrasi jadwal bergantung pada ketersediaan dan kebijakan API pihak ketiga (Google Calendar API); jika pengguna mencabut izin akses atau layanan API mengalami gangguan, sinkronisasi jadwal tidak akan berfungsi |
@@ -70,11 +59,7 @@ Solusi perangkat lunak yang kami berikan merupakan desktop application yang akan
 | AB-K-5 | Sebagai aplikasi desktop, rilis awal tidak mencakup versi mobile                                                                                                                                                          |
 | AB-K-6 | Aplikasi tidak menyediakan rekam medis elektronik atau fitur diagnosis klinis                                                                                                                                             |
 
-#### 2.2.4 Ruang Lingkup Solusi
-
-##### 2.2.4.1 Termasuk dalam ruang lingkup
-
-| ID         | Asumsi                                                                                                                                                         |
+| ID | Di dalam ruang Lingkup Solusi |
 | ---------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | AB-RLS-D-1 | Pengaturan dan pengiriman daily affirmations sesuai jadwal yang ditentukan pengguna                                                                            |
 | AB-RLS-D-2 | Pengingat (reminder) makan, tidur, dan olahraga yang dapat dikustomisasi                                                                                       |
@@ -82,9 +67,7 @@ Solusi perangkat lunak yang kami berikan merupakan desktop application yang akan
 | AB-RLS-D-4 | Pemesanan sesi konsultasi dengan konselor, termasuk deteksi bentrok (overlap) antara slot yang dipilih dengan event yang sudah ada di Google Calendar pengguna |
 | AB-RLS-D-5 | Panel administrator untuk mengelola ketersediaan konselor dan data pengguna                                                                                    |
 
-##### 2.2.4.2 Di luar ruang lingkup
-
-| ID         | Asumsi                                                           |
+| ID | Di luar ruang lingkup solusi |
 | ---------- | ---------------------------------------------------------------- |
 | AB-RLS-L-1 | Layanan konseling darurat atau intervensi krisis real-time       |
 | AB-RLS-L-2 | Rekam medis elektronik atau riwayat diagnosis klinis pengguna    |
@@ -92,85 +75,17 @@ Solusi perangkat lunak yang kami berikan merupakan desktop application yang akan
 | AB-RLS-L-4 | Aplikasi versi mobile (native Android/iOS) pada rilis awal       |
 | AB-RLS-L-5 | Fitur komunitas atau forum antar-pengguna                        |
 
-## BAB 3: Spesifikasi Kebutuhan dan Proses Bisnis
+## Spesifikasi Kebutuhan
 
-### 3.1 Identifikasi Aktor
+### Identifikasi Aktor
 
 | Aktor         | Deskripsi                                                                                  |
 | ------------- | ------------------------------------------------------------------------------------------ |
-| Mahasiswa     | Pengguna ini berlaku sebagai pengguna utama dari aplikasi ini.                             |
-| Administrator | Pengguna ini berperan untuk merawat dan mengelola keberjalanan dari aplikasi ini.          |
-| Konselor      | Pengguna ini akan mengatur jadwal ketersediaan untuk sesi konseling di dalam aplikasi ini. |
-
-### 3.2 Kebutuhan Pengguna Awal
-
-| ID    | Aktor     | Kebutuhan / Aktivitas                                               | Tujuan / Nilai                                                                                       |
-| ----- | --------- | ------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
-| US-01 | Mahasiswa | Mendapatkan semangat dan kepercayaan diri dari _daily affirmations_ | Menjaga mood dan mental tetap stabil di tengah kekacauan kuliah                                      |
-| US-02 | Mahasiswa | Mendapatkan pengingat makan sesuai jadwal harian                    | Menjaga kesehatan fisik agar tidak kehilangan kontrol terhadap ritme kuliah                          |
-| US-03 | Mahasiswa | Mendapatkan pengingat tidur sesuai jadwal harian                    | Menjaga kesehatan fisik agar tidak kehilangan kontrol terhadap ritme kuliah                          |
-| US-04 | Mahasiswa | Menginput dan melihat jadwal sehari hari secara simpel dan mudah    | Mengurangi stress akibat banyaknya tugas agar dapat ditangani serta menghilangkan beban perencanaaan |
-| US-05 | Mahasiswa | Memesan bantuan profesional pada jadwal yang diinginkan             | Mengurangi gesekan dalam mencari bantuan profesional                                                 |
-| US-06 | Mahasiswa | Mendapatkan pengingat olahraga sesuai jadwal harian                 | Menjaga kesehatan fisik agar tidak kehilangan kontrol terhadap ritme kuliah                          |
-
-### 3.3 Deskripsi Aktivitas
-
-| ID   | Aktivitas                                     | Penjelasan                                                                                                                                                                        | ID User Story |
-| ---- | --------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------- |
-| A-01 | Menyetel daily affirmations                   | Pengguna dapat mengatur kapan mendapatkan daily affirmations lewat aplikasi.                                                                                                      | US-01         |
-| A-02 | Melihat jadwal sehari-hari secara keseluruhan | Pengguna dapat melihat jadwal sehari-hari lewat integrasi dengan google calendar termasuk jadwal reminder dan event-event lain yang ada di jadwal google calendar pengguna.       | US-04         |
-| A-03 | Menyetel reminder makan                       | Pengguna dapat mengatur kapan diberikan reminder lewat aplikasi.                                                                                                                  | US-02         |
-| A-04 | Menyetel reminder tidur                       | Pengguna dapat mengatur kapan diberikan reminder lewat aplikasi.                                                                                                                  | US-03         |
-| A-05 | Mengatur reminder olahraga                    | Pengguna dapat mengatur kapan diberikan reminder lewat aplikasi.                                                                                                                  | US-06         |
-| A-06 | Menjadwalkan konsultasi dengan tenaga medis   | Pengguna dapat melihat jadwal konsultasi yang tersedia sekaligus melihat apakah jadwal tersebut bertabrakan dengan jadwal yang sudah ada di kalender pengguna di google calendar. | US-05         |
-
-### 3.4 Model Proses Bisnis
-
-<p align="center">
-<img alt="Contoh Activity Diagram" src="M1/assets/diagram/diagram-act-1.png" width="70%">
-  </p>
-<p align="center">
-<i>Gambar 1. Model Proses Bisnis Sehati</i>
-<br>
-www.drawio.com
-</p>
-
-## References
-
-- [https://garuda.kemdiktisaintek.go.id/documents/detail/4396353](https://garuda.kemdiktisaintek.go.id/documents/detail/4396353)
-- [https://play.google.com/store/apps/details?id=id.bicarakan.client_app](https://play.google.com/store/apps/details?id=id.bicarakan.client_app)
-- [https://play.google.com/store/apps/details?id=com.icreativelabs.sahabatku](https://play.google.com/store/apps/details?id=com.icreativelabs.sahabatku&hl=id)
-- [https://play.google.com/store/apps/details?id=com.betterhelp\&hl=id](https://play.google.com/store/apps/details?id=com.betterhelp&hl=id)
-- [https://psycnet.apa.org/doiLanding?doi=10.1037%2Fsah0000392](https://psycnet.apa.org/doiLanding?doi=10.1037%2Fsah0000392)
-- [https://ourworldindata.org/grapher/suicide-death-rates?tab=line\&country=\~IDN\&mapSelect=\~IDN\&globe=1\&globeRotation=-2.27%2C117.36\&globeZoom=2.5](https://ourworldindata.org/grapher/suicide-death-rates?tab=line&country=~IDN&mapSelect=~IDN&globe=1&globeRotation=-2.27%2C117.36&globeZoom=2.5)
-- [https://databoks.katadata.co.id/demografi/statistik/636e76fcf8dc70d/berapa-angka-bunuh-diri-di-indonesia](https://databoks.katadata.co.id/demografi/statistik/636e76fcf8dc70d/berapa-angka-bunuh-diri-di-indonesia)
-- [De Oliveira, Claire, et al. "The Role of Mental Health on Workplace Productivity: A Critical Review of the Literature: C. de Oliveira et al." _Applied health economics and health policy_ 21.2 (2023): 167-193.](https://pmc.ncbi.nlm.nih.gov/articles/PMC9663290/pdf/40258_2022_Article_761.pdf)
-- [Sayce, Liz. "Social inclusion and mental health." _Psychiatric Bulletin_ 25.4 (2001): 121-123.](https://www.cambridge.org/core/services/aop-cambridge-core/content/view/36D14A7DEF64A0CE9F7CFF3728A89DFA/S095560360009588Xa.pdf/social_inclusion_and_mental_health.pdf)
-- [https://www.undp.org/sustainable-development-goals/good-health](https://www.undp.org/sustainable-development-goals/good-health)
-- Diagram UML: https://www.drawio.com/, https://staruml.io/
-- Konflik Riliv: [Garuda Kemdiktisaintek](https://garuda.kemdiktisaintek.go.id/documents/detail/4396353)
-- Ulasan Bicarakan.id: [https://play.google.com/store/apps/details?id=id.bicarakan.client_app](https://play.google.com/store/apps/details?id=id.bicarakan.client_app)
-- Ulasan Sahabatku: [https://play.google.com/store/apps/details?id=com.icreativelabs.sahabatku](https://play.google.com/store/apps/details?id=com.icreativelabs.sahabatku&hl=id)
-- Ulasan BetterHelp: [https://play.google.com/store/apps/details?id=com.betterhelp\&hl=id](https://play.google.com/store/apps/details?id=com.betterhelp&hl=id)
-
-# M2: Requirement Gathering
-
-## BAB 1: Deskripsi Umum
-
-### 1.1 Deskripsi Umum Sistem
-
-Melalui “Sehati”, pengguna utama diharapkan untuk bisa memesan jadwal sesi terapi, utamanya. Selain itu, ada aksi-aksi tambahan yang dapat dilakukan, seperti melihat daily affirmation dan pengingat makan, olahraga, dan tidur. Semua ini dilakukan melalui akun (?). Bagi konselor, mereka bisa mendaftarkan diri (melalui akun juga?) dan menjadwalkan sesi terapi.
-
-### 1.2 Deskripsi Pengguna Perangkat Lunak
-
-| Aktor         | Deskripsi                                                                                                                                             |
-| ------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Mahasiswa     | Pengguna ini akan menggunakan fitur-fitur pengingat makan, olahraga, dan tidur serta mendapatkan daily affirmations dan dapat memesan sesi konsultasi |
 | Administrator | Pengguna ini akan menambahkan jadwal konsultasi sesuai jadwal yang terdapat pada informasi konsultan.                                                 |
 
-## BAB 2: Deskripsi Kebutuhan Perangkat Lunak
 
-### 2.1 Kebutuhan Pengguna Awal
+### Kebutuhan Pengguna Awal
 
 | ID    | Aktor                    | Kebutuhan / Aktivitas                                            | Tujuan / Nilai                                                                               |
 | ----- | ------------------------ | ---------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
@@ -184,7 +99,7 @@ Melalui “Sehati”, pengguna utama diharapkan untuk bisa memesan jadwal sesi t
 | US-08 | Administrator            | Menjaga dan mengelola sistem                                     | Menjaga kestabilan dan keandalan aplikasi dan sistem                                         |
 | US-09 | Mahasiswa, Administrator | Masuk ke aplikasi menggunakan akun Google                        | Memudahkan proses login tanpa perlu membuat dan mengingat kredensial baru                    |
 
-### 2.2 Deskripsi Aktivitas
+### Deskripsi Aktivitas
 
 | ID   | Aktivitas                                              | Penjelasan                                                                                                                                                                        | ID _User_ Story |
 | ---- | ------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------- |
@@ -200,7 +115,7 @@ Melalui “Sehati”, pengguna utama diharapkan untuk bisa memesan jadwal sesi t
 | A-10 | Merespons terhadap umpan balik pengguna                | Admin membantu pengguna dalam penggunaan aplikasi                                                                                                                                 | US-08           |
 | A-11 | Melakukan autentikasi melalui akun Google              | Pengguna masuk ke aplikasi dengan akun Google mereka, dan sistem memverifikasi identitas tersebut sebelum memberikan akses ke fitur aplikasi.                                     | US-09           |
 
-### 2.3 Pemetaan Kebutuhan
+### Peta Kebutuhan
 
 | ID Kebutuhan | ID Aktivitas     | Jenis Kebutuhan | Deskripsi Kebutuhan                                                                                                                | P/L   |
 | ------------ | ---------------- | --------------- | ---------------------------------------------------------------------------------------------------------------------------------- | ----- |
@@ -226,7 +141,7 @@ Melalui “Sehati”, pengguna utama diharapkan untuk bisa memesan jadwal sesi t
 | R-20         | N/A              | _System_        | Sistem dapat dinavigasikan dengan Mudah                                                                                            | Ya    |
 | R-21         | A-11             | _System_        | Sistem dapat mengautentikasi pengguna (Mahasiswa dan Administrator) melalui akun Google sebelum memberikan akses ke fitur aplikasi | Ya    |
 
-### 2.4 Kebutuhan Fungsional (KF)
+## Kebutuhan Fungsional dan Kebutuhan Non-Fungsional
 
 | ID KF | ID Kebutuhan     | Penjelasan                                                                                                                                                                               |
 | ----- | ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -242,8 +157,6 @@ Melalui “Sehati”, pengguna utama diharapkan untuk bisa memesan jadwal sesi t
 | KF-10 | R-18             | Sistem dapat memberikan akses kepada administrator untuk memberikan tanggapan/feedback terhadap umpan balik pengguna.                                                                    |
 | KF-11 | R-21             | Sistem dapat memverifikasi identitas pengguna melalui login akun Google dan memberikan akses ke aplikasi setelah autentikasi berhasil.                                                   |
 
-### 2.5 Kebutuhan Non-Fungsional (KNF)
-
 | ID KNF | ID Kebutuhan | Parameter       | Deskripsi Kebutuhan                                                       |
 | ------ | ------------ | --------------- | ------------------------------------------------------------------------- |
 | KNF-01 | R-08         | Availability    | P/L dapat tersedia setiap saat dengan minimal uptime 90%                  |
@@ -252,22 +165,39 @@ Melalui “Sehati”, pengguna utama diharapkan untuk bisa memesan jadwal sesi t
 | KNF-04 | R-09         | Reliability     | P/L dapat memberikan feedback menuju administrator                        |
 | KNF-05 | R-11         | Maintainability | Sistem dapat memodifikasi jadwal tanpa merubah Source Kode                |
 
-<br>
-
-## References
-
 - [https://www.geeksforgeeks.org/software-engineering/software-engineering-software-maintenance/](https://www.geeksforgeeks.org/software-engineering/software-engineering-software-maintenance/)
 
-# M3: Use Cases
+## Model Proses Bisnis
 
-## 3.1 Identifikasi Aktor
+<p align="center">
+<img alt="Contoh Activity Diagram" src="M1/assets/diagram/diagram-act-1.png" width="70%">
+  </p>
+<p align="center">
+<i>Gambar 1. Model Proses Bisnis Sehati</i>
+<br>
+www.drawio.com
+</p>
 
-| Aktor         | Deskripsi                                                                                                                                             |
-| ------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Mahasiswa     | Pengguna ini akan menggunakan fitur-fitur pengingat makan, olahraga, dan tidur serta mendapatkan daily affirmations dan dapat memesan sesi konsultasi |
-| Administrator | Pengguna ini akan menambahkan jadwal konsultasi sesuai jadwal yang terdapat pada informasi konsultan.                                                 |
+***References***
+- [https://garuda.kemdiktisaintek.go.id/documents/detail/4396353](https://garuda.kemdiktisaintek.go.id/documents/detail/4396353)
+- [https://play.google.com/store/apps/details?id=id.bicarakan.client_app](https://play.google.com/store/apps/details?id=id.bicarakan.client_app)
+- [https://play.google.com/store/apps/details?id=com.icreativelabs.sahabatku](https://play.google.com/store/apps/details?id=com.icreativelabs.sahabatku&hl=id)
+- [https://play.google.com/store/apps/details?id=com.betterhelp\&hl=id](https://play.google.com/store/apps/details?id=com.betterhelp&hl=id)
+- [https://psycnet.apa.org/doiLanding?doi=10.1037%2Fsah0000392](https://psycnet.apa.org/doiLanding?doi=10.1037%2Fsah0000392)
+- [https://ourworldindata.org/grapher/suicide-death-rates?tab=line\&country=\~IDN\&mapSelect=\~IDN\&globe=1\&globeRotation=-2.27%2C117.36\&globeZoom=2.5](https://ourworldindata.org/grapher/suicide-death-rates?tab=line&country=~IDN&mapSelect=~IDN&globe=1&globeRotation=-2.27%2C117.36&globeZoom=2.5)
+- [https://databoks.katadata.co.id/demografi/statistik/636e76fcf8dc70d/berapa-angka-bunuh-diri-di-indonesia](https://databoks.katadata.co.id/demografi/statistik/636e76fcf8dc70d/berapa-angka-bunuh-diri-di-indonesia)
+- [De Oliveira, Claire, et al. "The Role of Mental Health on Workplace Productivity: A Critical Review of the Literature: C. de Oliveira et al." _Applied health economics and health policy_ 21.2 (2023): 167-193.](https://pmc.ncbi.nlm.nih.gov/articles/PMC9663290/pdf/40258_2022_Article_761.pdf)
+- [Sayce, Liz. "Social inclusion and mental health." _Psychiatric Bulletin_ 25.4 (2001): 121-123.](https://www.cambridge.org/core/services/aop-cambridge-core/content/view/36D14A7DEF64A0CE9F7CFF3728A89DFA/S095560360009588Xa.pdf/social_inclusion_and_mental_health.pdf)
+- [https://www.undp.org/sustainable-development-goals/good-health](https://www.undp.org/sustainable-development-goals/good-health)
+- Diagram UML: https://www.drawio.com/, https://staruml.io/
+- Konflik Riliv: [Garuda Kemdiktisaintek](https://garuda.kemdiktisaintek.go.id/documents/detail/4396353)
+- Ulasan Bicarakan.id: [https://play.google.com/store/apps/details?id=id.bicarakan.client_app](https://play.google.com/store/apps/details?id=id.bicarakan.client_app)
+- Ulasan Sahabatku: [https://play.google.com/store/apps/details?id=com.icreativelabs.sahabatku](https://play.google.com/store/apps/details?id=com.icreativelabs.sahabatku&hl=id)
+- Ulasan BetterHelp: [https://play.google.com/store/apps/details?id=com.betterhelp\&hl=id](https://play.google.com/store/apps/details?id=com.betterhelp&hl=id)
 
-## 3.2 Identifikasi Use Case
+
+# Use Cases
+
 
 | ID UC | Nama Use Case                 | Deskripsi Singkat                                                                                           | Aktor Terlibat           | ID KF Terkait       |
 | ----- | ----------------------------- | ----------------------------------------------------------------------------------------------------------- | ------------------------ | ------------------- |
@@ -284,7 +214,7 @@ Melalui “Sehati”, pengguna utama diharapkan untuk bisa memesan jadwal sesi t
 | UC-11 | Masuk Melalui Akun Google     | Pengguna login ke aplikasi menggunakan akun Google sebelum mengakses fitur lainnya.                         | Mahasiswa, Administrator | KF-11               |
 | UC-12 | Form Pengajuan pertanyaan     | Pengguna mengajukan pertanyaan diluar yang ada di FAQ                                                       | Mahasiswa                | KF-07               |
 
-## 3.3 Use Case Diagram
+## Use Case Diagram
 
 <br>
 
@@ -296,9 +226,9 @@ Melalui “Sehati”, pengguna utama diharapkan untuk bisa memesan jadwal sesi t
 </p>
 <br>
 
-## 3.4 Skenario Use Case
+## Skenario Use Case
 
-### 3.4.1 Skenario UC-01
+### Skenario UC-01
 
 **Nama Use Case:** _Menyetel_ Daily Affirmations
 
@@ -318,7 +248,7 @@ Melalui “Sehati”, pengguna utama diharapkan untuk bisa memesan jadwal sesi t
 | 1   | Mahasiswa memasukkan input waktu pengiriman _daily affirmation_ | Sistem menampilkan input pada _input box_                                                                  |
 | 2   | Mahasiswa mengklik tombol konfirmasi                            | Sistem tidak dapat menyimpan preferensi waktu pengiriman _daily affirmation_ dan menampilkan pesan _error_ |
 
-### 3.4.2 Skenario UC-02
+### Skenario UC-02
 
 **Nama Use Case:** _Menyetel Pengingat Kesehatan_
 
@@ -338,7 +268,7 @@ Melalui “Sehati”, pengguna utama diharapkan untuk bisa memesan jadwal sesi t
 | 1   | Mahasiswa memasukkan input waktu pengiriman pengingat kesehatan | Sistem menampilkan input pada _input box_                                                                  |
 | 2   | Mahasiswa mengklik tombol konfirmasi                            | Sistem tidak dapat menyimpan preferensi waktu pengiriman pengingat kesehatan dan menampilkan pesan _error_ |
 
-### 3.4.3 Skenario UC-03
+### Skenario UC-03
 
 **Nama Use Case:** _Melihat Kalender Terintegrasi_
 
@@ -357,7 +287,7 @@ Melalui “Sehati”, pengguna utama diharapkan untuk bisa memesan jadwal sesi t
 | 1   | Mahasiswa mengklik tombol "Lihat Kalender" | Sistem tidak menampilkan kalender dengan data-data _event_ mahasiswa dan menyediakan pesan _error_ dan tombol untuk mengulangi aksi |
 | 2   | Mahasiswa mengklik tombol "Refresh"        | Jika gagal, sama seperti no. 1. Jika berhasil, sistem bereaksi pada skenario normal                                                 |
 
-### 3.4.4 Skenario UC-04
+### Skenario UC-04
 
 **Nama Use Case:** _Memesan Sesi Konsultasi_
 
@@ -380,7 +310,7 @@ Melalui “Sehati”, pengguna utama diharapkan untuk bisa memesan jadwal sesi t
 | --- | -------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
 | 1   | Mahasiswa mengklik tombol "Konfirmasi" | Sistem tidak menyimpan pesanan dan menampilkan pesan _error_. Jika ingin mengulangi, mahasiswa hanya perlu mengklik tombol "Konfirmasi" sekali lagi. |
 
-### 3.4.5 Skenario UC-05
+### Skenario UC-05
 
 **Nama Use Case:** _Mengelola Jadwal Konsultan_
 
@@ -405,7 +335,7 @@ Melalui “Sehati”, pengguna utama diharapkan untuk bisa memesan jadwal sesi t
 | --- | ----------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | 1   | Administrator memasukkan perubahan pada jadwal di laman edit dan mengklik tombol "Simpan" | Sistem tidak menyimpan pergantian data dan menyediakan pesan _error_. Jika ingin mengulangi, administrator hanya perlu mengklik tombol "Simpan" sekali lagi. |
 
-### 3.4.6 Skenario UC-06
+### Skenario UC-06
 
 **Nama Use Case:** Melihat FAQ
 
@@ -423,7 +353,7 @@ Melalui “Sehati”, pengguna utama diharapkan untuk bisa memesan jadwal sesi t
 | --- | ---------------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
 | 1   | Mahasiswa mencari pertanyaan di search bar FAQ | Sistem tidak menunjukkan pertanyaan yang dicari mahasiswa, lalu menawarkan untuk mengajukan pertanyaan di forum |
 
-### 3.4.7 Skenario UC-07
+### Skenario UC-07
 
 **Nama Use Case:** Mengelola FAQ
 
@@ -445,7 +375,7 @@ Melalui “Sehati”, pengguna utama diharapkan untuk bisa memesan jadwal sesi t
 | 2   | Admin mengurangi pertanyaan di FAQ                | Sistem tidak menghapus pertanyaan (dan jawabannya) dari database           |
 | 3   | Admin mengubah pertanyaan dan/atau jawaban di FAQ | Sistem tidak menyimpan perubahan pertanyaan dan/atau jawaban pada database |
 
-### 3.4.8 Skenario UC-08
+### Skenario UC-08
 
 **Nama Use Case:** Memberikan Umpan Balik
 
@@ -463,7 +393,7 @@ Melalui “Sehati”, pengguna utama diharapkan untuk bisa memesan jadwal sesi t
 | --- | --------------------------------------------------------------- | ------------------------------------------------------------------- |
 | 1   | Mahasiswa memberikan umpan balik di forum pemberian umpan balik | Sistem tidak menerima dan tidak menyimpan umpan balik pada database |
 
-### 3.4.9 Skenario UC-09
+### Skenario UC-09
 
 **Nama Use Case:** Menanggapi Umpan Balik
 
@@ -481,7 +411,7 @@ Melalui “Sehati”, pengguna utama diharapkan untuk bisa memesan jadwal sesi t
 | --- | ------------------------------------------------------------------------ | ------------------------------------------------------- |
 | 1   | Admin memberikan tanggapan pada umpan balik yang diterima oleh mahasiswa | Sistem tidak menunjukkan konten pada tampilan mahasiswa |
 
-### 3.4.10 Skenario UC-10
+### Skenario UC-10
 
 **Nama Use Case:** Memantau Status Server
 
@@ -494,7 +424,7 @@ Melalui “Sehati”, pengguna utama diharapkan untuk bisa memesan jadwal sesi t
 
 <br>
 
-### 3.4.11 Skenario UC-11
+### Skenario UC-11
 
 **Nama Use Case:** Masuk Melalui Akun Google
 
