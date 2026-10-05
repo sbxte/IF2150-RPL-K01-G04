@@ -79,10 +79,10 @@ Solusi perangkat lunak yang kami berikan merupakan desktop application yang akan
 
 ### Identifikasi Aktor
 
-| Aktor         | Deskripsi                                                                                  |
-| ------------- | ------------------------------------------------------------------------------------------ |
-| Mahasiswa     | Pengguna ini akan menggunakan fitur-fitur pengingat makan, olahraga, dan tidur serta mendapatkan daily affirmations dan dapat memesan sesi konsultasi |
-| Administrator | Pengguna ini akan menambahkan jadwal konsultasi sesuai jadwal yang terdapat pada informasi konsultan.                                                 |
+| Aktor         | Deskripsi                                                                                                                                               |
+| ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Mahasiswa     | Pengguna ini akan menggunakan fitur-fitur pengingat makan, olahraga, dan tidur serta mendapatkan _daily affirmations_ dan dapat memesan sesi konsultasi |
+| Administrator | Pengguna ini akan menambahkan jadwal konsultasi sesuai jadwal yang terdapat pada informasi konsultan.                                                   |
 
 
 ### Kebutuhan Pengguna Awal
@@ -143,19 +143,19 @@ Solusi perangkat lunak yang kami berikan merupakan desktop application yang akan
 
 ## Kebutuhan Fungsional dan Kebutuhan Non-Fungsional
 
-| ID KF | ID Kebutuhan     | Penjelasan                                                                                                                                                                               |
-| ----- | ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| KF-01 | R-01             | Sistem menyediakan opsi untuk menyetel waktu pengiriman _daily affirmations_ dan dapat mengirim notifikasi _daily affirmations_ di waktu yang disetel                                    |
-| KF-02 | R-03, R-04       | Sistem dapat mengambil data Google Calendar pengguna melalui API yang tersedia dan menampilkannya di antarmuka                                                                           |
-| KF-03 | R-05, R-06, R-07 | Sistem menyediakan opsi untuk menyetel waktu pengiriman pengingat makan, tidur, olahraga dan dapat mengirim pengingatnya di waktu yang disetel                                           |
-| KF-04 | R-08             | Sistem memberikan tampilan notifikasi di mana pun user berada dalam aplikasi, dilengkapi juga dengan konten seperti label yang diberikan pengguna                                        |
-| KF-05 | R-09             | Sistem dapat menampilkan kalender yang telah terintegrasi dengan Google Calendar pengguna lalu memberikan kalender gabungan dengan data jadwal sesi konsultasi yang terdapat di database |
-| KF-06 | R-10, R-11       | Sistem dapat mengambil data jadwal dari database dan dapat ditampilkan data tersebut ke pengguna                                                                                         |
-| KF-07 | R-14             | Sistem dapat menampilkan daftar pertanyaan yang sering diajukan (FAQ) pada aplikasi.                                                                                                     |
-| KF-08 | R-13, R-15       | Sistem menyediakan fitur bagi pengguna untuk memberikan umpan balik terhadap aplikasi.                                                                                                   |
-| KF-09 | R-16             | Sistem dapat menampilkan status server (up/down) kepada administrator.                                                                                                                   |
-| KF-10 | R-18             | Sistem dapat memberikan akses kepada administrator untuk memberikan tanggapan/feedback terhadap umpan balik pengguna.                                                                    |
-| KF-11 | R-21             | Sistem dapat memverifikasi identitas pengguna melalui login akun Google dan memberikan akses ke aplikasi setelah autentikasi berhasil.                                                   |
+| ID KF | ID Kebutuhan     | Penjelasan                                                                                                                                                                                 |
+| ----- | ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| KF-01 | R-01             | Sistem menyediakan opsi untuk menyetel waktu pengiriman **daily affirmations** dan dapat mengirim notifikasi **daily affirmations** di waktu yang disetel                                  |
+| KF-02 | R-03             | Sistem dapat mengambil data Google Calendar pengguna melalui API yang tersedia dan menampilkannya di antarmuka                                                                             |
+| KF-03 | R-04, R-05, R-06 | Sistem menyediakan opsi untuk menyetel waktu pengiriman pengingat makan, tidur, olahraga dan dapat mengirim pengingatnya di waktu yang disetel                                             |
+| KF-04 | R-07             | Sistem memberikan tampilan notifikasi di mana pun user berada dalam aplikasi, dilengkapi juga dengan konten seperti label yang diberikan pengguna                                          |
+| KF-05 | R-08             | Sistem dapat menampilkan kalender yang telah terintegrasi dengan Google Calendar pengguna lalu memberikan kalender gabungan dengan data jadwal sesi konsultasi yang terdapat di _database_ |
+| KF-06 | R-09, R-10       | Sistem dapat mengambil data jadwal dari _database_ dan dapat ditampilkan data tersebut ke pengguna                                                                                         |
+| KF-07 | R-12             | Sistem dapat menampilkan daftar pertanyaan yang sering diajukan (FAQ) pada aplikasi.                                                                                                       |
+| KF-08 | R-14             | Sistem menyediakan fitur bagi pengguna untuk memberikan umpan balik terhadap aplikasi.                                                                                                     |
+| KF-09 | R-15             | Sistem dapat menampilkan status _server_ (_up/down_) kepada administrator.                                                                                                                 |
+| KF-10 | R-17             | Sistem dapat memberikan akses kepada administrator untuk memberikan tanggapan/feedback terhadap umpan balik pengguna.                                                                      |
+| KF-11 | R-22             | Sistem dapat memverifikasi identitas pengguna melalui _log in_ akun Google dan memberikan akses ke aplikasi setelah autentikasi berhasil.                                                  |
 
 | ID KNF | ID Kebutuhan | Parameter       | Deskripsi Kebutuhan                                                       |
 | ------ | ------------ | --------------- | ------------------------------------------------------------------------- |
@@ -198,21 +198,20 @@ www.drawio.com
 
 # Use Cases
 
-
-| ID UC | Nama Use Case                 | Deskripsi Singkat                                                                                           | Aktor Terlibat           | ID KF Terkait       |
-| ----- | ----------------------------- | ----------------------------------------------------------------------------------------------------------- | ------------------------ | ------------------- |
-| UC-01 | Menyetel Daily Affirmations   | Mahasiswa mengatur waktu penerimaan daily affirmations dan menerima notifikasinya.                          | Mahasiswa                | KF-01               |
-| UC-02 | Menyetel Pengingat Kesehatan  | Mahasiswa mengatur waktu pengingat makan, tidur, dan olahraga, serta menerima notifikasinya.                | Mahasiswa                | KF-03, KF-04        |
-| UC-03 | Melihat Kalender Terintegrasi | Mahasiswa melihat jadwal gabungan antara Google Calendar dan jadwal sesi konsultasi dalam satu tampilan.    | Mahasiswa                | KF-02, KF-05, KF-06 |
-| UC-04 | Memesan Sesi Konsultasi       | Mahasiswa memilih dan memesan sesi konsultasi pada jadwal yang tersedia.                                    | Mahasiswa                | KF-05, KF-06        |
-| UC-05 | Mengelola Jadwal Konsultan    | Administrator memasukkan dan memperbarui jadwal sesi konsultasi ke dalam sistem tanpa mengubah source code. | Administrator            | KF-06               |
-| UC-06 | Melihat FAQ                   | Mahasiswa membuka dan mencari daftar pertanyaan yang sering diajukan.                                       | Mahasiswa                | KF-07               |
-| UC-07 | Mengelola FAQ                 | Administrator menambah, mengubah, atau menghapus daftar FAQ.                                                | Administrator            | KF-07               |
-| UC-08 | Memberikan Umpan Balik        | Mahasiswa mengirimkan umpan balik terhadap aplikasi.                                                        | Mahasiswa                | KF-08               |
-| UC-09 | Menanggapi Umpan Balik        | Administrator melihat dan memberikan tanggapan atas umpan balik yang masuk.                                 | Administrator            | KF-10               |
-| UC-10 | Memantau Status Server        | Administrator memeriksa status up/down server secara berkala.                                               | Administrator            | KF-09               |
-| UC-11 | Masuk Melalui Akun Google     | Pengguna login ke aplikasi menggunakan akun Google sebelum mengakses fitur lainnya.                         | Mahasiswa, Administrator | KF-11               |
-| UC-12 | Form Pengajuan pertanyaan     | Pengguna mengajukan pertanyaan diluar yang ada di FAQ                                                       | Mahasiswa                | KF-07               |
+| ID UC | Nama _Use Case_               | Deskripsi Singkat                                                                                             | Aktor Terlibat           | ID KF Terkait       |
+| ----- | ----------------------------- | ------------------------------------------------------------------------------------------------------------- | ------------------------ | ------------------- |
+| UC-01 | Menyetel _Daily Affirmations_ | Mahasiswa mengatur waktu penerimaan _daily affirmations_ dan menerima notifikasinya.                          | Mahasiswa                | KF-01, KF-02        |
+| UC-02 | Menyetel Pengingat Kesehatan  | Mahasiswa mengatur waktu pengingat makan, tidur, dan olahraga, serta menerima notifikasinya.                  | Mahasiswa                | KF-03, KF-04        |
+| UC-03 | Melihat Kalender Terintegrasi | Mahasiswa melihat jadwal gabungan antara Google Calendar dan jadwal sesi konsultasi dalam satu tampilan.      | Mahasiswa                | KF-02, KF-05, KF-06 |
+| UC-04 | Memesan Sesi Konsultasi       | Mahasiswa memilih dan memesan sesi konsultasi pada jadwal yang tersedia.                                      | Mahasiswa                | KF-05, KF-06        |
+| UC-05 | Mengelola Jadwal Konsultan    | Administrator memasukkan dan memperbarui jadwal sesi konsultasi ke dalam sistem tanpa mengubah _source code_. | Administrator            | KF-06               |
+| UC-06 | Melihat FAQ                   | Mahasiswa membuka dan mencari daftar pertanyaan yang sering diajukan.                                         | Mahasiswa                | KF-07               |
+| UC-07 | Mengelola FAQ                 | Administrator menambah, mengubah, atau menghapus daftar FAQ.                                                  | Administrator            | KF-07               |
+| UC-08 | Memberikan Umpan Balik        | Mahasiswa mengirimkan umpan balik terhadap aplikasi.                                                          | Mahasiswa                | KF-08               |
+| UC-09 | Menanggapi Umpan Balik        | Administrator melihat dan memberikan tanggapan atas umpan balik yang masuk.                                   | Administrator            | KF-10               |
+| UC-10 | Memantau Status _Server_      | Administrator memeriksa status _up/down_ _server_ secara berkala.                                             | Administrator            | KF-09               |
+| UC-11 | Masuk Melalui Akun Google     | Pengguna _log in_ ke aplikasi menggunakan akun Google sebelum mengakses fitur lainnya.                        | Mahasiswa, Administrator | KF-11               |
+| UC-12 | Form Pengajuan pertanyaan     | Pengguna mengajukan pertanyaan diluar yang ada di FAQ                                                         | Mahasiswa                | KF-07               |
 
 ## Use Case Diagram
 
@@ -230,7 +229,7 @@ www.drawio.com
 
 ### Skenario UC-01
 
-**Nama Use Case:** _Menyetel_ Daily Affirmations
+**Nama _Use Case_:** _Menyetel_ _Daily Affirmations_
 
 **Skenario Normal**
 
@@ -250,7 +249,7 @@ www.drawio.com
 
 ### Skenario UC-02
 
-**Nama Use Case:** _Menyetel Pengingat Kesehatan_
+**Nama _Use Case_:** _Menyetel Pengingat Kesehatan_
 
 **Skenario Normal**
 
@@ -270,7 +269,7 @@ www.drawio.com
 
 ### Skenario UC-03
 
-**Nama Use Case:** _Melihat Kalender Terintegrasi_
+**Nama _Use Case_:** _Melihat Kalender Terintegrasi_
 
 **Skenario Normal**
 
@@ -289,7 +288,7 @@ www.drawio.com
 
 ### Skenario UC-04
 
-**Nama Use Case:** _Memesan Sesi Konsultasi_
+**Nama _Use Case_:** _Memesan Sesi Konsultasi_
 
 | No  | Aksi Aktor                                      | Reaksi Perangkat Lunak                                                                               |
 | --- | ----------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
@@ -312,7 +311,7 @@ www.drawio.com
 
 ### Skenario UC-05
 
-**Nama Use Case:** _Mengelola Jadwal Konsultan_
+**Nama _Use Case_:** _Mengelola Jadwal Konsultan_
 
 **Skenario Normal**
 
@@ -337,7 +336,7 @@ www.drawio.com
 
 ### Skenario UC-06
 
-**Nama Use Case:** Melihat FAQ
+**Nama _Use Case_:** Melihat FAQ
 
 **Skenario Normal**
 
@@ -355,47 +354,47 @@ www.drawio.com
 
 ### Skenario UC-07
 
-**Nama Use Case:** Mengelola FAQ
+**Nama _Use Case_:** Mengelola FAQ
 
 **Skenario Normal**
 
-| No  | Aksi Aktor                                        | Reaksi Perangkat Lunak                                                        |
-| --- | ------------------------------------------------- | ----------------------------------------------------------------------------- |
-| 1   | Admin menambahkan pertanyaan dan jawaban di FAQ   | Sistem berhasil menambahkan pertanyaan & jawabannya di database               |
-| 2   | Admin mengurangi pertanyaan di FAQ                | Sistem berhasil menghapus pertanyaan (dan jawabannya) dari database           |
-| 3   | Admin mengubah pertanyaan dan/atau jawaban di FAQ | Sistem berhasil menyimpan perubahan pertanyaan dan/atau jawaban pada database |
+| No  | Aksi Aktor                                        | Reaksi Perangkat Lunak                                                          |
+| --- | ------------------------------------------------- | ------------------------------------------------------------------------------- |
+| 1   | Admin menambahkan pertanyaan dan jawaban di FAQ   | Sistem berhasil menambahkan pertanyaan & jawabannya di _database_               |
+| 2   | Admin mengurangi pertanyaan di FAQ                | Sistem berhasil menghapus pertanyaan (dan jawabannya) dari _database_           |
+| 3   | Admin mengubah pertanyaan dan/atau jawaban di FAQ | Sistem berhasil menyimpan perubahan pertanyaan dan/atau jawaban pada _database_ |
 
 <br>
 
 \*\*Skenario Alternatif 1: Tidak ada pertanyaan maupun jawaban yang berhasil disimpan
 
-| No  | Aksi Aktor                                        | Reaksi Perangkat Lunak                                                     |
-| --- | ------------------------------------------------- | -------------------------------------------------------------------------- |
-| 1   | Admin menambahkan pertanyaan dan jawaban di FAQ   | Sistem tidak menambahkan pertanyaan maupun jawabannya di database          |
-| 2   | Admin mengurangi pertanyaan di FAQ                | Sistem tidak menghapus pertanyaan (dan jawabannya) dari database           |
-| 3   | Admin mengubah pertanyaan dan/atau jawaban di FAQ | Sistem tidak menyimpan perubahan pertanyaan dan/atau jawaban pada database |
+| No  | Aksi Aktor                                        | Reaksi Perangkat Lunak                                                       |
+| --- | ------------------------------------------------- | ---------------------------------------------------------------------------- |
+| 1   | Admin menambahkan pertanyaan dan jawaban di FAQ   | Sistem tidak menambahkan pertanyaan maupun jawabannya di _database_          |
+| 2   | Admin mengurangi pertanyaan di FAQ                | Sistem tidak menghapus pertanyaan (dan jawabannya) dari _database_           |
+| 3   | Admin mengubah pertanyaan dan/atau jawaban di FAQ | Sistem tidak menyimpan perubahan pertanyaan dan/atau jawaban pada _database_ |
 
 ### Skenario UC-08
 
-**Nama Use Case:** Memberikan Umpan Balik
+**Nama _Use Case_:** Memberikan Umpan Balik
 
 **Skenario Normal**
 
-| No  | Aksi Aktor                                                      | Reaksi Perangkat Lunak                                  |
-| --- | --------------------------------------------------------------- | ------------------------------------------------------- |
-| 1   | Mahasiswa memberikan umpan balik di forum pemberian umpan balik | Sistem menerima dan menyimpan umpan balik pada database |
+| No  | Aksi Aktor                                                      | Reaksi Perangkat Lunak                                    |
+| --- | --------------------------------------------------------------- | --------------------------------------------------------- |
+| 1   | Mahasiswa memberikan umpan balik di forum pemberian umpan balik | Sistem menerima dan menyimpan umpan balik pada _database_ |
 
 <br>
 
-\*\*Skenario Alternatif 1: Umpan balik tidak disimpan pada database
+\*\*Skenario Alternatif 1: Umpan balik tidak disimpan pada _database_
 
-| No  | Aksi Aktor                                                      | Reaksi Perangkat Lunak                                              |
-| --- | --------------------------------------------------------------- | ------------------------------------------------------------------- |
-| 1   | Mahasiswa memberikan umpan balik di forum pemberian umpan balik | Sistem tidak menerima dan tidak menyimpan umpan balik pada database |
+| No  | Aksi Aktor                                                      | Reaksi Perangkat Lunak                                                |
+| --- | --------------------------------------------------------------- | --------------------------------------------------------------------- |
+| 1   | Mahasiswa memberikan umpan balik di forum pemberian umpan balik | Sistem tidak menerima dan tidak menyimpan umpan balik pada _database_ |
 
 ### Skenario UC-09
 
-**Nama Use Case:** Menanggapi Umpan Balik
+**Nama _Use Case_:** Menanggapi Umpan Balik
 
 **Skenario Normal**
 
@@ -413,31 +412,447 @@ www.drawio.com
 
 ### Skenario UC-10
 
-**Nama Use Case:** Memantau Status Server
+**Nama _Use Case_:** Memantau Status _Server_
 
 **Skenario Normal**
 
-| No  | Aksi Aktor                          | Reaksi Perangkat Lunak                  |
-| --- | ----------------------------------- | --------------------------------------- |
-| 1   | Admin melihat status uptime website | Sistem memberikan status uptime website |
-| 2   | Admin melihat status uptime server  | Sistem menunjukkan status uptime server |
+| No  | Aksi Aktor                             | Reaksi Perangkat Lunak                      |
+| --- | -------------------------------------- | ------------------------------------------- |
+| 1   | Admin melihat status _uptime_ website  | Sistem memberikan status _uptime_ website   |
+| 2   | Admin melihat status _uptime_ _server_ | Sistem menunjukkan status _uptime_ _server_ |
 
 <br>
 
 ### Skenario UC-11
 
-**Nama Use Case:** Masuk Melalui Akun Google
+**Nama _Use Case_:** Masuk Melalui Akun Google
 
 **Skenario Normal**
 
-| No  | Aksi Aktor                                         | Reaksi Perangkat Lunak                                         |
-| --- | -------------------------------------------------- | -------------------------------------------------------------- |
-| 1   | Mahasiswa melakukan autentikasi dengan akun Google | Sistem menampilkan tampilan selanjutnya setelah login berhasil |
+| No  | Aksi Aktor                                         | Reaksi Perangkat Lunak                                            |
+| --- | -------------------------------------------------- | ----------------------------------------------------------------- |
+| 1   | Mahasiswa melakukan autentikasi dengan akun Google | Sistem menampilkan tampilan selanjutnya setelah _log in_ berhasil |
 
 <br>
 
-\*\*Skenario Alternatif 1: OAuth Google tidak berfungsi saat login
+\*\*Skenario Alternatif 1: OAuth Google tidak berfungsi saat _log in_
 
-| No  | Aksi Aktor                                         | Reaksi Perangkat Lunak                                                          |
-| --- | -------------------------------------------------- | ------------------------------------------------------------------------------- |
-| 1   | Mahasiswa melakukan autentikasi dengan akun Google | Sistem tidak melakukan login untuk mahasiswa, mahasiswa kembali ke login screen |
+| No  | Aksi Aktor                                         | Reaksi Perangkat Lunak                                                                |
+| --- | -------------------------------------------------- | ------------------------------------------------------------------------------------- |
+| 1   | Mahasiswa melakukan autentikasi dengan akun Google | Sistem tidak melakukan _log in_ untuk mahasiswa, mahasiswa kembali ke _log in_ screen |
+
+### Skenario UC-12
+
+**Nama _Use Case_:** Form Pengajuan pertanyaan
+
+**Skenario Normal**
+
+| No  | Aksi Aktor                                          | Reaksi Perangkat Lunak                                                     |
+| --- | --------------------------------------------------- | -------------------------------------------------------------------------- |
+| 1   | Mahasiswa melakukan pengajuan pertanyaan pada forms | Sistem memberikan konfirmasi bahwa pertanyaan telah disimpan pada database |
+
+<br>
+
+\*\*Skenario Alternatif 1: Pertanyaan tidak tersimpan di database
+
+| No  | Aksi Aktor                                          | Reaksi Perangkat Lunak                                                                                            |
+| --- | --------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| 1   | Mahasiswa melakukan pengajuan pertanyaan pada forms | Sistem tidak berhasil menyimpan pertanyaan pada database dan memberikan informasi bahwa pertanyaan tidak disimpan |
+
+# Struktur Kelas
+
+| ID Kelas | Nama Kelas            | Deskripsi Kelas                                                                                                               | ID _Use Case_                           |
+| -------- | --------------------- | ----------------------------------------------------------------------------------------------------------------------------- | --------------------------------------- |
+| C-01     | Pengguna              | Kelas abstrak menyimpan atribut umum akun (id, nama, email, googleId) yang dibagikan Mahasiswa dan Administrator.             | UC-11                                   |
+| C-02     | Mahasiswa             | Merealisasikan Pengguna; merepresentasikan pengguna utama aplikasi.                                                           | UC-01–UC-04, UC-06, UC-08, UC-11, UC-12 |
+| C-03     | Administrator         | Merealisasikan Pengguna; mengelola jadwal konsultan, FAQ, dan umpan balik.                                                    | UC-05, UC-07, UC-09, UC-10, UC-11       |
+| C-04     | SesiAutentikasi       | Menyimpan token sesi aplikasi dan status _log in_ setelah autentikasi Google berhasil.                                        | UC-11                                   |
+| C-05     | DailyAffirmation      | Menyimpan konten afirmasi dan jadwal pengiriman yang ditentukan pengguna.                                                     | UC-01                                   |
+| C-06     | Reminder              | Menyimpan jenis pengingat (makan/tidur/olahraga) beserta waktu yang ditentukan pengguna.                                      | UC-02                                   |
+| C-07     | Notifikasi            | Merepresentasikan satu notifikasi yang dikirim ke pengguna (dari DailyAffirmation atau Reminder).                             | UC-01, UC-02                            |
+| C-08     | GoogleCalendarService | Menangani komunikasi ke Google Calendar API — mengambil event pengguna dan melakukan pengecekan bentrok jadwal (_free/busy_). | UC-03, UC-04                            |
+| C-09     | KalenderGabungan      | Menggabungkan event dari GoogleCalendarService dengan data JadwalKonsultasi untuk ditampilkan sebagai satu tampilan kalender. | UC-03                                   |
+| C-10     | Konsultan             | Menyimpan data konsultan (nama, spesialisasi) yang didaftarkan oleh Administrator.                                            | UC-04, UC-05                            |
+| C-11     | JadwalKonsultasi      | Menyimpan slot jadwal konsultasi (konsultan, waktu, status tersedia/terpesan) pada _database_.                                | UC-04, UC-05                            |
+| C-12     | FAQ                   | Menyimpan pasangan pertanyaan dan jawaban yang dikelola Administrator.                                                        | UC-06, UC-07                            |
+| C-13     | PengajuanPertanyaan   | Menyimpan pertanyaan yang diajukan pengguna di luar FAQ yang tersedia.                                                        | UC-12                                   |
+| C-14     | UmpanBalik            | Menyimpan umpan balik pengguna beserta tanggapan Administrator (jika ada).                                                    | UC-08, UC-09                            |
+| C-15     | Status*Server*        | Merepresentasikan status _uptime_ layanan yang dipantau Administrator.                                                        | UC-10                                   |
+
+## Diagram Kelas per _Use Case_
+
+### Diagram Kelas UC-01
+
+**Nama _Use Case_:** Menyetel _Daily Affirmations_
+
+**Identifikasi Kelas**
+
+| ID Kelas | Nama Kelas       | Deskripsi Kelas                                                                                   |
+| -------- | ---------------- | ------------------------------------------------------------------------------------------------- |
+| C-02     | Mahasiswa        | Merealisasikan Pengguna; merepresentasikan pengguna utama aplikasi.                               |
+| C-05     | DailyAffirmation | Menyimpan konten afirmasi dan jadwal pengiriman yang ditentukan pengguna.                         |
+| C-07     | Notifikasi       | Merepresentasikan satu notifikasi yang dikirim ke pengguna (dari DailyAffirmation atau Reminder). |
+
+**Diagram Kelas**
+
+<p align="center">
+<img alt="Class Diagram UC-01" src="/docs/M4/assets/diagram/UC-01_diagram.png" width="70%">
+</p>
+<p align="center">
+<i>Gambar 2. Diagram Kelas _Use Case_ UC-01</i>
+</p>
+<br>
+
+| ID Kelas | Nama Kelas       | Atribut                       | Metode/Operasi                           |
+| -------- | ---------------- | ----------------------------- | ---------------------------------------- |
+| C-02     | Mahasiswa        | nim                           | -                                        |
+| C-05     | DailyAffirmation | konten, waktuKirim            | aturWaktuKirim(), kirimAfirmasi()        |
+| C-07     | Notifikasi       | idNotifikasi, isi, waktuKirim | kirimNotifikasi(), tampilkanNotifikasi() |
+
+### Diagram Kelas UC-02
+
+**Nama _Use Case_:** Menyetel Pengingat Kesehatan
+
+**Identifikasi Kelas**
+
+| ID Kelas | Nama Kelas | Deskripsi Kelas                                                                                   |
+| -------- | ---------- | ------------------------------------------------------------------------------------------------- |
+| C-02     | Mahasiswa  | Merealisasikan Pengguna; merepresentasikan pengguna utama aplikasi.                               |
+| C-06     | Reminder   | Menyimpan jenis pengingat (makan/tidur/olahraga) beserta waktu yang ditentukan pengguna.          |
+| C-07     | Notifikasi | Merepresentasikan satu notifikasi yang dikirim ke pengguna (dari DailyAffirmation atau Reminder). |
+
+**Diagram Kelas**
+
+<p align="center">
+<img alt="Class Diagram UC-02" src="/docs/M4/assets/diagram/UC-02_diagram.png" width="70%">
+</p>
+<p align="center">
+<i>Gambar 3. Diagram Kelas _Use Case_ UC-02</i>
+</p>
+<br>
+
+| ID Kelas | Nama Kelas | Atribut                       | Metode/Operasi                           |
+| -------- | ---------- | ----------------------------- | ---------------------------------------- |
+| C-02     | Mahasiswa  | nim                           | -                                        |
+| C-06     | Reminder   | jenis, waktu                  | aturWaktuPengingat(), kirimPengingat()   |
+| C-07     | Notifikasi | idNotifikasi, isi, waktuKirim | kirimNotifikasi(), tampilkanNotifikasi() |
+
+### Diagram Kelas UC-03
+
+**Nama _Use Case_:** Melihat Kalender Terintegrasi
+
+**Identifikasi Kelas**
+
+| ID Kelas | Nama Kelas            | Deskripsi Kelas                                                                                                               |
+| -------- | --------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| C-02     | Mahasiswa             | Merealisasikan Pengguna; merepresentasikan pengguna utama aplikasi.                                                           |
+| C-08     | GoogleCalendarService | Menangani komunikasi ke Google Calendar API — mengambil event pengguna dan melakukan pengecekan bentrok jadwal (_free/busy_). |
+| C-09     | KalenderGabungan      | Menggabungkan event dari GoogleCalendarService dengan data JadwalKonsultasi untuk ditampilkan sebagai satu tampilan kalender. |
+
+**Diagram Kelas**
+
+<p align="center">
+<img alt="Class Diagram UC-03" src="/docs/M4/assets/diagram/UC-03_diagram.png" width="70%">
+</p>
+<p align="center">
+<i>Gambar 4. Diagram Kelas _Use Case_ UC-03</i>
+</p>
+<br>
+
+| ID Kelas | Nama Kelas            | Atribut     | Metode/Operasi                         |
+| -------- | --------------------- | ----------- | -------------------------------------- |
+| C-02     | Mahasiswa             | nim         | -                                      |
+| C-08     | GoogleCalendarService | accessToken | ambilEvent(), cekBentrokJadwal()       |
+| C-09     | KalenderGabungan      | daftarEvent | gabungkanJadwal(), tampilkanKalender() |
+
+### Diagram Kelas UC-04
+
+**Nama _Use Case_:** Memesan Sesi Konsultasi
+
+#### Identifikasi Kelas
+
+| ID Kelas | Nama Kelas            | Deskripsi Kelas                                                                                                               |
+| -------- | --------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| C-02     | Mahasiswa             | Merealisasikan Pengguna; merepresentasikan pengguna utama aplikasi.                                                           |
+| C-08     | GoogleCalendarService | Menangani komunikasi ke Google Calendar API — mengambil event pengguna dan melakukan pengecekan bentrok jadwal (_free/busy_). |
+| C-10     | Konsultan             | Menyimpan data konsultan (nama, spesialisasi) yang didaftarkan oleh Administrator.                                            |
+| C-11     | JadwalKonsultasi      | Menyimpan slot jadwal konsultasi (konsultan, waktu, status tersedia/terpesan) pada _database_.                                |
+
+#### Diagram Kelas
+
+<p align="center">
+<img alt="Class Diagram UC-04" src="/docs/M4/assets/diagram/UC-04_diagram.png" width="70%">
+</p>
+<p align="center">
+<i>Gambar 5. Diagram Kelas _Use Case_ UC-04</i>
+</p>
+<br>
+
+| ID Kelas | Nama Kelas            | Atribut                 | Metode/Operasi                                |
+| -------- | --------------------- | ----------------------- | --------------------------------------------- |
+| C-02     | Mahasiswa             | nim                     | -                                             |
+| C-08     | GoogleCalendarService | accessToken             | ambilEvent(), cekBentrokJadwal()              |
+| C-10     | Konsultan             | nama, spesialisasi      | -                                             |
+| C-11     | JadwalKonsultasi      | idJadwal, waktu, status | simpanJadwal(), perbaruiJadwal(), pesanSesi() |
+
+### Diagram Kelas UC-05
+
+**Nama _Use Case_:** Mengelola Jadwal Konsultan
+
+#### Identifikasi Kelas
+
+| ID Kelas | Nama Kelas       | Deskripsi Kelas                                                                                |
+| -------- | ---------------- | ---------------------------------------------------------------------------------------------- |
+| C-03     | Administrator    | Merealisasikan Pengguna; mengelola jadwal konsultan, FAQ, dan umpan balik.                     |
+| C-10     | Konsultan        | Menyimpan data konsultan (nama, spesialisasi) yang didaftarkan oleh Administrator.             |
+| C-11     | JadwalKonsultasi | Menyimpan slot jadwal konsultasi (konsultan, waktu, status tersedia/terpesan) pada _database_. |
+
+#### Diagram Kelas
+
+<p align="center">
+<img alt="Class Diagram UC-05" src="/docs/M4/assets/diagram/UC-05_diagram.png" width="70%">
+</p>
+<p align="center">
+<i>Gambar 6. Diagram Kelas _Use Case_ UC-05</i>
+</p>
+<br>
+
+| ID Kelas | Nama Kelas       | Atribut                 | Metode/Operasi                                |
+| -------- | ---------------- | ----------------------- | --------------------------------------------- |
+| C-03     | Administrator    | -                       | -                                             |
+| C-10     | Konsultan        | nama, spesialisasi      | -                                             |
+| C-11     | JadwalKonsultasi | idJadwal, waktu, status | simpanJadwal(), perbaruiJadwal(), pesanSesi() |
+
+### Diagram Kelas UC-06
+
+**Nama _Use Case_:** Melihat FAQ
+
+**Identifikasi Kelas**
+
+| ID Kelas | Nama Kelas | Deskripsi Kelas                                                        |
+| -------- | ---------- | ---------------------------------------------------------------------- |
+| C-02     | Mahasiswa  | Merealisasikan Pengguna; merepresentasikan pengguna utama aplikasi.    |
+| C-12     | FAQ        | Menyimpan pasangan pertanyaan dan jawaban yang dikelola Administrator. |
+
+*Diagram Kelas**
+
+<p align="center">
+<img alt="Class Diagram UC-06" src="/docs/M4/assets/diagram/UC-06_diagram.png" width="70%">
+</p>
+<p align="center">
+<i>Gambar 7. Diagram Kelas _Use Case_ UC-06</i>
+</p>
+<br>
+
+| ID Kelas | Nama Kelas | Atribut             | Metode/Operasi                     |
+| -------- | ---------- | ------------------- | ---------------------------------- |
+| C-02     | Mahasiswa  | nim                 | -                                  |
+| C-12     | FAQ        | pertanyaan, jawaban | tambahFAQ(), ubahFAQ(), hapusFAQ() |
+
+### Diagram Kelas UC-07
+
+**Nama _Use Case_:** Mengelola FAQ
+
+**Identifikasi Kelas**
+
+| ID Kelas | Nama Kelas    | Deskripsi Kelas                                                            |
+| -------- | ------------- | -------------------------------------------------------------------------- |
+| C-03     | Administrator | Merealisasikan Pengguna; mengelola jadwal konsultan, FAQ, dan umpan balik. |
+| C-12     | FAQ           | Menyimpan pasangan pertanyaan dan jawaban yang dikelola Administrator.     |
+
+**Diagram Kelas**
+
+<p align="center">
+<img alt="Class Diagram UC-07" src="/docs/M4/assets/diagram/UC-07_diagram.png" width="70%">
+</p>
+<p align="center">
+<i>Gambar 8. Diagram Kelas _Use Case_ UC-07</i>
+</p>
+<br>
+
+| ID Kelas | Nama Kelas    | Atribut             | Metode/Operasi                     |
+| -------- | ------------- | ------------------- | ---------------------------------- |
+| C-03     | Administrator | -                   | -                                  |
+| C-12     | FAQ           | pertanyaan, jawaban | tambahFAQ(), ubahFAQ(), hapusFAQ() |
+
+### Diagram Kelas UC-08
+
+**Nama _Use Case_:** Memberikan Umpan Balik
+
+**Identifikasi Kelas**
+
+| ID Kelas | Nama Kelas | Deskripsi Kelas                                                            |
+| -------- | ---------- | -------------------------------------------------------------------------- |
+| C-02     | Mahasiswa  | Merealisasikan Pengguna; merepresentasikan pengguna utama aplikasi.        |
+| C-14     | UmpanBalik | Menyimpan umpan balik pengguna beserta tanggapan Administrator (jika ada). |
+
+**Diagram Kelas**
+
+<p align="center">
+<img alt="Class Diagram UC-08" src="/docs/M4/assets/diagram/UC-08_diagram.png" width="70%">
+</p>
+<p align="center">
+<i>Gambar 9. Diagram Kelas _Use Case_ UC-08</i>
+</p>
+<br>
+
+| ID Kelas | Nama Kelas | Atribut                      | Metode/Operasi                        |
+| -------- | ---------- | ---------------------------- | ------------------------------------- |
+| C-02     | Mahasiswa  | nim                          | -                                     |
+| C-14     | UmpanBalik | idUmpanBalik, isi, tanggapan | kirimUmpanBalik(), berikanTanggapan() |
+
+### Diagram Kelas UC-09
+
+**Nama _Use Case_:** Menanggapi Umpan Balik
+
+**Identifikasi Kelas**
+
+| ID Kelas | Nama Kelas    | Deskripsi Kelas                                                            |
+| -------- | ------------- | -------------------------------------------------------------------------- |
+| C-03     | Administrator | Merealisasikan Pengguna; mengelola jadwal konsultan, FAQ, dan umpan balik. |
+| C-14     | UmpanBalik    | Menyimpan umpan balik pengguna beserta tanggapan Administrator (jika ada). |
+
+**Diagram Kelas**
+
+<p align="center">
+<img alt="Class Diagram UC-09" src="/docs/M4/assets/diagram/UC-09_diagram.png" width="70%">
+</p>
+<p align="center">
+<i>Gambar 10. Diagram Kelas _Use Case_ UC-09</i>
+</p>
+<br>
+
+| ID Kelas | Nama Kelas    | Atribut                      | Metode/Operasi                        |
+| -------- | ------------- | ---------------------------- | ------------------------------------- |
+| C-03     | Administrator | -                            | -                                     |
+| C-14     | UmpanBalik    | idUmpanBalik, isi, tanggapan | kirimUmpanBalik(), berikanTanggapan() |
+
+### Diagram Kelas UC-10
+
+**Nama _Use Case_:** Memantau Status _Server_
+
+**Identifikasi Kelas**
+
+| ID Kelas | Nama Kelas     | Deskripsi Kelas                                                            |
+| -------- | -------------- | -------------------------------------------------------------------------- |
+| C-03     | Administrator  | Merealisasikan Pengguna; mengelola jadwal konsultan, FAQ, dan umpan balik. |
+| C-15     | Status*Server* | Merepresentasikan status _uptime_ layanan yang dipantau Administrator.     |
+
+**Diagram Kelas**
+
+<p align="center">
+<img alt="Class Diagram UC-10" src="/docs/M4/assets/diagram/UC-10_diagram.png" width="70%">
+</p>
+<p align="center">
+<i>Gambar 11. Diagram Kelas _Use Case_ UC-10</i>
+</p>
+<br>
+
+| ID Kelas | Nama Kelas     | Atribut                | Metode/Operasi                       |
+| -------- | -------------- | ---------------------- | ------------------------------------ |
+| C-03     | Administrator  | -                      | -                                    |
+| C-15     | Status*Server* | statusUptime, waktuCek | cekStatusServer(), tampilkanStatus() |
+
+### Diagram Kelas UC-11
+
+**Nama _Use Case_:** Masuk Melalui Akun Google
+
+**Identifikasi Kelas**
+
+| ID Kelas | Nama Kelas      | Deskripsi Kelas                                                                                                   |
+| -------- | --------------- | ----------------------------------------------------------------------------------------------------------------- |
+| C-01     | Pengguna        | Kelas abstrak menyimpan atribut umum akun (id, nama, email, googleId) yang dibagikan Mahasiswa dan Administrator. |
+| C-02     | Mahasiswa       | Merealisasikan Pengguna; merepresentasikan pengguna utama aplikasi.                                               |
+| C-03     | Administrator   | Merealisasikan Pengguna; mengelola jadwal konsultan, FAQ, dan umpan balik.                                        |
+| C-04     | SesiAutentikasi | Menyimpan token sesi aplikasi dan status _log in_ setelah autentikasi Google berhasil.                            |
+
+**Diagram Kelas**
+
+<p align="center">
+<img alt="Class Diagram UC-11" src="/docs/M4/assets/diagram/UC-11_diagram.png" width="70%">
+</p>
+<p align="center">
+<i>Gambar 12. Diagram Kelas _Use Case_ UC-11</i>
+</p>
+<br>
+
+| ID Kelas | Nama Kelas      | Atribut                   | Metode/Operasi                                   |
+| -------- | --------------- | ------------------------- | ------------------------------------------------ |
+| C-01     | Pengguna        | id, nama, email, googleId | -                                                |
+| C-02     | Mahasiswa       | nim                       | -                                                |
+| C-03     | Administrator   | -                         | -                                                |
+| C-04     | SesiAutentikasi | token, waktuLogin, status | autentikasiGoogle(), verifikasiToken(), logout() |
+
+### Diagram Kelas UC-12
+
+**Nama _Use Case_:** Form Pengajuan Pertanyaan
+
+**Identifikasi Kelas**
+
+| ID Kelas | Nama Kelas          | Deskripsi Kelas                                                        |
+| :------- | :------------------ | :--------------------------------------------------------------------- |
+| C-02     | Mahasiswa           | Merealisasikan Pengguna; merepresentasikan pengguna utama aplikasi.    |
+| C-13     | PengajuanPertanyaan | Menyimpan pertanyaan yang diajukan pengguna di luar FAQ yang tersedia. |
+
+**Diagram Kelas**
+
+<p align="center">
+<img alt="Class Diagram UC-12" src="/docs/M4/assets/diagram/UC-12_diagram.png" width="70%">
+</p>
+<p align="center">
+<i>Gambar 13. Diagram Kelas _Use Case_ UC-12</i>
+</p>
+<br>
+
+| ID Kelas | Nama Kelas          | Atribut                     | Metode/Operasi     |
+| :------- | :------------------ | :-------------------------- | :----------------- |
+| C-02     | Mahasiswa           | nim                         | -                  |
+| C-13     | PengajuanPertanyaan | idPertanyaan, isiPertanyaan | ajukanPertanyaan() |
+
+## Diagram Kelas Keseluruhan
+
+<p align="center">
+<img alt="Class Diagram Keseluruhan" src="/docs/M4/assets/diagram/full-class-diagram.png" width="70%">
+</p>
+<p align="center">
+<i>Gambar 14. Diagram Kelas Keseluruhan</i>
+</p>
+<br>
+
+| ID Kelas | Nama Kelas            | Atribut                       | Metode/Operasi                                   |
+| -------- | --------------------- | ----------------------------- | ------------------------------------------------ |
+| C-01     | Pengguna              | id, nama, email, googleId     | -                                                |
+| C-02     | Mahasiswa             | nim                           | -                                                |
+| C-03     | Administrator         | -                             | -                                                |
+| C-04     | SesiAutentikasi       | token, waktuLogin, status     | autentikasiGoogle(), verifikasiToken(), logout() |
+| C-05     | DailyAffirmation      | konten, waktuKirim            | aturWaktuKirim(), kirimAfirmasi()                |
+| C-06     | Reminder              | jenis, waktu                  | aturWaktuPengingat(), kirimPengingat()           |
+| C-07     | Notifikasi            | idNotifikasi, isi, waktuKirim | kirimNotifikasi(), tampilkanNotifikasi()         |
+| C-08     | GoogleCalendarService | accessToken                   | ambilEvent(), cekBentrokJadwal()                 |
+| C-09     | KalenderGabungan      | daftarEvent                   | gabungkanJadwal(), tampilkanKalender()           |
+| C-10     | Konsultan             | nama, spesialisasi            | -                                                |
+| C-11     | JadwalKonsultasi      | idJadwal, waktu, status       | simpanJadwal(), perbaruiJadwal(), pesanSesi()    |
+| C-12     | FAQ                   | pertanyaan, jawaban           | tambahFAQ(), ubahFAQ(), hapusFAQ()               |
+| C-13     | PengajuanPertanyaan   | idPertanyaan, isiPertanyaan   | ajukanPertanyaan()                               |
+| C-14     | UmpanBalik            | idUmpanBalik, isi, tanggapan  | kirimUmpanBalik(), berikanTanggapan()            |
+| C-15     | Status*Server*        | statusUptime, waktuCek        | cekStatusServer(), tampilkanStatus()             |
+
+## Traceability Struktur Kelas
+
+| ID Kelas | ID _Use Case_                            | ID KF                                           |
+| -------- | ---------------------------------------- | ----------------------------------------------- |
+| C-01     | UC-11                                    | KF-11                                           |
+| C-02     | UC-01, UC-04, UC-06, UC-08, UC-11, UC-12 | KF-01, KF-02, KF-05, KF-06, KF-07, KF-08, KF-11 |
+| C-03     | UC-05, UC-07, UC-09, UC-10, UC-11        | KF-06, KF-07, KF-09, KF-10, KF-11               |
+| C-04     | UC-11                                    | KF-11                                           |
+| C-05     | UC-01                                    | KF-01, KF-02                                    |
+| C-06     | UC-02                                    | KF-03, KF-04                                    |
+| C-07     | UC-01, UC-02                             | KF-01, KF02, KF-03, KF-04                       |
+| C-08     | UC-03, UC-04                             | KF-02, KF-05, KF-06                             |
+| C-09     | UC-03                                    | KF-02, KF-05, KF-06                             |
+| C-10     | UC-04, UC-05                             | KF-05, KF-06                                    |
+| C-11     | UC-04, UC-05                             | KF-05, KF-06                                    |
+| C-12     | UC-06, UC-07                             | KF-07                                           |
+| C-13     | UC-12                                    | KF-07                                           |
+| C-14     | UC-08, UC-09                             | KF-08, KF-10                                    |
+| C-15     | UC-10                                    | KF-09                                           |
