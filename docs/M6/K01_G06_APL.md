@@ -27,68 +27,88 @@ Dipersiapkan oleh:
 
 ---
 
-<br>
-<br>
-
 # BAB 1: Style/Pattern Arsitektur Acuan
 
-Pada bagian ini, tentukan _architectural style_ atau _pattern_ yang menjadi acuan untuk aplikasi yang Anda kembangkan. Misalnya _layered architecture_, _client-server_, _repository_, _pipe and filter architecture_, atau MVC (_Model-View-Controller_).
+## Style yang dipilih: Client-Server, dengan backend berpola Layered Architecture
 
+Sehati tidak memiliki server yang me-render halaman (tidak ada *server-rendered view* seperti Django/Rails), karena *client*-nya adalah aplikasi mobile React Native yang berjalan independen dan hanya berkomunikasi dengan backend lewat HTTP/JSON. Ini membuat **client-server** pattern yang sesuai, bukan MVC klasik satu-*runtime*. Backend sendiri (Hono di Cloudflare Workers) disusun berlapis:
+
+- **View** — Aplikasi React Native. Seluruhnya berjalan di perangkat pengguna, me-render UI, dan memanggil API lewat HTTP.
+- **Controller** — *Route handler* Hono di Cloudflare Workers. Menerima *request* dari View, memvalidasi input, memanggil Model atau Integrasi Eksternal, dan mengembalikan JSON.
+- **Model** — Entitas data (mis. `JadwalKonsultasi`, `UmpanBalik`, `PengajuanPertanyaan`) beserta operasinya, disimpan secara *persistent* di **Penyimpanan Data**.
+- **Integrasi Eksternal** — Komunikasi ke Google OAuth 2.0 (autentikasi, KF-12) dan Google Calendar API (pengambilan *event* dan pengecekan *free/busy*, KF-02/KF-05), dipanggil dari Controller, bukan dari View, sehingga *client secret* dan *access token* Google tidak pernah ada di perangkat pengguna.
+
+## Alasan pemilihan
+
+Dua aktor (Mahasiswa, Administrator) mengakses sistem lewat *client* yang sama sekali terpisah dari server, sehingga pemisahan client-server sudah melekat pada bentuk sistemnya, bukan pilihan tambahan. KF-02/KF-05 (integrasi Google Calendar) dan KF-12 (autentikasi Google) keduanya melibatkan komunikasi ke sistem pihak ketiga, yang paling wajar ditempatkan sebagai lapisan Integrasi Eksternal yang berdiri sendiri dari Model, agar Controller bisa mengganti penyedia kalender tanpa mengubah struktur data. KNF-01 (uptime 90%) dan KNF-02 (keamanan data) juga mengarah ke pola ini: ketersediaan dan keamanan ditegakkan di satu titik (server), bukan tersebar di tiap perangkat client.
+
+## Gambar style/pattern pada P/L Sehati
+
+NOTE: Double check the line type usage, iirc there's different meanings during asistensi
 <p align="center">
-<img alt="Contoh Arsitektur MVC" src="./assets/diagram/contoh-arsitektur-mvc.webp" width="70%">
+<img alt="Pattern Client-Server pada Sehati" src="./assets/diagram/sehati-apl-pattern.png" width="70%">
 </p>
 <p align="center">
-<i>Gambar 1. Contoh Arsitektur MVC</i>
+<i>Gambar 1. Pattern Client-Server diterapkan pada Sehati</i>
 </p>
-
-Isi bab ini dengan hal-hal berikut:
-
-1. **Style/pattern yang dipilih** beserta penjelasan singkat peran setiap bagiannya. Untuk MVC, jelaskan peran _Model_, _View_, dan _Controller_.
-2. **Alasan pemilihan** berdasarkan karakteristik P/L Anda, misalnya jenis pengguna, alur proses bisnis, serta KF dan KNF pada dokumen SKPL.
-3. **Gambar style/pattern yang diterapkan pada P/L Anda.** Jangan hanya menyalin Gambar 1. Isi setiap bagian pattern dengan komponen milik P/L Anda. Misalnya, kotak _Controller_ berisi daftar _controller_ yang ada di aplikasi dan kotak _Model_ berisi daftar _model_ yang ada di aplikasi.
-
-Selain _style/pattern_, tuliskan juga lingkungan operasi P/L. Tabel berikut **disalin dari subbab 2.5 _Lingkungan Operasi Perangkat Lunak_ pada dokumen SKPL** tanpa perubahan. Setelah tabel, jelaskan kaitan teknologi yang dipakai dengan _style/pattern_ yang dipilih. Contohnya, Django (Python) secara bawaan mengikuti pola MVT (_Model-View-Template_), yaitu varian dari MVC.
 
 Tabel 1.1. Lingkungan Operasi Perangkat Lunak
 
-| Komponen | Spesifikasi                                                                 |
-| :------- | :-------------------------------------------------------------------------- |
-| _Server_ | _[contoh: Node.js v20 dengan Next.js, dijalankan secara lokal (localhost)]_ |
-| _Client_ | _[contoh: Web Browser modern (Chrome, Firefox terbaru)]_                    |
-| _DBMS_   | _[contoh: PostgreSQL 15 pada Supabase sebagai basis data terpusat]_         |
-| _OS_     | _[contoh: Cross-platform (Windows/Linux/MacOS) melalui browser]_            |
-| _..._    | _..._                                                                       |
+| Komponen | Spesifikasi |
+| --- | --- |
+| Server | Cloudflare Workers (runtime V8 isolates) menjalankan Hono (TypeScript) sebagai REST API |
+| Client | Aplikasi mobile React Native (Expo), Android dan iOS |
+| DBMS | Cloudflare D1 (SQLite terdistribusi di edge) |
+| OS | Android 10+ dan iOS 15+ pada client; Cloudflare Workers tidak memerlukan OS tradisional di sisi server |
+| Integrasi Eksternal | Google OAuth 2.0 (autentikasi) dan Google Calendar API (event, free/busy) |
 
-<sub><b><i>Catatan</i></b>: <i>Style/pattern yang dipilih di bab ini menjadi acuan untuk BAB 2 (pengelompokan komponen) dan BAB 3 (model arsitektur). Contoh pada dokumen ini memakai MVC secara konsisten dari BAB 1 sampai BAB 3. Kelompok boleh memakai pattern lain selama alasannya dijelaskan dan BAB 2 serta BAB 3 disesuaikan. Tabel 1.1 harus sama persis dengan subbab 2.5 dokumen SKPL; jangan menambah atau mengubah isinya karena SKPL sudah final.</i></sub>
+Kaitan teknologi dengan pattern: Hono tidak mengikuti MVC bawaan seperti Django/Rails karena memang dirancang sebagai *router* tipis untuk lingkungan edge. 
+Ini justru cocok untuk client-server murni, di mana seluruh *rendering* ada di client (React Native) dan server hanya menjadi Controller + Model tanpa View. 
+Cloudflare D1 berperan sebagai lapisan penyimpanan di bawah Model, terpisah dari logika Controller, sesuai prinsip pemisahan tanggung jawab pada *layered architecture*.
 
 ---
 
 # BAB 2: Identifikasi Komponen / Modul / Subsistem
 
-Pada bagian ini, lakukan identifikasi terhadap komponen, modul, atau subsistem yang menyusun aplikasi berdasarkan _pattern_ arsitektur yang telah ditetapkan sebelumnya. Setiap komponen memiliki tanggung jawab tertentu dalam mendukung fungsionalitas sistem.
-
-Setiap komponen memiliki tanggung jawab tertentu dalam mendukung fungsionalitas sistem secara keseluruhan. Komponen dapat dikelompokkan berdasarkan lapisan arsitektur (misalnya _Model_, _View_, dan _Controller_ pada pattern MVC), atau berdasarkan fungsi atau peran komponen di dalam sistem (misalnya modul autentikasi, manajemen data, dan integrasi eksternal).
-
 Tabel 2.1. Identifikasi Komponen/Modul/Subsistem
 
-| Nama Komponen/Modul/Subsistem | Jenis                 | Penjelasan                                                                                                           |
-| :---------------------------- | :-------------------- | :------------------------------------------------------------------------------------------------------------------- |
-| _KatalogView_                 | _View_                | _Menampilkan daftar produk dan meneruskan aksi pelanggan (misalnya "Tambah ke Keranjang") ke KatalogController._     |
-| _KeranjangView_               | _View_                | _Menampilkan isi keranjang pelanggan beserta tombol checkout._                                                       |
-| _CheckoutView_                | _View_                | _Menampilkan ringkasan pesanan dan pilihan metode pembayaran kepada pelanggan._                                      |
-| _RiwayatPesananView_          | _View_                | _Menampilkan daftar pesanan yang pernah dibuat pelanggan beserta statusnya._                                         |
-| _KatalogController_           | _Controller_          | _Memproses permintaan daftar produk dan penambahan produk ke keranjang._                                             |
-| _KeranjangController_         | _Controller_          | _Memproses perubahan isi keranjang dan membuat pesanan baru saat checkout._                                          |
-| _PembayaranController_        | _Controller_          | _Memproses pemilihan metode pembayaran dan meneruskan permintaan otorisasi ke PaymentGatewayAdapter._                |
-| _PesananController_           | _Controller_          | _Memproses permintaan riwayat pesanan milik pelanggan._                                                              |
-| _Produk_                      | _Model_               | _Merepresentasikan data produk beserta stoknya serta metode untuk mengakses dan mengubahnya._                        |
-| _Keranjang_                   | _Model_               | _Merepresentasikan item yang dipilih pelanggan sebelum checkout serta metode untuk mengakses dan mengubahnya._       |
-| _Pesanan_                     | _Model_               | _Merepresentasikan data pesanan beserta status pembayarannya serta metode untuk mengakses dan mengubahnya._          |
-| _Pelanggan_                   | _Model_               | _Merepresentasikan data akun pelanggan serta metode untuk mengakses dan mengubahnya._                                |
-| _Validasi_                    | _Pendukung_           | _Memvalidasi input pelanggan sebelum diproses oleh controller._                                                      |
-| _PaymentGatewayAdapter_       | _Integrasi Eksternal_ | _Mengirim permintaan otorisasi ke payment gateway (dummy) dan meneruskan status pembayaran ke PembayaranController._ |
-| _Database_                    | _Penyimpanan Data_    | _Menyimpan seluruh data model secara persisten, baik lokal (misalnya SQLite) maupun terpusat (misalnya Supabase)._   |
-| _..._                         | _..._                 | _..._                                                                                                                |
+| Nama Komponen | Jenis | Penjelasan |
+| --- | --- | --- |
+| LoginView | View | Menampilkan tombol masuk dengan akun Google dan meneruskan hasil autentikasi ke AuthController. |
+| AffirmationView | View | Menampilkan input waktu pengiriman daily affirmations dan meneruskan ke AffirmationController. |
+| ReminderView | View | Menampilkan input waktu pengingat makan/tidur/olahraga dan meneruskan ke ReminderController. |
+| CalendarView | View | Menampilkan kalender gabungan dan meneruskan aksi "Lihat Kalender"/"Refresh" ke CalendarController. |
+| ConsultationBookingView | View | Menampilkan jadwal konsultasi yang tersedia dan meneruskan pemesanan ke ConsultationController. |
+| ConsultationManagementView | View | Menampilkan dashboard admin untuk mengelola jadwal konsultan, meneruskan perubahan ke ConsultationController. |
+| FAQView | View | Menampilkan daftar FAQ, kolom pencarian, pengelolaan FAQ oleh admin, dan form pengajuan pertanyaan di luar FAQ. |
+| FeedbackView | View | Menampilkan form umpan balik bagi Mahasiswa dan tampilan tanggapan bagi Administrator. |
+| ServerStatusView | View | Menampilkan status uptime server dan website kepada Administrator. |
+| AuthController | Controller | Memproses autentikasi Google, membuat/memverifikasi SesiAutentikasi, dan memanggil GoogleAuthService. |
+| AffirmationController | Controller | Memproses penyetelan waktu dan pengiriman DailyAffirmation, memicu Notifikasi. |
+| ReminderController | Controller | Memproses penyetelan waktu dan pengiriman Reminder, memicu Notifikasi. |
+| CalendarController | Controller | Mengambil data dari GoogleCalendarService dan JadwalKonsultasi, menggabungkannya lewat KalenderGabungan. |
+| ConsultationController | Controller | Memproses pemesanan dan pengelolaan JadwalKonsultasi, memanggil GoogleCalendarService untuk cek bentrok. |
+| FAQController | Controller | Memproses pencarian, penambahan, perubahan, dan penghapusan FAQ, serta penyimpanan PengajuanPertanyaan. |
+| FeedbackController | Controller | Memproses pengiriman UmpanBalik dan penyimpanan tanggapan Administrator. |
+| ServerStatusController | Controller | Mengambil data StatusServer untuk ditampilkan ke Administrator. |
+| Validasi | Pendukung | Memvalidasi input (format waktu, field wajib) sebelum diproses controller terkait. |
+| Pengguna | Model | Menyimpan atribut umum akun (id, nama, email, googleId) yang dipakai bersama Mahasiswa dan Administrator. |
+| Mahasiswa | Model | Merepresentasikan akun mahasiswa sebagai pengguna utama aplikasi. |
+| Administrator | Model | Merepresentasikan akun administrator pengelola aplikasi. |
+| SesiAutentikasi | Model | Menyimpan token sesi aplikasi dan status login setelah autentikasi Google berhasil. |
+| DailyAffirmation | Model | Menyimpan konten afirmasi dan jadwal pengiriman yang ditentukan pengguna. |
+| Reminder | Model | Menyimpan jenis pengingat (makan/tidur/olahraga) beserta waktu yang ditentukan pengguna. |
+| Notifikasi | Model | Merepresentasikan satu notifikasi yang dikirim ke pengguna. |
+| KalenderGabungan | Model | Menggabungkan event dari GoogleCalendarService dengan data JadwalKonsultasi untuk satu tampilan kalender. |
+| Konsultan | Model | Menyimpan data konsultan (nama, spesialisasi) yang didaftarkan Administrator. |
+| JadwalKonsultasi | Model | Menyimpan slot jadwal konsultasi (konsultan, waktu, status tersedia/terpesan). |
+| FAQ | Model | Menyimpan pasangan pertanyaan dan jawaban yang dikelola Administrator. |
+| PengajuanPertanyaan | Model | Menyimpan pertanyaan yang diajukan pengguna di luar FAQ yang tersedia. |
+| UmpanBalik | Model | Menyimpan umpan balik pengguna beserta tanggapan Administrator (jika ada). |
+| StatusServer | Model | Merepresentasikan status uptime layanan yang dipantau Administrator. |
+| GoogleAuthService | Integrasi Eksternal | Menangani pertukaran kode otorisasi dengan Google OAuth 2.0 dan penerimaan access/refresh token. |
+| GoogleCalendarService | Integrasi Eksternal | Mengambil event pengguna dari Google Calendar API dan melakukan pengecekan bentrok jadwal (free/busy). |
+| CloudflareD1Database | Penyimpanan Data | Menyimpan seluruh data Model secara persisten di Cloudflare D1. |
 
 Ketentuan pengisian Tabel 2.1:
 
@@ -101,6 +121,8 @@ Ketentuan pengisian Tabel 2.1:
 ---
 
 # BAB 3: Model Arsitektur Perangkat Lunak
+
+***NOTE: Remove this text before publishing release***
 
 _Architectural View_ adalah bagaimana cara kita melihat/mendeskripsikan arsitektur sebuah sistem dari sudut pandang tertentu. Dalam perancangan arsitektur aplikasi, dibutuhkan _Architectural View_ yang dapat mempermudah pemahaman dari proses aplikasi yang akan dikembangkan. Tujuan dari _Architectural View_ adalah menjadi bahan komunikasi, pemisahan masalah, mempermudah analisis, dan pemandu saat eksekusi pengembangan sistem tersebut.
 
@@ -116,9 +138,22 @@ Ketentuan pengisian BAB 3:
 6. Beri label pada setiap garis atau panah yang menghubungkan komponen agar hubungan antarkomponen dapat dipahami tanpa penjelasan tambahan.
 7. Jika membuat _Physical View_, gambarkan lingkungan operasi pada Tabel 1.1.
 
-## 3.1 XXX View
+## 3.1 Logical View
 
-Tuliskan secara singkat mengenai model arsitektur perangkat lunak yang Anda pilih dan sertakan alasan mengapa model arsitektur tersebut cocok untuk aplikasi Anda.
+Logical View dipilih karena yang paling penting dijelaskan di Sehati adalah pembagian tanggung jawab antar lapisan (View, Controller, Model, Integrasi Eksternal, Penyimpanan Data) — bukan urutan proses (Process View) atau distribusi fisik server (Physical View, meskipun bisa ditambahkan sebagai pelengkap karena Tabel 1.1 sudah memuat datanya).
+
+Gambar 1 di BAB 1 adalah kerangka Logical View ini dalam bentuk minimal. Untuk diagram final BAB 3, gambar harus memuat **seluruh 33 komponen di Tabel 2.1**, dikelompokkan dalam kotak-kotak besar sesuai kolom Jenis (View, Controller, Model, Pendukung, Integrasi Eksternal, Penyimpanan Data), dengan setiap garis diberi label:
+
+- View → Controller: label "memanggil"
+- Controller → Model: label "akses"
+- Controller → Integrasi Eksternal: label "memanggil API"
+- Model → Penyimpanan Data: label "disimpan di"
+- Controller → Validasi: label "memvalidasi"
+
+***Note for bikin diagram: (DELETE THIS TEXT AFTER DONE)***
+
+Karena jumlahnya banyak, cara paling rapi menggambarnya di draw.io: buat satu kotak besar per Jenis, 
+lalu di dalam tiap kotak besar tuliskan nama-nama komponen dari Tabel 2.1 sebagai daftar bertitik — persis seperti Gambar 2 contoh *e-commerce* yang mengelompokkan `KatalogView`/`KeranjangView`/dsb. menjadi satu wilayah "View".
 
 <p align="center">
 <img alt="Contoh Logical View pada P/L E-Commerce" src="./assets/diagram/contoh-logical-view.webp" width="100%">
