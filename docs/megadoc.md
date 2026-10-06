@@ -157,6 +157,7 @@ Administrator mengelola data konsultan dan jadwal ketersediaannya, FAQ, umpan ba
 | US-07 | Administrator            | Memasukkan jadwal sesi konsultasi pada sistem                    | Menjadikan data jadwal sesi konsultasi tersedia ke sistem dan dapat diakses                  |
 | US-08 | Administrator            | Menjaga dan mengelola sistem                                     | Menjaga kestabilan dan keandalan aplikasi dan sistem                                         |
 | US-09 | Mahasiswa, Administrator | Masuk ke aplikasi menggunakan akun Google                        | Memudahkan proses login tanpa perlu membuat dan mengingat kredensial baru                    |
+| US-10 | Mahasiswa                | Mengajukan pertanyaan yang tidak tercakup di FAQ                 | Mendapatkan jawaban atas hal yang tidak terjawab oleh FAQ yang tersedia                      |
 
 ### Deskripsi Aktivitas
 
@@ -173,13 +174,14 @@ Administrator mengelola data konsultan dan jadwal ketersediaannya, FAQ, umpan ba
 | A-09 | Meng-*update* dan melakukan pengecekan terhadap server | Admin melakukan regulasi melalui pengecekan dan update keadaan server (servis up/down) | US-08 |
 | A-10 | Merespons terhadap umpan balik pengguna | Admin membantu pengguna dalam penggunaan aplikasi | US-08 |
 | A-11 | Melakukan autentikasi melalui akun Google | Pengguna masuk ke aplikasi dengan akun Google mereka, dan sistem memverifikasi identitas tersebut sebelum memberikan akses ke fitur aplikasi. | US-09 |
+| A-12 | Mengajukan pertanyaan di luar FAQ | Pengguna dapat mengisi dan mengirim pertanyaan melalui form ketika jawabannya tidak ditemukan di FAQ. | US-10 |
 
 ### Peta Kebutuhan
 
 | ID Kebutuhan | ID Aktivitas     | Jenis Kebutuhan | Deskripsi Kebutuhan                                                                                                                | P/L   |
 | ------------ | ---------------- | --------------- | ---------------------------------------------------------------------------------------------------------------------------------- | ----- |
 | R-01         | A-01             | _User_          | _User_ dapat mengubah kapan mereka menerima _daily affirmations_ saat diinginkan                                                   | Ya    |
-| R-02         | A-01             | _System_        | Sistem dapat menyimpan preferensi _user_ dengan menggunakan _cookies_                                                              | Ya    |
+| R-02         | A-01             | *System*        | Sistem dapat menyimpan preferensi waktu pengiriman *daily affirmations* milik pengguna pada *database*                             | Ya    |
 | R-03         | A-02             | _User_          | _User_ dapat melihat kalender dari aplikasi                                                                                        | Ya    |
 | R-04         | A-02             | _System_        | Sistem dapat menampilkan kalender di aplikasi yang merupakan cerminan dari Google Calendar pengguna                                | Ya    |
 | R-05         | A-03             | _User_          | _User_ dapat menyetel kapan saja ia ingin diingatkan untuk makan                                                                   | Ya    |
@@ -189,7 +191,7 @@ Administrator mengelola data konsultan dan jadwal ketersediaannya, FAQ, umpan ba
 | R-09         | A-06             | _User_          | _User_ dapat memesan jadwal sesuai sesi yang telah terdaftar di sistem                                                             | Ya    |
 | R-10         | A-06             | _System_        | Sistem dapat mengambil data (melakukan GET _request_) dari _database_ untuk ditampilkan ke pengguna                                | Ya    |
 | R-11         | A-07             | _System_        | Sistem dapat menyimpan data jadwal sesi konsultasi pada _database_                                                                 | Ya    |
-| R-12         | A-07             | _Business_      | Konsultan harus memberikan jadwalnya kepada administrator untuk mendaftarkannya di sistem                                          | Ya    |
+| R-12         | A-07             | *Business*      | Konsultan harus memberikan jadwalnya kepada administrator untuk mendaftarkannya di sistem                                          | Tidak |
 | R-13         | A-08             | _System_        | Sistem harus memiliki sistem/media pemberian umpan balik                                                                           | Ya    |
 | R-14         | A-08             | _System_        | Sistem harus menampilkan pertanyaan-pertanyaan yang sering diberikan _User_ pada suatu tempat di aplikasi                          | Ya    |
 | R-15         | A-08             | _Business_      | Pengguna harus dapat memberikan umpan balik terhadap aplikasi                                                                      | Ya    |
@@ -199,13 +201,15 @@ Administrator mengelola data konsultan dan jadwal ketersediaannya, FAQ, umpan ba
 | R-19         | N/A              | _System_        | Sistem dapat memastikan data pengguna tidak dapat diakses oleh pihak tak berwenang                                                 | Ya    |
 | R-20         | N/A              | _System_        | Sistem dapat dinavigasikan dengan Mudah                                                                                            | Ya    |
 | R-21         | A-11             | _System_        | Sistem dapat mengautentikasi pengguna (Mahasiswa dan Administrator) melalui akun Google sebelum memberikan akses ke fitur aplikasi | Ya    |
+| R-22         | A-12             | *User*          | *User* dapat mengajukan pertanyaan di luar FAQ yang tersedia melalui form                                                          | Ya    |
+| R-23         | A-12             | *System*        | Sistem dapat menyimpan pertanyaan yang diajukan pengguna pada *database* dan memberikan konfirmasi penyimpanan                     | Ya    |
 
 ## Kebutuhan Fungsional dan Kebutuhan Non-Fungsional
 
 | ID KF | ID Kebutuhan     | Penjelasan                                                                                                                                                                                 |
 | ----- | ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| KF-01 | R-01 | Sistem menyediakan opsi untuk menyetel waktu pengiriman **daily affirmations** dan dapat mengirim notifikasi **daily affirmations** di waktu yang disetel |
-| KF-02 | R-04 | Sistem dapat mengambil data Google Calendar pengguna melalui API yang tersedia dan menampilkannya di antarmuka |
+| KF-01 | R-01, R-02 | Sistem menyediakan opsi untuk menyetel waktu pengiriman *daily affirmations*, menyimpan preferensi tersebut, dan dapat mengirim notifikasi *daily affirmations* di waktu yang disetel |
+| KF-02 | R-03, R-04 | Sistem memungkinkan *user* melihat kalender dari aplikasi, dengan mengambil data Google Calendar pengguna melalui API yang tersedia dan menampilkannya di antarmuka |
 | KF-03 | R-05, R-06, R-07 | Sistem menyediakan opsi untuk menyetel waktu pengiriman pengingat makan, tidur, olahraga dan dapat mengirim pengingatnya di waktu yang disetel |
 | KF-04 | R-08 | Sistem memberikan tampilan notifikasi di mana pun user berada dalam aplikasi, dilengkapi juga dengan konten seperti label yang diberikan pengguna |
 | KF-05 | R-04 | Sistem dapat menampilkan kalender yang telah terintegrasi dengan Google Calendar pengguna lalu memberikan kalender gabungan dengan data jadwal sesi konsultasi yang terdapat di *database* |
@@ -216,6 +220,7 @@ Administrator mengelola data konsultan dan jadwal ketersediaannya, FAQ, umpan ba
 | KF-10 | R-16 | Sistem dapat menampilkan status *server* (*up/down*) kepada administrator. |
 | KF-11 | R-18 | Sistem dapat memberikan akses kepada administrator untuk memberikan tanggapan/feedback terhadap umpan balik pengguna. |
 | KF-12 | R-21 | Sistem dapat memverifikasi identitas pengguna melalui *log in* akun Google dan memberikan akses ke aplikasi setelah autentikasi berhasil. |
+| KF-13 | R-22, R-23 | Sistem menyediakan form bagi pengguna untuk mengajukan pertanyaan di luar FAQ, menyimpannya pada *database*, dan menampilkan konfirmasi bahwa pertanyaan telah tersimpan |
 
 | ID KNF | ID Kebutuhan | Parameter    | Deskripsi Kebutuhan                                         |
 | ------ | ------------ | ------------ | ----------------------------------------------------------- |
@@ -253,7 +258,7 @@ www.drawio.com
 | UC-09 | Menanggapi Umpan Balik | Administrator melihat dan memberikan tanggapan atas umpan balik yang masuk. | Administrator | KF-11 |
 | UC-10 | Memantau Status *Server* | Administrator memeriksa status *up/down* server secara berkala. | Administrator | KF-10 |
 | UC-11 | Masuk Melalui Akun Google | Pengguna *log in* ke aplikasi menggunakan akun Google sebelum mengakses fitur lainnya. | Mahasiswa, Administrator | KF-12 |
-| UC-12 | Form Pengajuan Pertanyaan | Pengguna mengajukan pertanyaan di luar yang ada di FAQ | Mahasiswa | KF-08 ⚠ *(lihat catatan di atas)* |
+| UC-12 | Form Pengajuan Pertanyaan | Pengguna mengajukan pertanyaan di luar yang ada di FAQ | Mahasiswa | KF-13 |
 
 ## Use Case Diagram
 
