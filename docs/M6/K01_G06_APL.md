@@ -45,9 +45,28 @@ Dua aktor (Mahasiswa, Administrator) mengakses sistem lewat *client* yang sama s
 ## Gambar style/pattern pada P/L Sehati
 
 NOTE: Double check the line type usage, iirc there's different meanings during asistensi
-<p align="center">
-<img alt="Pattern Client-Server pada Sehati" src="./assets/diagram/sehati-apl-pattern.png" width="70%">
-</p>
+
+```mermaid
+swimlane-beta TB
+    subgraph Client["Client"]
+        RN["React Native App"]
+    end
+
+    subgraph OurServer["Our Servers"]
+        Hono["Hono API Router"]
+        DB[("Cloudflare D1 Database")]
+    end
+
+	subgraph ExtServer["External Servers"]
+		Google["Google OAuth 2.0 &<br/>Calendar API"]
+	end
+
+    RN <-->|"HTTP request/response"| Hono
+    Hono <-->|"data query"| DB
+    Hono <-.->|"autentikasi & ambil event"| Google
+
+    style Google stroke-dasharray: 5 5
+```
 <p align="center">
 <i>Gambar 1. Pattern Client-Server diterapkan pada Sehati</i>
 </p>
