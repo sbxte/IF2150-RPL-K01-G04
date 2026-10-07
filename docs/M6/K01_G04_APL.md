@@ -29,46 +29,73 @@ Dipersiapkan oleh:
 
 # BAB 1: Style/Pattern Arsitektur Acuan
 
-## Style yang dipilih: Client-Server, dengan backend berpola Layered Architecture
+## Style yang dipilih: Client-Server dengan MVC (Model-View-Controller)
 
-Sehati tidak memiliki server yang me-render halaman (tidak ada *server-rendered view* seperti Django/Rails), karena *client*-nya adalah aplikasi mobile React Native yang berjalan independen dan hanya berkomunikasi dengan backend lewat HTTP/JSON. Ini membuat **client-server** pattern yang sesuai, bukan MVC klasik satu-*runtime*. Backend sendiri (Hono di Cloudflare Workers) disusun berlapis:
+Sehati memakai gabungan dua pattern. **Client-Server** menentukan di mana komponen berjalan, sedangkan **MVC** menentukan pembagian tanggung jawab antarkomponen. Keduanya dipetakan sebagai berikut:
 
-- **View** — Aplikasi React Native. Seluruhnya berjalan di perangkat pengguna, me-render UI, dan memanggil API lewat HTTP.
-- **Controller** — *Route handler* Hono di Cloudflare Workers. Menerima *request* dari View, memvalidasi input, memanggil Model atau Integrasi Eksternal, dan mengembalikan JSON.
-- **Model** — Entitas data (mis. `JadwalKonsultasi`, `UmpanBalik`, `PengajuanPertanyaan`) beserta operasinya, disimpan secara *persistent* di **Penyimpanan Data**.
-- **Integrasi Eksternal** — Komunikasi ke Google OAuth 2.0 (autentikasi, KF-12) dan Google Calendar API (pengambilan *event* dan pengecekan *free/busy*, KF-02/KF-05), dipanggil dari Controller, bukan dari View, sehingga *client secret* dan *access token* Google tidak pernah ada di perangkat pengguna.
+| Peran MVC | Berjalan di | Komponen | Tanggung jawab |
+| --- | --- | --- | --- |
+| **View** | Client (aplikasi mobile React Native di perangkat pengguna) | LoginView, AffirmationView, ReminderView, CalendarView, ConsultationBookingView, ConsultationManagementView, FAQView, FeedbackView, ServerStatusView | Menampilkan antarmuka, menerima aksi pengguna, dan mengirimkannya ke server sebagai *request*. View tidak menyimpan data permanen dan tidak memegang *secret* Google. |
+| **Controller** | Server (Hono di Cloudflare Workers) | AuthController, AffirmationController, ReminderController, CalendarController, ConsultationController, FAQController, FeedbackController, ServerStatusController, dibantu Validasi | Menerima *request* dari View, memvalidasi input, mengakses Model atau memanggil Integrasi Eksternal, lalu mengembalikan *response* JSON. |
+| **Model** | Server | Pengguna, Mahasiswa, Administrator, SesiAutentikasi, DailyAffirmation, Reminder, Notifikasi, KalenderGabungan, Konsultan, JadwalKonsultasi, FAQ, PengajuanPertanyaan, UmpanBalik, StatusServer | Menyimpan data dan aturan domain, dan disimpan secara *persistent* di CloudflareD1Database. |
+| Integrasi Eksternal | Server | GoogleAuthService, GoogleCalendarService | Berkomunikasi dengan Google OAuth 2.0 dan Google Calendar API. Hanya dipanggil dari Controller, sehingga *client secret* dan *access token* Google tidak pernah ada di perangkat pengguna. |
+| Penyimpanan Data | Server | CloudflareD1Database | Menyimpan seluruh data Model. |
+
+**Cara kerja gabungan.** Pada MVC klasik, View dan Controller berada dalam satu program dan saling berinteraksi langsung. Pada Sehati, batas Client-Server memisahkan View dari Controller dan Model, sehingga interaksi MVC berjalan lewat HTTP:
+
+- *User events* dari View ke Controller menjadi **HTTP request**.
+- *Update* dari Controller ke View menjadi **HTTP response** (JSON).
+- *Update request* dan *data access* antara Controller, Model, dan database terjadi seluruhnya di dalam server.
+- View tidak membaca Model secara langsung. Keadaan Model sampai ke View hanya lewat *response* Controller.
+
+Server tidak me-*render* halaman (tidak ada *server-rendered view* seperti Django/Rails), sehingga sisi server hanya berisi Controller dan Model, dan seluruh View ada di client.
 
 ## Alasan pemilihan
 
-Dua aktor (Mahasiswa, Administrator) mengakses sistem lewat *client* yang sama sekali terpisah dari server, sehingga pemisahan client-server sudah melekat pada bentuk sistemnya, bukan pilihan tambahan. KF-02/KF-05 (integrasi Google Calendar) dan KF-12 (autentikasi Google) keduanya melibatkan komunikasi ke sistem pihak ketiga, yang paling wajar ditempatkan sebagai lapisan Integrasi Eksternal yang berdiri sendiri dari Model, agar Controller bisa mengganti penyedia kalender tanpa mengubah struktur data. KNF-01 (uptime 90%) dan KNF-02 (keamanan data) juga mengarah ke pola ini: ketersediaan dan keamanan ditegakkan di satu titik (server), bukan tersebar di tiap perangkat client.
+**Alasan memilih Client-Server**
+
+1. **Dua aktor, satu pusat data.** Mahasiswa dan Administrator memakai client yang sama dan harus melihat data yang sama (jadwal konsultasi, FAQ, umpan balik). Jadwal yang sudah dipesan satu Mahasiswa harus langsung tidak tersedia bagi yang lain (UC-04, UC-05), yang hanya terjamin bila data dipegang satu server.
+2. **Integrasi pihak ketiga (KF-02, KF-05, UC-11).** Pengambilan *event* dan pengecekan *free/busy* Google Calendar serta autentikasi Google memakai *client secret* dan *access token*. Bila dipanggil dari client, kredensial itu ada di perangkat pengguna. Dengan Client-Server, semua panggilan ke Google berjalan di server.
+3. **KNF-01 (uptime 90%).** Ketersediaan cukup dijaga dan dipantau pada satu titik, yaitu server, sehingga fitur memantau status *server* (UC-10) bermakna.
+4. **KNF-02 (keamanan data).** Autentikasi, validasi input, dan akses ke database ditegakkan di server, bukan diserahkan ke client.
+
+**Alasan memilih MVC**
+
+1. **Satu Model dipakai banyak View.** Misalnya JadwalKonsultasi dipakai oleh CalendarView, ConsultationBookingView, dan ConsultationManagementView (UC-03, UC-04, UC-05). Dengan Model terpisah dari View, perubahan tampilan tidak mengubah struktur data.
+2. **Pemisahan tim dan teknologi.** Antarmuka (React Native) dan logika server (Hono) dapat dikembangkan terpisah selama kontrak HTTP/JSON antara View dan Controller tetap.
+3. **Tiap fitur punya jalur yang jelas.** Setiap use case dijalankan oleh satu rantai View, Controller, dan Model (misalnya UC-06: FAQView, FAQController, FAQ), sehingga mudah ditelusuri dan diuji.
+4. **Sesuai pengelompokan Tabel 2.1.** Kolom Jenis pada BAB 2 mengikuti pola View, Controller, dan Model, ditambah Pendukung, Integrasi Eksternal, dan Penyimpanan Data.
 
 ## Gambar style/pattern pada P/L Sehati
 
-NOTE: Double check the line type usage, iirc there's different meanings during asistensi
-
 ```mermaid
-swimlane-beta TB
-    subgraph Client["Client"]
-        RN["React Native App"]
+flowchart TB
+    subgraph CLIENT["Client: Aplikasi mobile React Native"]
+        VIEW["VIEW<br/>LoginView, AffirmationView, ReminderView, CalendarView,<br/>ConsultationBookingView, ConsultationManagementView,<br/>FAQView, FeedbackView, ServerStatusView"]
     end
 
-    subgraph OurServer["Our Servers"]
-        Hono["Hono API Router"]
-        DB[("Cloudflare D1 Database")]
+    subgraph SERVER["Server: Hono di Cloudflare Workers"]
+        CTRL["CONTROLLER<br/>AuthController, AffirmationController, ReminderController,<br/>CalendarController, ConsultationController, FAQController,<br/>FeedbackController, ServerStatusController"]
+        VAL["Validasi"]
+        MODEL["MODEL<br/>Pengguna, Mahasiswa, Administrator, SesiAutentikasi,<br/>DailyAffirmation, Reminder, Notifikasi, KalenderGabungan,<br/>Konsultan, JadwalKonsultasi, FAQ, PengajuanPertanyaan,<br/>UmpanBalik, StatusServer"]
+        INT["INTEGRASI EKSTERNAL<br/>GoogleAuthService, GoogleCalendarService"]
     end
 
-	subgraph ExtServer["External Servers"]
-		Google["Google OAuth 2.0 &<br/>Calendar API"]
-	end
+    DB[("CloudflareD1Database")]
+    GOOGLE["Google OAuth 2.0 dan Google Calendar API<br/>(sistem eksternal)"]
 
-    RN <-->|"HTTP request/response"| Hono
-    Hono <-->|"data query"| DB
-    Hono <-.->|"autentikasi & ambil event"| Google
+    VIEW -->|"HTTP request (user events)"| CTRL
+    CTRL -->|"HTTP response (update, JSON)"| VIEW
+    CTRL -.->|"memvalidasi"| VAL
+    CTRL -->|"akses"| MODEL
+    CTRL -.->|"memanggil"| INT
+    MODEL -->|"disimpan di"| DB
+    INT -.->|"memanggil API"| GOOGLE
 
-    style Google stroke-dasharray: 5 5
+    style GOOGLE stroke-dasharray: 5 5
 ```
 <p align="center">
-<i>Gambar 1. Pattern Client-Server diterapkan pada Sehati</i>
+<i>Gambar 1. Pattern Client-Server dengan MVC diterapkan pada Sehati</i>
 </p>
 
 Tabel 1.1. Lingkungan Operasi Perangkat Lunak
@@ -81,9 +108,7 @@ Tabel 1.1. Lingkungan Operasi Perangkat Lunak
 | OS | Android 10+ dan iOS 15+ pada client; Cloudflare Workers tidak memerlukan OS tradisional di sisi server |
 | Integrasi Eksternal | Google OAuth 2.0 (autentikasi) dan Google Calendar API (event, free/busy) |
 
-Kaitan teknologi dengan pattern: Hono tidak mengikuti MVC bawaan seperti Django/Rails karena memang dirancang sebagai *router* tipis untuk lingkungan edge. 
-Ini justru cocok untuk client-server murni, di mana seluruh *rendering* ada di client (React Native) dan server hanya menjadi Controller + Model tanpa View. 
-Cloudflare D1 berperan sebagai lapisan penyimpanan di bawah Model, terpisah dari logika Controller, sesuai prinsip pemisahan tanggung jawab pada *layered architecture*.
+Kaitan teknologi dengan pattern: React Native menjalankan seluruh View di perangkat pengguna, sesuai peran client yang hanya menampilkan dan meneruskan aksi. Hono dipilih karena merupakan *router* tipis untuk lingkungan *edge*, sehingga cocok menjadi server yang hanya berisi Controller dan Model tanpa View. Cloudflare Workers memungkinkan satu server melayani semua client, dan Cloudflare D1 menjadi penyimpanan terpusat di bawah Model, terpisah dari logika Controller.
 
 ---
 
@@ -141,27 +166,17 @@ Ketentuan pengisian Tabel 2.1:
 
 # BAB 3: Model Arsitektur Perangkat Lunak
 
-***NOTE: Remove this text before publishing release***
-
-_Architectural View_ adalah bagaimana cara kita melihat/mendeskripsikan arsitektur sebuah sistem dari sudut pandang tertentu. Dalam perancangan arsitektur aplikasi, dibutuhkan _Architectural View_ yang dapat mempermudah pemahaman dari proses aplikasi yang akan dikembangkan. Tujuan dari _Architectural View_ adalah menjadi bahan komunikasi, pemisahan masalah, mempermudah analisis, dan pemandu saat eksekusi pengembangan sistem tersebut.
-
-Buatlah model arsitektur dari aplikasi yang akan dirancang dalam bentuk _view_. Model arsitektur ini berfungsi untuk memperlihatkan bagaimana setiap komponen, modul, dan subsistem saling berinteraksi serta berkolaborasi dalam menjalankan fungsi utama sistem secara keseluruhan. Anda dapat membuat satu atau lebih _view_ tergantung kebutuhan dalam bentuk gambar. Pilihlah notasi yang sesuai. Contoh _view_ yang dapat digunakan antara lain _**Logical View**_, _**Process View**_, _**Development View**_, serta _**Physical View**_.
-
-Ketentuan pengisian BAB 3:
-
-1. Setiap view menggambarkan **keseluruhan sistem**, bukan satu use case atau satu fitur saja.
-2. Buat **minimal satu view**. Setiap view dituliskan dalam subbab tersendiri (3.1, 3.2, dan seterusnya). Tidak perlu membuat keempat view, pilih yang paling membantu menjelaskan P/L Anda, lalu jelaskan alasan pemilihannya.
-3. Setiap view harus **konsisten dengan BAB 2**. Seluruh komponen pada Tabel 2.1 harus muncul dengan nama yang sama, dan tidak boleh ada komponen pada view yang tidak terdaftar di Tabel 2.1.
-4. Setiap view harus **mencerminkan style/pattern pada BAB 1**. Misalnya, jika memilih MVC, pembagian _Model_, _View_, dan _Controller_ harus terlihat jelas pada diagram.
-5. Jika membuat lebih dari satu view, setiap view harus menggambarkan sistem yang sama dari sudut pandang berbeda. View tambahan melengkapi view pertama, bukan mengulanginya.
-6. Beri label pada setiap garis atau panah yang menghubungkan komponen agar hubungan antarkomponen dapat dipahami tanpa penjelasan tambahan.
-7. Jika membuat _Physical View_, gambarkan lingkungan operasi pada Tabel 1.1.
+BAB ini menggambarkan arsitektur Sehati dari satu sudut pandang yang mencakup seluruh sistem, yaitu *Logical View*. Diagram memuat seluruh 35 komponen pada Tabel 2.1 dengan nama yang sama, dan mengikuti pattern Client-Server dengan MVC pada BAB 1.
 
 ## 3.1 Logical View
 
-Logical View dipilih karena yang paling penting dijelaskan di Sehati adalah pembagian tanggung jawab antar lapisan (View, Controller, Model, Integrasi Eksternal, Penyimpanan Data) — bukan urutan proses (Process View) atau distribusi fisik server (Physical View, meskipun bisa ditambahkan sebagai pelengkap karena Tabel 1.1 sudah memuat datanya).
+Logical View dipilih karena hal terpenting yang perlu dijelaskan pada Sehati adalah pembagian tanggung jawab antar komponen: View di sisi *client*, serta Controller, Model, dan layanan pendukung di sisi *server*. Pembagian ini langsung menjawab kebutuhan SKPL, yaitu satu server yang memegang data bersama untuk dua aktor dan satu-satunya yang memanggil Google. Process View tidak dipilih karena sistem ini tidak memiliki alur proses paralel yang rumit, dan Physical View tidak dipilih karena lingkungan operasinya sudah dijelaskan pada Tabel 1.1.
+
+Diagram pada Gambar 2 adalah *block diagram* yang memuat seluruh 35 komponen Tabel 2.1: 9 View, 8 Controller, 1 Validasi, 14 Model, 2 Integrasi Eksternal, dan 1 Penyimpanan Data. Komponen dikelompokkan sesuai BAB 1. Kotak *Client* berisi View, dan kotak *Server* berisi Controller, Model, dan Sistem Pendukung (Validasi). Layanan Google (GoogleAuthService dan GoogleCalendarService) berada dalam kotak Sistem Eksternal, dan CloudflareD1Database berada di luar kotak Server. Garis putus-putus menandakan pemanggilan atau validasi. Garis penuh menandakan akses ke Model atau penyimpanan data.
+
 ```mermaid
 flowchart TB
+    subgraph CLIENT["Client"]
     subgraph VIEW["View"]
         direction LR
         AffirmationView
@@ -174,7 +189,9 @@ flowchart TB
         ConsultationBookingView
         ConsultationManagementView
     end
+    end
 
+    subgraph SERVER["Server"]
     subgraph CONTROLLER["Controller"]
         direction LR
         AffirmationController
@@ -207,6 +224,7 @@ flowchart TB
 
     subgraph PENDUKUNG["Sistem Pendukung"]
         Validasi
+    end
     end
 
     subgraph EKSTERNAL["Sistem Eksternal"]
@@ -269,9 +287,16 @@ flowchart TB
 <i>Gambar 2. Logical View pada P/L Sehati</i>
 </p>
 
-Gambar 2 adalah contoh _Logical View_ dalam bentuk _block diagram_. Seluruh komponen pada Tabel 2.1 digambarkan dan dikelompokkan sesuai pola MVC (_View_, _Controller_, _Model_), ditambah komponen pendukung dan basis data. Sistem di luar P/L, seperti _Payment Gateway (dummy)_, digambarkan dengan garis putus-putus dan tidak perlu dimasukkan ke Tabel 2.1. Setiap garis diberi label: "Memanggil" untuk _View_ yang memanggil _Controller_, "akses" untuk _Controller_ yang mengakses _Model_, serta agregasi dan komposisi untuk hubungan antar-_Model_.
+Relasi antar komponen pada Gambar 2:
 
-<sub><b><i>Catatan</i></b>: <i>Ganti XXX dengan nama view yang dibuat, misalnya Logical View. Gambar 2 hanya contoh untuk P/L e-commerce, ganti dengan view milik kelompok Anda yang memuat seluruh komponen pada Tabel 2.1. Jenis view dan notasinya boleh berbeda dari contoh. Jika membuat view tambahan, lanjutkan pola 3.x ini (3.2, 3.3, dan seterusnya).</i></sub>
+- **View → Controller** (*Memanggil*): setiap View memanggil Controller untuk fiturnya. LoginView memanggil AuthController, dan ConsultationBookingView serta ConsultationManagementView sama-sama memanggil ConsultationController.
+- **Controller → Model** (*Akses*): setiap Controller mengakses Model yang dikelolanya, misalnya FAQController ke FAQ dan ConsultationController ke JadwalKonsultasi dan Konsultan.
+- **Controller → Validasi** (*Memvalidasi*): Controller yang menerima input waktu atau isian wajib memeriksanya lewat Validasi sebelum diproses.
+- **Controller → Sistem Eksternal** (*Memanggil*): AuthController memanggil GoogleAuthService, sedangkan CalendarController dan ConsultationController memanggil GoogleCalendarService.
+- **Antar-Model** (*Agregasi* dan *Komposisi*): Notifikasi, PengajuanPertanyaan, dan Administrator menghimpun Model terkait secara agregasi. DailyAffirmation, Reminder, dan KalenderGabungan menjadi bagian dari Mahasiswa secara komposisi, begitu pula Mahasiswa dan Administrator terhadap Pengguna.
+- **Model → CloudflareD1Database** (*Menyimpan*): seluruh Model disimpan secara persisten di D1.
+
+Pada diagram ini, simbol lingkaran di ujung garis antar-Model berada di sisi komponen yang menghimpun (agregat atau induk).
 
 ---
 
