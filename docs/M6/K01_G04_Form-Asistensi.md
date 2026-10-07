@@ -2,15 +2,15 @@
 
 ## Tugas Besar IF2150 - Rekayasa Perangkat Lunak
 
-| Informasi                | Keterangan  |
-| ------------------------ | ----------- |
-| **Hari**                 | -           |
-| **Tanggal**              | -/-/2026    |
-| **Kelas**                | K01         |
-| **Nomor Kelompok**       | G04         |
-| **Nama Kelompok**        | LompatMulai |
-| **Nama Perangkat Lunak** | Sehati      |
-| **Dokumen**              | -           |
+| Informasi                | Keterangan     |
+| ------------------------ | -------------- |
+| **Hari**                 | Jumat          |
+| **Tanggal**              | 2/10/2026      |
+| **Kelas**                | K01            |
+| **Nomor Kelompok**       | G04            |
+| **Nama Kelompok**        | LompatMulai    |
+| **Nama Perangkat Lunak** | Sehati         |
+| **Dokumen**              | K01_G04_APL.md |
 
 ### Anggota Kelompok
 
