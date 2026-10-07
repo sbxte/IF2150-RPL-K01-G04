@@ -160,22 +160,8 @@ Ketentuan pengisian BAB 3:
 ## 3.1 Logical View
 
 Logical View dipilih karena yang paling penting dijelaskan di Sehati adalah pembagian tanggung jawab antar lapisan (View, Controller, Model, Integrasi Eksternal, Penyimpanan Data) — bukan urutan proses (Process View) atau distribusi fisik server (Physical View, meskipun bisa ditambahkan sebagai pelengkap karena Tabel 1.1 sudah memuat datanya).
-
-Gambar 1 di BAB 1 adalah kerangka Logical View ini dalam bentuk minimal. Untuk diagram final BAB 3, gambar harus memuat **seluruh 33 komponen di Tabel 2.1**, dikelompokkan dalam kotak-kotak besar sesuai kolom Jenis (View, Controller, Model, Pendukung, Integrasi Eksternal, Penyimpanan Data), dengan setiap garis diberi label:
-
-- View → Controller: label "memanggil"
-- Controller → Model: label "akses"
-- Controller → Integrasi Eksternal: label "memanggil API"
-- Model → Penyimpanan Data: label "disimpan di"
-- Controller → Validasi: label "memvalidasi"
-
-***Note for bikin diagram: (DELETE THIS TEXT AFTER DONE)***
-
-Karena jumlahnya banyak, cara paling rapi menggambarnya di draw.io: buat satu kotak besar per Jenis, 
-lalu di dalam tiap kotak besar tuliskan nama-nama komponen dari Tabel 2.1 sebagai daftar bertitik — persis seperti Gambar 2 contoh *e-commerce* yang mengelompokkan `KatalogView`/`KeranjangView`/dsb. menjadi satu wilayah "View".
-
 <p align="center">
-<img alt="Contoh Logical View pada P/L E-Commerce" src="./assets/diagram/contoh-logical-view.webp" width="100%">
+<img alt="Contoh Logical View pada P/L E-Commerce" src="./assets/diagram/LogicalView.png" width="100%">
 </p>
 <p align="center">
 <i>Gambar 2. Contoh Logical View pada P/L E-Commerce</i>
