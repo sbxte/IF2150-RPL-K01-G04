@@ -69,6 +69,10 @@ Server tidak me-_render_ halaman (tidak ada _server-rendered view_ seperti Djang
 ## Gambar style/pattern pada P/L Sehati
 
 ```mermaid
+---
+config:
+  layout: elk
+---
 flowchart TB
     subgraph CLIENT["Client: Aplikasi mobile React Native"]
         VIEW["VIEW<br/>LoginView, AffirmationView, ReminderView, CalendarView,<br/>ConsultationBookingView, ConsultationManagementView,<br/>FAQView, FeedbackView, ServerStatusView"]
@@ -176,6 +180,10 @@ Logical View dipilih karena hal terpenting yang perlu dijelaskan pada Sehati ada
 Diagram pada Gambar 2 adalah _block diagram_ yang memuat seluruh 35 komponen Tabel 2.1: 9 View, 8 Controller, 1 Validasi, 14 Model, 2 Integrasi Eksternal, dan 1 Penyimpanan Data. Komponen dikelompokkan sesuai BAB 1. Kotak _Client_ berisi View, dan kotak _Server_ berisi Controller, Model, dan Sistem Pendukung (Validasi). Layanan Google (GoogleAuthService dan GoogleCalendarService) berada dalam kotak Sistem Eksternal, dan CloudflareD1Database berada di luar kotak Server. Garis putus-putus menandakan pemanggilan atau validasi. Garis penuh menandakan akses ke Model atau penyimpanan data.
 
 ```mermaid
+---
+config:
+  layout: elk
+---
 flowchart TB
     subgraph CLIENT["Client"]
     subgraph VIEW["View"]
