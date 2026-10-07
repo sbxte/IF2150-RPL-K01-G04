@@ -160,11 +160,113 @@ Ketentuan pengisian BAB 3:
 ## 3.1 Logical View
 
 Logical View dipilih karena yang paling penting dijelaskan di Sehati adalah pembagian tanggung jawab antar lapisan (View, Controller, Model, Integrasi Eksternal, Penyimpanan Data) — bukan urutan proses (Process View) atau distribusi fisik server (Physical View, meskipun bisa ditambahkan sebagai pelengkap karena Tabel 1.1 sudah memuat datanya).
+```mermaid
+flowchart TB
+    subgraph VIEW["View"]
+        direction LR
+        AffirmationView
+        ReminderView
+        FAQView
+        FeedbackView
+        ServerStatusView
+        LoginView
+        CalendarView
+        ConsultationBookingView
+        ConsultationManagementView
+    end
+
+    subgraph CONTROLLER["Controller"]
+        direction LR
+        AffirmationController
+        ReminderController
+        FAQController
+        FeedbackController
+        ServerStatusController
+        AuthController
+        CalendarController
+        ConsultationController
+    end
+
+    subgraph MODEL["Model"]
+        direction LR
+        DailyAffirmation
+        Reminder
+        FAQ
+        UmpanBalik
+        StatusServer
+        SesiAutentikasi
+        KalenderGabungan
+        JadwalKonsultasi
+        Konsultan
+        Notifikasi
+        PengajuanPertanyaan
+        Mahasiswa
+        Administrator
+        Pengguna
+    end
+
+    subgraph PENDUKUNG["Sistem Pendukung"]
+        Validasi
+    end
+
+    subgraph EKSTERNAL["Sistem Eksternal"]
+        GoogleCalendarService
+        GoogleAuthService
+    end
+
+    CloudflareD1Database[("CloudflareD1Database")]
+
+    %% View -> Controller
+    AffirmationView -.->|Memanggil| AffirmationController
+    ReminderView -.->|Memanggil| ReminderController
+    FAQView -.->|Memanggil| FAQController
+    FeedbackView -.->|Memanggil| FeedbackController
+    ServerStatusView -.->|Memanggil| ServerStatusController
+    LoginView -.->|Memanggil| AuthController
+    CalendarView -.->|Memanggil| CalendarController
+    ConsultationBookingView -.->|Memanggil| ConsultationController
+    ConsultationManagementView -.->|Memanggil| ConsultationController
+
+    %% Controller -> Model
+    AffirmationController -->|Akses| DailyAffirmation
+    ReminderController -->|Akses| Reminder
+    FAQController -->|Akses| FAQ
+    FeedbackController -->|Akses| UmpanBalik
+    ServerStatusController -->|Akses| StatusServer
+    AuthController -->|Akses| SesiAutentikasi
+    CalendarController -->|Akses| KalenderGabungan
+    ConsultationController -->|Akses| JadwalKonsultasi
+    ConsultationController -->|Akses| Konsultan
+    KalenderGabungan -.->|Memanggil| JadwalKonsultasi
+
+    %% Controller -> Validasi
+    AffirmationController -.->|Memvalidasi| Validasi
+    ReminderController -.->|Memvalidasi| Validasi
+    CalendarController -.->|Memvalidasi| Validasi
+    ConsultationController -.->|Memvalidasi| Validasi
+
+    %% Controller -> Sistem Eksternal
+    AuthController -.->|Memanggil| GoogleAuthService
+    CalendarController -.->|Memanggil| GoogleCalendarService
+    ConsultationController -.->|Memanggil| GoogleCalendarService
+
+    %% Antar-Model (ujung o = sisi "keseluruhan")
+    DailyAffirmation --o|Agregasi| Notifikasi
+    Reminder --o|Agregasi| Notifikasi
+    UmpanBalik --o|Agregasi| PengajuanPertanyaan
+    StatusServer --o|Agregasi| Administrator
+    JadwalKonsultasi --o|Agregasi| Administrator
+    Konsultan --o|Agregasi| Administrator
+    DailyAffirmation --o|Komposisi| Mahasiswa
+    Reminder --o|Komposisi| Mahasiswa
+    KalenderGabungan --o|Komposisi| Mahasiswa
+    Mahasiswa --o|Komposisi| Pengguna
+    Administrator --o|Komposisi| Pengguna
+
+    MODEL -->|Menyimpan| CloudflareD1Database
+```
 <p align="center">
-<img alt="Contoh Logical View pada P/L E-Commerce" src="./assets/diagram/LogicalView.png" width="100%">
-</p>
-<p align="center">
-<i>Gambar 2. Contoh Logical View pada P/L E-Commerce</i>
+<i>Gambar 2. Logical View pada P/L Sehati</i>
 </p>
 
 Gambar 2 adalah contoh _Logical View_ dalam bentuk _block diagram_. Seluruh komponen pada Tabel 2.1 digambarkan dan dikelompokkan sesuai pola MVC (_View_, _Controller_, _Model_), ditambah komponen pendukung dan basis data. Sistem di luar P/L, seperti _Payment Gateway (dummy)_, digambarkan dengan garis putus-putus dan tidak perlu dimasukkan ke Tabel 2.1. Setiap garis diberi label: "Memanggil" untuk _View_ yang memanggil _Controller_, "akses" untuk _Controller_ yang mengakses _Model_, serta agregasi dan komposisi untuk hubungan antar-_Model_.
