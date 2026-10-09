@@ -63,36 +63,36 @@ Semua definisi dan singkatan yang digunakan dalam dokumen ini beserta penjelasan
 
 Tabel 1.3. Definisi Istilah dan Singkatan
 
-| Singkatan, Akronim, atau Istilah | Penjelasan                                                                                                                                                                               |
-| -------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| P/L                              | Singkatan dari Perangkat Lunak, yaitu aplikasi yang memberikan perintah kepada komputer untuk menjalankan tugas tertentu.                                                                |
-| SKPL                             | Singkatan dari Spesifikasi Kebutuhan Perangkat Lunak, yaitu dokumen yang merangkum kriteria-kriteria yang diperlukan untuk membangun aplikasi menjalankan tugasnya.                      |
-| DPPL                             | ...                                                                                                                                                                                      |
-| KF                               | Singkatan dari Kebutuhan Fungsional, yaitu kebutuhan yang menjelaskan apa yang harus dapat dilakukan oleh sistem.                                                                        |
-| KNF                              | Singkatan dari Kebutuhan Non-Fungsional, yaitu kebutuhan yang menjelaskan kualitas sistem, seperti ketersediaan, keamanan, dan kemudahan penggunaan.                                     |
-| UC                               | Singkatan dari _Use Case_, yaitu gambaran interaksi antara aktor dan sistem untuk mencapai suatu tujuan.                                                                                 |
-| UML                              | Singkatan dari _Unified Modeling Language_, yaitu bahasa pemodelan standar yang digunakan untuk membuat _use case diagram_ dan diagram kelas.                                            |
-| SDG                              | Singkatan dari _Sustainable Development Goals_ (Tujuan Pengembangan Berkelanjutan), yaitu 17 tujuan global yang dicanangkan PBB. SDG 3 berfokus pada kehidupan yang sehat dan sejahtera. |
-| Sehati                           | Nama perangkat lunak yang dikembangkan untuk mendukung kesehatan mental dan kesejahteraan mahasiswa.                                                                                     |
-| Mahasiswa                        | Aktor pengguna utama Sehati yang menggunakan pengingat, _daily affirmations_, jadwal, dan pemesanan sesi konsultasi.                                                                     |
-| Administrator                    | Aktor yang mengelola Sehati, termasuk memasukkan jadwal konsultan, mengelola FAQ dan umpan balik, serta memantau status _server_.                                                        |
-| Konsultan                        | Tenaga profesional yang menyediakan sesi konsultasi. Konsultan bukan aktor sistem; data dan jadwalnya dikelola oleh Administrator.                                                       |
-| _Daily Affirmations_             | Pesan positif yang dikirimkan kepada pengguna pada waktu yang diatur pengguna untuk menjaga suasana hati dan kepercayaan diri.                                                           |
-| Pengingat                        | Notifikasi dengan waktu yang diatur pengguna untuk makan, tidur, dan berolahraga.                                                                                                        |
-| Notifikasi                       | Pesan yang ditampilkan sistem kepada pengguna, misalnya untuk _daily affirmations_ dan pengingat.                                                                                        |
-| Google Calendar                  | Layanan kalender milik Google yang datanya diintegrasikan ke Sehati untuk menampilkan jadwal pengguna.                                                                                   |
-| API                              | Singkatan dari _Application Programming Interface_, yaitu antarmuka yang memungkinkan satu perangkat lunak berkomunikasi dengan perangkat lunak lain, misalnya Google Calendar API.      |
-| OAuth                            | Protokol otorisasi yang memungkinkan aplikasi mendapat akses terbatas ke akun pengguna di layanan lain (misalnya Google) tanpa mengetahui kata sandi pengguna.                           |
-| Autentikasi                      | Proses memverifikasi identitas pengguna sebelum diberi akses ke aplikasi. Pada Sehati, autentikasi dilakukan melalui akun Google.                                                        |
-| _Free/busy_                      | Informasi rentang waktu pengguna yang sibuk atau kosong pada kalender, tanpa rincian acaranya. Dipakai untuk mendeteksi bentrok jadwal.                                                  |
-| Bentrok jadwal                   | Kondisi ketika waktu sesi konsultasi yang dipilih tumpang tindih dengan acara lain di kalender pengguna.                                                                                 |
-| _Database_                       | Basis data tempat sistem menyimpan data seperti jadwal konsultasi, FAQ, dan umpan balik.                                                                                                 |
-| _Server_                         | Komponen sistem yang menjalankan logika aplikasi dan melayani permintaan dari pengguna.                                                                                                  |
-| _Uptime_                         | Persentase waktu sistem dapat diakses dan beroperasi dalam suatu periode.                                                                                                                |
-| FAQ                              | Singkatan dari _Frequently Asked Questions_, yaitu daftar pertanyaan yang sering diajukan beserta jawabannya.                                                                            |
-| Umpan balik                      | Masukan dari pengguna terhadap aplikasi, yang dapat ditanggapi oleh Administrator.                                                                                                       |
-| _Traceability_                   | Keterlacakan hubungan antara kelas, _use case_, dan kebutuhan fungsional.                                                                                                                |
-| Mungkin ada yang baru di sini?   | ...                                                                                                                                                                                      |
+| Singkatan, Akronim, atau Istilah | Penjelasan                                                                                                                                                                                   |
+| -------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| P/L                              | Singkatan dari **Perangkat Lunak**, yaitu aplikasi yang memberikan perintah kepada komputer untuk menjalankan tugas tertentu.                                                                |
+| SKPL                             | Singkatan dari **Spesifikasi Kebutuhan Perangkat Lunak**, yaitu dokumen yang merangkum kriteria-kriteria yang diperlukan untuk membangun aplikasi menjalankan tugasnya.                      |
+| DPPL                             | ...                                                                                                                                                                                          |
+| KF                               | Singkatan dari **Kebutuhan Fungsional**, yaitu kebutuhan yang menjelaskan apa yang harus dapat dilakukan oleh sistem.                                                                        |
+| KNF                              | Singkatan dari **Kebutuhan Nonfungsional,** yaitu kebutuhan yang menjelaskan kualitas sistem, seperti ketersediaan, keamanan, dan kemudahan penggunaan.                                      |
+| UC                               | Singkatan dari **_Use Case_**, yaitu gambaran interaksi antara aktor dan sistem untuk mencapai suatu tujuan.                                                                                 |
+| UML                              | Singkatan dari **_Unified Modeling Language_**, yaitu bahasa pemodelan standar yang digunakan untuk membuat _use case diagram_ dan diagram kelas.                                            |
+| SDG                              | Singkatan dari **_Sustainable Development Goals_** (Tujuan Pengembangan Berkelanjutan), yaitu 17 tujuan global yang dicanangkan PBB. SDG 3 berfokus pada kehidupan yang sehat dan sejahtera. |
+| Sehati                           | **Nama perangkat lunak yang dikembangkan** untuk mendukung kesehatan mental dan kesejahteraan mahasiswa.                                                                                     |
+| Mahasiswa                        | **Aktor pengguna utama** Sehati yang menggunakan pengingat, _daily affirmations_, jadwal, dan pemesanan sesi konsultasi.                                                                     |
+| Administrator                    | **Aktor yang mengelola** Sehati, termasuk memasukkan jadwal konsultan, mengelola FAQ dan umpan balik, serta memantau status _server_.                                                        |
+| Konsultan                        | Tenaga profesional yang menyediakan sesi konsultasi. Konsultan bukan aktor sistem; data dan jadwalnya dikelola oleh Administrator.                                                           |
+| _Daily Affirmations_             | Pesan positif yang dikirimkan kepada pengguna pada waktu yang diatur pengguna untuk menjaga suasana hati dan kepercayaan diri.                                                               |
+| Pengingat                        | Notifikasi dengan waktu yang diatur pengguna untuk makan, tidur, dan berolahraga.                                                                                                            |
+| Notifikasi                       | Pesan yang ditampilkan sistem kepada pengguna, misalnya untuk _daily affirmations_ dan pengingat.                                                                                            |
+| Google Calendar                  | Layanan kalender milik Google yang datanya diintegrasikan ke Sehati untuk menampilkan jadwal pengguna.                                                                                       |
+| API                              | Singkatan dari **_Application Programming Interface_**, yaitu antarmuka yang memungkinkan satu perangkat lunak berkomunikasi dengan perangkat lunak lain, misalnya Google Calendar API.      |
+| OAuth                            | Protokol otorisasi yang memungkinkan aplikasi mendapat akses terbatas ke akun pengguna di layanan lain (misalnya Google) tanpa mengetahui kata sandi pengguna.                               |
+| Autentikasi                      | Proses memverifikasi identitas pengguna sebelum diberi akses ke aplikasi. Pada Sehati, autentikasi dilakukan melalui akun Google.                                                            |
+| _Free/busy_                      | Informasi rentang waktu pengguna yang sibuk atau kosong pada kalender, tanpa rincian acaranya. Dipakai untuk mendeteksi bentrok jadwal.                                                      |
+| Bentrok jadwal                   | Kondisi ketika waktu sesi konsultasi yang dipilih tumpang tindih dengan acara lain di kalender pengguna.                                                                                     |
+| _Database_                       | Basis data tempat sistem menyimpan data seperti jadwal konsultasi, FAQ, dan umpan balik.                                                                                                     |
+| _Server_                         | Komponen sistem yang menjalankan logika aplikasi dan melayani permintaan dari pengguna.                                                                                                      |
+| _Uptime_                         | Persentase waktu sistem dapat diakses dan beroperasi dalam suatu periode.                                                                                                                    |
+| FAQ                              | Singkatan dari **_Frequently Asked Questions_**, yaitu daftar pertanyaan yang sering diajukan beserta jawabannya.                                                                            |
+| Umpan balik                      | Masukan dari pengguna terhadap aplikasi, yang dapat ditanggapi oleh Administrator.                                                                                                           |
+| _Traceability_                   | Keterlacakan hubungan antara kelas, _use case_, dan kebutuhan fungsional.                                                                                                                    |
+| Mungkin ada yang baru di sini?   | ...                                                                                                                                                                                          |
 
 ## 1.4 Aturan Penomoran
 
@@ -130,14 +130,14 @@ Tuliskan sistematika pembahasan dokumen ini secara ringkas dan runut, dengan mak
 
 Sebutkan _operating system_, DBMS, _development tools_, _filing system_, dan bahasa pemrograman yang digunakan.
 
-| Komponen                 | Spesifikasi                                                                                            |
-| ------------------------ | ------------------------------------------------------------------------------------------------------ |
-| Server                   | Cloudflare Workers (runtime V8 isolates) menjalankan Hono (TypeScript) sebagai REST API                |
-| Client                   | Aplikasi mobile React Native (Expo), Android dan iOS                                                   |
-| DBMS                     | Cloudflare D1 (SQLite terdistribusi di edge)                                                           |
-| OS                       | Android 10+ dan iOS 15+ pada client; Cloudflare Workers tidak memerlukan OS tradisional di sisi server |
-| Integrasi Eksternal      | Google OAuth 2.0 (autentikasi) dan Google Calendar API (event, free/busy)                              |
-| Mungkin ada yang kurang? | ...                                                                                                    |
+| Komponen                 | Spesifikasi                                                                                              |
+| ------------------------ | -------------------------------------------------------------------------------------------------------- |
+| _Server_                 | Cloudflare Workers (runtime V8 isolates [?]), menjalankan Hono sebagai REST API                          |
+| _Client_                 | Aplikasi _mobile_ React Native (Expo), Android, dan iOS                                                  |
+| DBMS                     | Cloudflare D1 (SQLite terdistribusi di _edge_)                                                           |
+| OS                       | Android 10+ dan iOS 15+ pada _client_; Cloudflare Workers tidak memerlukan OS tradisional di sisi server |
+| Integrasi Eksternal      | Google OAuth 2.0 (otentikasi) dan Google Calendar API (_event_, _free/busy_)                             |
+| Mungkin ada yang kurang? | ...                                                                                                      |
 
 ## 2.2 Style/Pattern Arsitektur Acuan
 
@@ -152,7 +152,7 @@ Gunakan hasil **BAB 1 Style/Pattern Arsitektur Acuan pada dokumen APL**, termasu
 <i>Gambar 1. Contoh Arsitektur MVC</i>
 </p>
 
-## 2.3 Identifikasi Komponen / Modul / Subsistem
+## 2.3 Identifikasi Komponen/Modul/Subsistem
 
 Identifikasi komponen, modul, atau subsistem penyusun aplikasi berdasarkan _pattern_ yang telah ditetapkan. Jelaskan tanggung jawab masing-masing komponen. Pengelompokan dapat mengikuti lapisan arsitektur atau fungsi/peran komponen dalam sistem.
 
@@ -160,54 +160,63 @@ Ambil dari **Tabel 2.1 dokumen APL**, lalu kelompokkan berdasarkan lapisan (Mode
 
 Tabel 2.3. Identifikasi Komponen/Modul/Subsistem
 
-| Nama Komponen              | Jenis               | Penjelasan                                                                                                      |
-| -------------------------- | ------------------- | --------------------------------------------------------------------------------------------------------------- |
-| LoginView                  | View                | Menampilkan tombol masuk dengan akun Google dan meneruskan hasil autentikasi ke AuthController.                 |
-| AffirmationView            | View                | Menampilkan input waktu pengiriman daily affirmations dan meneruskan ke AffirmationController.                  |
-| ReminderView               | View                | Menampilkan input waktu pengingat makan/tidur/olahraga dan meneruskan ke ReminderController.                    |
-| CalendarView               | View                | Menampilkan kalender gabungan dan meneruskan aksi "Lihat Kalender"/"Refresh" ke CalendarController.             |
-| ConsultationBookingView    | View                | Menampilkan jadwal konsultasi yang tersedia dan meneruskan pemesanan ke ConsultationController.                 |
-| ConsultationManagementView | View                | Menampilkan dashboard admin untuk mengelola jadwal konsultan, meneruskan perubahan ke ConsultationController.   |
-| FAQView                    | View                | Menampilkan daftar FAQ, kolom pencarian, pengelolaan FAQ oleh admin, dan form pengajuan pertanyaan di luar FAQ. |
-| FeedbackView               | View                | Menampilkan form umpan balik bagi Mahasiswa dan tampilan tanggapan bagi Administrator.                          |
-| ServerStatusView           | View                | Menampilkan status uptime server dan website kepada Administrator.                                              |
-| AuthController             | Controller          | Memproses autentikasi Google, membuat/memverifikasi SesiAutentikasi, dan memanggil GoogleAuthService.           |
-| AffirmationController      | Controller          | Memproses penyetelan waktu dan pengiriman DailyAffirmation, memicu Notifikasi.                                  |
-| ReminderController         | Controller          | Memproses penyetelan waktu dan pengiriman Reminder, memicu Notifikasi.                                          |
-| CalendarController         | Controller          | Mengambil data dari GoogleCalendarService dan JadwalKonsultasi, menggabungkannya lewat KalenderGabungan.        |
-| ConsultationController     | Controller          | Memproses pemesanan dan pengelolaan JadwalKonsultasi, memanggil GoogleCalendarService untuk cek bentrok.        |
-| FAQController              | Controller          | Memproses pencarian, penambahan, perubahan, dan penghapusan FAQ, serta penyimpanan PengajuanPertanyaan.         |
-| FeedbackController         | Controller          | Memproses pengiriman UmpanBalik dan penyimpanan tanggapan Administrator.                                        |
-| ServerStatusController     | Controller          | Mengambil data StatusServer untuk ditampilkan ke Administrator.                                                 |
-| Validasi                   | Pendukung           | Memvalidasi input (format waktu, field wajib) sebelum diproses controller terkait.                              |
-| Pengguna                   | Model               | Menyimpan atribut umum akun (id, nama, email, googleId) yang dipakai bersama Mahasiswa dan Administrator.       |
-| Mahasiswa                  | Model               | Merepresentasikan akun mahasiswa sebagai pengguna utama aplikasi.                                               |
-| Administrator              | Model               | Merepresentasikan akun administrator pengelola aplikasi.                                                        |
-| SesiAutentikasi            | Model               | Menyimpan token sesi aplikasi dan status login setelah autentikasi Google berhasil.                             |
-| DailyAffirmation           | Model               | Menyimpan konten afirmasi dan jadwal pengiriman yang ditentukan pengguna.                                       |
-| Reminder                   | Model               | Menyimpan jenis pengingat (makan/tidur/olahraga) beserta waktu yang ditentukan pengguna.                        |
-| Notifikasi                 | Model               | Merepresentasikan satu notifikasi yang dikirim ke pengguna.                                                     |
-| KalenderGabungan           | Model               | Menggabungkan event dari GoogleCalendarService dengan data JadwalKonsultasi untuk satu tampilan kalender.       |
-| Konsultan                  | Model               | Menyimpan data konsultan (nama, spesialisasi) yang didaftarkan Administrator.                                   |
-| JadwalKonsultasi           | Model               | Menyimpan slot jadwal konsultasi (konsultan, waktu, status tersedia/terpesan).                                  |
-| FAQ                        | Model               | Menyimpan pasangan pertanyaan dan jawaban yang dikelola Administrator.                                          |
-| PengajuanPertanyaan        | Model               | Menyimpan pertanyaan yang diajukan pengguna di luar FAQ yang tersedia.                                          |
-| UmpanBalik                 | Model               | Menyimpan umpan balik pengguna beserta tanggapan Administrator (jika ada).                                      |
-| StatusServer               | Model               | Merepresentasikan status uptime layanan yang dipantau Administrator.                                            |
-| GoogleAuthService          | Integrasi Eksternal | Menangani pertukaran kode otorisasi dengan Google OAuth 2.0 dan penerimaan access/refresh token.                |
-| GoogleCalendarService      | Integrasi Eksternal | Mengambil event pengguna dari Google Calendar API dan melakukan pengecekan bentrok jadwal (free/busy).          |
-| CloudflareD1Database       | Penyimpanan Data    | Menyimpan seluruh data Model secara persisten di Cloudflare D1.                                                 |
-| Mungkin ada yang baru?     | ...                 | ...                                                                                                             |
+| Nama Komponen                | Jenis               | Penjelasan                                                                                                        |
+| ---------------------------- | ------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| `LoginView`                  | _View_              | Menampilkan tombol masuk dengan akun Google dan meneruskan hasil otentikasi ke `AuthController`.                  |
+| `AffirmationView`            | _View_              | Menampilkan input waktu pengiriman _daily affirmations_ dan meneruskan ke `AffirmationController`.                |
+| `ReminderView`               | _View_              | Menampilkan input waktu pengingat makan/tidur/olahraga dan meneruskan ke `ReminderController`.                    |
+| `CalendarView`               | _View_              | Menampilkan kalender gabungan dan meneruskan aksi "Lihat Kalender"/"_Refresh_" ke `CalendarController`.           |
+| `ConsultationBookingView`    | _View_              | Menampilkan jadwal konsultasi yang tersedia dan meneruskan pemesanan ke `ConsultationController`.                 |
+| `ConsultationManagementView` | _View_              | Menampilkan _dashboard_ admin untuk mengelola jadwal konsultan, meneruskan perubahan ke `ConsultationController`. |
+| `FAQView`                    | _View_              | Menampilkan daftar FAQ, kolom pencarian, pengelolaan FAQ oleh admin, dan form pengajuan pertanyaan di luar FAQ.   |
+| `FeedbackView`               | _View_              | Menampilkan form umpan balik bagi Mahasiswa dan tampilan tanggapan bagi Administrator.                            |
+| `ServerStatusView`           | _View_              | Menampilkan status _uptime_ _server_ dan _website_ kepada Administrator.                                          |
+| `AuthController`             | _Controller_        | Memproses otentikasi Google, membuat/memverifikasi `SesiAutentikasi`, dan memanggil `GoogleAuthService`.          |
+| `AffirmationController`      | _Controller_        | Memproses penyetelan waktu dan pengiriman `DailyAffirmation`, memicu `Notifikasi`.                                |
+| `ReminderController`         | _Controller_        | Memproses penyetelan waktu dan pengiriman `Reminder`, memicu `Notifikasi`.                                        |
+| `CalendarController`         | _Controller_        | Mengambil data dari `GoogleCalendarService` dan `JadwalKonsultasi`, menggabungkannya lewat `KalenderGabungan`.    |
+| `ConsultationController`     | _Controller_        | Memproses pemesanan dan pengelolaan `JadwalKonsultasi`, memanggil `GoogleCalendarService` untuk cek bentrok.      |
+| `FAQController`              | _Controller_        | Memproses pencarian, penambahan, perubahan, dan penghapusan FAQ, serta penyimpanan `PengajuanPertanyaan`.         |
+| `FeedbackController`         | _Controller_        | Memproses pengiriman `UmpanBalik` dan penyimpanan tanggapan Administrator.                                        |
+| `ServerStatusController`     | _Controller_        | Mengambil data `StatusServer` untuk ditampilkan ke Administrator.                                                 |
+| `Validasi`                   | Pendukung           | Memvalidasi input (format waktu, _field_ wajib) sebelum diproses _controller_ terkait.                            |
+| `Pengguna`                   | _Model_             | Menyimpan atribut umum akun (`id`, `nama`, `email`, `googleId`) yang dipakai bersama Mahasiswa dan Administrator. |
+| `Mahasiswa`                  | _Model_             | Merepresentasikan akun mahasiswa sebagai pengguna utama aplikasi.                                                 |
+| `Administrator`              | _Model_             | Merepresentasikan akun administrator pengelola aplikasi.                                                          |
+| `SesiAutentikasi`            | _Model_             | Menyimpan token sesi aplikasi dan status _login_ setelah otentikasi Google berhasil.                              |
+| `DailyAffirmation`           | _Model_             | Menyimpan konten afirmasi dan jadwal pengiriman yang ditentukan pengguna.                                         |
+| `Reminder`                   | _Model_             | Menyimpan jenis pengingat (makan/tidur/olahraga) beserta waktu yang ditentukan pengguna.                          |
+| `Notifikasi`                 | _Model_             | Merepresentasikan satu notifikasi yang dikirim ke pengguna.                                                       |
+| `KalenderGabungan`           | _Model_             | Menggabungkan event dari `GoogleCalendarService` dengan data `JadwalKonsultasi` untuk satu tampilan kalender.     |
+| `Konsultan`                  | _Model_             | Menyimpan data konsultan (nama, spesialisasi) yang didaftarkan Administrator.                                     |
+| `JadwalKonsultasi`           | _Model_             | Menyimpan slot jadwal konsultasi (konsultan, waktu, status tersedia/terpesan).                                    |
+| `FAQ`                        | _Model_             | Menyimpan pasangan pertanyaan dan jawaban yang dikelola Administrator.                                            |
+| `PengajuanPertanyaan`        | _Model_             | Menyimpan pertanyaan yang diajukan pengguna di luar FAQ yang tersedia.                                            |
+| `UmpanBalik`                 | _Model_             | Menyimpan umpan balik pengguna beserta tanggapan Administrator (jika ada).                                        |
+| `StatusServer`               | _Model_             | Merepresentasikan status _uptime_ layanan yang dipantau Administrator.                                            |
+| `GoogleAuthService`          | Integrasi eksternal | Menangani pertukaran kode otorisasi dengan Google OAuth 2.0 dan penerimaan _access/refresh token_.                |
+| `GoogleCalendarService`      | Integrasi eksternal | Mengambil _event_ pengguna dari Google Calendar API dan melakukan pengecekan bentrok jadwal (_free/busy_).        |
+| `CloudflareD1Database`       | Penyimpanan data    | Menyimpan seluruh data _Model_ secara persisten di Cloudflare D1.                                                 |
+| Mungkin ada yang baru?       | ...                 | ...                                                                                                               |
 
 ## 2.4 Model Arsitektur Perangkat Lunak
 
-BAB ini menggambarkan arsitektur Sehati dari satu sudut pandang yang mencakup seluruh sistem, yaitu _Logical View_. Diagram memuat seluruh 35 komponen pada Tabel 2.1 dengan nama yang sama, dan mengikuti pattern Client-Server dengan MVC pada BAB 1.
+BAB ini menggambarkan arsitektur Sehati dari satu sudut pandang yang mencakup seluruh sistem, yaitu _Logical View_. Diagram memuat seluruh 35 komponen pada Tabel 2.1 dengan nama yang sama, dan mengikuti _pattern_ _client-server_ dengan MVC pada BAB 1.
 
-## 3.1 Logical View
+## 3.1 _Logical View_
 
-Logical View dipilih karena hal terpenting yang perlu dijelaskan pada Sehati adalah pembagian tanggung jawab antar komponen: View di sisi _client_, serta Controller, Model, dan layanan pendukung di sisi _server_. Pembagian ini langsung menjawab kebutuhan SKPL, yaitu satu server yang memegang data bersama untuk dua aktor dan satu-satunya yang memanggil Google. Process View tidak dipilih karena sistem ini tidak memiliki alur proses paralel yang rumit, dan Physical View tidak dipilih karena lingkungan operasinya sudah dijelaskan pada Tabel 1.1.
+_Logical view_ dipilih karena hal terpenting yang perlu dijelaskan pada Sehati adalah pembagian tanggung jawab antar komponen: _view_ di sisi _client_, serta _controller_, _model_, dan layanan pendukung di sisi _server_. Pembagian ini langsung menjawab kebutuhan SKPL, yaitu satu _server_ yang memegang data bersama untuk dua aktor dan satu-satunya yang memanggil Google. _Process view_ tidak dipilih karena sistem ini tidak memiliki alur proses paralel yang rumit, dan _physical view_ tidak dipilih karena lingkungan operasinya sudah dijelaskan pada Tabel 1.1.
 
-Diagram pada Gambar 2 adalah _block diagram_ yang memuat seluruh 35 komponen Tabel 2.1: 9 View, 8 Controller, 1 Validasi, 14 Model, 2 Integrasi Eksternal, dan 1 Penyimpanan Data. Komponen dikelompokkan sesuai BAB 1. Kotak _Client_ berisi View, dan kotak _Server_ berisi Controller, Model, dan Sistem Pendukung (Validasi). Layanan Google (GoogleAuthService dan GoogleCalendarService) berada dalam kotak Sistem Eksternal, dan CloudflareD1Database berada di luar kotak Server. Garis putus-putus menandakan pemanggilan atau validasi. Garis penuh menandakan akses ke Model atau penyimpanan data.
+Diagram pada Gambar 2 adalah _block diagram_ yang memuat seluruh 35 komponen Tabel 2.1:
+
+- 9 _view_,
+- 8 _controller_,
+- 1 validasi,
+- 14 _model_,
+- 2 integrasi eksternal, dan
+- 1 penyimpanan data.
+
+Komponen dikelompokkan sesuai Bab 1. Kotak "_Client_" berisi _view_, dan kotak "_Server_" berisi _controller_, _model_, dan sistem pendukung (validasi). Layanan Google (`GoogleAuthService` dan `GoogleCalendarService`) berada dalam kotak "Sistem Eksternal", dan `CloudflareD1Database` berada di luar kotak "_Server_". Garis putus-putus menandakan pemanggilan atau validasi. Garis penuh menandakan akses ke _model_ atau penyimpanan data.
 
 ```mermaid
 ---
@@ -329,14 +338,31 @@ flowchart TB
 
 Relasi antar komponen pada Gambar 2:
 
-- **View → Controller** (_Memanggil_): setiap View memanggil Controller untuk fiturnya. LoginView memanggil AuthController, dan ConsultationBookingView serta ConsultationManagementView sama-sama memanggil ConsultationController.
-- **Controller → Model** (_Akses_): setiap Controller mengakses Model yang dikelolanya, misalnya FAQController ke FAQ dan ConsultationController ke JadwalKonsultasi dan Konsultan.
-- **Controller → Validasi** (_Memvalidasi_): Controller yang menerima input waktu atau isian wajib memeriksanya lewat Validasi sebelum diproses.
-- **Controller → Sistem Eksternal** (_Memanggil_): AuthController memanggil GoogleAuthService, sedangkan CalendarController dan ConsultationController memanggil GoogleCalendarService.
-- **Antar-Model** (_Agregasi_ dan _Komposisi_): Notifikasi, PengajuanPertanyaan, dan Administrator menghimpun Model terkait secara agregasi. DailyAffirmation, Reminder, dan KalenderGabungan menjadi bagian dari Mahasiswa secara komposisi, begitu pula Mahasiswa dan Administrator terhadap Pengguna.
-- **Model → CloudflareD1Database** (_Menyimpan_): seluruh Model disimpan secara persisten di D1.
+1. **_View_ → _Controller_** (memanggil)
 
-Pada diagram ini, simbol lingkaran di ujung garis antar-Model berada di sisi komponen yang menghimpun (agregat atau induk).
+Setiap _view_ memanggil _controller_ untuk fiturnya. `LoginView` memanggil `AuthController`, dan `ConsultationBookingView` serta `ConsultationManagementView` sama-sama memanggil `ConsultationController`.
+
+2. **_Controller_ → _Model_** (akses)
+
+Setiap _controller_ mengakses _model_ yang dikelolanya, misalnya `FAQController` ke `FAQ` dan `ConsultationController` ke `JadwalKonsultasi` dan `Konsultan`.
+
+3. **_Controller_ → Validasi** (memvalidasi)
+
+_Controller_ yang menerima input waktu atau isian wajib memeriksanya lewat validasi sebelum diproses.
+
+4. **_Controller_ → Sistem Eksternal** (memanggil)
+
+`AuthController` memanggil `GoogleAuthService`, sedangkan `CalendarController` dan `ConsultationController` memanggil `GoogleCalendarService`.
+
+5. **Antar-Model** (agregasi dan komposisi)
+
+`Notifikasi`, `PengajuanPertanyaan`, dan `Administrator` menghimpun _model_ terkait secara agregasi. `DailyAffirmation`, `Reminder`, dan `KalenderGabungan` menjadi bagian dari `Mahasiswa` secara komposisi, begitu pula `Mahasiswa` dan `Administrator` terhadap `Pengguna`.
+
+6. **_Model_ → CloudflareD1Database** (menyimpan)
+
+Seluruh _model_ disimpan secara persisten di D1.
+
+Pada diagram ini, simbol lingkaran di ujung garis antar-_model_ berada di sisi komponen yang menghimpun (agregat atau induk).
 
 ---
 
