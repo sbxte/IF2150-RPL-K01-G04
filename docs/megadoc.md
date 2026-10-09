@@ -85,7 +85,7 @@ Pengguna utama (Mahasiswa) masuk ke aplikasi melalui akun Google, lalu dapat mem
 Administrator mengelola data konsultan dan jadwal ketersediaannya, FAQ, umpan balik pengguna, serta memantau status server.
 
 <p align="center">
-<img alt="Model proses bisnis" src="/docs/M5/assets/diagram/SwimlaneRPL.drawio.png" width="70%">
+<img alt="Model proses bisnis" src="M5/assets/diagram/SwimlaneRPL.drawio.png" width="70%">
 </p>
 <p align="center">
 <i>Gambar 1. Contoh Activity Diagram Proses Bisnis</i>
@@ -263,7 +263,7 @@ www.drawio.com
 ## Use Case Diagram
 
 <p align="center">
-<img alt="Use Case Diagram di DRAW.IO" src="/docs/M3/assets/diagram/UCD.png" width="70%">
+<img alt="Use Case Diagram di DRAW.IO" src="M3/assets/diagram/UCD.png" width="70%">
 </p>
 <p align="center">
 <i>Gambar 1. Use case Diagram</i>
@@ -540,7 +540,7 @@ www.drawio.com
 **Diagram Kelas**
 
 <p align="center">
-<img alt="Class Diagram UC-01" src="/docs/M5/assets/diagram/UC-01_diagram.png" width="70%">
+<img alt="Class Diagram UC-01" src="M4/assets/diagram/UC-01_diagram.png" width="70%">
 </p>
 <p align="center">
 <i>Gambar 2. Diagram Kelas _Use Case_ UC-01</i>
@@ -568,7 +568,7 @@ www.drawio.com
 **Diagram Kelas**
 
 <p align="center">
-<img alt="Class Diagram UC-02" src="/docs/M5/assets/diagram/UC-02_diagram.png" width="70%">
+<img alt="Class Diagram UC-02" src="M4/assets/diagram/UC-02_diagram.png" width="70%">
 </p>
 <p align="center">
 <i>Gambar 3. Diagram Kelas _Use Case_ UC-02</i>
@@ -596,7 +596,7 @@ www.drawio.com
 **Diagram Kelas**
 
 <p align="center">
-<img alt="Class Diagram UC-03" src="/docs/M5/assets/diagram/UC-03_diagram.png" width="70%">
+<img alt="Class Diagram UC-03" src="M4/assets/diagram/UC-03_diagram.png" width="70%">
 </p>
 <p align="center">
 <i>Gambar 4. Diagram Kelas _Use Case_ UC-03</i>
@@ -625,7 +625,7 @@ www.drawio.com
 #### Diagram Kelas
 
 <p align="center">
-<img alt="Class Diagram UC-04" src="/docs/M4/assets/diagram/UC-04_diagram.png" width="70%">
+<img alt="Class Diagram UC-04" src="M4/assets/diagram/UC-04_diagram.png" width="70%">
 </p>
 <p align="center">
 <i>Gambar 5. Diagram Kelas _Use Case_ UC-04</i>
@@ -654,7 +654,7 @@ www.drawio.com
 #### Diagram Kelas
 
 <p align="center">
-<img alt="Class Diagram UC-05" src="/docs/M5/assets/diagram/UC-05_diagram.png" width="70%">
+<img alt="Class Diagram UC-05" src="M4/assets/diagram/UC-05_diagram.png" width="70%">
 </p>
 <p align="center">
 <i>Gambar 6. Diagram Kelas _Use Case_ UC-05</i>
@@ -681,7 +681,7 @@ www.drawio.com
 *Diagram Kelas**
 
 <p align="center">
-<img alt="Class Diagram UC-06" src="/docs/M5/assets/diagram/UC-06_diagram.png" width="70%">
+<img alt="Class Diagram UC-06" src="M4/assets/diagram/UC-06_diagram.png" width="70%">
 </p>
 <p align="center">
 <i>Gambar 7. Diagram Kelas _Use Case_ UC-06</i>
@@ -707,7 +707,7 @@ www.drawio.com
 **Diagram Kelas**
 
 <p align="center">
-<img alt="Class Diagram UC-07" src="/docs/M5/assets/diagram/UC-07_diagram.png" width="70%">
+<img alt="Class Diagram UC-07" src="M4/assets/diagram/UC-07_diagram.png" width="70%">
 </p>
 <p align="center">
 <i>Gambar 8. Diagram Kelas _Use Case_ UC-07</i>
@@ -733,7 +733,7 @@ www.drawio.com
 **Diagram Kelas**
 
 <p align="center">
-<img alt="Class Diagram UC-08" src="/docs/M5/assets/diagram/UC-08_diagram.png" width="70%">
+<img alt="Class Diagram UC-08" src="M4/assets/diagram/UC-08_diagram.png" width="70%">
 </p>
 <p align="center">
 <i>Gambar 9. Diagram Kelas _Use Case_ UC-08</i>
@@ -759,7 +759,7 @@ www.drawio.com
 **Diagram Kelas**
 
 <p align="center">
-<img alt="Class Diagram UC-09" src="/docs/M5/assets/diagram/UC-09_diagram.png" width="70%">
+<img alt="Class Diagram UC-09" src="M4/assets/diagram/UC-09_diagram.png" width="70%">
 </p>
 <p align="center">
 <i>Gambar 10. Diagram Kelas _Use Case_ UC-09</i>
@@ -785,7 +785,7 @@ www.drawio.com
 **Diagram Kelas**
 
 <p align="center">
-<img alt="Class Diagram UC-10" src="/docs/M5/assets/diagram/UC-10_diagram.png" width="70%">
+<img alt="Class Diagram UC-10" src="M4/assets/diagram/UC-10_diagram.png" width="70%">
 </p>
 <p align="center">
 <i>Gambar 11. Diagram Kelas _Use Case_ UC-10</i>
@@ -813,7 +813,7 @@ www.drawio.com
 **Diagram Kelas**
 
 <p align="center">
-<img alt="Class Diagram UC-11" src="/docs/M5/assets/diagram/UC-11_diagram.png" width="70%">
+<img alt="Class Diagram UC-11" src="M4/assets/diagram/UC-11_diagram.png" width="70%">
 </p>
 <p align="center">
 <i>Gambar 12. Diagram Kelas _Use Case_ UC-11</i>
@@ -841,7 +841,7 @@ www.drawio.com
 **Diagram Kelas**
 
 <p align="center">
-<img alt="Class Diagram UC-12" src="/docs/M5/assets/diagram/UC-12_diagram.png" width="70%">
+<img alt="Class Diagram UC-12" src="M4/assets/diagram/UC-12_diagram.png" width="70%">
 </p>
 <p align="center">
 <i>Gambar 13. Diagram Kelas _Use Case_ UC-12</i>
@@ -856,7 +856,7 @@ www.drawio.com
 ## Diagram Kelas Keseluruhan
 
 <p align="center">
-<img alt="Class Diagram Keseluruhan" src="/docs/M4/assets/diagram/full-class-diagram.png" width="70%">
+<img alt="Class Diagram Keseluruhan" src="M4/assets/diagram/full-class-diagram.png" width="70%">
 </p>
 <p align="center">
 <i>Gambar 14. Diagram Kelas Keseluruhan</i>
