@@ -1,4 +1,6 @@
-# Kamus Istillah
+# Kamus Istilah
+
+Tabel 1. Definisi Istilah dan Singkatan
 
 | Singkatan, Akronim, atau Istilah | Penjelasan |
 | --- | --- |
@@ -61,7 +63,11 @@ Namun, terdapat beberapa keluhan yang diberikan oleh _review online_ yang diberi
 | AK-4 | Layanan BetterHelp yang memiliki marketplace konseling memiliki masalah menaruh iklan yang bersangkutan dengan pihak ketiga yang menjual data pribadi pengguna.                                                                                                         |
 | AK-5 | Chatbot Woebot yang pada awalnya memiliki basis pengguna yang cukup tinggi namun karena perusahaan beralih ke model enterprise pengguna-pengguna tersebut ditinggalkan begitu saja tanpa adanya pengganti.                                                              |
 
+Tabel 2. Perbandingan Kekurangan Solusi yang Sudah Ada
+
 # Aturan Penomoran
+
+Tabel 3. Aturan Penomoran
 
 | Hal/Bagian | Penomoran | Keterangan |
 | --- | --- | --- |
@@ -88,10 +94,12 @@ Administrator mengelola data konsultan dan jadwal ketersediaannya, FAQ, umpan ba
 <img alt="Model proses bisnis" src="M5/assets/diagram/SwimlaneRPL.drawio.png" width="70%">
 </p>
 <p align="center">
-<i>Gambar 1. Contoh Activity Diagram Proses Bisnis</i>
+<i>Gambar 1. Diagram Aktivitas Proses Bisnis Sehati</i>
 </p>
 
 ## Asumsi dan Batasan
+
+Tabel 4. Asumsi
 
 | ID | Asumsi |
 | --- | --- |
@@ -100,6 +108,8 @@ Administrator mengelola data konsultan dan jadwal ketersediaannya, FAQ, umpan ba
 | AB-A-3 | Data konsultan yang terdaftar diperbarui secara berkala oleh Administrator |
 | AB-A-4 | Data jadwal dan preferensi yang dimasukkan pengguna (waktu makan, tidur, olahraga) mencerminkan kondisi dan kebutuhan nyata mereka |
 | AB-A-5 | Pengguna memiliki perangkat mobile (Android/iOS) yang memenuhi spesifikasi minimum aplikasi |
+
+Tabel 5. Regulasi
 
 | ID | Regulasi |
 | --- | --- |
@@ -110,6 +120,8 @@ Administrator mengelola data konsultan dan jadwal ketersediaannya, FAQ, umpan ba
 | AB-R-5 | UU No. 17/2023 tentang Kesehatan (UU Kesehatan omnibus) |
 | AB-R-6 | Permenkes No. 54/2017 |
 
+Tabel 6. Keterbatasan
+
 | ID | Keterbatasan |
 | --- | --- |
 | AB-K-1 | Aplikasi bukan pengganti layanan intervensi krisis atau *hotline* darurat (seperti SEJIWA 119 ext. 8) — tidak dirancang untuk menangani situasi darurat kesehatan mental |
@@ -119,6 +131,8 @@ Administrator mengelola data konsultan dan jadwal ketersediaannya, FAQ, umpan ba
 | AB-K-5 | Rilis awal hanya mencakup aplikasi mobile (Android dan iOS); belum tersedia versi web atau desktop |
 | AB-K-6 | Aplikasi tidak menyediakan rekam medis elektronik atau fitur diagnosis klinis |
 
+Tabel 7. Di Dalam Ruang Lingkup Solusi
+
 | ID | Di dalam ruang lingkup solusi |
 | --- | --- |
 | AB-RLS-D-1 | Pengaturan dan pengiriman *daily affirmations* sesuai jadwal yang ditentukan pengguna |
@@ -126,6 +140,8 @@ Administrator mengelola data konsultan dan jadwal ketersediaannya, FAQ, umpan ba
 | AB-RLS-D-3 | Tampilan jadwal harian terintegrasi dengan Google Calendar pengguna (*read access*) |
 | AB-RLS-D-4 | Pemesanan sesi konsultasi dengan konsultan, termasuk deteksi bentrok (*overlap*) antara slot yang dipilih dengan event yang sudah ada di Google Calendar pengguna |
 | AB-RLS-D-5 | Panel administrator untuk mengelola ketersediaan konsultan dan data pengguna |
+
+Tabel 8. Di Luar Ruang Lingkup Solusi
 
 | ID | Di luar ruang lingkup solusi |
 | --- | --- |
@@ -139,12 +155,16 @@ Administrator mengelola data konsultan dan jadwal ketersediaannya, FAQ, umpan ba
 
 ### Identifikasi Aktor
 
+Tabel 9. Identifikasi Aktor
+
 | Aktor         | Deskripsi                                                                                                                                               |
 | ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Mahasiswa | Pengguna ini akan menggunakan fitur-fitur pengingat makan, olahraga, dan tidur serta mendapatkan *daily affirmations* dan dapat memesan sesi konsultasi |
 | Administrator | Pengguna ini akan menambahkan jadwal konsultasi sesuai jadwal yang terdapat pada informasi konsultan |
 
 ### Kebutuhan Pengguna Awal
+
+Tabel 10. Kebutuhan Pengguna Awal
 
 | ID    | Aktor                    | Kebutuhan / Aktivitas                                            | Tujuan / Nilai                                                                               |
 | ----- | ------------------------ | ---------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
@@ -160,6 +180,8 @@ Administrator mengelola data konsultan dan jadwal ketersediaannya, FAQ, umpan ba
 | US-10 | Mahasiswa                | Mengajukan pertanyaan yang tidak tercakup di FAQ                 | Mendapatkan jawaban atas hal yang tidak terjawab oleh FAQ yang tersedia                      |
 
 ### Deskripsi Aktivitas
+
+Tabel 11. Deskripsi Aktivitas
 
 | ID   | Aktivitas                                              | Penjelasan                                                                                                                                                                        | ID _User_ Story |
 | ---- | ------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------- |
@@ -177,6 +199,8 @@ Administrator mengelola data konsultan dan jadwal ketersediaannya, FAQ, umpan ba
 | A-12 | Mengajukan pertanyaan di luar FAQ | Pengguna dapat mengisi dan mengirim pertanyaan melalui form ketika jawabannya tidak ditemukan di FAQ. | US-10 |
 
 ### Peta Kebutuhan
+
+Tabel 12. Peta Kebutuhan
 
 | ID Kebutuhan | ID Aktivitas     | Jenis Kebutuhan | Deskripsi Kebutuhan                                                                                                                | P/L   |
 | ------------ | ---------------- | --------------- | ---------------------------------------------------------------------------------------------------------------------------------- | ----- |
@@ -206,6 +230,8 @@ Administrator mengelola data konsultan dan jadwal ketersediaannya, FAQ, umpan ba
 
 ## Kebutuhan Fungsional dan Kebutuhan Non-Fungsional
 
+Tabel 13. Kebutuhan Fungsional
+
 | ID KF | ID Kebutuhan     | Penjelasan                                                                                                                                                                                 |
 | ----- | ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | KF-01 | R-01, R-02 | Sistem menyediakan opsi untuk menyetel waktu pengiriman *daily affirmations*, menyimpan preferensi tersebut, dan dapat mengirim notifikasi *daily affirmations* di waktu yang disetel |
@@ -222,6 +248,8 @@ Administrator mengelola data konsultan dan jadwal ketersediaannya, FAQ, umpan ba
 | KF-12 | R-21 | Sistem dapat memverifikasi identitas pengguna melalui *log in* akun Google dan memberikan akses ke aplikasi setelah autentikasi berhasil. |
 | KF-13 | R-22, R-23 | Sistem menyediakan form bagi pengguna untuk mengajukan pertanyaan di luar FAQ, menyimpannya pada *database*, dan menampilkan konfirmasi bahwa pertanyaan telah tersimpan |
 
+Tabel 14. Kebutuhan Non-Fungsional
+
 | ID KNF | ID Kebutuhan | Parameter    | Deskripsi Kebutuhan                                         |
 | ------ | ------------ | ------------ | ----------------------------------------------------------- |
 | KNF-01 | R-08         | Availability | P/L dapat tersedia setiap saat dengan minimal uptime 90%    |
@@ -237,13 +265,15 @@ Administrator mengelola data konsultan dan jadwal ketersediaannya, FAQ, umpan ba
 <img alt="Contoh Activity Diagram" src="M1/assets/diagram/diagram-act-1.png" width="70%">
   </p>
 <p align="center">
-<i>Gambar 1. Model Proses Bisnis Sehati</i>
+<i>Gambar 2. Model Proses Bisnis Sehati</i>
 <br>
 www.drawio.com
 </p>
 
 
 # Use Cases
+
+Tabel 15. Daftar Use Case
 
 | ID UC | Nama *Use Case* | Deskripsi Singkat | Aktor Terlibat | ID KF Terkait |
 | --- | --- | --- | --- | --- |
@@ -266,7 +296,7 @@ www.drawio.com
 <img alt="Use Case Diagram di DRAW.IO" src="M3/assets/diagram/UCD.png" width="70%">
 </p>
 <p align="center">
-<i>Gambar 1. Use case Diagram</i>
+<i>Gambar 3. Use Case Diagram Sehati</i>
 </p>
 
 ## Skenario Use Case
@@ -505,10 +535,12 @@ www.drawio.com
 
 # Struktur Kelas
 
+Tabel 16. Struktur Kelas
+
 | ID Kelas | Nama Kelas            | Deskripsi Kelas                                                                                                               | ID _Use Case_                           |
 | -------- | --------------------- | ----------------------------------------------------------------------------------------------------------------------------- | --------------------------------------- |
 | C-01     | Pengguna              | Kelas abstrak menyimpan atribut umum akun (id, nama, email, googleId) yang dibagikan Mahasiswa dan Administrator.             | UC-11                                   |
-| C-02     | Mahasiswa             | Merealisasikan Pengguna; merepresentasikan pengguna utama aplikasi.                                                           | UC-01–UC-04, UC-06, UC-08, UC-11, UC-12 |
+| C-02     | Mahasiswa             | Merealisasikan Pengguna; merepresentasikan pengguna utama aplikasi.                                                           | UC-01, UC-02, UC-03, UC-04, UC-06, UC-08, UC-11, UC-12 |
 | C-03     | Administrator         | Merealisasikan Pengguna; mengelola jadwal konsultan, FAQ, dan umpan balik.                                                    | UC-05, UC-07, UC-09, UC-10, UC-11       |
 | C-04     | SesiAutentikasi       | Menyimpan token sesi aplikasi dan status _log in_ setelah autentikasi Google berhasil.                                        | UC-11                                   |
 | C-05     | DailyAffirmation      | Menyimpan konten afirmasi dan jadwal pengiriman yang ditentukan pengguna.                                                     | UC-01                                   |
@@ -521,7 +553,7 @@ www.drawio.com
 | C-12     | FAQ                   | Menyimpan pasangan pertanyaan dan jawaban yang dikelola Administrator.                                                        | UC-06, UC-07                            |
 | C-13     | PengajuanPertanyaan   | Menyimpan pertanyaan yang diajukan pengguna di luar FAQ yang tersedia.                                                        | UC-12                                   |
 | C-14     | UmpanBalik            | Menyimpan umpan balik pengguna beserta tanggapan Administrator (jika ada).                                                    | UC-08, UC-09                            |
-| C-15     | Status*Server*        | Merepresentasikan status _uptime_ layanan yang dipantau Administrator.                                                        | UC-10                                   |
+| C-15     | StatusServer          | Merepresentasikan status _uptime_ layanan yang dipantau Administrator.                                                        | UC-10                                   |
 
 ## Diagram Kelas per _Use Case_
 
@@ -543,7 +575,7 @@ www.drawio.com
 <img alt="Class Diagram UC-01" src="M4/assets/diagram/UC-01_diagram.png" width="70%">
 </p>
 <p align="center">
-<i>Gambar 2. Diagram Kelas _Use Case_ UC-01</i>
+<i>Gambar 4. Diagram Kelas _Use Case_ UC-01</i>
 </p>
 <br>
 
@@ -571,7 +603,7 @@ www.drawio.com
 <img alt="Class Diagram UC-02" src="M4/assets/diagram/UC-02_diagram.png" width="70%">
 </p>
 <p align="center">
-<i>Gambar 3. Diagram Kelas _Use Case_ UC-02</i>
+<i>Gambar 5. Diagram Kelas _Use Case_ UC-02</i>
 </p>
 <br>
 
@@ -599,7 +631,7 @@ www.drawio.com
 <img alt="Class Diagram UC-03" src="M4/assets/diagram/UC-03_diagram.png" width="70%">
 </p>
 <p align="center">
-<i>Gambar 4. Diagram Kelas _Use Case_ UC-03</i>
+<i>Gambar 6. Diagram Kelas _Use Case_ UC-03</i>
 </p>
 <br>
 
@@ -613,7 +645,7 @@ www.drawio.com
 
 **Nama _Use Case_:** Memesan Sesi Konsultasi
 
-#### Identifikasi Kelas
+**Identifikasi Kelas**
 
 | ID Kelas | Nama Kelas            | Deskripsi Kelas                                                                                                               |
 | -------- | --------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
@@ -622,13 +654,13 @@ www.drawio.com
 | C-10     | Konsultan             | Menyimpan data konsultan (nama, spesialisasi) yang didaftarkan oleh Administrator.                                            |
 | C-11     | JadwalKonsultasi      | Menyimpan slot jadwal konsultasi (konsultan, waktu, status tersedia/terpesan) pada _database_.                                |
 
-#### Diagram Kelas
+**Diagram Kelas**
 
 <p align="center">
 <img alt="Class Diagram UC-04" src="M4/assets/diagram/UC-04_diagram.png" width="70%">
 </p>
 <p align="center">
-<i>Gambar 5. Diagram Kelas _Use Case_ UC-04</i>
+<i>Gambar 7. Diagram Kelas _Use Case_ UC-04</i>
 </p>
 <br>
 
@@ -643,7 +675,7 @@ www.drawio.com
 
 **Nama _Use Case_:** Mengelola Jadwal Konsultan
 
-#### Identifikasi Kelas
+**Identifikasi Kelas**
 
 | ID Kelas | Nama Kelas       | Deskripsi Kelas                                                                                |
 | -------- | ---------------- | ---------------------------------------------------------------------------------------------- |
@@ -651,13 +683,13 @@ www.drawio.com
 | C-10     | Konsultan        | Menyimpan data konsultan (nama, spesialisasi) yang didaftarkan oleh Administrator.             |
 | C-11     | JadwalKonsultasi | Menyimpan slot jadwal konsultasi (konsultan, waktu, status tersedia/terpesan) pada _database_. |
 
-#### Diagram Kelas
+**Diagram Kelas**
 
 <p align="center">
 <img alt="Class Diagram UC-05" src="M4/assets/diagram/UC-05_diagram.png" width="70%">
 </p>
 <p align="center">
-<i>Gambar 6. Diagram Kelas _Use Case_ UC-05</i>
+<i>Gambar 8. Diagram Kelas _Use Case_ UC-05</i>
 </p>
 <br>
 
@@ -678,13 +710,13 @@ www.drawio.com
 | C-02     | Mahasiswa  | Merealisasikan Pengguna; merepresentasikan pengguna utama aplikasi.    |
 | C-12     | FAQ        | Menyimpan pasangan pertanyaan dan jawaban yang dikelola Administrator. |
 
-*Diagram Kelas**
+**Diagram Kelas**
 
 <p align="center">
 <img alt="Class Diagram UC-06" src="M4/assets/diagram/UC-06_diagram.png" width="70%">
 </p>
 <p align="center">
-<i>Gambar 7. Diagram Kelas _Use Case_ UC-06</i>
+<i>Gambar 9. Diagram Kelas _Use Case_ UC-06</i>
 </p>
 <br>
 
@@ -710,7 +742,7 @@ www.drawio.com
 <img alt="Class Diagram UC-07" src="M4/assets/diagram/UC-07_diagram.png" width="70%">
 </p>
 <p align="center">
-<i>Gambar 8. Diagram Kelas _Use Case_ UC-07</i>
+<i>Gambar 10. Diagram Kelas _Use Case_ UC-07</i>
 </p>
 <br>
 
@@ -736,7 +768,7 @@ www.drawio.com
 <img alt="Class Diagram UC-08" src="M4/assets/diagram/UC-08_diagram.png" width="70%">
 </p>
 <p align="center">
-<i>Gambar 9. Diagram Kelas _Use Case_ UC-08</i>
+<i>Gambar 11. Diagram Kelas _Use Case_ UC-08</i>
 </p>
 <br>
 
@@ -762,7 +794,7 @@ www.drawio.com
 <img alt="Class Diagram UC-09" src="M4/assets/diagram/UC-09_diagram.png" width="70%">
 </p>
 <p align="center">
-<i>Gambar 10. Diagram Kelas _Use Case_ UC-09</i>
+<i>Gambar 12. Diagram Kelas _Use Case_ UC-09</i>
 </p>
 <br>
 
@@ -780,7 +812,7 @@ www.drawio.com
 | ID Kelas | Nama Kelas     | Deskripsi Kelas                                                            |
 | -------- | -------------- | -------------------------------------------------------------------------- |
 | C-03     | Administrator  | Merealisasikan Pengguna; mengelola jadwal konsultan, FAQ, dan umpan balik. |
-| C-15     | Status*Server* | Merepresentasikan status _uptime_ layanan yang dipantau Administrator.     |
+| C-15     | StatusServer | Merealisasikan Pengguna; merepresentasikan status _uptime_ layanan yang dipantau Administrator. |
 
 **Diagram Kelas**
 
@@ -788,14 +820,14 @@ www.drawio.com
 <img alt="Class Diagram UC-10" src="M4/assets/diagram/UC-10_diagram.png" width="70%">
 </p>
 <p align="center">
-<i>Gambar 11. Diagram Kelas _Use Case_ UC-10</i>
+<i>Gambar 13. Diagram Kelas _Use Case_ UC-10</i>
 </p>
 <br>
 
 | ID Kelas | Nama Kelas     | Atribut                | Metode/Operasi                       |
 | -------- | -------------- | ---------------------- | ------------------------------------ |
 | C-03     | Administrator  | -                      | -                                    |
-| C-15     | Status*Server* | statusUptime, waktuCek | cekStatusServer(), tampilkanStatus() |
+| C-15     | StatusServer | statusUptime, waktuCek | cekStatusServer(), tampilkanStatus() |
 
 ### Diagram Kelas UC-11
 
@@ -816,7 +848,7 @@ www.drawio.com
 <img alt="Class Diagram UC-11" src="M4/assets/diagram/UC-11_diagram.png" width="70%">
 </p>
 <p align="center">
-<i>Gambar 12. Diagram Kelas _Use Case_ UC-11</i>
+<i>Gambar 14. Diagram Kelas _Use Case_ UC-11</i>
 </p>
 <br>
 
@@ -844,7 +876,7 @@ www.drawio.com
 <img alt="Class Diagram UC-12" src="M4/assets/diagram/UC-12_diagram.png" width="70%">
 </p>
 <p align="center">
-<i>Gambar 13. Diagram Kelas _Use Case_ UC-12</i>
+<i>Gambar 15. Diagram Kelas _Use Case_ UC-12</i>
 </p>
 <br>
 
@@ -859,7 +891,7 @@ www.drawio.com
 <img alt="Class Diagram Keseluruhan" src="M4/assets/diagram/full-class-diagram.png" width="70%">
 </p>
 <p align="center">
-<i>Gambar 14. Diagram Kelas Keseluruhan</i>
+<i>Gambar 16. Diagram Kelas Keseluruhan</i>
 </p>
 <br>
 
@@ -883,6 +915,8 @@ www.drawio.com
 
 
 ## Traceability Struktur Kelas
+
+Tabel 17. Traceability Struktur Kelas
 
 | ID Kelas | ID *Use Case* | ID KF |
 | --- | --- | --- |
@@ -936,10 +970,10 @@ flowchart TB
 ```
 
 <p align="center">
-<i>Gambar 1. Pattern Client-Server dengan MVC diterapkan pada Sehati</i>
+<i>Gambar 17. Pattern Client-Server dengan MVC diterapkan pada Sehati</i>
 </p>
 
-Tabel 1.1. Lingkungan Operasi Perangkat Lunak
+Tabel 18. Lingkungan Operasi Perangkat Lunak
 
 | Komponen            | Spesifikasi                                                                                            |
 | ------------------- | ------------------------------------------------------------------------------------------------------ |
@@ -952,6 +986,8 @@ Tabel 1.1. Lingkungan Operasi Perangkat Lunak
 Kaitan teknologi dengan pattern: React Native menjalankan seluruh View di perangkat pengguna, sesuai peran client yang hanya menampilkan dan meneruskan aksi. Hono dipilih karena merupakan _router_ tipis untuk lingkungan _edge_, sehingga cocok menjadi server yang hanya berisi Controller dan Model tanpa View. Cloudflare Workers memungkinkan satu server melayani semua client, dan Cloudflare D1 menjadi penyimpanan terpusat di bawah Model, terpisah dari logika Controller.
 
 ## Identifikasi Komponen
+
+Tabel 19. Identifikasi Komponen
 
 | Nama Komponen              | Jenis               | Penjelasan                                                                                                      |
 | -------------------------- | ------------------- | --------------------------------------------------------------------------------------------------------------- |
@@ -991,7 +1027,7 @@ Kaitan teknologi dengan pattern: React Native menjalankan seluruh View di perang
 | GoogleCalendarService      | Integrasi Eksternal | Mengambil event pengguna dari Google Calendar API dan melakukan pengecekan bentrok jadwal (free/busy).          |
 | CloudflareD1Database       | Penyimpanan Data    | Menyimpan seluruh data Model secara persisten di Cloudflare D1.                                                 |
 
-Ketentuan pengisian Tabel 2.1:
+Ketentuan pengisian Tabel 19:
 
 1. Kolom **Jenis** mengikuti pengelompokan pada _style/pattern_ di BAB 1. Untuk MVC, jenisnya adalah _Model_, _View_, dan _Controller_. Jenis lain boleh ditambahkan, misalnya _Pendukung_ untuk komponen bantu yang dipakai bersama, atau _Integrasi Eksternal_ untuk penghubung ke sistem di luar P/L yang disebutkan pada subbab 2.2 dokumen SKPL. Kolom ini juga boleh diisi dengan _Subsistem_, _Modul_, atau _Komponen_ apabila komponen dikelompokkan berdasarkan fungsinya. Tuliskan subsistem terlebih dahulu, lalu komponen penyusunnya di baris-baris berikutnya.
 2. Komponen **tidak sama dengan** kelas. Satu komponen boleh mewadahi beberapa kelas dari diagram kelas pada dokumen SKPL. Pastikan seluruh kelas tercakup oleh setidaknya satu komponen.
@@ -999,9 +1035,9 @@ Ketentuan pengisian Tabel 2.1:
 
 ## Logical View
 
-Logical View dipilih karena hal terpenting yang perlu dijelaskan pada Sehati adalah pembagian tanggung jawab antar komponen: View di sisi _client_, serta Controller, Model, dan layanan pendukung di sisi _server_. Pembagian ini langsung menjawab kebutuhan SKPL, yaitu satu server yang memegang data bersama untuk dua aktor dan satu-satunya yang memanggil Google. Process View tidak dipilih karena sistem ini tidak memiliki alur proses paralel yang rumit, dan Physical View tidak dipilih karena lingkungan operasinya sudah dijelaskan pada Tabel 1.1.
+Logical View dipilih karena hal terpenting yang perlu dijelaskan pada Sehati adalah pembagian tanggung jawab antar komponen: View di sisi _client_, serta Controller, Model, dan layanan pendukung di sisi _server_. Pembagian ini langsung menjawab kebutuhan SKPL, yaitu satu server yang memegang data bersama untuk dua aktor dan satu-satunya yang memanggil Google. Process View tidak dipilih karena sistem ini tidak memiliki alur proses paralel yang rumit, dan Physical View tidak dipilih karena lingkungan operasinya sudah dijelaskan pada Tabel 18.
 
-Diagram pada Gambar 2 adalah _block diagram_ yang memuat seluruh 35 komponen Tabel 2.1: 9 View, 8 Controller, 1 Validasi, 14 Model, 2 Integrasi Eksternal, dan 1 Penyimpanan Data. Komponen dikelompokkan sesuai BAB 1. Kotak _Client_ berisi View, dan kotak _Server_ berisi Controller, Model, dan Sistem Pendukung (Validasi). Layanan Google (GoogleAuthService dan GoogleCalendarService) berada dalam kotak Sistem Eksternal, dan CloudflareD1Database berada di luar kotak Server. Garis putus-putus menandakan pemanggilan atau validasi. Garis penuh menandakan akses ke Model atau penyimpanan data.
+Diagram pada Gambar 18 adalah _block diagram_ yang memuat seluruh 35 komponen Tabel 19: 9 View, 8 Controller, 1 Validasi, 14 Model, 2 Integrasi Eksternal, dan 1 Penyimpanan Data. Komponen dikelompokkan sesuai BAB 1. Kotak _Client_ berisi View, dan kotak _Server_ berisi Controller, Model, dan Sistem Pendukung (Validasi). Layanan Google (GoogleAuthService dan GoogleCalendarService) berada dalam kotak Sistem Eksternal, dan CloudflareD1Database berada di luar kotak Server. Garis putus-putus menandakan pemanggilan atau validasi. Garis penuh menandakan akses ke Model atau penyimpanan data.
 
 ```mermaid
 ---
@@ -1118,10 +1154,10 @@ flowchart TB
 ```
 
 <p align="center">
-<i>Gambar 2. Logical View pada P/L Sehati</i>
+<i>Gambar 18. Logical View pada P/L Sehati</i>
 </p>
 
-Relasi antar komponen pada Gambar 2:
+Relasi antar komponen pada Gambar 18:
 
 - **View → Controller** (_Memanggil_): setiap View memanggil Controller untuk fiturnya. LoginView memanggil AuthController, dan ConsultationBookingView serta ConsultationManagementView sama-sama memanggil ConsultationController.
 - **Controller → Model** (_Akses_): setiap Controller mengakses Model yang dikelolanya, misalnya FAQController ke FAQ dan ConsultationController ke JadwalKonsultasi dan Konsultan.
