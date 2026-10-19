@@ -1,7 +1,7 @@
 <h1>
 IF2150 REKAYASA PERANGKAT LUNAK
 <br>
-TUGAS 5
+TUGAS 7
 <br>
 DESKRIPSI PERANCANGAN PERANGKAT LUNAK (DPPL)
 </h1>
@@ -105,29 +105,29 @@ Dokumen ini memakai pola penomoran ID yang sama dengan dokumen SKPL dan APL, seh
 
 Tabel 1.4. Aturan Penomoran
 
-| Hal/Bagian                     | Penomoran | Keterangan                                                                                                      |
-| ------------------------------ | --------- | --------------------------------------------------------------------------------------------------------------- |
-| Kebutuhan                      | R-XX      | Huruf R, tanda hubung, lalu nomor urut dua digit mulai dari 01 (contoh: R-01). Dipakai pada kolom ID Kebutuhan. |
-| Kebutuhan Fungsional           | KF-XX     | Nomor urut dua digit mulai dari 01 (contoh: KF-01).                                                             |
-| Kebutuhan Non-Fungsional       | KNF-XX    | Nomor urut dua digit mulai dari 01 (contoh: KNF-01).                                                            |
-| Aktivitas                      | A-XX      | Nomor urut dua digit mulai dari 01 (contoh: A-01), sesuai dokumen _Requirement Gathering_.                      |
-| _User Story_                   | US-XX     | Nomor urut dua digit mulai dari 01 (contoh: US-01), sesuai dokumen _Requirement Gathering_.                     |
-| _Use Case_                     | UC-XX     | Nomor urut dua digit mulai dari 01 (contoh: UC-01).                                                             |
-| Kelas                          | C-XX      | Nomor urut dua digit mulai dari 01 (contoh: C-01).                                                              |
-| Aktor                          | Tidak ada | Aktor tidak diberi ID dan dirujuk dengan namanya (Mahasiswa, Administrator).                                    |
+| Hal/Bagian               | Penomoran | Keterangan                                                                                                      |
+| ------------------------ | --------- | --------------------------------------------------------------------------------------------------------------- |
+| Kebutuhan                | R-XX      | Huruf R, tanda hubung, lalu nomor urut dua digit mulai dari 01 (contoh: R-01). Dipakai pada kolom ID Kebutuhan. |
+| Kebutuhan Fungsional     | KF-XX     | Nomor urut dua digit mulai dari 01 (contoh: KF-01).                                                             |
+| Kebutuhan Non-Fungsional | KNF-XX    | Nomor urut dua digit mulai dari 01 (contoh: KNF-01).                                                            |
+| Aktivitas                | A-XX      | Nomor urut dua digit mulai dari 01 (contoh: A-01), sesuai dokumen _Requirement Gathering_.                      |
+| _User Story_             | US-XX     | Nomor urut dua digit mulai dari 01 (contoh: US-01), sesuai dokumen _Requirement Gathering_.                     |
+| _Use Case_               | UC-XX     | Nomor urut dua digit mulai dari 01 (contoh: UC-01).                                                             |
+| Kelas                    | C-XX      | Nomor urut dua digit mulai dari 01 (contoh: C-01).                                                              |
+| Aktor                    | Tidak ada | Aktor tidak diberi ID dan dirujuk dengan namanya (Mahasiswa, Administrator).                                    |
 
 ## 1.5 Referensi
 
 Dokumen ini merujuk pada sumber-sumber berikut.
 
-1. Kelompok G04 K01, dokumen *Spesifikasi Kebutuhan Perangkat Lunak (SKPL)* untuk Sehati, IF2150 Rekayasa Perangkat Lunak.
-2. Kelompok G04 K01, dokumen *Arsitektur Perangkat Lunak (APL)* untuk Sehati, IF2150 Rekayasa Perangkat Lunak.
-3. Google, *Google Calendar API Documentation*. https://developers.google.com/calendar
-4. Google, *Google Identity: OAuth 2.0*. https://developers.google.com/identity/protocols/oauth2
-5. Cloudflare, *Cloudflare Workers Documentation*. https://developers.cloudflare.com/workers/
-6. Cloudflare, *Cloudflare D1 Documentation*. https://developers.cloudflare.com/d1/
-7. Hono, *Hono Documentation*. https://hono.dev/
-8. Expo, *React Native Documentation*. https://docs.expo.dev/
+1. Kelompok G04 K01, dokumen _Spesifikasi Kebutuhan Perangkat Lunak (SKPL)_ untuk Sehati, IF2150 Rekayasa Perangkat Lunak.
+2. Kelompok G04 K01, dokumen _Arsitektur Perangkat Lunak (APL)_ untuk Sehati, IF2150 Rekayasa Perangkat Lunak.
+3. Google, _Google Calendar API Documentation_. https://developers.google.com/calendar
+4. Google, _Google Identity: OAuth 2.0_. https://developers.google.com/identity/protocols/oauth2
+5. Cloudflare, _Cloudflare Workers Documentation_. https://developers.cloudflare.com/workers/
+6. Cloudflare, _Cloudflare D1 Documentation_. https://developers.cloudflare.com/d1/
+7. Hono, _Hono Documentation_. https://hono.dev/
+8. Expo, _React Native Documentation_. https://docs.expo.dev/
 9. Alat pembuatan diagram UML: draw.io (https://www.drawio.com/) dan StarUML (https://staruml.io/).
 
 ## 1.6 Deskripsi Umum Dokumen (Ikhtisar)
@@ -413,67 +413,542 @@ Pada diagram ini, simbol lingkaran di ujung garis antar-_model_ berada di sisi k
 
 # BAB 3: Realisasi Use Case
 
-## 3.1 Use Case [Nama Use Case 1]
+BAB ini menjabarkan realisasi seluruh 12 _use case_ pada SKPL (UC-01 sampai UC-12). Setiap _use case_ dilengkapi identifikasi kelas, _sequence diagram_ untuk setiap skenario pada SKPL, dan diagram kelas.
 
-**ID Use Case:** _[UC01 sesuai SKPL]_  
-**Nama Use Case:** _[Nama use case sesuai SKPL]_
+<!-- TODO: gambar sequence diagram (UC-XX_SQ_diagram.png dan UC-XX_SQ_ALT<n>_diagram.png) belum dibuat. Diagram kelas UC-XX_diagram.png masih salinan dari M4 dan belum memenuhi spesifikasi 3.x.3. -->
+
+## 3.1 Use Case Menyetel Daily Affirmations
+
+**ID Use Case:** UC-01  
+**Nama Use Case:** Menyetel Daily Affirmations
 
 ### 3.1.1 Identifikasi Kelas
 
-Identifikasi kelas yang terkait dengan use case tersebut. Kelas di tahap perancangan dapat berbeda dengan dengan kelas di tahap analisis. Dapat menggunakan tabel di bawah:
+Tabel 3.1. Identifikasi Kelas Use Case UC-01
 
-Tabel 3.1. Identifikasi Kelas Use Case [UC01]
-
-| No  | Nama Kelas Perancangan     | Nama Kelas Analisis Terkait       |
-| :-- | :------------------------- | :-------------------------------- |
-| 1   | _[Nama kelas perancangan]_ | _[Nama kelas analisis pada SKPL]_ |
-| 2   | _[Nama kelas perancangan]_ | _[Nama kelas analisis pada SKPL]_ |
-| ... | _..._                      | _..._                             |
+| No  | Nama Kelas Perancangan | Nama Kelas Analisis Terkait |
+| :-- | :--------------------- | :-------------------------- |
+| 1   | `Mahasiswa`            | `Mahasiswa` (C-02)          |
+| 2   | `DailyAffirmation`     | `DailyAffirmation` (C-05)   |
+| 3   | `Notifikasi`           | `Notifikasi` (C-07)         |
 
 ### 3.1.2 Sequence Diagram
-
-Buat _sequence diagram_ untuk **setiap skenario use case**, mencakup skenario normal dan alternatif pada subbab 4.4 SKPL. Diagram melibatkan kelas-kelas yang telah diidentifikasi pada SKPL.
 
 - **Skenario Normal**
 
 <p align="center">
-<img alt="Contoh Logical View pada P/L E-Commerce" src="./assets/diagram/contoh-sequence_diagram.png" width="50%">
+<img alt="Sequence Diagram UC-01" src="./assets/diagram/UC-01_SQ_diagram.png" width="50%">
 </p>
 <p align="center">
-<i>Gambar X. Sequence Diagram [UC01]</i>
+<i>Gambar 3.1.1. Sequence Diagram UC-01 - Skenario Normal</i>
 </p>
 
-- **Skenario Alternatif [Nomor]: [Nama Skenario]**
+- **Skenario Alternatif 1: Sistem tidak mampu menyimpan setelan**
 
 <p align="center">
-<img alt="Contoh Logical View pada P/L E-Commerce" src="./assets/diagram/contoh-sequence_diagram.png" width="50%">
+<img alt="Sequence Diagram UC-01 Alternatif 1" src="./assets/diagram/UC-01_SQ_ALT1_diagram.png" width="50%">
 </p>
 <p align="center">
-<i>Gambar X. Sequence Diagram [UC01] - [Nama skenario alternatif]</i>
+<i>Gambar 3.1.2. Sequence Diagram UC-01 - Skenario Alternatif 1</i>
 </p>
 
 ### 3.1.3 Diagram Kelas
 
-Buatlah diagram kelas untuk use case ini yang terdiri atas kelas-kelas dari 3.1.1. **Setiap kelas pada diagram wajib menampilkan atribut dan metode/operasi langsung di dalam kotak kelasnya**, sehingga tidak perlu membuat tabel daftar atribut dan metode per kelas pada subbab ini. Daftar lengkap atribut dan metode seluruh kelas disajikan pada Tabel 4.1 (Bab 4).
-
 <p align="center">
-<img alt="Contoh Logical View pada P/L E-Commerce" src="./assets/diagram/contoh_class-diagram2.jpg" width="35%">
+<img alt="Diagram Kelas UC-01" src="./assets/diagram/UC-01_diagram.png" width="50%">
 </p>
 <p align="center">
-<i>Gambar X. Diagram Kelas [Nama Uce Case]</i>
+<i>Gambar 3.1.3. Diagram Kelas Use Case UC-01 - Menyetel Daily Affirmations</i>
 </p>
 
-Pada diagram, pastikan:
+## 3.2 Use Case Menyetel Pengingat Kesehatan
 
-- Atribut dituliskan beserta visibilitas dan tipe datanya, misalnya `- email: String`.
-- Operasi dituliskan beserta visibilitas, parameter, dan tipe kembaliannya, misalnya `+ login(email: String, password: String): Boolean`.
-- Relasi antarkelas (asosiasi, agregasi, komposisi, generalisasi, dan dependensi) digambarkan lengkap dengan multiplisitas.
-- Semua operasi yang dipanggil pada sequence diagram 3.1.2 (skenario normal dan alternatif) ada pada kelas yang bersangkutan.
-- Kelas yang sama dengan kelas di use case lain memakai nama, atribut, dan metode yang konsisten.
+**ID Use Case:** UC-02  
+**Nama Use Case:** Menyetel Pengingat Kesehatan
 
-## 3.2 Use Case XX
+### 3.2.1 Identifikasi Kelas
 
-Silahkan lanjutkan untuk _use case_ berikutnya dengan content yang sama dengan 3.1
+Tabel 3.2. Identifikasi Kelas Use Case UC-02
+
+| No  | Nama Kelas Perancangan | Nama Kelas Analisis Terkait |
+| :-- | :--------------------- | :-------------------------- |
+| 1   | `Mahasiswa`            | `Mahasiswa` (C-02)          |
+| 2   | `Reminder`             | `Reminder` (C-06)           |
+| 3   | `Notifikasi`           | `Notifikasi` (C-07)         |
+
+### 3.2.2 Sequence Diagram
+
+- **Skenario Normal**
+
+<p align="center">
+<img alt="Sequence Diagram UC-02" src="./assets/diagram/UC-02_SQ_diagram.png" width="50%">
+</p>
+<p align="center">
+<i>Gambar 3.2.1. Sequence Diagram UC-02 - Skenario Normal</i>
+</p>
+
+- **Skenario Alternatif 1: Sistem tidak mampu menyimpan setelan**
+
+<p align="center">
+<img alt="Sequence Diagram UC-02 Alternatif 1" src="./assets/diagram/UC-02_SQ_ALT1_diagram.png" width="50%">
+</p>
+<p align="center">
+<i>Gambar 3.2.2. Sequence Diagram UC-02 - Skenario Alternatif 1</i>
+</p>
+
+### 3.2.3 Diagram Kelas
+
+<p align="center">
+<img alt="Diagram Kelas UC-02" src="./assets/diagram/UC-02_diagram.png" width="50%">
+</p>
+<p align="center">
+<i>Gambar 3.2.3. Diagram Kelas Use Case UC-02 - Menyetel Pengingat Kesehatan</i>
+</p>
+
+## 3.3 Use Case Melihat Kalender Terintegrasi
+
+**ID Use Case:** UC-03  
+**Nama Use Case:** Melihat Kalender Terintegrasi
+
+### 3.3.1 Identifikasi Kelas
+
+Tabel 3.3. Identifikasi Kelas Use Case UC-03
+
+| No  | Nama Kelas Perancangan  | Nama Kelas Analisis Terkait    |
+| :-- | :---------------------- | :----------------------------- |
+| 1   | `Mahasiswa`             | `Mahasiswa` (C-02)             |
+| 2   | `GoogleCalendarService` | `GoogleCalendarService` (C-08) |
+| 3   | `KalenderGabungan`      | `KalenderGabungan` (C-09)      |
+
+### 3.3.2 Sequence Diagram
+
+- **Skenario Normal**
+
+<p align="center">
+<img alt="Sequence Diagram UC-03" src="./assets/diagram/UC-03_SQ_diagram.png" width="50%">
+</p>
+<p align="center">
+<i>Gambar 3.3.1. Sequence Diagram UC-03 - Skenario Normal</i>
+</p>
+
+- **Skenario Alternatif 1: Sistem tidak mampu mengambil data event**
+
+<p align="center">
+<img alt="Sequence Diagram UC-03 Alternatif 1" src="./assets/diagram/UC-03_SQ_ALT1_diagram.png" width="50%">
+</p>
+<p align="center">
+<i>Gambar 3.3.2. Sequence Diagram UC-03 - Skenario Alternatif 1</i>
+</p>
+
+### 3.3.3 Diagram Kelas
+
+<p align="center">
+<img alt="Diagram Kelas UC-03" src="./assets/diagram/UC-03_diagram.png" width="50%">
+</p>
+<p align="center">
+<i>Gambar 3.3.3. Diagram Kelas Use Case UC-03 - Melihat Kalender Terintegrasi</i>
+</p>
+
+## 3.4 Use Case Memesan Sesi Konsultasi
+
+**ID Use Case:** UC-04  
+**Nama Use Case:** Memesan Sesi Konsultasi
+
+### 3.4.1 Identifikasi Kelas
+
+Tabel 3.4. Identifikasi Kelas Use Case UC-04
+
+| No  | Nama Kelas Perancangan  | Nama Kelas Analisis Terkait    |
+| :-- | :---------------------- | :----------------------------- |
+| 1   | `Mahasiswa`             | `Mahasiswa` (C-02)             |
+| 2   | `GoogleCalendarService` | `GoogleCalendarService` (C-08) |
+| 3   | `Konsultan`             | `Konsultan` (C-10)             |
+| 4   | `JadwalKonsultasi`      | `JadwalKonsultasi` (C-11)      |
+
+### 3.4.2 Sequence Diagram
+
+- **Skenario Normal**
+
+<p align="center">
+<img alt="Sequence Diagram UC-04" src="./assets/diagram/UC-04_SQ_diagram.png" width="50%">
+</p>
+<p align="center">
+<i>Gambar 3.4.1. Sequence Diagram UC-04 - Skenario Normal</i>
+</p>
+
+- **Skenario Alternatif 1: Sistem tidak mampu mengambil data jadwal konsultasi**
+
+<p align="center">
+<img alt="Sequence Diagram UC-04 Alternatif 1" src="./assets/diagram/UC-04_SQ_ALT1_diagram.png" width="50%">
+</p>
+<p align="center">
+<i>Gambar 3.4.2. Sequence Diagram UC-04 - Skenario Alternatif 1</i>
+</p>
+
+- **Skenario Alternatif 2: Sistem tidak mampu menyimpan jadwal konsultasi yang dipesan**
+
+<p align="center">
+<img alt="Sequence Diagram UC-04 Alternatif 2" src="./assets/diagram/UC-04_SQ_ALT2_diagram.png" width="50%">
+</p>
+<p align="center">
+<i>Gambar 3.4.3. Sequence Diagram UC-04 - Skenario Alternatif 2</i>
+</p>
+
+### 3.4.3 Diagram Kelas
+
+<p align="center">
+<img alt="Diagram Kelas UC-04" src="./assets/diagram/UC-04_diagram.png" width="50%">
+</p>
+<p align="center">
+<i>Gambar 3.4.4. Diagram Kelas Use Case UC-04 - Memesan Sesi Konsultasi</i>
+</p>
+
+## 3.5 Use Case Mengelola Jadwal Konsultan
+
+**ID Use Case:** UC-05  
+**Nama Use Case:** Mengelola Jadwal Konsultan
+
+### 3.5.1 Identifikasi Kelas
+
+Tabel 3.5. Identifikasi Kelas Use Case UC-05
+
+| No  | Nama Kelas Perancangan | Nama Kelas Analisis Terkait |
+| :-- | :--------------------- | :-------------------------- |
+| 1   | `Administrator`        | `Administrator` (C-03)      |
+| 2   | `Konsultan`            | `Konsultan` (C-10)          |
+| 3   | `JadwalKonsultasi`     | `JadwalKonsultasi` (C-11)   |
+
+### 3.5.2 Sequence Diagram
+
+- **Skenario Normal**
+
+<p align="center">
+<img alt="Sequence Diagram UC-05" src="./assets/diagram/UC-05_SQ_diagram.png" width="50%">
+</p>
+<p align="center">
+<i>Gambar 3.5.1. Sequence Diagram UC-05 - Skenario Normal</i>
+</p>
+
+- **Skenario Alternatif 1: Sistem tidak mampu mengambil data jadwal konsultasi**
+
+<p align="center">
+<img alt="Sequence Diagram UC-05 Alternatif 1" src="./assets/diagram/UC-05_SQ_ALT1_diagram.png" width="50%">
+</p>
+<p align="center">
+<i>Gambar 3.5.2. Sequence Diagram UC-05 - Skenario Alternatif 1</i>
+</p>
+
+- **Skenario Alternatif 2: Sistem tidak mampu mengedit data jadwal konsultasi**
+
+<p align="center">
+<img alt="Sequence Diagram UC-05 Alternatif 2" src="./assets/diagram/UC-05_SQ_ALT2_diagram.png" width="50%">
+</p>
+<p align="center">
+<i>Gambar 3.5.3. Sequence Diagram UC-05 - Skenario Alternatif 2</i>
+</p>
+
+### 3.5.3 Diagram Kelas
+
+<p align="center">
+<img alt="Diagram Kelas UC-05" src="./assets/diagram/UC-05_diagram.png" width="50%">
+</p>
+<p align="center">
+<i>Gambar 3.5.4. Diagram Kelas Use Case UC-05 - Mengelola Jadwal Konsultan</i>
+</p>
+
+## 3.6 Use Case Melihat FAQ
+
+**ID Use Case:** UC-06  
+**Nama Use Case:** Melihat FAQ
+
+### 3.6.1 Identifikasi Kelas
+
+Tabel 3.6. Identifikasi Kelas Use Case UC-06
+
+| No  | Nama Kelas Perancangan | Nama Kelas Analisis Terkait |
+| :-- | :--------------------- | :-------------------------- |
+| 1   | `Mahasiswa`            | `Mahasiswa` (C-02)          |
+| 2   | `FAQ`                  | `FAQ` (C-12)                |
+
+### 3.6.2 Sequence Diagram
+
+- **Skenario Normal**
+
+<p align="center">
+<img alt="Sequence Diagram UC-06" src="./assets/diagram/UC-06_SQ_diagram.png" width="50%">
+</p>
+<p align="center">
+<i>Gambar 3.6.1. Sequence Diagram UC-06 - Skenario Normal</i>
+</p>
+
+- **Skenario Alternatif 1: Tidak ada pertanyaan yang dicari pengguna**
+
+<p align="center">
+<img alt="Sequence Diagram UC-06 Alternatif 1" src="./assets/diagram/UC-06_SQ_ALT1_diagram.png" width="50%">
+</p>
+<p align="center">
+<i>Gambar 3.6.2. Sequence Diagram UC-06 - Skenario Alternatif 1</i>
+</p>
+
+### 3.6.3 Diagram Kelas
+
+<p align="center">
+<img alt="Diagram Kelas UC-06" src="./assets/diagram/UC-06_diagram.png" width="50%">
+</p>
+<p align="center">
+<i>Gambar 3.6.3. Diagram Kelas Use Case UC-06 - Melihat FAQ</i>
+</p>
+
+## 3.7 Use Case Mengelola FAQ
+
+**ID Use Case:** UC-07  
+**Nama Use Case:** Mengelola FAQ
+
+### 3.7.1 Identifikasi Kelas
+
+Tabel 3.7. Identifikasi Kelas Use Case UC-07
+
+| No  | Nama Kelas Perancangan | Nama Kelas Analisis Terkait |
+| :-- | :--------------------- | :-------------------------- |
+| 1   | `Administrator`        | `Administrator` (C-03)      |
+| 2   | `FAQ`                  | `FAQ` (C-12)                |
+
+### 3.7.2 Sequence Diagram
+
+- **Skenario Normal**
+
+<p align="center">
+<img alt="Sequence Diagram UC-07" src="./assets/diagram/UC-07_SQ_diagram.png" width="50%">
+</p>
+<p align="center">
+<i>Gambar 3.7.1. Sequence Diagram UC-07 - Skenario Normal</i>
+</p>
+
+- **Skenario Alternatif 1: Tidak ada pertanyaan maupun jawaban yang berhasil disimpan**
+
+<p align="center">
+<img alt="Sequence Diagram UC-07 Alternatif 1" src="./assets/diagram/UC-07_SQ_ALT1_diagram.png" width="50%">
+</p>
+<p align="center">
+<i>Gambar 3.7.2. Sequence Diagram UC-07 - Skenario Alternatif 1</i>
+</p>
+
+### 3.7.3 Diagram Kelas
+
+<p align="center">
+<img alt="Diagram Kelas UC-07" src="./assets/diagram/UC-07_diagram.png" width="50%">
+</p>
+<p align="center">
+<i>Gambar 3.7.3. Diagram Kelas Use Case UC-07 - Mengelola FAQ</i>
+</p>
+
+## 3.8 Use Case Memberikan Umpan Balik
+
+**ID Use Case:** UC-08  
+**Nama Use Case:** Memberikan Umpan Balik
+
+### 3.8.1 Identifikasi Kelas
+
+Tabel 3.8. Identifikasi Kelas Use Case UC-08
+
+| No  | Nama Kelas Perancangan | Nama Kelas Analisis Terkait |
+| :-- | :--------------------- | :-------------------------- |
+| 1   | `Mahasiswa`            | `Mahasiswa` (C-02)          |
+| 2   | `UmpanBalik`           | `UmpanBalik` (C-14)         |
+
+### 3.8.2 Sequence Diagram
+
+- **Skenario Normal**
+
+<p align="center">
+<img alt="Sequence Diagram UC-08" src="./assets/diagram/UC-08_SQ_diagram.png" width="50%">
+</p>
+<p align="center">
+<i>Gambar 3.8.1. Sequence Diagram UC-08 - Skenario Normal</i>
+</p>
+
+- **Skenario Alternatif 1: Umpan balik tidak disimpan pada database**
+
+<p align="center">
+<img alt="Sequence Diagram UC-08 Alternatif 1" src="./assets/diagram/UC-08_SQ_ALT1_diagram.png" width="50%">
+</p>
+<p align="center">
+<i>Gambar 3.8.2. Sequence Diagram UC-08 - Skenario Alternatif 1</i>
+</p>
+
+### 3.8.3 Diagram Kelas
+
+<p align="center">
+<img alt="Diagram Kelas UC-08" src="./assets/diagram/UC-08_diagram.png" width="50%">
+</p>
+<p align="center">
+<i>Gambar 3.8.3. Diagram Kelas Use Case UC-08 - Memberikan Umpan Balik</i>
+</p>
+
+## 3.9 Use Case Menanggapi Umpan Balik
+
+**ID Use Case:** UC-09  
+**Nama Use Case:** Menanggapi Umpan Balik
+
+### 3.9.1 Identifikasi Kelas
+
+Tabel 3.9. Identifikasi Kelas Use Case UC-09
+
+| No  | Nama Kelas Perancangan | Nama Kelas Analisis Terkait |
+| :-- | :--------------------- | :-------------------------- |
+| 1   | `Administrator`        | `Administrator` (C-03)      |
+| 2   | `UmpanBalik`           | `UmpanBalik` (C-14)         |
+
+### 3.9.2 Sequence Diagram
+
+- **Skenario Normal**
+
+<p align="center">
+<img alt="Sequence Diagram UC-09" src="./assets/diagram/UC-09_SQ_diagram.png" width="50%">
+</p>
+<p align="center">
+<i>Gambar 3.9.1. Sequence Diagram UC-09 - Skenario Normal</i>
+</p>
+
+- **Skenario Alternatif 1: Tanggapan umpan balik tidak berhasil ditampilkan**
+
+<p align="center">
+<img alt="Sequence Diagram UC-09 Alternatif 1" src="./assets/diagram/UC-09_SQ_ALT1_diagram.png" width="50%">
+</p>
+<p align="center">
+<i>Gambar 3.9.2. Sequence Diagram UC-09 - Skenario Alternatif 1</i>
+</p>
+
+### 3.9.3 Diagram Kelas
+
+<p align="center">
+<img alt="Diagram Kelas UC-09" src="./assets/diagram/UC-09_diagram.png" width="50%">
+</p>
+<p align="center">
+<i>Gambar 3.9.3. Diagram Kelas Use Case UC-09 - Menanggapi Umpan Balik</i>
+</p>
+
+## 3.10 Use Case Memantau Status Server
+
+**ID Use Case:** UC-10  
+**Nama Use Case:** Memantau Status Server
+
+### 3.10.1 Identifikasi Kelas
+
+Tabel 3.10. Identifikasi Kelas Use Case UC-10
+
+| No  | Nama Kelas Perancangan | Nama Kelas Analisis Terkait |
+| :-- | :--------------------- | :-------------------------- |
+| 1   | `Administrator`        | `Administrator` (C-03)      |
+| 2   | `StatusServer`         | `StatusServer` (C-15)       |
+
+### 3.10.2 Sequence Diagram
+
+- **Skenario Normal**
+
+<p align="center">
+<img alt="Sequence Diagram UC-10" src="./assets/diagram/UC-10_SQ_diagram.png" width="50%">
+</p>
+<p align="center">
+<i>Gambar 3.10.1. Sequence Diagram UC-10 - Skenario Normal</i>
+</p>
+
+### 3.10.3 Diagram Kelas
+
+<p align="center">
+<img alt="Diagram Kelas UC-10" src="./assets/diagram/UC-10_diagram.png" width="50%">
+</p>
+<p align="center">
+<i>Gambar 3.10.2. Diagram Kelas Use Case UC-10 - Memantau Status Server</i>
+</p>
+
+## 3.11 Use Case Masuk Melalui Akun Google
+
+**ID Use Case:** UC-11  
+**Nama Use Case:** Masuk Melalui Akun Google
+
+### 3.11.1 Identifikasi Kelas
+
+Tabel 3.11. Identifikasi Kelas Use Case UC-11
+
+| No  | Nama Kelas Perancangan | Nama Kelas Analisis Terkait |
+| :-- | :--------------------- | :-------------------------- |
+| 1   | `Pengguna`             | `Pengguna` (C-01)           |
+| 2   | `Mahasiswa`            | `Mahasiswa` (C-02)          |
+| 3   | `Administrator`        | `Administrator` (C-03)      |
+| 4   | `SesiAutentikasi`      | `SesiAutentikasi` (C-04)    |
+
+### 3.11.2 Sequence Diagram
+
+- **Skenario Normal**
+
+<p align="center">
+<img alt="Sequence Diagram UC-11" src="./assets/diagram/UC-11_SQ_diagram.png" width="50%">
+</p>
+<p align="center">
+<i>Gambar 3.11.1. Sequence Diagram UC-11 - Skenario Normal</i>
+</p>
+
+- **Skenario Alternatif 1: OAuth Google tidak berfungsi saat log in**
+
+<p align="center">
+<img alt="Sequence Diagram UC-11 Alternatif 1" src="./assets/diagram/UC-11_SQ_ALT1_diagram.png" width="50%">
+</p>
+<p align="center">
+<i>Gambar 3.11.2. Sequence Diagram UC-11 - Skenario Alternatif 1</i>
+</p>
+
+### 3.11.3 Diagram Kelas
+
+<p align="center">
+<img alt="Diagram Kelas UC-11" src="./assets/diagram/UC-11_diagram.png" width="50%">
+</p>
+<p align="center">
+<i>Gambar 3.11.3. Diagram Kelas Use Case UC-11 - Masuk Melalui Akun Google</i>
+</p>
+
+## 3.12 Use Case Form Pengajuan Pertanyaan
+
+**ID Use Case:** UC-12  
+**Nama Use Case:** Form Pengajuan Pertanyaan
+
+### 3.12.1 Identifikasi Kelas
+
+Tabel 3.12. Identifikasi Kelas Use Case UC-12
+
+| No  | Nama Kelas Perancangan | Nama Kelas Analisis Terkait  |
+| :-- | :--------------------- | :--------------------------- |
+| 1   | `Mahasiswa`            | `Mahasiswa` (C-02)           |
+| 2   | `PengajuanPertanyaan`  | `PengajuanPertanyaan` (C-13) |
+
+### 3.12.2 Sequence Diagram
+
+- **Skenario Normal**
+
+<p align="center">
+<img alt="Sequence Diagram UC-12" src="./assets/diagram/UC-12_SQ_diagram.png" width="50%">
+</p>
+<p align="center">
+<i>Gambar 3.12.1. Sequence Diagram UC-12 - Skenario Normal</i>
+</p>
+
+- **Skenario Alternatif 1: Pertanyaan tidak tersimpan di database**
+
+<p align="center">
+<img alt="Sequence Diagram UC-12 Alternatif 1" src="./assets/diagram/UC-12_SQ_ALT1_diagram.png" width="50%">
+</p>
+<p align="center">
+<i>Gambar 3.12.2. Sequence Diagram UC-12 - Skenario Alternatif 1</i>
+</p>
+
+### 3.12.3 Diagram Kelas
+
+<p align="center">
+<img alt="Diagram Kelas UC-12" src="./assets/diagram/UC-12_diagram.png" width="50%">
+</p>
+<p align="center">
+<i>Gambar 3.12.3. Diagram Kelas Use Case UC-12 - Form Pengajuan Pertanyaan</i>
+</p>
 
 <br>
 
@@ -483,23 +958,32 @@ Silahkan lanjutkan untuk _use case_ berikutnya dengan content yang sama dengan 3
 
 ## 4.1 Diagram Kelas
 
-**Bagian ini diisi dengan diagram kelas keseluruhan.**
-
 <p align="center">
-<img alt="Contoh Logical View pada P/L E-Commerce" src="./assets/diagram/contoh-class_diargam.png" width="35%">
+<img alt="Diagram Kelas Perancangan Keseluruhan Sehati" src="./assets/diagram/full-class-diagram.png" width="50%">
 </p>
 <p align="center">
-<i>Gambar 4.1. Diagram Kelas Perancangan Keseluruhan [Nama P/L]</i>
+<i>Gambar 4.1. Diagram Kelas Perancangan Keseluruhan Sehati</i>
 </p>
 
 Tabel 4.1. Daftar Kelas Perancangan Keseluruhan
 
-| ID Kelas | Nama Kelas     | Atribut            | Metode/Operasi            |
-| :------- | :------------- | :----------------- | :------------------------ |
-| _[C01]_  | _[Nama kelas]_ | _[Daftar atribut]_ | _[Daftar metode/operasi]_ |
-| _[C02]_  | _[Nama kelas]_ | _[Daftar atribut]_ | _[Daftar metode/operasi]_ |
-| _[C03]_  | _[Nama kelas]_ | _[Daftar atribut]_ | _[Daftar metode/operasi]_ |
-| _..._    | _..._          | _..._              | _..._                     |
+| ID Kelas | Nama Kelas              | Atribut                             | Metode/Operasi                                         |
+| :------- | :---------------------- | :---------------------------------- | :----------------------------------------------------- |
+| C-01     | `Pengguna`              | `id`, `nama`, `email`, `googleId`   | -                                                      |
+| C-02     | `Mahasiswa`             | `nim`                               | -                                                      |
+| C-03     | `Administrator`         | -                                   | -                                                      |
+| C-04     | `SesiAutentikasi`       | `token`, `waktuLogin`, `status`     | `autentikasiGoogle()`, `verifikasiToken()`, `logout()` |
+| C-05     | `DailyAffirmation`      | `konten`, `waktuKirim`              | `aturWaktuKirim()`, `kirimAfirmasi()`                  |
+| C-06     | `Reminder`              | `jenis`, `waktu`                    | `aturWaktuPengingat()`, `kirimPengingat()`             |
+| C-07     | `Notifikasi`            | `idNotifikasi`, `isi`, `waktuKirim` | `kirimNotifikasi()`, `tampilkanNotifikasi()`           |
+| C-08     | `GoogleCalendarService` | `accessToken`                       | `ambilEvent()`, `cekBentrokJadwal()`                   |
+| C-09     | `KalenderGabungan`      | `daftarEvent`                       | `gabungkanJadwal()`, `tampilkanKalender()`             |
+| C-10     | `Konsultan`             | `nama`, `spesialisasi`              | -                                                      |
+| C-11     | `JadwalKonsultasi`      | `idJadwal`, `waktu`, `status`       | `simpanJadwal()`, `perbaruiJadwal()`, `pesanSesi()`    |
+| C-12     | `FAQ`                   | `pertanyaan`, `jawaban`             | `tambahFAQ()`, `ubahFAQ()`, `hapusFAQ()`               |
+| C-13     | `PengajuanPertanyaan`   | `idPertanyaan`, `isiPertanyaan`     | `ajukanPertanyaan()`                                   |
+| C-14     | `UmpanBalik`            | `idUmpanBalik`, `isi`, `tanggapan`  | `kirimUmpanBalik()`, `berikanTanggapan()`              |
+| C-15     | `StatusServer`          | `statusUptime`, `waktuCek`          | `cekStatusServer()`, `tampilkanStatus()`               |
 
 <br>
 
@@ -507,12 +991,24 @@ Tabel 4.1. Daftar Kelas Perancangan Keseluruhan
 
 # BAB 5: Matriks Kerunutan
 
-Petakan kelas perancangan dengan use case yang terkait. Gunakan **BAB 6 Traceability pada dokumen SKPL** sebagai acuan keterkaitan kelas analisis dan use case, lalu sesuaikan dengan realisasi use case dan kelas perancangan pada BAB 3–BAB 5 DPPL.
+Matriks ini memetakan setiap kelas perancangan terhadap _use case_ yang direalisasikannya, mengacu pada BAB 6 _Traceability_ dokumen SKPL dan disesuaikan dengan realisasi _use case_ pada BAB 3.
 
-Tabel 7.1. Matriks Kerunutan Kelas terhadap Use Case
+Tabel 5.1. Matriks Kerunutan Kelas terhadap Use Case
 
-| Kelas                     | Use Case Terkait          |
-| :------------------------ | :------------------------ |
-| _[ID kelas - Nama kelas]_ | _[ID UC - Nama use case]_ |
-| _[ID kelas - Nama kelas]_ | _[ID UC - Nama use case]_ |
-| _..._                     | _..._                     |
+| Kelas                          | Use Case Terkait                                                                                                                                                                                                                                                             |
+| :----------------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| C-01 - `Pengguna`              | UC-11 - Masuk Melalui Akun Google                                                                                                                                                                                                                                            |
+| C-02 - `Mahasiswa`             | UC-01 - Menyetel Daily Affirmations, UC-02 - Menyetel Pengingat Kesehatan, UC-03 - Melihat Kalender Terintegrasi, UC-04 - Memesan Sesi Konsultasi, UC-06 - Melihat FAQ, UC-08 - Memberikan Umpan Balik, UC-11 - Masuk Melalui Akun Google, UC-12 - Form Pengajuan Pertanyaan |
+| C-03 - `Administrator`         | UC-05 - Mengelola Jadwal Konsultan, UC-07 - Mengelola FAQ, UC-09 - Menanggapi Umpan Balik, UC-10 - Memantau Status Server, UC-11 - Masuk Melalui Akun Google                                                                                                                 |
+| C-04 - `SesiAutentikasi`       | UC-11 - Masuk Melalui Akun Google                                                                                                                                                                                                                                            |
+| C-05 - `DailyAffirmation`      | UC-01 - Menyetel Daily Affirmations                                                                                                                                                                                                                                          |
+| C-06 - `Reminder`              | UC-02 - Menyetel Pengingat Kesehatan                                                                                                                                                                                                                                         |
+| C-07 - `Notifikasi`            | UC-01 - Menyetel Daily Affirmations, UC-02 - Menyetel Pengingat Kesehatan                                                                                                                                                                                                    |
+| C-08 - `GoogleCalendarService` | UC-03 - Melihat Kalender Terintegrasi, UC-04 - Memesan Sesi Konsultasi                                                                                                                                                                                                       |
+| C-09 - `KalenderGabungan`      | UC-03 - Melihat Kalender Terintegrasi                                                                                                                                                                                                                                        |
+| C-10 - `Konsultan`             | UC-04 - Memesan Sesi Konsultasi, UC-05 - Mengelola Jadwal Konsultan                                                                                                                                                                                                          |
+| C-11 - `JadwalKonsultasi`      | UC-04 - Memesan Sesi Konsultasi, UC-05 - Mengelola Jadwal Konsultan                                                                                                                                                                                                          |
+| C-12 - `FAQ`                   | UC-06 - Melihat FAQ, UC-07 - Mengelola FAQ                                                                                                                                                                                                                                   |
+| C-13 - `PengajuanPertanyaan`   | UC-12 - Form Pengajuan Pertanyaan                                                                                                                                                                                                                                            |
+| C-14 - `UmpanBalik`            | UC-08 - Memberikan Umpan Balik, UC-09 - Menanggapi Umpan Balik                                                                                                                                                                                                               |
+| C-15 - `StatusServer`          | UC-10 - Memantau Status Server                                                                                                                                                                                                                                               |
