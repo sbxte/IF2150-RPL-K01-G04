@@ -489,13 +489,6 @@ Tabel 3.2. Identifikasi Kelas Use Case UC-02
 
 - **Skenario Alternatif 1: Sistem tidak mampu menyimpan setelan**
 
-<p align="center">
-<img alt="Sequence Diagram UC-02 Alternatif 1" src="./assets/diagram/UC-02_SQ_ALT1_diagram.png" width="50%">
-</p>
-<p align="center">
-<i>Gambar 3.2.2. Sequence Diagram UC-02 - Skenario Alternatif 1</i>
-</p>
-
 ### 3.2.3 Diagram Kelas
 
 <p align="center">
@@ -533,12 +526,6 @@ Tabel 3.3. Identifikasi Kelas Use Case UC-03
 
 - **Skenario Alternatif 1: Sistem tidak mampu mengambil data event**
 
-<p align="center">
-<img alt="Sequence Diagram UC-03 Alternatif 1" src="./assets/diagram/UC-03_SQ_ALT1_diagram.png" width="50%">
-</p>
-<p align="center">
-<i>Gambar 3.3.2. Sequence Diagram UC-03 - Skenario Alternatif 1</i>
-</p>
 
 ### 3.3.3 Diagram Kelas
 
@@ -578,21 +565,10 @@ Tabel 3.4. Identifikasi Kelas Use Case UC-04
 
 - **Skenario Alternatif 1: Sistem tidak mampu mengambil data jadwal konsultasi**
 
-<p align="center">
-<img alt="Sequence Diagram UC-04 Alternatif 1" src="./assets/diagram/UC-04_SQ_ALT1_diagram.png" width="50%">
-</p>
-<p align="center">
-<i>Gambar 3.4.2. Sequence Diagram UC-04 - Skenario Alternatif 1</i>
-</p>
 
 - **Skenario Alternatif 2: Sistem tidak mampu menyimpan jadwal konsultasi yang dipesan**
 
-<p align="center">
-<img alt="Sequence Diagram UC-04 Alternatif 2" src="./assets/diagram/UC-04_SQ_ALT2_diagram.png" width="50%">
-</p>
-<p align="center">
-<i>Gambar 3.4.3. Sequence Diagram UC-04 - Skenario Alternatif 2</i>
-</p>
+
 
 ### 3.4.3 Diagram Kelas
 
@@ -631,21 +607,9 @@ Tabel 3.5. Identifikasi Kelas Use Case UC-05
 
 - **Skenario Alternatif 1: Sistem tidak mampu mengambil data jadwal konsultasi**
 
-<p align="center">
-<img alt="Sequence Diagram UC-05 Alternatif 1" src="./assets/diagram/UC-05_SQ_ALT1_diagram.png" width="50%">
-</p>
-<p align="center">
-<i>Gambar 3.5.2. Sequence Diagram UC-05 - Skenario Alternatif 1</i>
-</p>
 
 - **Skenario Alternatif 2: Sistem tidak mampu mengedit data jadwal konsultasi**
 
-<p align="center">
-<img alt="Sequence Diagram UC-05 Alternatif 2" src="./assets/diagram/UC-05_SQ_ALT2_diagram.png" width="50%">
-</p>
-<p align="center">
-<i>Gambar 3.5.3. Sequence Diagram UC-05 - Skenario Alternatif 2</i>
-</p>
 
 ### 3.5.3 Diagram Kelas
 
@@ -683,12 +647,7 @@ Tabel 3.6. Identifikasi Kelas Use Case UC-06
 
 - **Skenario Alternatif 1: Tidak ada pertanyaan yang dicari pengguna**
 
-<p align="center">
-<img alt="Sequence Diagram UC-06 Alternatif 1" src="./assets/diagram/UC-06_SQ_ALT1_diagram.png" width="50%">
-</p>
-<p align="center">
-<i>Gambar 3.6.2. Sequence Diagram UC-06 - Skenario Alternatif 1</i>
-</p>
+
 
 ### 3.6.3 Diagram Kelas
 
@@ -726,12 +685,7 @@ Tabel 3.7. Identifikasi Kelas Use Case UC-07
 
 - **Skenario Alternatif 1: Tidak ada pertanyaan maupun jawaban yang berhasil disimpan**
 
-<p align="center">
-<img alt="Sequence Diagram UC-07 Alternatif 1" src="./assets/diagram/UC-07_SQ_ALT1_diagram.png" width="50%">
-</p>
-<p align="center">
-<i>Gambar 3.7.2. Sequence Diagram UC-07 - Skenario Alternatif 1</i>
-</p>
+
 
 ### 3.7.3 Diagram Kelas
 
@@ -769,12 +723,6 @@ Tabel 3.8. Identifikasi Kelas Use Case UC-08
 
 - **Skenario Alternatif 1: Umpan balik tidak disimpan pada database**
 
-<p align="center">
-<img alt="Sequence Diagram UC-08 Alternatif 1" src="./assets/diagram/UC-08_SQ_ALT1_diagram.png" width="50%">
-</p>
-<p align="center">
-<i>Gambar 3.8.2. Sequence Diagram UC-08 - Skenario Alternatif 1</i>
-</p>
 
 ### 3.8.3 Diagram Kelas
 
@@ -812,12 +760,7 @@ Tabel 3.9. Identifikasi Kelas Use Case UC-09
 
 - **Skenario Alternatif 1: Tanggapan umpan balik tidak berhasil ditampilkan**
 
-<p align="center">
-<img alt="Sequence Diagram UC-09 Alternatif 1" src="./assets/diagram/UC-09_SQ_ALT1_diagram.png" width="50%">
-</p>
-<p align="center">
-<i>Gambar 3.9.2. Sequence Diagram UC-09 - Skenario Alternatif 1</i>
-</p>
+
 
 ### 3.9.3 Diagram Kelas
 
@@ -891,12 +834,7 @@ Tabel 3.11. Identifikasi Kelas Use Case UC-11
 
 - **Skenario Alternatif 1: OAuth Google tidak berfungsi saat log in**
 
-<p align="center">
-<img alt="Sequence Diagram UC-11 Alternatif 1" src="./assets/diagram/UC-11_SQ_ALT1_diagram.png" width="50%">
-</p>
-<p align="center">
-<i>Gambar 3.11.2. Sequence Diagram UC-11 - Skenario Alternatif 1</i>
-</p>
+
 
 ### 3.11.3 Diagram Kelas
 
@@ -934,12 +872,6 @@ Tabel 3.12. Identifikasi Kelas Use Case UC-12
 
 - **Skenario Alternatif 1: Pertanyaan tidak tersimpan di database**
 
-<p align="center">
-<img alt="Sequence Diagram UC-12 Alternatif 1" src="./assets/diagram/UC-12_SQ_ALT1_diagram.png" width="50%">
-</p>
-<p align="center">
-<i>Gambar 3.12.2. Sequence Diagram UC-12 - Skenario Alternatif 1</i>
-</p>
 
 ### 3.12.3 Diagram Kelas
 
