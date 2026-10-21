@@ -7,40 +7,41 @@ DESKRIPSI PERANCANGAN PERANGKAT LUNAK (DPPL)
 </h1>
 <br>
 
-## *Nama Perangkat Lunak*
-### *[Logo Perangkat Lunak]*
+## Sehati
 
-### Untuk: *[Nama Asisten]*
+<p align="center">
+<img alt="Logo Sehati" src="./assets/sehati-logo.png" width="160">
+</p>
+
+### Untuk: Aurelia Jennifer Gunawan
 
 Dipersiapkan oleh:
-| Informasi | Keterangan |
-| --- | --- |
-| Kelas | *\[Kelas\]* |
-| Kelompok | *\[Nomor Kelompok\]*  |
 
-| NIM | Nama |
-|---|---|
-| *[NIM 1]* | *[Nama Anggota 1]* |
-| *[NIM 2]* | *[Nama Anggota 2]* |
-| *[NIM 3]* | *[Nama Anggota 3]* |
-| *[NIM 4]* | *[Nama Anggota 4]* |
-| *[NIM 5]* | *[Nama Anggota 5]* |
+| Informasi | Keterangan |
+| --------- | ---------- |
+| Kelas     | K01        |
+| Kelompok  | G04        |
+
+| NIM      | Nama                         |
+| -------- | ---------------------------- |
+| 13525052 | Daniel Charisma Christian    |
+| 13525061 | Rifqi Irfan Indrawan         |
+| 13525082 | Ausa Haadiyaan Mukhtar Yusuf |
+| 13525058 | Farish Firstian Erifiawan    |
+
 ---
 
 ## Daftar Perubahan
 
 | Revisi | Deskripsi |
-| :--- | :--- |
-| *A* | *Deskripsikan perubahan yang dilakukan dari dokumen sebelumnya pada dokumen ini. Jika tidak terdapat perubahan, harap kosongkan tabel.* |
-| *B* |  |
-| *C* |  |
-| ... |  |
+| ------ | --------- |
+| ...    | ...       |
 
 ---
 
 <br>
 
-> **Petunjuk pengerjaan:** *[Silahkan hapus bagian ini setelah selesai mengerjakan]*
+> **Petunjuk pengerjaan:** _[Silahkan hapus bagian ini setelah selesai mengerjakan]_
 >
 > Dokumen ini melanjutkan **Deskripsi Perancangan Perangkat Lunak**. Gunakan nama, ID, kebutuhan, dan use case yang konsisten dengan kedua dokumen tersebut. Contoh pola ID baru di bawah dapat disesuaikan dengan kesepakatan kelompok, ID yang sudah ada tetap dipertahankan.
 
@@ -48,42 +49,47 @@ Dipersiapkan oleh:
 
 ---
 
-
 # BAB 1: Pendahuluan
 
 ## 1.1 Tujuan Penulisan Dokumen
+
 Tuliskan dengan ringkas tujuan dokumen DPPL ini dibuat dan siapa saja yang akan menggunakan dokumen ini.
 
 ## 1.2 Lingkup Masalah
+
 Tuliskan dengan ringkas nama aplikasi dan deskripsi singkatnya. Bagian ini maksimal berisi satu paragraf, dapat diambil dari SKPL.
 
 ## 1.3 Definisi, Istilah, dan Singkatan
+
 Semua definisi dan singkatan yang digunakan dalam dokumen ini beserta penjelasannya.
 
 Tabel 1.3. Definisi Istilah dan Singkatan
 
-| Singkatan, Akronim, atau Istilah | Penjelasan |
-| :--- | :--- |
-| *P/L* | *Singkatan dari Perangkat Lunak, yaitu aplikasi yang memberikan perintah kepada komputer untuk menjalankan tugas tertentu.* |
-| *DPPL* | *Singkatan dari Spesifikasi Kebutuhan Perangkat Lunak, yaitu dokumen yang merangkum kriteria-kriteria yang diperlukan untuk membangun aplikasi menjalankan tugasnya.* |
-| *UC* | *Singkatan dari Use Case.* |
-| *...* | *...* |
+| Singkatan, Akronim, atau Istilah | Penjelasan                                                                                                                                                            |
+| :------------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| _P/L_                            | _Singkatan dari Perangkat Lunak, yaitu aplikasi yang memberikan perintah kepada komputer untuk menjalankan tugas tertentu._                                           |
+| _DPPL_                           | _Singkatan dari Spesifikasi Kebutuhan Perangkat Lunak, yaitu dokumen yang merangkum kriteria-kriteria yang diperlukan untuk membangun aplikasi menjalankan tugasnya._ |
+| _UC_                             | _Singkatan dari Use Case._                                                                                                                                            |
+| _..._                            | _..._                                                                                                                                                                 |
 
 ## 1.4 Aturan Penomoran
+
 Tuliskan aturan penomoran (ID) yang digunakan dalam dokumen ini. Gunakan pola ID yang **sama** dengan yang sudah dipakai pada dokumen-dokumen sebelumnya, jangan membuat pola baru di dokumen ini.
 
 Tabel 1.4. Aturan Penomoran
 
 | Hal/Bagian | Penomoran | Keterangan |
-| :--- | :--- | :--- |
-| *Uce Case* | *UCXX* | |
-| *Kelas* | *CXX* | |
-| *...* | *...* |
+| :--------- | :-------- | :--------- |
+| _Uce Case_ | _UCXX_    |            |
+| _Kelas_    | _CXX_     |            |
+| _..._      | _..._     |
 
 ## 1.5 Referensi
+
 Cantumkan dokumentasi P/L yang dirujuk oleh dokumen ini, **minimal dokumen SKPL dan APL**. Tambahkan buku, panduan, atau dokumentasi lain apabila digunakan.
 
 ## 1.6 Deskripsi Umum Dokumen (Ikhtisar)
+
 Tuliskan sistematika pembahasan dokumen ini secara ringkas dan runut, dengan maksimal 1 paragraf.
 
 <br>
@@ -94,12 +100,11 @@ Tuliskan sistematika pembahasan dokumen ini secara ringkas dan runut, dengan mak
 
 ## 2.1 Rancangan Lingkungan Implementasi
 
-Sebutkan *operating system*, DBMS, *development tools*, *filing system*, dan bahasa pemrograman yang digunakan.
+Sebutkan _operating system_, DBMS, _development tools_, _filing system_, dan bahasa pemrograman yang digunakan.
 
 ## 2.2 Style/Pattern Arsitektur Acuan
 
-Tentukan *architectural style* atau *pattern* yang menjadi acuan aplikasi, misalnya *layered architecture*, *client-server*, *repository*, *pipe and filter*, atau MVC (*Model-View-Controller*).
-
+Tentukan _architectural style_ atau _pattern_ yang menjadi acuan aplikasi, misalnya _layered architecture_, _client-server_, _repository_, _pipe and filter_, atau MVC (_Model-View-Controller_).
 
 Gunakan hasil **BAB 1 Style/Pattern Arsitektur Acuan pada dokumen APL**, termasuk alasan pemilihan dan gambar penerapannya pada P/L kelompok. Gunakan komponen aplikasi sendiri pada gambar, bukan hanya contoh pola umum.
 
@@ -112,23 +117,23 @@ Gunakan hasil **BAB 1 Style/Pattern Arsitektur Acuan pada dokumen APL**, termasu
 
 ## 2.3 Identifikasi Komponen / Modul / Subsistem
 
-Identifikasi komponen, modul, atau subsistem penyusun aplikasi berdasarkan *pattern* yang telah ditetapkan. Jelaskan tanggung jawab masing-masing komponen. Pengelompokan dapat mengikuti lapisan arsitektur atau fungsi/peran komponen dalam sistem.
+Identifikasi komponen, modul, atau subsistem penyusun aplikasi berdasarkan _pattern_ yang telah ditetapkan. Jelaskan tanggung jawab masing-masing komponen. Pengelompokan dapat mengikuti lapisan arsitektur atau fungsi/peran komponen dalam sistem.
 
 Dapat menyalin dari dokumen DPPL sebelumnya
 
 Tabel 2.3. Identifikasi Komponen/Modul/Subsistem
 
-| Nama Komponen/Modul/Subsistem | Jenis | Penjelasan |
-| :--- | :--- | :--- |
-| *[Nama komponen/modul/subsistem]* | *[Jenis]* | *[Tanggung jawab komponen]* |
-| *[Nama komponen/modul/subsistem]* | *[Jenis]* | *[Tanggung jawab komponen]* |
-| *...* | *...* | *...* |
+| Nama Komponen/Modul/Subsistem     | Jenis     | Penjelasan                  |
+| :-------------------------------- | :-------- | :-------------------------- |
+| _[Nama komponen/modul/subsistem]_ | _[Jenis]_ | _[Tanggung jawab komponen]_ |
+| _[Nama komponen/modul/subsistem]_ | _[Jenis]_ | _[Tanggung jawab komponen]_ |
+| _..._                             | _..._     | _..._                       |
 
 ## 2.4 Model Arsitektur Perangkat Lunak
 
-Buat model arsitektur dalam bentuk satu atau lebih *view* yang memperlihatkan interaksi dan kolaborasi komponen, modul, serta subsistem dalam menjalankan fungsi sistem. Pilih notasi yang sesuai. Contoh *view*: *Logical View*, *Process View*, *Development View*, dan *Physical View*.
+Buat model arsitektur dalam bentuk satu atau lebih _view_ yang memperlihatkan interaksi dan kolaborasi komponen, modul, serta subsistem dalam menjalankan fungsi sistem. Pilih notasi yang sesuai. Contoh _view_: _Logical View_, _Process View_, _Development View_, dan _Physical View_.
 
-Gunakan hasil **BAB 3 Model Arsitektur Perangkat Lunak pada dokumen APL**. 
+Gunakan hasil **BAB 3 Model Arsitektur Perangkat Lunak pada dokumen APL**.
 
 ### 2.4.1 View [Nama View]
 
@@ -142,19 +147,19 @@ Tuliskan secara singkat model arsitektur yang dipilih dan alasan model tersebut 
 </p>
 
 ### 2.4.X View [Nama View]
-*[Lakukan hal yang sama dengan bagian sebelumnya]*
+
+_[Lakukan hal yang sama dengan bagian sebelumnya]_
 
 <br>
 
 ---
 
-
 # BAB 3: Realisasi Use Case
 
 ## 3.1 Use Case [Nama Use Case 1]
 
-**ID Use Case:** *[UC01 sesuai SKPL]*  
-**Nama Use Case:** *[Nama use case sesuai SKPL]*
+**ID Use Case:** _[UC01 sesuai SKPL]_  
+**Nama Use Case:** _[Nama use case sesuai SKPL]_
 
 ### 3.1.1 Identifikasi Kelas
 
@@ -162,15 +167,15 @@ Identifikasi kelas yang terkait dengan use case tersebut. Kelas di tahap peranca
 
 Tabel 3.1. Identifikasi Kelas Use Case [UC01]
 
-| No | Nama Kelas Perancangan | Nama Kelas Analisis Terkait |
-|:--- | :--- | :--- |
-| 1 | *[Nama kelas perancangan]* | *[Nama kelas analisis pada SKPL]* |
-| 2 | *[Nama kelas perancangan]* | *[Nama kelas analisis pada SKPL]* |
-| ... | *...* | *...* |
+| No  | Nama Kelas Perancangan     | Nama Kelas Analisis Terkait       |
+| :-- | :------------------------- | :-------------------------------- |
+| 1   | _[Nama kelas perancangan]_ | _[Nama kelas analisis pada SKPL]_ |
+| 2   | _[Nama kelas perancangan]_ | _[Nama kelas analisis pada SKPL]_ |
+| ... | _..._                      | _..._                             |
 
 ### 3.1.2 Sequence Diagram
 
-Buat *sequence diagram* untuk **setiap skenario use case**, mencakup skenario normal dan alternatif pada subbab 4.4 SKPL. Diagram melibatkan kelas-kelas yang telah diidentifikasi pada SKPL. 
+Buat _sequence diagram_ untuk **setiap skenario use case**, mencakup skenario normal dan alternatif pada subbab 4.4 SKPL. Diagram melibatkan kelas-kelas yang telah diidentifikasi pada SKPL.
 
 - **Skenario Normal**
 
@@ -202,6 +207,7 @@ Buatlah diagram kelas untuk use case ini yang terdiri atas kelas-kelas dari 3.1.
 </p>
 
 Pada diagram, pastikan:
+
 - Atribut dituliskan beserta visibilitas dan tipe datanya, misalnya `- email: String`.
 - Operasi dituliskan beserta visibilitas, parameter, dan tipe kembaliannya, misalnya `+ login(email: String, password: String): Boolean`.
 - Relasi antarkelas (asosiasi, agregasi, komposisi, generalisasi, dan dependensi) digambarkan lengkap dengan multiplisitas.
@@ -210,7 +216,7 @@ Pada diagram, pastikan:
 
 ## 3.2 Use Case XX
 
-Silahkan lanjutkan untuk  *use case* berikutnya dengan content yang sama dengan 3.1
+Silahkan lanjutkan untuk _use case_ berikutnya dengan content yang sama dengan 3.1
 
 <br>
 
@@ -231,12 +237,12 @@ Silahkan lanjutkan untuk  *use case* berikutnya dengan content yang sama dengan 
 
 Tabel 4.1. Daftar Kelas Perancangan Keseluruhan
 
-| ID Kelas | Nama Kelas | Atribut | Metode/Operasi |
-| :--- | :--- | :--- | :--- |
-| *[C01]* | *[Nama kelas]* | *[Daftar atribut]* | *[Daftar metode/operasi]* |
-| *[C02]* | *[Nama kelas]* | *[Daftar atribut]* | *[Daftar metode/operasi]* |
-| *[C03]* | *[Nama kelas]* | *[Daftar atribut]* | *[Daftar metode/operasi]* |
-| *...* | *...* | *...* | *...* |
+| ID Kelas | Nama Kelas     | Atribut            | Metode/Operasi            |
+| :------- | :------------- | :----------------- | :------------------------ |
+| _[C01]_  | _[Nama kelas]_ | _[Daftar atribut]_ | _[Daftar metode/operasi]_ |
+| _[C02]_  | _[Nama kelas]_ | _[Daftar atribut]_ | _[Daftar metode/operasi]_ |
+| _[C03]_  | _[Nama kelas]_ | _[Daftar atribut]_ | _[Daftar metode/operasi]_ |
+| _..._    | _..._          | _..._              | _..._                     |
 
 ---
 
@@ -246,62 +252,61 @@ Bagian ini diisi dengan daftar seluruh kelas dalam tabel berikut:
 
 Tabel 5.1. Daftar Kelas Perancangan dan Kelas Analisis Terkait
 
-| No | Nama Kelas Perancangan | Nama Kelas Analisis Terkait |
-| :--- | :--- | :--- |
-| 1 | *[Nama kelas perancangan]* | *[Nama kelas analisis pada SKPL atau -]* |
-| 2 | *[Nama kelas perancangan]* | *[Nama kelas analisis pada SKPL atau -]* |
-| ... | *...* | *...* |
+| No  | Nama Kelas Perancangan     | Nama Kelas Analisis Terkait              |
+| :-- | :------------------------- | :--------------------------------------- |
+| 1   | _[Nama kelas perancangan]_ | _[Nama kelas analisis pada SKPL atau -]_ |
+| 2   | _[Nama kelas perancangan]_ | _[Nama kelas analisis pada SKPL atau -]_ |
+| ... | _..._                      | _..._                                    |
 
-Untuk **setiap kelas**, identifikasi operasi berdasarkan tanggung jawab kelas beserta *visibility*-nya, serta atribut beserta *visibility* dan tipenya. Buat subbab tersendiri untuk setiap kelas.
+Untuk **setiap kelas**, identifikasi operasi berdasarkan tanggung jawab kelas beserta _visibility_-nya, serta atribut beserta _visibility_ dan tipenya. Buat subbab tersendiri untuk setiap kelas.
 
 ## 5.1 Kelas [Nama Kelas 1]
 
-**Nama Kelas:** *[Nama kelas]*  
-**ID Kelas:** *[ID kelas]*
+**Nama Kelas:** _[Nama kelas]_  
+**ID Kelas:** _[ID kelas]_
 
 Tabel 5.1.1. Operasi Kelas [Nama Kelas 1]
 
-| Nama Operasi | Visibility (private, public) | Keterangan |
-| :--- | :--- | :--- |
-| *[Signature operasi, termasuk parameter dan tipe kembalian]* | *[Visibility]* | *[Tanggung jawab operasi]* |
-| *...* | *...* | *...* |
+| Nama Operasi                                                 | Visibility (private, public) | Keterangan                 |
+| :----------------------------------------------------------- | :--------------------------- | :------------------------- |
+| _[Signature operasi, termasuk parameter dan tipe kembalian]_ | _[Visibility]_               | _[Tanggung jawab operasi]_ |
+| _..._                                                        | _..._                        | _..._                      |
 
 Tabel 5.1.2. Atribut Kelas [Nama Kelas 1]
 
-| Nama Atribut | Visibility (private, public) | Tipe |
-| :--- | :--- | :--- |
-| *[Nama atribut]* | *[Visibility]* | *[Tipe sesuai bahasa pemrograman yang digunakan]* |
-| *...* | *...* | *...* |
+| Nama Atribut     | Visibility (private, public) | Tipe                                              |
+| :--------------- | :--------------------------- | :------------------------------------------------ |
+| _[Nama atribut]_ | _[Visibility]_               | _[Tipe sesuai bahasa pemrograman yang digunakan]_ |
+| _..._            | _..._                        | _..._                                             |
 
 ### 5.1.1 Algoritma/Query
 
-Bagian ini diisi untuk kerangka algoritma proses yang dianggap cukup penting. Algoritma dapat dituliskan sebagai *pseudocode*. Implementasi *skeleton code* juga dapat digunakan untuk kelas yang sudah terdefinisi pada bahasa pemrograman tertentu.
+Bagian ini diisi untuk kerangka algoritma proses yang dianggap cukup penting. Algoritma dapat dituliskan sebagai _pseudocode_. Implementasi _skeleton code_ juga dapat digunakan untuk kelas yang sudah terdefinisi pada bahasa pemrograman tertentu.
 
-**Nama Kelas:** *[Nama kelas]*  
-**Nama Operasi:** *[Signature operasi]*  
-**ID Algoritma:** *[Algo-001]*
+**Nama Kelas:** _[Nama kelas]_  
+**Nama Operasi:** _[Signature operasi]_  
+**ID Algoritma:** _[Algo-001]_
 
 ```text
 [Tuliskan pseudocode algoritma operasi di sini.]
 ```
 
-Jika operasi mengacu pada query tertentu, lengkapi tabel berikut. 
+Jika operasi mengacu pada query tertentu, lengkapi tabel berikut.
 
 Tabel 5.1.1. Query Operasi [Nama Operasi]
 
-| No Query | Query | Keterangan |
-| :--- | :--- | :--- |
-| *[Q-001]* | *[Tuliskan query]* | *[Fungsi query]* |
-| *...* | *...* | *...* |
-
+| No Query  | Query              | Keterangan       |
+| :-------- | :----------------- | :--------------- |
+| _[Q-001]_ | _[Tuliskan query]_ | _[Fungsi query]_ |
+| _..._     | _..._              | _..._            |
 
 ### 5.1.2 Algoritma/Query
 
-*[Ulangi pola 5.1.1 untuk operasi penting berikutnya pada kelas yang sama, jika ada.]*
+_[Ulangi pola 5.1.1 untuk operasi penting berikutnya pada kelas yang sama, jika ada.]_
 
 ## 5.2 Kelas [Nama Kelas Berikutnya]
 
-*[Ulangi pola 5.1: nama dan ID kelas, tabel operasi, tabel atribut, serta subbab algoritma/query untuk operasi penting jika diperlukan.]*
+_[Ulangi pola 5.1: nama dan ID kelas, tabel operasi, tabel atribut, serta subbab algoritma/query untuk operasi penting jika diperlukan.]_
 
 <br>
 
@@ -313,8 +318,8 @@ Tabel 5.1.1. Query Operasi [Nama Operasi]
 
 Masukkan versi awal prototipe antarmuka, dimana untuk setiap antarmuka/layar, tuliskan spesifikasi rinci objek yang ditampilkan dan reaksi sistem terhadap interaksi pengguna.
 
-**Antarmuka:** *[ID layar]*  
-**Nama Layar:** *[Nama layar]*
+**Antarmuka:** _[ID layar]_  
+**Nama Layar:** _[Nama layar]_
 
 <p align="center">
 <img alt="Contoh Logical View pada P/L E-Commerce" src="./assets/diagram/contoh-design.png" width="50%">
@@ -325,16 +330,15 @@ Masukkan versi awal prototipe antarmuka, dimana untuk setiap antarmuka/layar, tu
 
 Tabel 6.1. Spesifikasi Objek Antarmuka [ID Layar]
 
-| Id_Objek | Jenis | Konten | Keterangan |
-| :--- | :--- | :--- | :--- |
-| *[ID objek]* | *[Jenis objek, misalnya Button, RTF Box, dll]* | *[String yang tampil pada layar]* | *[Reaksi sistem, layar tujuan, tautan, atau ID algoritma yang dijalankan]* |
-| *[ID objek]* | *[Jenis objek]* | *[Konten yang ditampilkan]* | *[Reaksi sistem atau nama file terkait beserta deskripsi ringkasnya]* |
-| *...* | *...* | *...* | *...* |
-
+| Id_Objek     | Jenis                                          | Konten                            | Keterangan                                                                 |
+| :----------- | :--------------------------------------------- | :-------------------------------- | :------------------------------------------------------------------------- |
+| _[ID objek]_ | _[Jenis objek, misalnya Button, RTF Box, dll]_ | _[String yang tampil pada layar]_ | _[Reaksi sistem, layar tujuan, tautan, atau ID algoritma yang dijalankan]_ |
+| _[ID objek]_ | _[Jenis objek]_                                | _[Konten yang ditampilkan]_       | _[Reaksi sistem atau nama file terkait beserta deskripsi ringkasnya]_      |
+| _..._        | _..._                                          | _..._                             | _..._                                                                      |
 
 ## 6.X Rancangan Antarmuka [ID Layar X]
 
-*[Ulangi pola 6.1 untuk layar berikutnya sampai semua layar teridentifikasi]*
+_[Ulangi pola 6.1 untuk layar berikutnya sampai semua layar teridentifikasi]_
 
 ## 6.Y Rancangan Antarmuka Keseluruhan
 
@@ -342,11 +346,11 @@ Tuliskan daftar gambar seluruh antarmuka. Berikan ID unik untuk setiap tampilan 
 
 Tabel 6.Y. Rancangan Antarmuka Keseluruhan
 
-| No | Tampilan Antarmuka |
-| :--- | :--- |
-| *[I-01]* | <img src="./assets/diagram/contoh-design.png" alt="Contoh Desain" width="400"> |
-| *[I-02]* | *[Sisipkan gambar antarmuka I-02]* |
-| *[I-XX]* | *[Sisipkan gambar antarmuka berikutnya]* |
+| No       | Tampilan Antarmuka                                                             |
+| :------- | :----------------------------------------------------------------------------- |
+| _[I-01]_ | <img src="./assets/diagram/contoh-design.png" alt="Contoh Desain" width="400"> |
+| _[I-02]_ | _[Sisipkan gambar antarmuka I-02]_                                             |
+| _[I-XX]_ | _[Sisipkan gambar antarmuka berikutnya]_                                       |
 
 <br>
 
@@ -358,8 +362,8 @@ Petakan kelas perancangan dengan use case yang terkait. Gunakan **BAB 6 Traceabi
 
 Tabel 7.1. Matriks Kerunutan Kelas terhadap Use Case
 
-| Kelas | Use Case Terkait |
-| :--- | :--- |
-| *[ID kelas - Nama kelas]* | *[ID UC - Nama use case; tuliskan seluruh use case terkait]* |
-| *[ID kelas - Nama kelas]* | *[ID UC - Nama use case]* |
-| *...* | *...* |
+| Kelas                     | Use Case Terkait                                             |
+| :------------------------ | :----------------------------------------------------------- |
+| _[ID kelas - Nama kelas]_ | _[ID UC - Nama use case; tuliskan seluruh use case terkait]_ |
+| _[ID kelas - Nama kelas]_ | _[ID UC - Nama use case]_                                    |
+| _..._                     | _..._                                                        |
