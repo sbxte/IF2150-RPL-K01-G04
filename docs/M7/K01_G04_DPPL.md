@@ -415,8 +415,6 @@ Pada diagram ini, simbol lingkaran di ujung garis antar-_model_ berada di sisi k
 
 BAB ini menjabarkan realisasi seluruh 12 _use case_ pada SKPL (UC-01 sampai UC-12). Setiap _use case_ dilengkapi identifikasi kelas, _sequence diagram_ untuk setiap skenario pada SKPL, dan diagram kelas.
 
-<!-- TODO: gambar sequence diagram (UC-XX_SQ_diagram.png dan UC-XX_SQ_ALT<n>_diagram.png) belum dibuat. Diagram kelas UC-XX_diagram.png masih salinan dari M4 dan belum memenuhi spesifikasi 3.x.3. -->
-
 ## 3.1 Use Case Menyetel Daily Affirmations
 
 **ID Use Case:** UC-01  
@@ -428,35 +426,143 @@ Tabel 3.1. Identifikasi Kelas Use Case UC-01
 
 | No  | Nama Kelas Perancangan | Nama Kelas Analisis Terkait |
 | :-- | :--------------------- | :-------------------------- |
-| 1   | `Mahasiswa`            | `Mahasiswa` (C-02)          |
-| 2   | `DailyAffirmation`     | `DailyAffirmation` (C-05)   |
-| 3   | `Notifikasi`           | `Notifikasi` (C-07)         |
+| 1 | `Mahasiswa` | `Mahasiswa` (C-02) |
+| 2 | `AffirmationView` | - |
+| 3 | `AffirmationController` | - |
+| 4 | `Validasi` | - |
+| 5 | `DailyAffirmation` | `DailyAffirmation` (C-05) |
+| 6 | `CloudflareD1Database` | - |
+| 7 | `Notifikasi` | `Notifikasi` (C-07) |
 
 ### 3.1.2 Sequence Diagram
 
 - **Skenario Normal**
 
-<p align="center">
-<img alt="Sequence Diagram UC-01" src="./assets/diagram/UC-01_SQ_diagram.png" width="50%">
-</p>
+```mermaid
+sequenceDiagram
+    actor Mahasiswa
+    participant AffirmationView@{ "type": "boundary" }
+    participant AffirmationController@{ "type": "control" }
+    participant Validasi@{ "type": "control" }
+    participant DailyAffirmation@{ "type": "entity" }
+    participant CloudflareD1Database@{ "type": "entity" }
+    participant Notifikasi@{ "type": "entity" }
+
+    Mahasiswa->>+AffirmationView: bukaPageAffirmasi()
+    AffirmationView->>+AffirmationController: tampilkanOpsiAffirmasi()
+    AffirmationController-->>-AffirmationView: opsi waktu pengiriman
+    AffirmationView-->>-Mahasiswa: tampilkanOpsiAffirmasi()
+    Mahasiswa->>+AffirmationView: pilihWaktuPengiriman(waktu)
+    AffirmationView->>+AffirmationController: submitWaktuPengiriman(waktu)
+    AffirmationController->>+Validasi: validasiWaktu(waktu)
+    Validasi-->>-AffirmationController: valid
+    AffirmationController->>+DailyAffirmation: aturWaktuKirim(waktu)
+    DailyAffirmation->>+CloudflareD1Database: simpanWaktuKirim(waktu)
+    CloudflareD1Database-->>-DailyAffirmation: berhasil
+    DailyAffirmation-->>-AffirmationController: true
+    AffirmationController->>+Notifikasi: kirimNotifikasi()
+    Notifikasi-->>-AffirmationController: terkirim
+    AffirmationController-->>-AffirmationView: setelan tersimpan
+    AffirmationView-->>-Mahasiswa: tampilkanSetelanTersimpan()
+```
+
 <p align="center">
 <i>Gambar 3.1.1. Sequence Diagram UC-01 - Skenario Normal</i>
 </p>
 
 - **Skenario Alternatif 1: Sistem tidak mampu menyimpan setelan**
 
-<p align="center">
-<img alt="Sequence Diagram UC-01 Alternatif 1" src="./assets/diagram/UC-01_SQ_ALT1_diagram.png" width="50%">
-</p>
+```mermaid
+sequenceDiagram
+    actor Mahasiswa
+    participant AffirmationView@{ "type": "boundary" }
+    participant AffirmationController@{ "type": "control" }
+    participant Validasi@{ "type": "control" }
+    participant DailyAffirmation@{ "type": "entity" }
+    participant CloudflareD1Database@{ "type": "entity" }
+    participant Notifikasi@{ "type": "entity" }
+
+    Mahasiswa->>+AffirmationView: bukaPageAffirmasi()
+    AffirmationView->>+AffirmationController: tampilkanOpsiAffirmasi()
+    AffirmationController-->>-AffirmationView: opsi waktu pengiriman
+    AffirmationView-->>-Mahasiswa: tampilkanOpsiAffirmasi()
+    Mahasiswa->>+AffirmationView: pilihWaktuPengiriman(waktu)
+    AffirmationView->>+AffirmationController: submitWaktuPengiriman(waktu)
+    AffirmationController->>+Validasi: validasiWaktu(waktu)
+    Validasi-->>-AffirmationController: valid
+    AffirmationController->>+DailyAffirmation: aturWaktuKirim(waktu)
+    DailyAffirmation->>+CloudflareD1Database: simpanWaktuKirim(waktu)
+    CloudflareD1Database-->>-DailyAffirmation: gagal
+    DailyAffirmation-->>-AffirmationController: false
+    AffirmationController-->>-AffirmationView: gagal menyimpan
+    AffirmationView-->>-Mahasiswa: showError(pesan)
+```
+
 <p align="center">
 <i>Gambar 3.1.2. Sequence Diagram UC-01 - Skenario Alternatif 1</i>
 </p>
 
 ### 3.1.3 Diagram Kelas
 
-<p align="center">
-<img alt="Diagram Kelas UC-01" src="./assets/diagram/UC-01_diagram.png" width="50%">
-</p>
+
+```mermaid
+classDiagram
+    class Mahasiswa {
+        <<entity>>
+        -nim: String
+    }
+    class AffirmationView {
+        <<boundary>>
+        -waktuTerpilih: Time
+        +bukaPageAffirmasi(): void
+        +pilihWaktuPengiriman(waktu: Time): void
+        +tampilkanOpsiAffirmasi(): void
+        +tampilkanSetelanTersimpan(): void
+        +showError(pesan: String): void
+    }
+    class AffirmationController {
+        <<control>>
+        +tampilkanOpsiAffirmasi(): void
+        +submitWaktuPengiriman(waktu: Time): void
+    }
+    class Validasi {
+        <<control>>
+        +validasiWaktu(waktu: Time): Boolean
+        +validasiKonsultan(konsultan: Konsultan): Boolean
+        +validasiJadwal(jadwal: JadwalKonsultasi): Boolean
+        +validasiInput(isi: List~String~): Boolean
+    }
+    class DailyAffirmation {
+        <<entity>>
+        -konten: String
+        -waktuKirim: Time
+        +aturWaktuKirim(waktu: Time): Boolean
+        +kirimAfirmasi(): void
+    }
+    class CloudflareD1Database {
+        <<entity>>
+        +simpanWaktuKirim(waktu: Time): Boolean
+        +simpanKalender(jadwal: JadwalKonsultasi): Boolean
+        +simpanPerubahan(data: String): Boolean
+    }
+    class Notifikasi {
+        <<entity>>
+        -idNotifikasi: String
+        -isi: String
+        -waktuKirim: DateTime
+        +kirimNotifikasi(): void
+        +tampilkanNotifikasi(): void
+    }
+    Mahasiswa "1" --> "0..*" DailyAffirmation : mengatur
+    DailyAffirmation ..> Notifikasi : memicu
+    Mahasiswa "1" --> "1" AffirmationView : mengakses
+    AffirmationView "1" --> "1" AffirmationController : memanggil
+    AffirmationController ..> DailyAffirmation : akses
+    AffirmationController ..> Validasi : memvalidasi
+    AffirmationController ..> Notifikasi : akses
+    DailyAffirmation ..> CloudflareD1Database : disimpan di
+```
+
 <p align="center">
 <i>Gambar 3.1.3. Diagram Kelas Use Case UC-01 - Menyetel Daily Affirmations</i>
 </p>
@@ -472,28 +578,143 @@ Tabel 3.2. Identifikasi Kelas Use Case UC-02
 
 | No  | Nama Kelas Perancangan | Nama Kelas Analisis Terkait |
 | :-- | :--------------------- | :-------------------------- |
-| 1   | `Mahasiswa`            | `Mahasiswa` (C-02)          |
-| 2   | `Reminder`             | `Reminder` (C-06)           |
-| 3   | `Notifikasi`           | `Notifikasi` (C-07)         |
+| 1 | `Mahasiswa` | `Mahasiswa` (C-02) |
+| 2 | `ReminderView` | - |
+| 3 | `ReminderController` | - |
+| 4 | `Validasi` | - |
+| 5 | `Reminder` | `Reminder` (C-06) |
+| 6 | `CloudflareD1Database` | - |
+| 7 | `Notifikasi` | `Notifikasi` (C-07) |
 
 ### 3.2.2 Sequence Diagram
 
 - **Skenario Normal**
 
-<p align="center">
-<img alt="Sequence Diagram UC-02" src="./assets/diagram/UC-02_SQ_diagram.png" width="50%">
-</p>
+```mermaid
+sequenceDiagram
+    actor Mahasiswa
+    participant ReminderView@{ "type": "boundary" }
+    participant ReminderController@{ "type": "control" }
+    participant Validasi@{ "type": "control" }
+    participant Reminder@{ "type": "entity" }
+    participant CloudflareD1Database@{ "type": "entity" }
+    participant Notifikasi@{ "type": "entity" }
+
+    Mahasiswa->>+ReminderView: bukaPageReminder()
+    ReminderView->>+ReminderController: tampilkanOpsiReminder()
+    ReminderController-->>-ReminderView: opsi waktu pengiriman
+    ReminderView-->>-Mahasiswa: tampilkanOpsiReminder()
+    Mahasiswa->>+ReminderView: pilihWaktuPengiriman(waktu)
+    ReminderView->>+ReminderController: submitWaktuPengiriman(waktu)
+    ReminderController->>+Validasi: validasiWaktu(waktu)
+    Validasi-->>-ReminderController: valid
+    ReminderController->>+Reminder: aturWaktuKirim(waktu)
+    Reminder->>+CloudflareD1Database: simpanWaktuKirim(waktu)
+    CloudflareD1Database-->>-Reminder: berhasil
+    Reminder-->>-ReminderController: true
+    ReminderController->>+Notifikasi: kirimNotifikasi()
+    Notifikasi-->>-ReminderController: terkirim
+    ReminderController-->>-ReminderView: setelan tersimpan
+    ReminderView-->>-Mahasiswa: tampilkanSetelanTersimpan()
+```
+
 <p align="center">
 <i>Gambar 3.2.1. Sequence Diagram UC-02 - Skenario Normal</i>
 </p>
 
 - **Skenario Alternatif 1: Sistem tidak mampu menyimpan setelan**
 
-### 3.2.3 Diagram Kelas
+```mermaid
+sequenceDiagram
+    actor Mahasiswa
+    participant ReminderView@{ "type": "boundary" }
+    participant ReminderController@{ "type": "control" }
+    participant Validasi@{ "type": "control" }
+    participant Reminder@{ "type": "entity" }
+    participant CloudflareD1Database@{ "type": "entity" }
+    participant Notifikasi@{ "type": "entity" }
+
+    Mahasiswa->>+ReminderView: bukaPageReminder()
+    ReminderView->>+ReminderController: tampilkanOpsiReminder()
+    ReminderController-->>-ReminderView: opsi waktu pengiriman
+    ReminderView-->>-Mahasiswa: tampilkanOpsiReminder()
+    Mahasiswa->>+ReminderView: pilihWaktuPengiriman(waktu)
+    ReminderView->>+ReminderController: submitWaktuPengiriman(waktu)
+    ReminderController->>+Validasi: validasiWaktu(waktu)
+    Validasi-->>-ReminderController: valid
+    ReminderController->>+Reminder: aturWaktuKirim(waktu)
+    Reminder->>+CloudflareD1Database: simpanWaktuKirim(waktu)
+    CloudflareD1Database-->>-Reminder: gagal
+    Reminder-->>-ReminderController: false
+    ReminderController-->>-ReminderView: gagal menyimpan
+    ReminderView-->>-Mahasiswa: showError(pesan)
+```
 
 <p align="center">
-<img alt="Diagram Kelas UC-02" src="./assets/diagram/UC-02_diagram.png" width="50%">
+<i>Gambar 3.2.2. Sequence Diagram UC-02 - Skenario Alternatif 1</i>
 </p>
+
+### 3.2.3 Diagram Kelas
+
+
+```mermaid
+classDiagram
+    class Mahasiswa {
+        <<entity>>
+        -nim: String
+    }
+    class ReminderView {
+        <<boundary>>
+        -waktuTerpilih: Time
+        +bukaPageReminder(): void
+        +pilihWaktuPengiriman(waktu: Time): void
+        +tampilkanOpsiReminder(): void
+        +tampilkanSetelanTersimpan(): void
+        +showError(pesan: String): void
+    }
+    class ReminderController {
+        <<control>>
+        +tampilkanOpsiReminder(): void
+        +submitWaktuPengiriman(waktu: Time): void
+    }
+    class Validasi {
+        <<control>>
+        +validasiWaktu(waktu: Time): Boolean
+        +validasiKonsultan(konsultan: Konsultan): Boolean
+        +validasiJadwal(jadwal: JadwalKonsultasi): Boolean
+        +validasiInput(isi: List~String~): Boolean
+    }
+    class Reminder {
+        <<entity>>
+        -jenis: String
+        -waktu: Time
+        +aturWaktuKirim(waktu: Time): Boolean
+        +kirimPengingat(): void
+    }
+    class CloudflareD1Database {
+        <<entity>>
+        +simpanWaktuKirim(waktu: Time): Boolean
+        +simpanKalender(jadwal: JadwalKonsultasi): Boolean
+        +simpanPerubahan(data: String): Boolean
+    }
+    class Notifikasi {
+        <<entity>>
+        -idNotifikasi: String
+        -isi: String
+        -waktuKirim: DateTime
+        +kirimNotifikasi(): void
+        +tampilkanNotifikasi(): void
+    }
+    Mahasiswa "1" --> "0..*" Reminder : mengatur
+    Reminder ..> Notifikasi : memicu
+    Mahasiswa "1" --> "1" ReminderView : mengakses
+    ReminderView "1" --> "1" ReminderController : memanggil
+    ReminderController ..> Reminder : akses
+    ReminderController ..> Validasi : memvalidasi
+    ReminderController ..> Notifikasi : akses
+    Reminder ..> CloudflareD1Database : disimpan di
+```
+
 <p align="center">
 <i>Gambar 3.2.3. Diagram Kelas Use Case UC-02 - Menyetel Pengingat Kesehatan</i>
 </p>
@@ -507,31 +728,122 @@ Tabel 3.2. Identifikasi Kelas Use Case UC-02
 
 Tabel 3.3. Identifikasi Kelas Use Case UC-03
 
-| No  | Nama Kelas Perancangan  | Nama Kelas Analisis Terkait    |
-| :-- | :---------------------- | :----------------------------- |
-| 1   | `Mahasiswa`             | `Mahasiswa` (C-02)             |
-| 2   | `GoogleCalendarService` | `GoogleCalendarService` (C-08) |
-| 3   | `KalenderGabungan`      | `KalenderGabungan` (C-09)      |
+| No  | Nama Kelas Perancangan | Nama Kelas Analisis Terkait |
+| :-- | :--------------------- | :-------------------------- |
+| 1 | `Mahasiswa` | `Mahasiswa` (C-02) |
+| 2 | `CalendarView` | - |
+| 3 | `CalendarController` | - |
+| 4 | `GoogleCalendarService` | `GoogleCalendarService` (C-08) |
+| 5 | `JadwalKonsultasi` | `JadwalKonsultasi` (C-11) |
+| 6 | `KalenderGabungan` | `KalenderGabungan` (C-09) |
 
 ### 3.3.2 Sequence Diagram
 
 - **Skenario Normal**
 
-<p align="center">
-<img alt="Sequence Diagram UC-03" src="./assets/diagram/UC-03_SQ_diagram.png" width="50%">
-</p>
+```mermaid
+sequenceDiagram
+    actor Mahasiswa
+    participant CalendarView@{ "type": "boundary" }
+    participant CalendarController@{ "type": "control" }
+    participant GoogleCalendarService@{ "type": "entity" }
+    participant JadwalKonsultasi@{ "type": "entity" }
+    participant KalenderGabungan@{ "type": "entity" }
+
+    Mahasiswa->>+CalendarView: bukaPageCalendar()
+    CalendarView->>+CalendarController: tampilkanCalendar()
+    CalendarController->>+GoogleCalendarService: ambilKalender()
+    GoogleCalendarService-->>-CalendarController: daftar event Google
+    CalendarController->>+JadwalKonsultasi: ambilKalender()
+    JadwalKonsultasi-->>-CalendarController: daftar jadwal konsultasi
+    CalendarController->>+KalenderGabungan: gabungkanJadwal(google, jadwal)
+    KalenderGabungan-->>-CalendarController: kalender gabungan
+    CalendarController-->>-CalendarView: kalender gabungan
+    CalendarView-->>-Mahasiswa: tampilkanKalender(kalender)
+```
+
 <p align="center">
 <i>Gambar 3.3.1. Sequence Diagram UC-03 - Skenario Normal</i>
 </p>
 
 - **Skenario Alternatif 1: Sistem tidak mampu mengambil data event**
 
+```mermaid
+sequenceDiagram
+    actor Mahasiswa
+    participant CalendarView@{ "type": "boundary" }
+    participant CalendarController@{ "type": "control" }
+    participant GoogleCalendarService@{ "type": "entity" }
+    participant JadwalKonsultasi@{ "type": "entity" }
+    participant KalenderGabungan@{ "type": "entity" }
+
+    Mahasiswa->>+CalendarView: bukaPageCalendar()
+    CalendarView->>+CalendarController: tampilkanCalendar()
+    CalendarController->>+GoogleCalendarService: ambilKalender()
+    GoogleCalendarService-->>-CalendarController: gagal
+    CalendarController-->>-CalendarView: gagal mengambil data
+    CalendarView-->>-Mahasiswa: showErrorMessage(pesan)
+    Note over Mahasiswa,CalendarView: Mahasiswa dapat menekan tombol Refresh untuk mengulangi bukaPageCalendar()
+```
+
+<p align="center">
+<i>Gambar 3.3.2. Sequence Diagram UC-03 - Skenario Alternatif 1</i>
+</p>
 
 ### 3.3.3 Diagram Kelas
 
-<p align="center">
-<img alt="Diagram Kelas UC-03" src="./assets/diagram/UC-03_diagram.png" width="50%">
-</p>
+
+```mermaid
+classDiagram
+    class Mahasiswa {
+        <<entity>>
+        -nim: String
+    }
+    class CalendarView {
+        <<boundary>>
+        +bukaPageCalendar(): void
+        +tampilkanKalender(kalender: List~Event~): void
+        +showErrorMessage(pesan: String): void
+    }
+    class CalendarController {
+        <<control>>
+        +tampilkanCalendar(): void
+    }
+    class GoogleCalendarService {
+        <<entity>>
+        -accessToken: String
+        +ambilKalender(): List~Event~
+        +cekBentrokJadwal(jadwal: JadwalKonsultasi): Boolean
+    }
+    class JadwalKonsultasi {
+        <<entity>>
+        -idJadwal: String
+        -waktu: DateTime
+        -status: String
+        +ambilKalender(): List~JadwalKonsultasi~
+        +ambilKalender(konsultan: Konsultan): List~JadwalKonsultasi~
+        +simpanJadwal(): Boolean
+        +perbaruiJadwal(): Boolean
+        +pesanSesi(): Boolean
+    }
+    class KalenderGabungan {
+        <<entity>>
+        -daftarEvent: List~Event~
+        +gabungkanJadwal(google: List~Event~, jadwal: List~JadwalKonsultasi~): List~Event~
+        +jadwalBentrok(jadwal: JadwalKonsultasi): Boolean
+        +ubahKalender(jadwal: JadwalKonsultasi): Boolean
+    }
+    Mahasiswa "1" --> "1" KalenderGabungan : melihat
+    KalenderGabungan ..> GoogleCalendarService : memakai
+    KalenderGabungan "1" --> "0..*" JadwalKonsultasi : menggabungkan
+    Mahasiswa "1" --> "0..*" JadwalKonsultasi : memesan
+    Mahasiswa "1" --> "1" CalendarView : mengakses
+    CalendarView "1" --> "1" CalendarController : memanggil
+    CalendarController ..> GoogleCalendarService : akses
+    CalendarController ..> JadwalKonsultasi : akses
+    CalendarController ..> KalenderGabungan : akses
+```
+
 <p align="center">
 <i>Gambar 3.3.3. Diagram Kelas Use Case UC-03 - Melihat Kalender Terintegrasi</i>
 </p>
@@ -545,36 +857,231 @@ Tabel 3.3. Identifikasi Kelas Use Case UC-03
 
 Tabel 3.4. Identifikasi Kelas Use Case UC-04
 
-| No  | Nama Kelas Perancangan  | Nama Kelas Analisis Terkait    |
-| :-- | :---------------------- | :----------------------------- |
-| 1   | `Mahasiswa`             | `Mahasiswa` (C-02)             |
-| 2   | `GoogleCalendarService` | `GoogleCalendarService` (C-08) |
-| 3   | `Konsultan`             | `Konsultan` (C-10)             |
-| 4   | `JadwalKonsultasi`      | `JadwalKonsultasi` (C-11)      |
+| No  | Nama Kelas Perancangan | Nama Kelas Analisis Terkait |
+| :-- | :--------------------- | :-------------------------- |
+| 1 | `Mahasiswa` | `Mahasiswa` (C-02) |
+| 2 | `ConsultationBookingView` | - |
+| 3 | `ConsultationController` | - |
+| 4 | `Konsultan` | `Konsultan` (C-10) |
+| 5 | `JadwalKonsultasi` | `JadwalKonsultasi` (C-11) |
+| 6 | `Validasi` | - |
+| 7 | `KalenderGabungan` | `KalenderGabungan` (C-09) |
+| 8 | `GoogleCalendarService` | `GoogleCalendarService` (C-08) |
+| 9 | `CloudflareD1Database` | - |
 
 ### 3.4.2 Sequence Diagram
 
 - **Skenario Normal**
 
-<p align="center">
-<img alt="Sequence Diagram UC-04" src="./assets/diagram/UC-04_SQ_diagram.png" width="50%">
-</p>
+```mermaid
+sequenceDiagram
+    actor Mahasiswa
+    participant ConsultationBookingView@{ "type": "boundary" }
+    participant ConsultationController@{ "type": "control" }
+    participant Konsultan@{ "type": "entity" }
+    participant Validasi@{ "type": "control" }
+    participant JadwalKonsultasi@{ "type": "entity" }
+    participant KalenderGabungan@{ "type": "entity" }
+    participant GoogleCalendarService@{ "type": "entity" }
+    participant CloudflareD1Database@{ "type": "entity" }
+
+    Mahasiswa->>+ConsultationBookingView: bukaPageKonsultasi()
+    ConsultationBookingView->>+ConsultationController: tampilkanOpsiKonsultasi()
+    ConsultationController->>+Konsultan: ambilDaftarKonsultan()
+    Konsultan-->>-ConsultationController: daftar konsultan
+    ConsultationController-->>-ConsultationBookingView: daftar konsultan
+    ConsultationBookingView-->>-Mahasiswa: tampilkanOpsiKonsultasi(daftar)
+    Mahasiswa->>+ConsultationBookingView: pilihKonsultan(konsultan)
+    ConsultationBookingView->>+ConsultationController: submitKonsultan(konsultan)
+    ConsultationController->>+Validasi: validasiKonsultan(konsultan)
+    Validasi-->>-ConsultationController: valid
+    ConsultationController->>+JadwalKonsultasi: ambilKalender(konsultan)
+    JadwalKonsultasi-->>-ConsultationController: daftar jadwal konsultasi
+    ConsultationController-->>-ConsultationBookingView: daftar jadwal
+    ConsultationBookingView-->>-Mahasiswa: tampilkanKalender(jadwal)
+    Mahasiswa->>+ConsultationBookingView: pilihSesi(jadwal)
+    ConsultationBookingView->>+ConsultationController: updateStatusKonsultasi(jadwal)
+    ConsultationController->>+KalenderGabungan: jadwalBentrok(jadwal)
+    KalenderGabungan->>+GoogleCalendarService: cekBentrokJadwal(jadwal)
+    GoogleCalendarService-->>-KalenderGabungan: false
+    KalenderGabungan-->>-ConsultationController: false
+    ConsultationController->>+KalenderGabungan: ubahKalender(jadwal)
+    KalenderGabungan->>+CloudflareD1Database: simpanKalender(jadwal)
+    CloudflareD1Database-->>-KalenderGabungan: berhasil
+    KalenderGabungan-->>-ConsultationController: true
+    ConsultationController->>+JadwalKonsultasi: pesanSesi()
+    JadwalKonsultasi-->>-ConsultationController: true
+    ConsultationController-->>-ConsultationBookingView: sesi terpesan
+    ConsultationBookingView-->>-Mahasiswa: tampilkanSetelanTersimpan()
+```
+
 <p align="center">
 <i>Gambar 3.4.1. Sequence Diagram UC-04 - Skenario Normal</i>
 </p>
 
 - **Skenario Alternatif 1: Sistem tidak mampu mengambil data jadwal konsultasi**
 
+```mermaid
+sequenceDiagram
+    actor Mahasiswa
+    participant ConsultationBookingView@{ "type": "boundary" }
+    participant ConsultationController@{ "type": "control" }
+    participant Konsultan@{ "type": "entity" }
+    participant Validasi@{ "type": "control" }
+    participant JadwalKonsultasi@{ "type": "entity" }
+    participant KalenderGabungan@{ "type": "entity" }
+    participant GoogleCalendarService@{ "type": "entity" }
+    participant CloudflareD1Database@{ "type": "entity" }
+
+    Mahasiswa->>+ConsultationBookingView: bukaPageKonsultasi()
+    ConsultationBookingView->>+ConsultationController: tampilkanOpsiKonsultasi()
+    ConsultationController->>+Konsultan: ambilDaftarKonsultan()
+    Konsultan-->>-ConsultationController: daftar konsultan
+    ConsultationController-->>-ConsultationBookingView: daftar konsultan
+    ConsultationBookingView-->>-Mahasiswa: tampilkanOpsiKonsultasi(daftar)
+    Mahasiswa->>+ConsultationBookingView: pilihKonsultan(konsultan)
+    ConsultationBookingView->>+ConsultationController: submitKonsultan(konsultan)
+    ConsultationController->>+Validasi: validasiKonsultan(konsultan)
+    Validasi-->>-ConsultationController: valid
+    ConsultationController->>+JadwalKonsultasi: ambilKalender(konsultan)
+    JadwalKonsultasi-->>-ConsultationController: gagal
+    ConsultationController-->>-ConsultationBookingView: gagal mengambil data
+    ConsultationBookingView-->>-Mahasiswa: showError(pesan)
+    Note over Mahasiswa,ConsultationBookingView: Mahasiswa dapat menekan tombol Refresh untuk mengulangi bukaPageKonsultasi()
+```
+
+<p align="center">
+<i>Gambar 3.4.2. Sequence Diagram UC-04 - Skenario Alternatif 1</i>
+</p>
 
 - **Skenario Alternatif 2: Sistem tidak mampu menyimpan jadwal konsultasi yang dipesan**
 
+```mermaid
+sequenceDiagram
+    actor Mahasiswa
+    participant ConsultationBookingView@{ "type": "boundary" }
+    participant ConsultationController@{ "type": "control" }
+    participant Konsultan@{ "type": "entity" }
+    participant Validasi@{ "type": "control" }
+    participant JadwalKonsultasi@{ "type": "entity" }
+    participant KalenderGabungan@{ "type": "entity" }
+    participant GoogleCalendarService@{ "type": "entity" }
+    participant CloudflareD1Database@{ "type": "entity" }
 
+    Mahasiswa->>+ConsultationBookingView: bukaPageKonsultasi()
+    ConsultationBookingView->>+ConsultationController: tampilkanOpsiKonsultasi()
+    ConsultationController->>+Konsultan: ambilDaftarKonsultan()
+    Konsultan-->>-ConsultationController: daftar konsultan
+    ConsultationController-->>-ConsultationBookingView: daftar konsultan
+    ConsultationBookingView-->>-Mahasiswa: tampilkanOpsiKonsultasi(daftar)
+    Mahasiswa->>+ConsultationBookingView: pilihKonsultan(konsultan)
+    ConsultationBookingView->>+ConsultationController: submitKonsultan(konsultan)
+    ConsultationController->>+Validasi: validasiKonsultan(konsultan)
+    Validasi-->>-ConsultationController: valid
+    ConsultationController->>+JadwalKonsultasi: ambilKalender(konsultan)
+    JadwalKonsultasi-->>-ConsultationController: daftar jadwal konsultasi
+    ConsultationController-->>-ConsultationBookingView: daftar jadwal
+    ConsultationBookingView-->>-Mahasiswa: tampilkanKalender(jadwal)
+    Mahasiswa->>+ConsultationBookingView: pilihSesi(jadwal)
+    ConsultationBookingView->>+ConsultationController: updateStatusKonsultasi(jadwal)
+    ConsultationController->>+KalenderGabungan: jadwalBentrok(jadwal)
+    KalenderGabungan->>+GoogleCalendarService: cekBentrokJadwal(jadwal)
+    GoogleCalendarService-->>-KalenderGabungan: false
+    KalenderGabungan-->>-ConsultationController: false
+    ConsultationController->>+KalenderGabungan: ubahKalender(jadwal)
+    KalenderGabungan->>+CloudflareD1Database: simpanKalender(jadwal)
+    CloudflareD1Database-->>-KalenderGabungan: gagal
+    KalenderGabungan-->>-ConsultationController: false
+    ConsultationController-->>-ConsultationBookingView: gagal menyimpan
+    ConsultationBookingView-->>-Mahasiswa: showError(pesan)
+```
+
+<p align="center">
+<i>Gambar 3.4.3. Sequence Diagram UC-04 - Skenario Alternatif 2</i>
+</p>
 
 ### 3.4.3 Diagram Kelas
 
-<p align="center">
-<img alt="Diagram Kelas UC-04" src="./assets/diagram/UC-04_diagram.png" width="50%">
-</p>
+
+```mermaid
+classDiagram
+    class Mahasiswa {
+        <<entity>>
+        -nim: String
+    }
+    class ConsultationBookingView {
+        <<boundary>>
+        +bukaPageKonsultasi(): void
+        +pilihKonsultan(konsultan: Konsultan): void
+        +pilihSesi(jadwal: JadwalKonsultasi): void
+        +tampilkanOpsiKonsultasi(daftar: List~Konsultan~): void
+        +tampilkanKalender(jadwal: List~JadwalKonsultasi~): void
+        +tampilkanSetelanTersimpan(): void
+        +showError(pesan: String): void
+    }
+    class ConsultationController {
+        <<control>>
+        +tampilkanOpsiKonsultasi(): void
+        +submitKonsultan(konsultan: Konsultan): void
+        +updateStatusKonsultasi(jadwal: JadwalKonsultasi): void
+    }
+    class Konsultan {
+        <<entity>>
+        -nama: String
+        -spesialisasi: String
+        +ambilDaftarKonsultan(): List~Konsultan~
+    }
+    class JadwalKonsultasi {
+        <<entity>>
+        -idJadwal: String
+        -waktu: DateTime
+        -status: String
+        +ambilKalender(): List~JadwalKonsultasi~
+        +ambilKalender(konsultan: Konsultan): List~JadwalKonsultasi~
+        +simpanJadwal(): Boolean
+        +perbaruiJadwal(): Boolean
+        +pesanSesi(): Boolean
+    }
+    class Validasi {
+        <<control>>
+        +validasiWaktu(waktu: Time): Boolean
+        +validasiKonsultan(konsultan: Konsultan): Boolean
+        +validasiJadwal(jadwal: JadwalKonsultasi): Boolean
+        +validasiInput(isi: List~String~): Boolean
+    }
+    class KalenderGabungan {
+        <<entity>>
+        -daftarEvent: List~Event~
+        +gabungkanJadwal(google: List~Event~, jadwal: List~JadwalKonsultasi~): List~Event~
+        +jadwalBentrok(jadwal: JadwalKonsultasi): Boolean
+        +ubahKalender(jadwal: JadwalKonsultasi): Boolean
+    }
+    class GoogleCalendarService {
+        <<entity>>
+        -accessToken: String
+        +ambilKalender(): List~Event~
+        +cekBentrokJadwal(jadwal: JadwalKonsultasi): Boolean
+    }
+    class CloudflareD1Database {
+        <<entity>>
+        +simpanWaktuKirim(waktu: Time): Boolean
+        +simpanKalender(jadwal: JadwalKonsultasi): Boolean
+        +simpanPerubahan(data: String): Boolean
+    }
+    Mahasiswa "1" --> "1" KalenderGabungan : melihat
+    KalenderGabungan ..> GoogleCalendarService : memakai
+    KalenderGabungan "1" --> "0..*" JadwalKonsultasi : menggabungkan
+    Mahasiswa "1" --> "0..*" JadwalKonsultasi : memesan
+    JadwalKonsultasi "0..*" --> "1" Konsultan : bersama
+    Mahasiswa "1" --> "1" ConsultationBookingView : mengakses
+    ConsultationBookingView "1" --> "1" ConsultationController : memanggil
+    ConsultationController ..> Konsultan : akses
+    ConsultationController ..> JadwalKonsultasi : akses
+    ConsultationController ..> Validasi : memvalidasi
+    ConsultationController ..> KalenderGabungan : akses
+    KalenderGabungan ..> CloudflareD1Database : disimpan di
+```
+
 <p align="center">
 <i>Gambar 3.4.4. Diagram Kelas Use Case UC-04 - Memesan Sesi Konsultasi</i>
 </p>
@@ -590,32 +1097,210 @@ Tabel 3.5. Identifikasi Kelas Use Case UC-05
 
 | No  | Nama Kelas Perancangan | Nama Kelas Analisis Terkait |
 | :-- | :--------------------- | :-------------------------- |
-| 1   | `Administrator`        | `Administrator` (C-03)      |
-| 2   | `Konsultan`            | `Konsultan` (C-10)          |
-| 3   | `JadwalKonsultasi`     | `JadwalKonsultasi` (C-11)   |
+| 1 | `Administrator` | `Administrator` (C-03) |
+| 2 | `ConsultationManagementView` | - |
+| 3 | `ConsultationController` | - |
+| 4 | `Konsultan` | `Konsultan` (C-10) |
+| 5 | `JadwalKonsultasi` | `JadwalKonsultasi` (C-11) |
+| 6 | `Validasi` | - |
+| 7 | `KalenderGabungan` | `KalenderGabungan` (C-09) |
+| 8 | `CloudflareD1Database` | - |
 
 ### 3.5.2 Sequence Diagram
 
 - **Skenario Normal**
 
-<p align="center">
-<img alt="Sequence Diagram UC-05" src="./assets/diagram/UC-05_SQ_diagram.png" width="50%">
-</p>
+```mermaid
+sequenceDiagram
+    actor Administrator
+    participant ConsultationManagementView@{ "type": "boundary" }
+    participant ConsultationController@{ "type": "control" }
+    participant Konsultan@{ "type": "entity" }
+    participant Validasi@{ "type": "control" }
+    participant JadwalKonsultasi@{ "type": "entity" }
+    participant KalenderGabungan@{ "type": "entity" }
+    participant CloudflareD1Database@{ "type": "entity" }
+
+    Administrator->>+ConsultationManagementView: bukaPageKonsultasi()
+    ConsultationManagementView->>+ConsultationController: tampilkanOpsiKonsultasi()
+    ConsultationController->>+Konsultan: ambilDaftarKonsultan()
+    Konsultan-->>-ConsultationController: daftar konsultan
+    ConsultationController-->>-ConsultationManagementView: daftar konsultan
+    ConsultationManagementView-->>-Administrator: tampilkanOpsiKonsultasi(daftar)
+    Administrator->>+ConsultationManagementView: pilihKonsultan(konsultan)
+    ConsultationManagementView->>+ConsultationController: submitKonsultan(konsultan)
+    ConsultationController->>+Validasi: validasiKonsultan(konsultan)
+    Validasi-->>-ConsultationController: valid
+    ConsultationController->>+JadwalKonsultasi: ambilKalender(konsultan)
+    JadwalKonsultasi-->>-ConsultationController: daftar jadwal konsultasi
+    ConsultationController-->>-ConsultationManagementView: daftar jadwal
+    ConsultationManagementView-->>-Administrator: tampilkanKalender(jadwal)
+    Administrator->>+ConsultationManagementView: perbaruiJadwal(jadwal)
+    ConsultationManagementView->>+ConsultationController: updateStatusKonsultasi(jadwal)
+    ConsultationController->>+Validasi: validasiJadwal(jadwal)
+    Validasi-->>-ConsultationController: valid
+    ConsultationController->>+KalenderGabungan: ubahKalender(jadwal)
+    KalenderGabungan->>+CloudflareD1Database: simpanKalender(jadwal)
+    CloudflareD1Database-->>-KalenderGabungan: berhasil
+    KalenderGabungan-->>-ConsultationController: true
+    ConsultationController-->>-ConsultationManagementView: jadwal diperbarui
+    ConsultationManagementView-->>-Administrator: tampilkanSetelanTersimpan()
+```
+
 <p align="center">
 <i>Gambar 3.5.1. Sequence Diagram UC-05 - Skenario Normal</i>
 </p>
 
 - **Skenario Alternatif 1: Sistem tidak mampu mengambil data jadwal konsultasi**
 
+```mermaid
+sequenceDiagram
+    actor Administrator
+    participant ConsultationManagementView@{ "type": "boundary" }
+    participant ConsultationController@{ "type": "control" }
+    participant Konsultan@{ "type": "entity" }
+    participant Validasi@{ "type": "control" }
+    participant JadwalKonsultasi@{ "type": "entity" }
+    participant KalenderGabungan@{ "type": "entity" }
+    participant CloudflareD1Database@{ "type": "entity" }
+
+    Administrator->>+ConsultationManagementView: bukaPageKonsultasi()
+    ConsultationManagementView->>+ConsultationController: tampilkanOpsiKonsultasi()
+    ConsultationController->>+Konsultan: ambilDaftarKonsultan()
+    Konsultan-->>-ConsultationController: daftar konsultan
+    ConsultationController-->>-ConsultationManagementView: daftar konsultan
+    ConsultationManagementView-->>-Administrator: tampilkanOpsiKonsultasi(daftar)
+    Administrator->>+ConsultationManagementView: pilihKonsultan(konsultan)
+    ConsultationManagementView->>+ConsultationController: submitKonsultan(konsultan)
+    ConsultationController->>+Validasi: validasiKonsultan(konsultan)
+    Validasi-->>-ConsultationController: valid
+    ConsultationController->>+JadwalKonsultasi: ambilKalender(konsultan)
+    JadwalKonsultasi-->>-ConsultationController: gagal
+    ConsultationController-->>-ConsultationManagementView: gagal mengambil data
+    ConsultationManagementView-->>-Administrator: showError(pesan)
+    Note over Administrator,ConsultationManagementView: Administrator dapat menekan tombol Refresh untuk mengulangi bukaPageKonsultasi()
+```
+
+<p align="center">
+<i>Gambar 3.5.2. Sequence Diagram UC-05 - Skenario Alternatif 1</i>
+</p>
 
 - **Skenario Alternatif 2: Sistem tidak mampu mengedit data jadwal konsultasi**
 
+```mermaid
+sequenceDiagram
+    actor Administrator
+    participant ConsultationManagementView@{ "type": "boundary" }
+    participant ConsultationController@{ "type": "control" }
+    participant Konsultan@{ "type": "entity" }
+    participant Validasi@{ "type": "control" }
+    participant JadwalKonsultasi@{ "type": "entity" }
+    participant KalenderGabungan@{ "type": "entity" }
+    participant CloudflareD1Database@{ "type": "entity" }
+
+    Administrator->>+ConsultationManagementView: bukaPageKonsultasi()
+    ConsultationManagementView->>+ConsultationController: tampilkanOpsiKonsultasi()
+    ConsultationController->>+Konsultan: ambilDaftarKonsultan()
+    Konsultan-->>-ConsultationController: daftar konsultan
+    ConsultationController-->>-ConsultationManagementView: daftar konsultan
+    ConsultationManagementView-->>-Administrator: tampilkanOpsiKonsultasi(daftar)
+    Administrator->>+ConsultationManagementView: pilihKonsultan(konsultan)
+    ConsultationManagementView->>+ConsultationController: submitKonsultan(konsultan)
+    ConsultationController->>+Validasi: validasiKonsultan(konsultan)
+    Validasi-->>-ConsultationController: valid
+    ConsultationController->>+JadwalKonsultasi: ambilKalender(konsultan)
+    JadwalKonsultasi-->>-ConsultationController: daftar jadwal konsultasi
+    ConsultationController-->>-ConsultationManagementView: daftar jadwal
+    ConsultationManagementView-->>-Administrator: tampilkanKalender(jadwal)
+    Administrator->>+ConsultationManagementView: perbaruiJadwal(jadwal)
+    ConsultationManagementView->>+ConsultationController: updateStatusKonsultasi(jadwal)
+    ConsultationController->>+Validasi: validasiJadwal(jadwal)
+    Validasi-->>-ConsultationController: valid
+    ConsultationController->>+KalenderGabungan: ubahKalender(jadwal)
+    KalenderGabungan->>+CloudflareD1Database: simpanKalender(jadwal)
+    CloudflareD1Database-->>-KalenderGabungan: gagal
+    KalenderGabungan-->>-ConsultationController: false
+    ConsultationController-->>-ConsultationManagementView: gagal menyimpan
+    ConsultationManagementView-->>-Administrator: showError(pesan)
+```
+
+<p align="center">
+<i>Gambar 3.5.3. Sequence Diagram UC-05 - Skenario Alternatif 2</i>
+</p>
 
 ### 3.5.3 Diagram Kelas
 
-<p align="center">
-<img alt="Diagram Kelas UC-05" src="./assets/diagram/UC-05_diagram.png" width="50%">
-</p>
+
+```mermaid
+classDiagram
+    class Administrator {
+        <<entity>>
+    }
+    class ConsultationManagementView {
+        <<boundary>>
+        +bukaPageKonsultasi(): void
+        +pilihKonsultan(konsultan: Konsultan): void
+        +perbaruiJadwal(jadwal: JadwalKonsultasi): void
+        +tampilkanOpsiKonsultasi(daftar: List~Konsultan~): void
+        +tampilkanKalender(jadwal: List~JadwalKonsultasi~): void
+        +tampilkanSetelanTersimpan(): void
+        +showError(pesan: String): void
+    }
+    class ConsultationController {
+        <<control>>
+        +tampilkanOpsiKonsultasi(): void
+        +submitKonsultan(konsultan: Konsultan): void
+        +updateStatusKonsultasi(jadwal: JadwalKonsultasi): void
+    }
+    class Konsultan {
+        <<entity>>
+        -nama: String
+        -spesialisasi: String
+        +ambilDaftarKonsultan(): List~Konsultan~
+    }
+    class JadwalKonsultasi {
+        <<entity>>
+        -idJadwal: String
+        -waktu: DateTime
+        -status: String
+        +ambilKalender(): List~JadwalKonsultasi~
+        +ambilKalender(konsultan: Konsultan): List~JadwalKonsultasi~
+        +simpanJadwal(): Boolean
+        +perbaruiJadwal(): Boolean
+        +pesanSesi(): Boolean
+    }
+    class Validasi {
+        <<control>>
+        +validasiWaktu(waktu: Time): Boolean
+        +validasiKonsultan(konsultan: Konsultan): Boolean
+        +validasiJadwal(jadwal: JadwalKonsultasi): Boolean
+        +validasiInput(isi: List~String~): Boolean
+    }
+    class KalenderGabungan {
+        <<entity>>
+        -daftarEvent: List~Event~
+        +gabungkanJadwal(google: List~Event~, jadwal: List~JadwalKonsultasi~): List~Event~
+        +jadwalBentrok(jadwal: JadwalKonsultasi): Boolean
+        +ubahKalender(jadwal: JadwalKonsultasi): Boolean
+    }
+    class CloudflareD1Database {
+        <<entity>>
+        +simpanWaktuKirim(waktu: Time): Boolean
+        +simpanKalender(jadwal: JadwalKonsultasi): Boolean
+        +simpanPerubahan(data: String): Boolean
+    }
+    KalenderGabungan "1" --> "0..*" JadwalKonsultasi : menggabungkan
+    Administrator "1" --> "0..*" JadwalKonsultasi : mengelola
+    JadwalKonsultasi "0..*" --> "1" Konsultan : bersama
+    Administrator "1" --> "1" ConsultationManagementView : mengakses
+    ConsultationManagementView "1" --> "1" ConsultationController : memanggil
+    ConsultationController ..> Konsultan : akses
+    ConsultationController ..> JadwalKonsultasi : akses
+    ConsultationController ..> Validasi : memvalidasi
+    ConsultationController ..> KalenderGabungan : akses
+    KalenderGabungan ..> CloudflareD1Database : disimpan di
+```
+
 <p align="center">
 <i>Gambar 3.5.4. Diagram Kelas Use Case UC-05 - Mengelola Jadwal Konsultan</i>
 </p>
@@ -631,29 +1316,122 @@ Tabel 3.6. Identifikasi Kelas Use Case UC-06
 
 | No  | Nama Kelas Perancangan | Nama Kelas Analisis Terkait |
 | :-- | :--------------------- | :-------------------------- |
-| 1   | `Mahasiswa`            | `Mahasiswa` (C-02)          |
-| 2   | `FAQ`                  | `FAQ` (C-12)                |
+| 1 | `Mahasiswa` | `Mahasiswa` (C-02) |
+| 2 | `FAQView` | - |
+| 3 | `FAQController` | - |
+| 4 | `FAQ` | `FAQ` (C-12) |
 
 ### 3.6.2 Sequence Diagram
 
 - **Skenario Normal**
 
-<p align="center">
-<img alt="Sequence Diagram UC-06" src="./assets/diagram/UC-06_SQ_diagram.png" width="50%">
-</p>
+```mermaid
+sequenceDiagram
+    actor Mahasiswa
+    participant FAQView@{ "type": "boundary" }
+    participant FAQController@{ "type": "control" }
+    participant FAQ@{ "type": "entity" }
+
+    Mahasiswa->>+FAQView: bukaFAQ()
+    FAQView->>+FAQController: tampilkanFAQ()
+    FAQController->>+FAQ: ambilDaftarPertanyaan()
+    FAQ-->>-FAQController: daftar FAQ
+    FAQController-->>-FAQView: daftar FAQ
+    FAQView-->>-Mahasiswa: tampilkanFAQ(daftar)
+    Mahasiswa->>+FAQView: cariFAQ(kataKunci)
+    FAQView->>+FAQController: cariFAQ(kataKunci)
+    FAQController->>+FAQ: cariFAQ(kataKunci)
+    FAQ-->>-FAQController: hasil pencarian
+    FAQController-->>-FAQView: hasil pencarian
+    FAQView-->>-Mahasiswa: tampilkanFAQ(hasil)
+```
+
 <p align="center">
 <i>Gambar 3.6.1. Sequence Diagram UC-06 - Skenario Normal</i>
 </p>
 
 - **Skenario Alternatif 1: Tidak ada pertanyaan yang dicari pengguna**
 
+```mermaid
+sequenceDiagram
+    actor Mahasiswa
+    participant FAQView@{ "type": "boundary" }
+    participant FAQController@{ "type": "control" }
+    participant FAQ@{ "type": "entity" }
 
+    Mahasiswa->>+FAQView: bukaFAQ()
+    FAQView->>+FAQController: tampilkanFAQ()
+    FAQController->>+FAQ: ambilDaftarPertanyaan()
+    FAQ-->>-FAQController: daftar FAQ
+    FAQController-->>-FAQView: daftar FAQ
+    FAQView-->>-Mahasiswa: tampilkanFAQ(daftar)
+    Mahasiswa->>+FAQView: cariFAQ(kataKunci)
+    FAQView->>+FAQController: cariFAQ(kataKunci)
+    FAQController->>+FAQ: cariFAQ(kataKunci)
+    FAQ-->>-FAQController: hasil kosong
+    FAQController-->>-FAQView: hasil kosong
+    FAQView-->>-Mahasiswa: tampilkanTawaranPengajuan()
+    Mahasiswa->>+FAQView: bukaFormPertanyaan()
+    FAQView->>+FAQController: muatFormPenambahanPertanyaan()
+    FAQController-->>-FAQView: form pertanyaan
+    FAQView-->>-Mahasiswa: tampilkanFormPenambahanPertanyaan()
+```
+
+<p align="center">
+<i>Gambar 3.6.2. Sequence Diagram UC-06 - Skenario Alternatif 1</i>
+</p>
 
 ### 3.6.3 Diagram Kelas
 
-<p align="center">
-<img alt="Diagram Kelas UC-06" src="./assets/diagram/UC-06_diagram.png" width="50%">
-</p>
+
+```mermaid
+classDiagram
+    class Mahasiswa {
+        <<entity>>
+        -nim: String
+    }
+    class FAQView {
+        <<boundary>>
+        +bukaFAQ(): void
+        +cariFAQ(kataKunci: String): void
+        +tambahFAQ(pertanyaan: String, jawaban: String): void
+        +ubahFAQ(idFAQ: String, pertanyaan: String, jawaban: String): void
+        +hapusFAQ(idFAQ: String): void
+        +bukaFormPertanyaan(): void
+        +isiFormPertanyaan(isi: String): void
+        +tampilkanFAQ(daftar: List~FAQ~): void
+        +tampilkanTawaranPengajuan(): void
+        +tampilkanFormPenambahanPertanyaan(): void
+        +tampilkanSetelanTersimpan(): void
+        +showError(pesan: String): void
+    }
+    class FAQController {
+        <<control>>
+        +tampilkanFAQ(): void
+        +cariFAQ(kataKunci: String): void
+        +tambahFAQ(pertanyaan: String, jawaban: String): void
+        +ubahFAQ(idFAQ: String, pertanyaan: String, jawaban: String): void
+        +hapusFAQ(idFAQ: String): void
+        +muatFormPenambahanPertanyaan(): void
+        +kirimPertanyaan(isi: String): void
+    }
+    class FAQ {
+        <<entity>>
+        -idFAQ: String
+        -pertanyaan: String
+        -jawaban: String
+        +ambilDaftarPertanyaan(): List~FAQ~
+        +cariFAQ(kataKunci: String): List~FAQ~
+        +tambahFAQ(pertanyaan: String, jawaban: String): Boolean
+        +ubahFAQ(idFAQ: String, pertanyaan: String, jawaban: String): Boolean
+        +hapusFAQ(idFAQ: String): Boolean
+    }
+    Mahasiswa "1" --> "0..*" FAQ : melihat
+    Mahasiswa "1" --> "1" FAQView : mengakses
+    FAQView "1" --> "1" FAQController : memanggil
+    FAQController ..> FAQ : akses
+```
+
 <p align="center">
 <i>Gambar 3.6.3. Diagram Kelas Use Case UC-06 - Melihat FAQ</i>
 </p>
@@ -669,29 +1447,165 @@ Tabel 3.7. Identifikasi Kelas Use Case UC-07
 
 | No  | Nama Kelas Perancangan | Nama Kelas Analisis Terkait |
 | :-- | :--------------------- | :-------------------------- |
-| 1   | `Administrator`        | `Administrator` (C-03)      |
-| 2   | `FAQ`                  | `FAQ` (C-12)                |
+| 1 | `Administrator` | `Administrator` (C-03) |
+| 2 | `FAQView` | - |
+| 3 | `FAQController` | - |
+| 4 | `FAQ` | `FAQ` (C-12) |
+| 5 | `Validasi` | - |
+| 6 | `CloudflareD1Database` | - |
 
 ### 3.7.2 Sequence Diagram
 
 - **Skenario Normal**
 
-<p align="center">
-<img alt="Sequence Diagram UC-07" src="./assets/diagram/UC-07_SQ_diagram.png" width="50%">
-</p>
+```mermaid
+sequenceDiagram
+    actor Administrator
+    participant FAQView@{ "type": "boundary" }
+    participant FAQController@{ "type": "control" }
+    participant FAQ@{ "type": "entity" }
+    participant Validasi@{ "type": "control" }
+    participant CloudflareD1Database@{ "type": "entity" }
+
+    Administrator->>+FAQView: bukaFAQ()
+    FAQView->>+FAQController: tampilkanFAQ()
+    FAQController->>+FAQ: ambilDaftarPertanyaan()
+    FAQ-->>-FAQController: daftar FAQ
+    FAQController-->>-FAQView: daftar FAQ
+    FAQView-->>-Administrator: tampilkanFAQ(daftar)
+    Administrator->>+FAQView: tambahFAQ(pertanyaan, jawaban)
+    FAQView->>+FAQController: tambahFAQ(pertanyaan, jawaban)
+    FAQController->>+Validasi: validasiInput(isi)
+    Validasi-->>-FAQController: valid
+    FAQController->>+FAQ: tambahFAQ(pertanyaan, jawaban)
+    FAQ->>+CloudflareD1Database: simpanPerubahan(data)
+    CloudflareD1Database-->>-FAQ: berhasil
+    FAQ-->>-FAQController: true
+    FAQController-->>-FAQView: tersimpan
+    FAQView-->>-Administrator: tampilkanSetelanTersimpan()
+    Administrator->>+FAQView: hapusFAQ(idFAQ)
+    FAQView->>+FAQController: hapusFAQ(idFAQ)
+    FAQController->>+FAQ: hapusFAQ(idFAQ)
+    FAQ->>+CloudflareD1Database: simpanPerubahan(data)
+    CloudflareD1Database-->>-FAQ: berhasil
+    FAQ-->>-FAQController: true
+    FAQController-->>-FAQView: tersimpan
+    FAQView-->>-Administrator: tampilkanSetelanTersimpan()
+    Administrator->>+FAQView: ubahFAQ(idFAQ, pertanyaan, jawaban)
+    FAQView->>+FAQController: ubahFAQ(idFAQ, pertanyaan, jawaban)
+    FAQController->>+Validasi: validasiInput(isi)
+    Validasi-->>-FAQController: valid
+    FAQController->>+FAQ: ubahFAQ(idFAQ, pertanyaan, jawaban)
+    FAQ->>+CloudflareD1Database: simpanPerubahan(data)
+    CloudflareD1Database-->>-FAQ: berhasil
+    FAQ-->>-FAQController: true
+    FAQController-->>-FAQView: tersimpan
+    FAQView-->>-Administrator: tampilkanSetelanTersimpan()
+```
+
 <p align="center">
 <i>Gambar 3.7.1. Sequence Diagram UC-07 - Skenario Normal</i>
 </p>
 
 - **Skenario Alternatif 1: Tidak ada pertanyaan maupun jawaban yang berhasil disimpan**
 
+```mermaid
+sequenceDiagram
+    actor Administrator
+    participant FAQView@{ "type": "boundary" }
+    participant FAQController@{ "type": "control" }
+    participant FAQ@{ "type": "entity" }
+    participant Validasi@{ "type": "control" }
+    participant CloudflareD1Database@{ "type": "entity" }
 
+    Administrator->>+FAQView: bukaFAQ()
+    FAQView->>+FAQController: tampilkanFAQ()
+    FAQController->>+FAQ: ambilDaftarPertanyaan()
+    FAQ-->>-FAQController: daftar FAQ
+    FAQController-->>-FAQView: daftar FAQ
+    FAQView-->>-Administrator: tampilkanFAQ(daftar)
+    Administrator->>+FAQView: tambahFAQ(pertanyaan, jawaban)
+    FAQView->>+FAQController: tambahFAQ(pertanyaan, jawaban)
+    FAQController->>+Validasi: validasiInput(isi)
+    Validasi-->>-FAQController: valid
+    FAQController->>+FAQ: tambahFAQ(pertanyaan, jawaban)
+    FAQ->>+CloudflareD1Database: simpanPerubahan(data)
+    CloudflareD1Database-->>-FAQ: gagal
+    FAQ-->>-FAQController: false
+    FAQController-->>-FAQView: gagal menyimpan
+    FAQView-->>-Administrator: showError(pesan)
+    Note over Administrator,FAQView: hapusFAQ(idFAQ) dan ubahFAQ(idFAQ, pertanyaan, jawaban) gagal dengan alur yang sama
+```
+
+<p align="center">
+<i>Gambar 3.7.2. Sequence Diagram UC-07 - Skenario Alternatif 1</i>
+</p>
 
 ### 3.7.3 Diagram Kelas
 
-<p align="center">
-<img alt="Diagram Kelas UC-07" src="./assets/diagram/UC-07_diagram.png" width="50%">
-</p>
+
+```mermaid
+classDiagram
+    class Administrator {
+        <<entity>>
+    }
+    class FAQView {
+        <<boundary>>
+        +bukaFAQ(): void
+        +cariFAQ(kataKunci: String): void
+        +tambahFAQ(pertanyaan: String, jawaban: String): void
+        +ubahFAQ(idFAQ: String, pertanyaan: String, jawaban: String): void
+        +hapusFAQ(idFAQ: String): void
+        +bukaFormPertanyaan(): void
+        +isiFormPertanyaan(isi: String): void
+        +tampilkanFAQ(daftar: List~FAQ~): void
+        +tampilkanTawaranPengajuan(): void
+        +tampilkanFormPenambahanPertanyaan(): void
+        +tampilkanSetelanTersimpan(): void
+        +showError(pesan: String): void
+    }
+    class FAQController {
+        <<control>>
+        +tampilkanFAQ(): void
+        +cariFAQ(kataKunci: String): void
+        +tambahFAQ(pertanyaan: String, jawaban: String): void
+        +ubahFAQ(idFAQ: String, pertanyaan: String, jawaban: String): void
+        +hapusFAQ(idFAQ: String): void
+        +muatFormPenambahanPertanyaan(): void
+        +kirimPertanyaan(isi: String): void
+    }
+    class FAQ {
+        <<entity>>
+        -idFAQ: String
+        -pertanyaan: String
+        -jawaban: String
+        +ambilDaftarPertanyaan(): List~FAQ~
+        +cariFAQ(kataKunci: String): List~FAQ~
+        +tambahFAQ(pertanyaan: String, jawaban: String): Boolean
+        +ubahFAQ(idFAQ: String, pertanyaan: String, jawaban: String): Boolean
+        +hapusFAQ(idFAQ: String): Boolean
+    }
+    class Validasi {
+        <<control>>
+        +validasiWaktu(waktu: Time): Boolean
+        +validasiKonsultan(konsultan: Konsultan): Boolean
+        +validasiJadwal(jadwal: JadwalKonsultasi): Boolean
+        +validasiInput(isi: List~String~): Boolean
+    }
+    class CloudflareD1Database {
+        <<entity>>
+        +simpanWaktuKirim(waktu: Time): Boolean
+        +simpanKalender(jadwal: JadwalKonsultasi): Boolean
+        +simpanPerubahan(data: String): Boolean
+    }
+    Administrator "1" --> "0..*" FAQ : mengelola
+    Administrator "1" --> "1" FAQView : mengakses
+    FAQView "1" --> "1" FAQController : memanggil
+    FAQController ..> FAQ : akses
+    FAQController ..> Validasi : memvalidasi
+    FAQ ..> CloudflareD1Database : disimpan di
+```
+
 <p align="center">
 <i>Gambar 3.7.3. Diagram Kelas Use Case UC-07 - Mengelola FAQ</i>
 </p>
@@ -707,28 +1621,134 @@ Tabel 3.8. Identifikasi Kelas Use Case UC-08
 
 | No  | Nama Kelas Perancangan | Nama Kelas Analisis Terkait |
 | :-- | :--------------------- | :-------------------------- |
-| 1   | `Mahasiswa`            | `Mahasiswa` (C-02)          |
-| 2   | `UmpanBalik`           | `UmpanBalik` (C-14)         |
+| 1 | `Mahasiswa` | `Mahasiswa` (C-02) |
+| 2 | `FeedbackView` | - |
+| 3 | `FeedbackController` | - |
+| 4 | `UmpanBalik` | `UmpanBalik` (C-14) |
+| 5 | `Validasi` | - |
+| 6 | `CloudflareD1Database` | - |
 
 ### 3.8.2 Sequence Diagram
 
 - **Skenario Normal**
 
-<p align="center">
-<img alt="Sequence Diagram UC-08" src="./assets/diagram/UC-08_SQ_diagram.png" width="50%">
-</p>
+```mermaid
+sequenceDiagram
+    actor Mahasiswa
+    participant FeedbackView@{ "type": "boundary" }
+    participant FeedbackController@{ "type": "control" }
+    participant Validasi@{ "type": "control" }
+    participant UmpanBalik@{ "type": "entity" }
+    participant CloudflareD1Database@{ "type": "entity" }
+
+    Mahasiswa->>+FeedbackView: bukaUmpanBalik()
+    FeedbackView->>+FeedbackController: tampilkanFormFeedback()
+    FeedbackController-->>-FeedbackView: form umpan balik
+    FeedbackView-->>-Mahasiswa: tampilkanFormFeedback()
+    Mahasiswa->>+FeedbackView: isiFormFeedback(isi)
+    FeedbackView->>+FeedbackController: kirimFeedback(isi)
+    FeedbackController->>+Validasi: validasiInput(isi)
+    Validasi-->>-FeedbackController: valid
+    FeedbackController->>+UmpanBalik: kirimUmpanBalik(isi)
+    UmpanBalik->>+CloudflareD1Database: simpanPerubahan(data)
+    CloudflareD1Database-->>-UmpanBalik: berhasil
+    UmpanBalik-->>-FeedbackController: true
+    FeedbackController-->>-FeedbackView: tersimpan
+    FeedbackView-->>-Mahasiswa: tampilkanFeedbackTersimpan()
+```
+
 <p align="center">
 <i>Gambar 3.8.1. Sequence Diagram UC-08 - Skenario Normal</i>
 </p>
 
 - **Skenario Alternatif 1: Umpan balik tidak disimpan pada database**
 
+```mermaid
+sequenceDiagram
+    actor Mahasiswa
+    participant FeedbackView@{ "type": "boundary" }
+    participant FeedbackController@{ "type": "control" }
+    participant Validasi@{ "type": "control" }
+    participant UmpanBalik@{ "type": "entity" }
+    participant CloudflareD1Database@{ "type": "entity" }
+
+    Mahasiswa->>+FeedbackView: bukaUmpanBalik()
+    FeedbackView->>+FeedbackController: tampilkanFormFeedback()
+    FeedbackController-->>-FeedbackView: form umpan balik
+    FeedbackView-->>-Mahasiswa: tampilkanFormFeedback()
+    Mahasiswa->>+FeedbackView: isiFormFeedback(isi)
+    FeedbackView->>+FeedbackController: kirimFeedback(isi)
+    FeedbackController->>+Validasi: validasiInput(isi)
+    Validasi-->>-FeedbackController: valid
+    FeedbackController->>+UmpanBalik: kirimUmpanBalik(isi)
+    UmpanBalik->>+CloudflareD1Database: simpanPerubahan(data)
+    CloudflareD1Database-->>-UmpanBalik: gagal
+    UmpanBalik-->>-FeedbackController: false
+    FeedbackController-->>-FeedbackView: gagal menyimpan
+    FeedbackView-->>-Mahasiswa: showError(pesan)
+```
+
+<p align="center">
+<i>Gambar 3.8.2. Sequence Diagram UC-08 - Skenario Alternatif 1</i>
+</p>
 
 ### 3.8.3 Diagram Kelas
 
-<p align="center">
-<img alt="Diagram Kelas UC-08" src="./assets/diagram/UC-08_diagram.png" width="50%">
-</p>
+
+```mermaid
+classDiagram
+    class Mahasiswa {
+        <<entity>>
+        -nim: String
+    }
+    class FeedbackView {
+        <<boundary>>
+        +bukaUmpanBalik(): void
+        +isiFormFeedback(isi: String): void
+        +bukaListFeedback(): void
+        +tanggapiFeedback(tanggapan: String): void
+        +tampilkanFormFeedback(): void
+        +tampilkanListFeedback(daftar: List~UmpanBalik~): void
+        +tampilkanFeedbackTersimpan(): void
+        +showError(pesan: String): void
+    }
+    class FeedbackController {
+        <<control>>
+        +tampilkanFormFeedback(): void
+        +kirimFeedback(isi: String): void
+        +tampilkanListFeedback(): void
+        +kirimTanggapan(tanggapan: String): void
+    }
+    class UmpanBalik {
+        <<entity>>
+        -idUmpanBalik: String
+        -isi: String
+        -tanggapan: String
+        +ambilListUmpanBalik(): List~UmpanBalik~
+        +kirimUmpanBalik(isi: String): Boolean
+        +berikanTanggapan(tanggapan: String): Boolean
+    }
+    class Validasi {
+        <<control>>
+        +validasiWaktu(waktu: Time): Boolean
+        +validasiKonsultan(konsultan: Konsultan): Boolean
+        +validasiJadwal(jadwal: JadwalKonsultasi): Boolean
+        +validasiInput(isi: List~String~): Boolean
+    }
+    class CloudflareD1Database {
+        <<entity>>
+        +simpanWaktuKirim(waktu: Time): Boolean
+        +simpanKalender(jadwal: JadwalKonsultasi): Boolean
+        +simpanPerubahan(data: String): Boolean
+    }
+    Mahasiswa "1" --> "0..*" UmpanBalik : memberikan
+    Mahasiswa "1" --> "1" FeedbackView : mengakses
+    FeedbackView "1" --> "1" FeedbackController : memanggil
+    FeedbackController ..> UmpanBalik : akses
+    FeedbackController ..> Validasi : memvalidasi
+    UmpanBalik ..> CloudflareD1Database : disimpan di
+```
+
 <p align="center">
 <i>Gambar 3.8.3. Diagram Kelas Use Case UC-08 - Memberikan Umpan Balik</i>
 </p>
@@ -744,29 +1764,152 @@ Tabel 3.9. Identifikasi Kelas Use Case UC-09
 
 | No  | Nama Kelas Perancangan | Nama Kelas Analisis Terkait |
 | :-- | :--------------------- | :-------------------------- |
-| 1   | `Administrator`        | `Administrator` (C-03)      |
-| 2   | `UmpanBalik`           | `UmpanBalik` (C-14)         |
+| 1 | `Administrator` | `Administrator` (C-03) |
+| 2 | `Mahasiswa` | `Mahasiswa` (C-02) |
+| 3 | `FeedbackView` | - |
+| 4 | `FeedbackController` | - |
+| 5 | `UmpanBalik` | `UmpanBalik` (C-14) |
+| 6 | `Validasi` | - |
+| 7 | `CloudflareD1Database` | - |
 
 ### 3.9.2 Sequence Diagram
 
 - **Skenario Normal**
 
-<p align="center">
-<img alt="Sequence Diagram UC-09" src="./assets/diagram/UC-09_SQ_diagram.png" width="50%">
-</p>
+```mermaid
+sequenceDiagram
+    actor Administrator
+    participant FeedbackView@{ "type": "boundary" }
+    participant FeedbackController@{ "type": "control" }
+    participant UmpanBalik@{ "type": "entity" }
+    participant Validasi@{ "type": "control" }
+    participant CloudflareD1Database@{ "type": "entity" }
+    actor Mahasiswa
+
+    Administrator->>+FeedbackView: bukaListFeedback()
+    FeedbackView->>+FeedbackController: tampilkanListFeedback()
+    FeedbackController->>+UmpanBalik: ambilListUmpanBalik()
+    UmpanBalik-->>-FeedbackController: daftar umpan balik
+    FeedbackController-->>-FeedbackView: daftar umpan balik
+    FeedbackView-->>-Administrator: tampilkanListFeedback(daftar)
+    Administrator->>+FeedbackView: tanggapiFeedback(tanggapan)
+    FeedbackView->>+FeedbackController: kirimTanggapan(tanggapan)
+    FeedbackController->>+Validasi: validasiInput(isi)
+    Validasi-->>-FeedbackController: valid
+    FeedbackController->>+UmpanBalik: berikanTanggapan(tanggapan)
+    UmpanBalik->>+CloudflareD1Database: simpanPerubahan(data)
+    CloudflareD1Database-->>-UmpanBalik: berhasil
+    UmpanBalik-->>-FeedbackController: true
+    FeedbackController-->>-FeedbackView: tersimpan
+    FeedbackView-->>-Administrator: tampilkanFeedbackTersimpan()
+```
+
 <p align="center">
 <i>Gambar 3.9.1. Sequence Diagram UC-09 - Skenario Normal</i>
 </p>
 
 - **Skenario Alternatif 1: Tanggapan umpan balik tidak berhasil ditampilkan**
 
+```mermaid
+sequenceDiagram
+    actor Administrator
+    participant FeedbackView@{ "type": "boundary" }
+    participant FeedbackController@{ "type": "control" }
+    participant UmpanBalik@{ "type": "entity" }
+    participant Validasi@{ "type": "control" }
+    participant CloudflareD1Database@{ "type": "entity" }
+    actor Mahasiswa
 
+    Administrator->>+FeedbackView: bukaListFeedback()
+    FeedbackView->>+FeedbackController: tampilkanListFeedback()
+    FeedbackController->>+UmpanBalik: ambilListUmpanBalik()
+    UmpanBalik-->>-FeedbackController: daftar umpan balik
+    FeedbackController-->>-FeedbackView: daftar umpan balik
+    FeedbackView-->>-Administrator: tampilkanListFeedback(daftar)
+    Administrator->>+FeedbackView: tanggapiFeedback(tanggapan)
+    FeedbackView->>+FeedbackController: kirimTanggapan(tanggapan)
+    FeedbackController->>+Validasi: validasiInput(isi)
+    Validasi-->>-FeedbackController: valid
+    FeedbackController->>+UmpanBalik: berikanTanggapan(tanggapan)
+    UmpanBalik->>+CloudflareD1Database: simpanPerubahan(data)
+    CloudflareD1Database-->>-UmpanBalik: berhasil
+    UmpanBalik-->>-FeedbackController: true
+    FeedbackController-->>-FeedbackView: tersimpan
+    FeedbackView-->>-Administrator: tampilkanFeedbackTersimpan()
+    Mahasiswa->>+FeedbackView: bukaListFeedback()
+    FeedbackView->>+FeedbackController: tampilkanListFeedback()
+    FeedbackController->>+UmpanBalik: ambilListUmpanBalik()
+    UmpanBalik-->>-FeedbackController: tanggapan tidak dapat dimuat
+    FeedbackController-->>-FeedbackView: tanggapan tidak dapat dimuat
+    FeedbackView-->>-Mahasiswa: tampilkanListFeedback(daftar tanpa tanggapan)
+```
+
+<p align="center">
+<i>Gambar 3.9.2. Sequence Diagram UC-09 - Skenario Alternatif 1</i>
+</p>
 
 ### 3.9.3 Diagram Kelas
 
-<p align="center">
-<img alt="Diagram Kelas UC-09" src="./assets/diagram/UC-09_diagram.png" width="50%">
-</p>
+
+```mermaid
+classDiagram
+    class Administrator {
+        <<entity>>
+    }
+    class Mahasiswa {
+        <<entity>>
+        -nim: String
+    }
+    class FeedbackView {
+        <<boundary>>
+        +bukaUmpanBalik(): void
+        +isiFormFeedback(isi: String): void
+        +bukaListFeedback(): void
+        +tanggapiFeedback(tanggapan: String): void
+        +tampilkanFormFeedback(): void
+        +tampilkanListFeedback(daftar: List~UmpanBalik~): void
+        +tampilkanFeedbackTersimpan(): void
+        +showError(pesan: String): void
+    }
+    class FeedbackController {
+        <<control>>
+        +tampilkanFormFeedback(): void
+        +kirimFeedback(isi: String): void
+        +tampilkanListFeedback(): void
+        +kirimTanggapan(tanggapan: String): void
+    }
+    class UmpanBalik {
+        <<entity>>
+        -idUmpanBalik: String
+        -isi: String
+        -tanggapan: String
+        +ambilListUmpanBalik(): List~UmpanBalik~
+        +kirimUmpanBalik(isi: String): Boolean
+        +berikanTanggapan(tanggapan: String): Boolean
+    }
+    class Validasi {
+        <<control>>
+        +validasiWaktu(waktu: Time): Boolean
+        +validasiKonsultan(konsultan: Konsultan): Boolean
+        +validasiJadwal(jadwal: JadwalKonsultasi): Boolean
+        +validasiInput(isi: List~String~): Boolean
+    }
+    class CloudflareD1Database {
+        <<entity>>
+        +simpanWaktuKirim(waktu: Time): Boolean
+        +simpanKalender(jadwal: JadwalKonsultasi): Boolean
+        +simpanPerubahan(data: String): Boolean
+    }
+    Mahasiswa "1" --> "0..*" UmpanBalik : memberikan
+    Administrator "1" --> "0..*" UmpanBalik : menanggapi
+    Mahasiswa "1" --> "1" FeedbackView : mengakses
+    Administrator "1" --> "1" FeedbackView : mengakses
+    FeedbackView "1" --> "1" FeedbackController : memanggil
+    FeedbackController ..> UmpanBalik : akses
+    FeedbackController ..> Validasi : memvalidasi
+    UmpanBalik ..> CloudflareD1Database : disimpan di
+```
+
 <p align="center">
 <i>Gambar 3.9.3. Diagram Kelas Use Case UC-09 - Menanggapi Umpan Balik</i>
 </p>
@@ -782,25 +1925,71 @@ Tabel 3.10. Identifikasi Kelas Use Case UC-10
 
 | No  | Nama Kelas Perancangan | Nama Kelas Analisis Terkait |
 | :-- | :--------------------- | :-------------------------- |
-| 1   | `Administrator`        | `Administrator` (C-03)      |
-| 2   | `StatusServer`         | `StatusServer` (C-15)       |
+| 1 | `Administrator` | `Administrator` (C-03) |
+| 2 | `ServerStatusView` | - |
+| 3 | `ServerStatusController` | - |
+| 4 | `StatusServer` | `StatusServer` (C-15) |
 
 ### 3.10.2 Sequence Diagram
 
 - **Skenario Normal**
 
-<p align="center">
-<img alt="Sequence Diagram UC-10" src="./assets/diagram/UC-10_SQ_diagram.png" width="50%">
-</p>
+```mermaid
+sequenceDiagram
+    actor Administrator
+    participant ServerStatusView@{ "type": "boundary" }
+    participant ServerStatusController@{ "type": "control" }
+    participant StatusServer@{ "type": "entity" }
+
+    Administrator->>+ServerStatusView: cekStatusServer("website")
+    ServerStatusView->>+ServerStatusController: tampilkanStatusServer("website")
+    ServerStatusController->>+StatusServer: ambilStatusServer("website")
+    StatusServer-->>-ServerStatusController: status uptime website
+    ServerStatusController-->>-ServerStatusView: status uptime website
+    ServerStatusView-->>-Administrator: tampilkanStatusServer(status)
+    Administrator->>+ServerStatusView: cekStatusServer("server")
+    ServerStatusView->>+ServerStatusController: tampilkanStatusServer("server")
+    ServerStatusController->>+StatusServer: ambilStatusServer("server")
+    StatusServer-->>-ServerStatusController: status uptime server
+    ServerStatusController-->>-ServerStatusView: status uptime server
+    ServerStatusView-->>-Administrator: tampilkanStatusServer(status)
+```
+
 <p align="center">
 <i>Gambar 3.10.1. Sequence Diagram UC-10 - Skenario Normal</i>
 </p>
 
 ### 3.10.3 Diagram Kelas
 
-<p align="center">
-<img alt="Diagram Kelas UC-10" src="./assets/diagram/UC-10_diagram.png" width="50%">
-</p>
+
+```mermaid
+classDiagram
+    class Administrator {
+        <<entity>>
+    }
+    class ServerStatusView {
+        <<boundary>>
+        +cekStatusServer(jenis: String): void
+        +tampilkanStatusServer(status: StatusServer): void
+    }
+    class ServerStatusController {
+        <<control>>
+        +tampilkanStatusServer(jenis: String): void
+    }
+    class StatusServer {
+        <<entity>>
+        -jenis: String
+        -statusUptime: Boolean
+        -waktuCek: DateTime
+        +ambilStatusServer(jenis: String): StatusServer
+        +cekStatusServer(): Boolean
+    }
+    Administrator "1" --> "0..*" StatusServer : memantau
+    Administrator "1" --> "1" ServerStatusView : mengakses
+    ServerStatusView "1" --> "1" ServerStatusController : memanggil
+    ServerStatusController ..> StatusServer : akses
+```
+
 <p align="center">
 <i>Gambar 3.10.2. Diagram Kelas Use Case UC-10 - Memantau Status Server</i>
 </p>
@@ -816,31 +2005,127 @@ Tabel 3.11. Identifikasi Kelas Use Case UC-11
 
 | No  | Nama Kelas Perancangan | Nama Kelas Analisis Terkait |
 | :-- | :--------------------- | :-------------------------- |
-| 1   | `Pengguna`             | `Pengguna` (C-01)           |
-| 2   | `Mahasiswa`            | `Mahasiswa` (C-02)          |
-| 3   | `Administrator`        | `Administrator` (C-03)      |
-| 4   | `SesiAutentikasi`      | `SesiAutentikasi` (C-04)    |
+| 1 | `Pengguna` | `Pengguna` (C-01) |
+| 2 | `Mahasiswa` | `Mahasiswa` (C-02) |
+| 3 | `Administrator` | `Administrator` (C-03) |
+| 4 | `LoginView` | - |
+| 5 | `AuthController` | - |
+| 6 | `SesiAutentikasi` | `SesiAutentikasi` (C-04) |
+| 7 | `GoogleAuthService` | - |
 
 ### 3.11.2 Sequence Diagram
 
 - **Skenario Normal**
 
-<p align="center">
-<img alt="Sequence Diagram UC-11" src="./assets/diagram/UC-11_SQ_diagram.png" width="50%">
-</p>
+```mermaid
+sequenceDiagram
+    actor Pengguna
+    participant LoginView@{ "type": "boundary" }
+    participant AuthController@{ "type": "control" }
+    participant GoogleAuthService@{ "type": "entity" }
+    participant SesiAutentikasi@{ "type": "entity" }
+
+    Pengguna->>+LoginView: masukLamanLogin()
+    LoginView->>+AuthController: tampilkanLoginPage()
+    AuthController-->>-LoginView: halaman login
+    LoginView-->>-Pengguna: tampilkanLoginPage()
+    Pengguna->>+LoginView: isiLoginPage(kodeOtorisasi)
+    LoginView->>+AuthController: kirimData(kodeOtorisasi)
+    AuthController->>+GoogleAuthService: validasi(kodeOtorisasi)
+    GoogleAuthService-->>-AuthController: valid
+    AuthController->>+SesiAutentikasi: autentikasiPengguna(kodeOtorisasi)
+    SesiAutentikasi-->>-AuthController: sesi dibuat
+    AuthController-->>-LoginView: login berhasil
+    LoginView-->>-Pengguna: loadPageUtama()
+```
+
 <p align="center">
 <i>Gambar 3.11.1. Sequence Diagram UC-11 - Skenario Normal</i>
 </p>
 
 - **Skenario Alternatif 1: OAuth Google tidak berfungsi saat log in**
 
+```mermaid
+sequenceDiagram
+    actor Pengguna
+    participant LoginView@{ "type": "boundary" }
+    participant AuthController@{ "type": "control" }
+    participant GoogleAuthService@{ "type": "entity" }
+    participant SesiAutentikasi@{ "type": "entity" }
 
+    Pengguna->>+LoginView: masukLamanLogin()
+    LoginView->>+AuthController: tampilkanLoginPage()
+    AuthController-->>-LoginView: halaman login
+    LoginView-->>-Pengguna: tampilkanLoginPage()
+    Pengguna->>+LoginView: isiLoginPage(kodeOtorisasi)
+    LoginView->>+AuthController: kirimData(kodeOtorisasi)
+    AuthController->>+GoogleAuthService: validasi(kodeOtorisasi)
+    GoogleAuthService-->>-AuthController: gagal
+    AuthController-->>-LoginView: autentikasi gagal
+    LoginView-->>-Pengguna: showError(pesan)
+```
+
+<p align="center">
+<i>Gambar 3.11.2. Sequence Diagram UC-11 - Skenario Alternatif 1</i>
+</p>
 
 ### 3.11.3 Diagram Kelas
 
-<p align="center">
-<img alt="Diagram Kelas UC-11" src="./assets/diagram/UC-11_diagram.png" width="50%">
-</p>
+
+```mermaid
+classDiagram
+    class Pengguna {
+        <<abstract>>
+        -id: String
+        -nama: String
+        -email: String
+        -googleId: String
+    }
+    class Mahasiswa {
+        <<entity>>
+        -nim: String
+    }
+    class Administrator {
+        <<entity>>
+    }
+    class LoginView {
+        <<boundary>>
+        +masukLamanLogin(): void
+        +isiLoginPage(kodeOtorisasi: String): void
+        +tampilkanLoginPage(): void
+        +loadPageUtama(): void
+        +showError(pesan: String): void
+    }
+    class AuthController {
+        <<control>>
+        +tampilkanLoginPage(): void
+        +kirimData(kodeOtorisasi: String): void
+    }
+    class SesiAutentikasi {
+        <<entity>>
+        -token: String
+        -waktuLogin: DateTime
+        -status: String
+        +autentikasiPengguna(kodeOtorisasi: String): Boolean
+        +verifikasiToken(token: String): Boolean
+        +logout(): void
+    }
+    class GoogleAuthService {
+        <<entity>>
+        -authCode: String
+        -accessToken: String
+        -refreshToken: String
+        +validasi(kodeOtorisasi: String): Boolean
+    }
+    Pengguna <|-- Mahasiswa
+    Pengguna <|-- Administrator
+    Pengguna "1" --> "0..*" SesiAutentikasi : memiliki
+    Pengguna "1" --> "1" LoginView : mengakses
+    LoginView "1" --> "1" AuthController : memanggil
+    AuthController ..> SesiAutentikasi : akses
+    AuthController ..> GoogleAuthService : akses
+```
+
 <p align="center">
 <i>Gambar 3.11.3. Diagram Kelas Use Case UC-11 - Masuk Melalui Akun Google</i>
 </p>
@@ -854,30 +2139,140 @@ Tabel 3.11. Identifikasi Kelas Use Case UC-11
 
 Tabel 3.12. Identifikasi Kelas Use Case UC-12
 
-| No  | Nama Kelas Perancangan | Nama Kelas Analisis Terkait  |
-| :-- | :--------------------- | :--------------------------- |
-| 1   | `Mahasiswa`            | `Mahasiswa` (C-02)           |
-| 2   | `PengajuanPertanyaan`  | `PengajuanPertanyaan` (C-13) |
+| No  | Nama Kelas Perancangan | Nama Kelas Analisis Terkait |
+| :-- | :--------------------- | :-------------------------- |
+| 1 | `Mahasiswa` | `Mahasiswa` (C-02) |
+| 2 | `FAQView` | - |
+| 3 | `FAQController` | - |
+| 4 | `Validasi` | - |
+| 5 | `PengajuanPertanyaan` | `PengajuanPertanyaan` (C-13) |
+| 6 | `CloudflareD1Database` | - |
 
 ### 3.12.2 Sequence Diagram
 
 - **Skenario Normal**
 
-<p align="center">
-<img alt="Sequence Diagram UC-12" src="./assets/diagram/UC-12_SQ_diagram.png" width="50%">
-</p>
+```mermaid
+sequenceDiagram
+    actor Mahasiswa
+    participant FAQView@{ "type": "boundary" }
+    participant FAQController@{ "type": "control" }
+    participant Validasi@{ "type": "control" }
+    participant PengajuanPertanyaan@{ "type": "entity" }
+    participant CloudflareD1Database@{ "type": "entity" }
+
+    Mahasiswa->>+FAQView: bukaFormPertanyaan()
+    FAQView->>+FAQController: muatFormPenambahanPertanyaan()
+    FAQController-->>-FAQView: form pertanyaan
+    FAQView-->>-Mahasiswa: tampilkanFormPenambahanPertanyaan()
+    Mahasiswa->>+FAQView: isiFormPertanyaan(isi)
+    FAQView->>+FAQController: kirimPertanyaan(isi)
+    FAQController->>+Validasi: validasiInput(isi)
+    Validasi-->>-FAQController: valid
+    FAQController->>+PengajuanPertanyaan: ajukanPertanyaan(isi)
+    PengajuanPertanyaan->>+CloudflareD1Database: simpanPerubahan(data)
+    CloudflareD1Database-->>-PengajuanPertanyaan: berhasil
+    PengajuanPertanyaan-->>-FAQController: true
+    FAQController-->>-FAQView: tersimpan
+    FAQView-->>-Mahasiswa: tampilkanSetelanTersimpan()
+```
+
 <p align="center">
 <i>Gambar 3.12.1. Sequence Diagram UC-12 - Skenario Normal</i>
 </p>
 
 - **Skenario Alternatif 1: Pertanyaan tidak tersimpan di database**
 
+```mermaid
+sequenceDiagram
+    actor Mahasiswa
+    participant FAQView@{ "type": "boundary" }
+    participant FAQController@{ "type": "control" }
+    participant Validasi@{ "type": "control" }
+    participant PengajuanPertanyaan@{ "type": "entity" }
+    participant CloudflareD1Database@{ "type": "entity" }
+
+    Mahasiswa->>+FAQView: bukaFormPertanyaan()
+    FAQView->>+FAQController: muatFormPenambahanPertanyaan()
+    FAQController-->>-FAQView: form pertanyaan
+    FAQView-->>-Mahasiswa: tampilkanFormPenambahanPertanyaan()
+    Mahasiswa->>+FAQView: isiFormPertanyaan(isi)
+    FAQView->>+FAQController: kirimPertanyaan(isi)
+    FAQController->>+Validasi: validasiInput(isi)
+    Validasi-->>-FAQController: valid
+    FAQController->>+PengajuanPertanyaan: ajukanPertanyaan(isi)
+    PengajuanPertanyaan->>+CloudflareD1Database: simpanPerubahan(data)
+    CloudflareD1Database-->>-PengajuanPertanyaan: gagal
+    PengajuanPertanyaan-->>-FAQController: false
+    FAQController-->>-FAQView: gagal menyimpan
+    FAQView-->>-Mahasiswa: showError(pesan)
+```
+
+<p align="center">
+<i>Gambar 3.12.2. Sequence Diagram UC-12 - Skenario Alternatif 1</i>
+</p>
 
 ### 3.12.3 Diagram Kelas
 
-<p align="center">
-<img alt="Diagram Kelas UC-12" src="./assets/diagram/UC-12_diagram.png" width="50%">
-</p>
+
+```mermaid
+classDiagram
+    class Mahasiswa {
+        <<entity>>
+        -nim: String
+    }
+    class FAQView {
+        <<boundary>>
+        +bukaFAQ(): void
+        +cariFAQ(kataKunci: String): void
+        +tambahFAQ(pertanyaan: String, jawaban: String): void
+        +ubahFAQ(idFAQ: String, pertanyaan: String, jawaban: String): void
+        +hapusFAQ(idFAQ: String): void
+        +bukaFormPertanyaan(): void
+        +isiFormPertanyaan(isi: String): void
+        +tampilkanFAQ(daftar: List~FAQ~): void
+        +tampilkanTawaranPengajuan(): void
+        +tampilkanFormPenambahanPertanyaan(): void
+        +tampilkanSetelanTersimpan(): void
+        +showError(pesan: String): void
+    }
+    class FAQController {
+        <<control>>
+        +tampilkanFAQ(): void
+        +cariFAQ(kataKunci: String): void
+        +tambahFAQ(pertanyaan: String, jawaban: String): void
+        +ubahFAQ(idFAQ: String, pertanyaan: String, jawaban: String): void
+        +hapusFAQ(idFAQ: String): void
+        +muatFormPenambahanPertanyaan(): void
+        +kirimPertanyaan(isi: String): void
+    }
+    class Validasi {
+        <<control>>
+        +validasiWaktu(waktu: Time): Boolean
+        +validasiKonsultan(konsultan: Konsultan): Boolean
+        +validasiJadwal(jadwal: JadwalKonsultasi): Boolean
+        +validasiInput(isi: List~String~): Boolean
+    }
+    class PengajuanPertanyaan {
+        <<entity>>
+        -idPertanyaan: String
+        -isiPertanyaan: String
+        +ajukanPertanyaan(isi: String): Boolean
+    }
+    class CloudflareD1Database {
+        <<entity>>
+        +simpanWaktuKirim(waktu: Time): Boolean
+        +simpanKalender(jadwal: JadwalKonsultasi): Boolean
+        +simpanPerubahan(data: String): Boolean
+    }
+    Mahasiswa "1" --> "0..*" PengajuanPertanyaan : mengajukan
+    Mahasiswa "1" --> "1" FAQView : mengakses
+    FAQView "1" --> "1" FAQController : memanggil
+    FAQController ..> Validasi : memvalidasi
+    FAQController ..> PengajuanPertanyaan : akses
+    PengajuanPertanyaan ..> CloudflareD1Database : disimpan di
+```
+
 <p align="center">
 <i>Gambar 3.12.3. Diagram Kelas Use Case UC-12 - Form Pengajuan Pertanyaan</i>
 </p>
@@ -890,32 +2285,378 @@ Tabel 3.12. Identifikasi Kelas Use Case UC-12
 
 ## 4.1 Diagram Kelas
 
-<p align="center">
-<img alt="Diagram Kelas Perancangan Keseluruhan Sehati" src="./assets/diagram/full-class-diagram.png" width="50%">
-</p>
+```mermaid
+classDiagram
+    class Pengguna {
+        <<abstract>>
+        -id: String
+        -nama: String
+        -email: String
+        -googleId: String
+    }
+    class Mahasiswa {
+        <<entity>>
+        -nim: String
+    }
+    class Administrator {
+        <<entity>>
+    }
+    class SesiAutentikasi {
+        <<entity>>
+        -token: String
+        -waktuLogin: DateTime
+        -status: String
+        +autentikasiPengguna(kodeOtorisasi: String): Boolean
+        +verifikasiToken(token: String): Boolean
+        +logout(): void
+    }
+    class DailyAffirmation {
+        <<entity>>
+        -konten: String
+        -waktuKirim: Time
+        +aturWaktuKirim(waktu: Time): Boolean
+        +kirimAfirmasi(): void
+    }
+    class Reminder {
+        <<entity>>
+        -jenis: String
+        -waktu: Time
+        +aturWaktuKirim(waktu: Time): Boolean
+        +kirimPengingat(): void
+    }
+    class Notifikasi {
+        <<entity>>
+        -idNotifikasi: String
+        -isi: String
+        -waktuKirim: DateTime
+        +kirimNotifikasi(): void
+        +tampilkanNotifikasi(): void
+    }
+    class GoogleCalendarService {
+        <<entity>>
+        -accessToken: String
+        +ambilKalender(): List~Event~
+        +cekBentrokJadwal(jadwal: JadwalKonsultasi): Boolean
+    }
+    class KalenderGabungan {
+        <<entity>>
+        -daftarEvent: List~Event~
+        +gabungkanJadwal(google: List~Event~, jadwal: List~JadwalKonsultasi~): List~Event~
+        +jadwalBentrok(jadwal: JadwalKonsultasi): Boolean
+        +ubahKalender(jadwal: JadwalKonsultasi): Boolean
+    }
+    class Konsultan {
+        <<entity>>
+        -nama: String
+        -spesialisasi: String
+        +ambilDaftarKonsultan(): List~Konsultan~
+    }
+    class JadwalKonsultasi {
+        <<entity>>
+        -idJadwal: String
+        -waktu: DateTime
+        -status: String
+        +ambilKalender(): List~JadwalKonsultasi~
+        +ambilKalender(konsultan: Konsultan): List~JadwalKonsultasi~
+        +simpanJadwal(): Boolean
+        +perbaruiJadwal(): Boolean
+        +pesanSesi(): Boolean
+    }
+    class FAQ {
+        <<entity>>
+        -idFAQ: String
+        -pertanyaan: String
+        -jawaban: String
+        +ambilDaftarPertanyaan(): List~FAQ~
+        +cariFAQ(kataKunci: String): List~FAQ~
+        +tambahFAQ(pertanyaan: String, jawaban: String): Boolean
+        +ubahFAQ(idFAQ: String, pertanyaan: String, jawaban: String): Boolean
+        +hapusFAQ(idFAQ: String): Boolean
+    }
+    class PengajuanPertanyaan {
+        <<entity>>
+        -idPertanyaan: String
+        -isiPertanyaan: String
+        +ajukanPertanyaan(isi: String): Boolean
+    }
+    class UmpanBalik {
+        <<entity>>
+        -idUmpanBalik: String
+        -isi: String
+        -tanggapan: String
+        +ambilListUmpanBalik(): List~UmpanBalik~
+        +kirimUmpanBalik(isi: String): Boolean
+        +berikanTanggapan(tanggapan: String): Boolean
+    }
+    class StatusServer {
+        <<entity>>
+        -jenis: String
+        -statusUptime: Boolean
+        -waktuCek: DateTime
+        +ambilStatusServer(jenis: String): StatusServer
+        +cekStatusServer(): Boolean
+    }
+    class LoginView {
+        <<boundary>>
+        +masukLamanLogin(): void
+        +isiLoginPage(kodeOtorisasi: String): void
+        +tampilkanLoginPage(): void
+        +loadPageUtama(): void
+        +showError(pesan: String): void
+    }
+    class AffirmationView {
+        <<boundary>>
+        -waktuTerpilih: Time
+        +bukaPageAffirmasi(): void
+        +pilihWaktuPengiriman(waktu: Time): void
+        +tampilkanOpsiAffirmasi(): void
+        +tampilkanSetelanTersimpan(): void
+        +showError(pesan: String): void
+    }
+    class ReminderView {
+        <<boundary>>
+        -waktuTerpilih: Time
+        +bukaPageReminder(): void
+        +pilihWaktuPengiriman(waktu: Time): void
+        +tampilkanOpsiReminder(): void
+        +tampilkanSetelanTersimpan(): void
+        +showError(pesan: String): void
+    }
+    class CalendarView {
+        <<boundary>>
+        +bukaPageCalendar(): void
+        +tampilkanKalender(kalender: List~Event~): void
+        +showErrorMessage(pesan: String): void
+    }
+    class ConsultationBookingView {
+        <<boundary>>
+        +bukaPageKonsultasi(): void
+        +pilihKonsultan(konsultan: Konsultan): void
+        +pilihSesi(jadwal: JadwalKonsultasi): void
+        +tampilkanOpsiKonsultasi(daftar: List~Konsultan~): void
+        +tampilkanKalender(jadwal: List~JadwalKonsultasi~): void
+        +tampilkanSetelanTersimpan(): void
+        +showError(pesan: String): void
+    }
+    class ConsultationManagementView {
+        <<boundary>>
+        +bukaPageKonsultasi(): void
+        +pilihKonsultan(konsultan: Konsultan): void
+        +perbaruiJadwal(jadwal: JadwalKonsultasi): void
+        +tampilkanOpsiKonsultasi(daftar: List~Konsultan~): void
+        +tampilkanKalender(jadwal: List~JadwalKonsultasi~): void
+        +tampilkanSetelanTersimpan(): void
+        +showError(pesan: String): void
+    }
+    class FAQView {
+        <<boundary>>
+        +bukaFAQ(): void
+        +cariFAQ(kataKunci: String): void
+        +tambahFAQ(pertanyaan: String, jawaban: String): void
+        +ubahFAQ(idFAQ: String, pertanyaan: String, jawaban: String): void
+        +hapusFAQ(idFAQ: String): void
+        +bukaFormPertanyaan(): void
+        +isiFormPertanyaan(isi: String): void
+        +tampilkanFAQ(daftar: List~FAQ~): void
+        +tampilkanTawaranPengajuan(): void
+        +tampilkanFormPenambahanPertanyaan(): void
+        +tampilkanSetelanTersimpan(): void
+        +showError(pesan: String): void
+    }
+    class FeedbackView {
+        <<boundary>>
+        +bukaUmpanBalik(): void
+        +isiFormFeedback(isi: String): void
+        +bukaListFeedback(): void
+        +tanggapiFeedback(tanggapan: String): void
+        +tampilkanFormFeedback(): void
+        +tampilkanListFeedback(daftar: List~UmpanBalik~): void
+        +tampilkanFeedbackTersimpan(): void
+        +showError(pesan: String): void
+    }
+    class ServerStatusView {
+        <<boundary>>
+        +cekStatusServer(jenis: String): void
+        +tampilkanStatusServer(status: StatusServer): void
+    }
+    class AuthController {
+        <<control>>
+        +tampilkanLoginPage(): void
+        +kirimData(kodeOtorisasi: String): void
+    }
+    class AffirmationController {
+        <<control>>
+        +tampilkanOpsiAffirmasi(): void
+        +submitWaktuPengiriman(waktu: Time): void
+    }
+    class ReminderController {
+        <<control>>
+        +tampilkanOpsiReminder(): void
+        +submitWaktuPengiriman(waktu: Time): void
+    }
+    class CalendarController {
+        <<control>>
+        +tampilkanCalendar(): void
+    }
+    class ConsultationController {
+        <<control>>
+        +tampilkanOpsiKonsultasi(): void
+        +submitKonsultan(konsultan: Konsultan): void
+        +updateStatusKonsultasi(jadwal: JadwalKonsultasi): void
+    }
+    class FAQController {
+        <<control>>
+        +tampilkanFAQ(): void
+        +cariFAQ(kataKunci: String): void
+        +tambahFAQ(pertanyaan: String, jawaban: String): void
+        +ubahFAQ(idFAQ: String, pertanyaan: String, jawaban: String): void
+        +hapusFAQ(idFAQ: String): void
+        +muatFormPenambahanPertanyaan(): void
+        +kirimPertanyaan(isi: String): void
+    }
+    class FeedbackController {
+        <<control>>
+        +tampilkanFormFeedback(): void
+        +kirimFeedback(isi: String): void
+        +tampilkanListFeedback(): void
+        +kirimTanggapan(tanggapan: String): void
+    }
+    class ServerStatusController {
+        <<control>>
+        +tampilkanStatusServer(jenis: String): void
+    }
+    class Validasi {
+        <<control>>
+        +validasiWaktu(waktu: Time): Boolean
+        +validasiKonsultan(konsultan: Konsultan): Boolean
+        +validasiJadwal(jadwal: JadwalKonsultasi): Boolean
+        +validasiInput(isi: List~String~): Boolean
+    }
+    class GoogleAuthService {
+        <<entity>>
+        -authCode: String
+        -accessToken: String
+        -refreshToken: String
+        +validasi(kodeOtorisasi: String): Boolean
+    }
+    class CloudflareD1Database {
+        <<entity>>
+        +simpanWaktuKirim(waktu: Time): Boolean
+        +simpanKalender(jadwal: JadwalKonsultasi): Boolean
+        +simpanPerubahan(data: String): Boolean
+    }
+    Pengguna <|-- Mahasiswa
+    Pengguna <|-- Administrator
+    Pengguna "1" --> "0..*" SesiAutentikasi : memiliki
+    Mahasiswa "1" --> "0..*" DailyAffirmation : mengatur
+    Mahasiswa "1" --> "0..*" Reminder : mengatur
+    DailyAffirmation ..> Notifikasi : memicu
+    Reminder ..> Notifikasi : memicu
+    Mahasiswa "1" --> "1" KalenderGabungan : melihat
+    KalenderGabungan ..> GoogleCalendarService : memakai
+    KalenderGabungan "1" --> "0..*" JadwalKonsultasi : menggabungkan
+    Mahasiswa "1" --> "0..*" JadwalKonsultasi : memesan
+    Administrator "1" --> "0..*" JadwalKonsultasi : mengelola
+    JadwalKonsultasi "0..*" --> "1" Konsultan : bersama
+    Mahasiswa "1" --> "0..*" FAQ : melihat
+    Administrator "1" --> "0..*" FAQ : mengelola
+    Mahasiswa "1" --> "0..*" PengajuanPertanyaan : mengajukan
+    FAQ ..> PengajuanPertanyaan : menawarkan
+    Mahasiswa "1" --> "0..*" UmpanBalik : memberikan
+    Administrator "1" --> "0..*" UmpanBalik : menanggapi
+    Administrator "1" --> "0..*" StatusServer : memantau
+    Pengguna "1" --> "1" LoginView : mengakses
+    Mahasiswa "1" --> "1" AffirmationView : mengakses
+    Mahasiswa "1" --> "1" ReminderView : mengakses
+    Mahasiswa "1" --> "1" CalendarView : mengakses
+    Mahasiswa "1" --> "1" ConsultationBookingView : mengakses
+    Administrator "1" --> "1" ConsultationManagementView : mengakses
+    Mahasiswa "1" --> "1" FAQView : mengakses
+    Administrator "1" --> "1" FAQView : mengakses
+    Mahasiswa "1" --> "1" FeedbackView : mengakses
+    Administrator "1" --> "1" FeedbackView : mengakses
+    Administrator "1" --> "1" ServerStatusView : mengakses
+    LoginView "1" --> "1" AuthController : memanggil
+    AffirmationView "1" --> "1" AffirmationController : memanggil
+    ReminderView "1" --> "1" ReminderController : memanggil
+    CalendarView "1" --> "1" CalendarController : memanggil
+    ConsultationBookingView "1" --> "1" ConsultationController : memanggil
+    ConsultationManagementView "1" --> "1" ConsultationController : memanggil
+    FAQView "1" --> "1" FAQController : memanggil
+    FeedbackView "1" --> "1" FeedbackController : memanggil
+    ServerStatusView "1" --> "1" ServerStatusController : memanggil
+    AuthController ..> SesiAutentikasi : akses
+    AuthController ..> GoogleAuthService : akses
+    AffirmationController ..> DailyAffirmation : akses
+    AffirmationController ..> Validasi : memvalidasi
+    AffirmationController ..> Notifikasi : akses
+    ReminderController ..> Reminder : akses
+    ReminderController ..> Validasi : memvalidasi
+    ReminderController ..> Notifikasi : akses
+    CalendarController ..> GoogleCalendarService : akses
+    CalendarController ..> JadwalKonsultasi : akses
+    CalendarController ..> KalenderGabungan : akses
+    ConsultationController ..> Konsultan : akses
+    ConsultationController ..> JadwalKonsultasi : akses
+    ConsultationController ..> Validasi : memvalidasi
+    ConsultationController ..> KalenderGabungan : akses
+    FAQController ..> FAQ : akses
+    FAQController ..> Validasi : memvalidasi
+    FAQController ..> PengajuanPertanyaan : akses
+    FeedbackController ..> UmpanBalik : akses
+    FeedbackController ..> Validasi : memvalidasi
+    ServerStatusController ..> StatusServer : akses
+    DailyAffirmation ..> CloudflareD1Database : disimpan di
+    Reminder ..> CloudflareD1Database : disimpan di
+    KalenderGabungan ..> CloudflareD1Database : disimpan di
+    FAQ ..> CloudflareD1Database : disimpan di
+    UmpanBalik ..> CloudflareD1Database : disimpan di
+    PengajuanPertanyaan ..> CloudflareD1Database : disimpan di
+```
+
 <p align="center">
 <i>Gambar 4.1. Diagram Kelas Perancangan Keseluruhan Sehati</i>
 </p>
 
 Tabel 4.1. Daftar Kelas Perancangan Keseluruhan
 
-| ID Kelas | Nama Kelas              | Atribut                             | Metode/Operasi                                         |
-| :------- | :---------------------- | :---------------------------------- | :----------------------------------------------------- |
-| C-01     | `Pengguna`              | `id`, `nama`, `email`, `googleId`   | -                                                      |
-| C-02     | `Mahasiswa`             | `nim`                               | -                                                      |
-| C-03     | `Administrator`         | -                                   | -                                                      |
-| C-04     | `SesiAutentikasi`       | `token`, `waktuLogin`, `status`     | `autentikasiGoogle()`, `verifikasiToken()`, `logout()` |
-| C-05     | `DailyAffirmation`      | `konten`, `waktuKirim`              | `aturWaktuKirim()`, `kirimAfirmasi()`                  |
-| C-06     | `Reminder`              | `jenis`, `waktu`                    | `aturWaktuPengingat()`, `kirimPengingat()`             |
-| C-07     | `Notifikasi`            | `idNotifikasi`, `isi`, `waktuKirim` | `kirimNotifikasi()`, `tampilkanNotifikasi()`           |
-| C-08     | `GoogleCalendarService` | `accessToken`                       | `ambilEvent()`, `cekBentrokJadwal()`                   |
-| C-09     | `KalenderGabungan`      | `daftarEvent`                       | `gabungkanJadwal()`, `tampilkanKalender()`             |
-| C-10     | `Konsultan`             | `nama`, `spesialisasi`              | -                                                      |
-| C-11     | `JadwalKonsultasi`      | `idJadwal`, `waktu`, `status`       | `simpanJadwal()`, `perbaruiJadwal()`, `pesanSesi()`    |
-| C-12     | `FAQ`                   | `pertanyaan`, `jawaban`             | `tambahFAQ()`, `ubahFAQ()`, `hapusFAQ()`               |
-| C-13     | `PengajuanPertanyaan`   | `idPertanyaan`, `isiPertanyaan`     | `ajukanPertanyaan()`                                   |
-| C-14     | `UmpanBalik`            | `idUmpanBalik`, `isi`, `tanggapan`  | `kirimUmpanBalik()`, `berikanTanggapan()`              |
-| C-15     | `StatusServer`          | `statusUptime`, `waktuCek`          | `cekStatusServer()`, `tampilkanStatus()`               |
+| ID Kelas | Nama Kelas | Atribut | Metode/Operasi |
+| :------- | :--------- | :------ | :------------- |
+| C-01 | `Pengguna` | `-id: String`<br>`-nama: String`<br>`-email: String`<br>`-googleId: String` | - |
+| C-02 | `Mahasiswa` | `-nim: String` | - |
+| C-03 | `Administrator` | - | - |
+| C-04 | `SesiAutentikasi` | `-token: String`<br>`-waktuLogin: DateTime`<br>`-status: String` | `+autentikasiPengguna(kodeOtorisasi: String): Boolean`<br>`+verifikasiToken(token: String): Boolean`<br>`+logout(): void` |
+| C-05 | `DailyAffirmation` | `-konten: String`<br>`-waktuKirim: Time` | `+aturWaktuKirim(waktu: Time): Boolean`<br>`+kirimAfirmasi(): void` |
+| C-06 | `Reminder` | `-jenis: String`<br>`-waktu: Time` | `+aturWaktuKirim(waktu: Time): Boolean`<br>`+kirimPengingat(): void` |
+| C-07 | `Notifikasi` | `-idNotifikasi: String`<br>`-isi: String`<br>`-waktuKirim: DateTime` | `+kirimNotifikasi(): void`<br>`+tampilkanNotifikasi(): void` |
+| C-08 | `GoogleCalendarService` | `-accessToken: String` | `+ambilKalender(): List<Event>`<br>`+cekBentrokJadwal(jadwal: JadwalKonsultasi): Boolean` |
+| C-09 | `KalenderGabungan` | `-daftarEvent: List<Event>` | `+gabungkanJadwal(google: List<Event>, jadwal: List<JadwalKonsultasi>): List<Event>`<br>`+jadwalBentrok(jadwal: JadwalKonsultasi): Boolean`<br>`+ubahKalender(jadwal: JadwalKonsultasi): Boolean` |
+| C-10 | `Konsultan` | `-nama: String`<br>`-spesialisasi: String` | `+ambilDaftarKonsultan(): List<Konsultan>` |
+| C-11 | `JadwalKonsultasi` | `-idJadwal: String`<br>`-waktu: DateTime`<br>`-status: String` | `+ambilKalender(): List<JadwalKonsultasi>`<br>`+ambilKalender(konsultan: Konsultan): List<JadwalKonsultasi>`<br>`+simpanJadwal(): Boolean`<br>`+perbaruiJadwal(): Boolean`<br>`+pesanSesi(): Boolean` |
+| C-12 | `FAQ` | `-idFAQ: String`<br>`-pertanyaan: String`<br>`-jawaban: String` | `+ambilDaftarPertanyaan(): List<FAQ>`<br>`+cariFAQ(kataKunci: String): List<FAQ>`<br>`+tambahFAQ(pertanyaan: String, jawaban: String): Boolean`<br>`+ubahFAQ(idFAQ: String, pertanyaan: String, jawaban: String): Boolean`<br>`+hapusFAQ(idFAQ: String): Boolean` |
+| C-13 | `PengajuanPertanyaan` | `-idPertanyaan: String`<br>`-isiPertanyaan: String` | `+ajukanPertanyaan(isi: String): Boolean` |
+| C-14 | `UmpanBalik` | `-idUmpanBalik: String`<br>`-isi: String`<br>`-tanggapan: String` | `+ambilListUmpanBalik(): List<UmpanBalik>`<br>`+kirimUmpanBalik(isi: String): Boolean`<br>`+berikanTanggapan(tanggapan: String): Boolean` |
+| C-15 | `StatusServer` | `-jenis: String`<br>`-statusUptime: Boolean`<br>`-waktuCek: DateTime` | `+ambilStatusServer(jenis: String): StatusServer`<br>`+cekStatusServer(): Boolean` |
+| C-16 | `LoginView` | - | `+masukLamanLogin(): void`<br>`+isiLoginPage(kodeOtorisasi: String): void`<br>`+tampilkanLoginPage(): void`<br>`+loadPageUtama(): void`<br>`+showError(pesan: String): void` |
+| C-17 | `AffirmationView` | `-waktuTerpilih: Time` | `+bukaPageAffirmasi(): void`<br>`+pilihWaktuPengiriman(waktu: Time): void`<br>`+tampilkanOpsiAffirmasi(): void`<br>`+tampilkanSetelanTersimpan(): void`<br>`+showError(pesan: String): void` |
+| C-18 | `ReminderView` | `-waktuTerpilih: Time` | `+bukaPageReminder(): void`<br>`+pilihWaktuPengiriman(waktu: Time): void`<br>`+tampilkanOpsiReminder(): void`<br>`+tampilkanSetelanTersimpan(): void`<br>`+showError(pesan: String): void` |
+| C-19 | `CalendarView` | - | `+bukaPageCalendar(): void`<br>`+tampilkanKalender(kalender: List<Event>): void`<br>`+showErrorMessage(pesan: String): void` |
+| C-20 | `ConsultationBookingView` | - | `+bukaPageKonsultasi(): void`<br>`+pilihKonsultan(konsultan: Konsultan): void`<br>`+pilihSesi(jadwal: JadwalKonsultasi): void`<br>`+tampilkanOpsiKonsultasi(daftar: List<Konsultan>): void`<br>`+tampilkanKalender(jadwal: List<JadwalKonsultasi>): void`<br>`+tampilkanSetelanTersimpan(): void`<br>`+showError(pesan: String): void` |
+| C-21 | `ConsultationManagementView` | - | `+bukaPageKonsultasi(): void`<br>`+pilihKonsultan(konsultan: Konsultan): void`<br>`+perbaruiJadwal(jadwal: JadwalKonsultasi): void`<br>`+tampilkanOpsiKonsultasi(daftar: List<Konsultan>): void`<br>`+tampilkanKalender(jadwal: List<JadwalKonsultasi>): void`<br>`+tampilkanSetelanTersimpan(): void`<br>`+showError(pesan: String): void` |
+| C-22 | `FAQView` | - | `+bukaFAQ(): void`<br>`+cariFAQ(kataKunci: String): void`<br>`+tambahFAQ(pertanyaan: String, jawaban: String): void`<br>`+ubahFAQ(idFAQ: String, pertanyaan: String, jawaban: String): void`<br>`+hapusFAQ(idFAQ: String): void`<br>`+bukaFormPertanyaan(): void`<br>`+isiFormPertanyaan(isi: String): void`<br>`+tampilkanFAQ(daftar: List<FAQ>): void`<br>`+tampilkanTawaranPengajuan(): void`<br>`+tampilkanFormPenambahanPertanyaan(): void`<br>`+tampilkanSetelanTersimpan(): void`<br>`+showError(pesan: String): void` |
+| C-23 | `FeedbackView` | - | `+bukaUmpanBalik(): void`<br>`+isiFormFeedback(isi: String): void`<br>`+bukaListFeedback(): void`<br>`+tanggapiFeedback(tanggapan: String): void`<br>`+tampilkanFormFeedback(): void`<br>`+tampilkanListFeedback(daftar: List<UmpanBalik>): void`<br>`+tampilkanFeedbackTersimpan(): void`<br>`+showError(pesan: String): void` |
+| C-24 | `ServerStatusView` | - | `+cekStatusServer(jenis: String): void`<br>`+tampilkanStatusServer(status: StatusServer): void` |
+| C-25 | `AuthController` | - | `+tampilkanLoginPage(): void`<br>`+kirimData(kodeOtorisasi: String): void` |
+| C-26 | `AffirmationController` | - | `+tampilkanOpsiAffirmasi(): void`<br>`+submitWaktuPengiriman(waktu: Time): void` |
+| C-27 | `ReminderController` | - | `+tampilkanOpsiReminder(): void`<br>`+submitWaktuPengiriman(waktu: Time): void` |
+| C-28 | `CalendarController` | - | `+tampilkanCalendar(): void` |
+| C-29 | `ConsultationController` | - | `+tampilkanOpsiKonsultasi(): void`<br>`+submitKonsultan(konsultan: Konsultan): void`<br>`+updateStatusKonsultasi(jadwal: JadwalKonsultasi): void` |
+| C-30 | `FAQController` | - | `+tampilkanFAQ(): void`<br>`+cariFAQ(kataKunci: String): void`<br>`+tambahFAQ(pertanyaan: String, jawaban: String): void`<br>`+ubahFAQ(idFAQ: String, pertanyaan: String, jawaban: String): void`<br>`+hapusFAQ(idFAQ: String): void`<br>`+muatFormPenambahanPertanyaan(): void`<br>`+kirimPertanyaan(isi: String): void` |
+| C-31 | `FeedbackController` | - | `+tampilkanFormFeedback(): void`<br>`+kirimFeedback(isi: String): void`<br>`+tampilkanListFeedback(): void`<br>`+kirimTanggapan(tanggapan: String): void` |
+| C-32 | `ServerStatusController` | - | `+tampilkanStatusServer(jenis: String): void` |
+| C-33 | `Validasi` | - | `+validasiWaktu(waktu: Time): Boolean`<br>`+validasiKonsultan(konsultan: Konsultan): Boolean`<br>`+validasiJadwal(jadwal: JadwalKonsultasi): Boolean`<br>`+validasiInput(isi: List<String>): Boolean` |
+| C-34 | `GoogleAuthService` | `-authCode: String`<br>`-accessToken: String`<br>`-refreshToken: String` | `+validasi(kodeOtorisasi: String): Boolean` |
+| C-35 | `CloudflareD1Database` | - | `+simpanWaktuKirim(waktu: Time): Boolean`<br>`+simpanKalender(jadwal: JadwalKonsultasi): Boolean`<br>`+simpanPerubahan(data: String): Boolean` |
 
 <br>
 
@@ -927,20 +2668,40 @@ Matriks ini memetakan setiap kelas perancangan terhadap _use case_ yang direalis
 
 Tabel 5.1. Matriks Kerunutan Kelas terhadap Use Case
 
-| Kelas                          | Use Case Terkait                                                                                                                                                                                                                                                             |
-| :----------------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| C-01 - `Pengguna`              | UC-11 - Masuk Melalui Akun Google                                                                                                                                                                                                                                            |
-| C-02 - `Mahasiswa`             | UC-01 - Menyetel Daily Affirmations, UC-02 - Menyetel Pengingat Kesehatan, UC-03 - Melihat Kalender Terintegrasi, UC-04 - Memesan Sesi Konsultasi, UC-06 - Melihat FAQ, UC-08 - Memberikan Umpan Balik, UC-11 - Masuk Melalui Akun Google, UC-12 - Form Pengajuan Pertanyaan |
-| C-03 - `Administrator`         | UC-05 - Mengelola Jadwal Konsultan, UC-07 - Mengelola FAQ, UC-09 - Menanggapi Umpan Balik, UC-10 - Memantau Status Server, UC-11 - Masuk Melalui Akun Google                                                                                                                 |
-| C-04 - `SesiAutentikasi`       | UC-11 - Masuk Melalui Akun Google                                                                                                                                                                                                                                            |
-| C-05 - `DailyAffirmation`      | UC-01 - Menyetel Daily Affirmations                                                                                                                                                                                                                                          |
-| C-06 - `Reminder`              | UC-02 - Menyetel Pengingat Kesehatan                                                                                                                                                                                                                                         |
-| C-07 - `Notifikasi`            | UC-01 - Menyetel Daily Affirmations, UC-02 - Menyetel Pengingat Kesehatan                                                                                                                                                                                                    |
-| C-08 - `GoogleCalendarService` | UC-03 - Melihat Kalender Terintegrasi, UC-04 - Memesan Sesi Konsultasi                                                                                                                                                                                                       |
-| C-09 - `KalenderGabungan`      | UC-03 - Melihat Kalender Terintegrasi                                                                                                                                                                                                                                        |
-| C-10 - `Konsultan`             | UC-04 - Memesan Sesi Konsultasi, UC-05 - Mengelola Jadwal Konsultan                                                                                                                                                                                                          |
-| C-11 - `JadwalKonsultasi`      | UC-04 - Memesan Sesi Konsultasi, UC-05 - Mengelola Jadwal Konsultan                                                                                                                                                                                                          |
-| C-12 - `FAQ`                   | UC-06 - Melihat FAQ, UC-07 - Mengelola FAQ                                                                                                                                                                                                                                   |
-| C-13 - `PengajuanPertanyaan`   | UC-12 - Form Pengajuan Pertanyaan                                                                                                                                                                                                                                            |
-| C-14 - `UmpanBalik`            | UC-08 - Memberikan Umpan Balik, UC-09 - Menanggapi Umpan Balik                                                                                                                                                                                                               |
-| C-15 - `StatusServer`          | UC-10 - Memantau Status Server                                                                                                                                                                                                                                               |
+| Kelas | Use Case Terkait |
+| :---- | :--------------- |
+| C-01 - `Pengguna` | UC-11 - Masuk Melalui Akun Google |
+| C-02 - `Mahasiswa` | UC-01 - Menyetel Daily Affirmations, UC-02 - Menyetel Pengingat Kesehatan, UC-03 - Melihat Kalender Terintegrasi, UC-04 - Memesan Sesi Konsultasi, UC-06 - Melihat FAQ, UC-08 - Memberikan Umpan Balik, UC-09 - Menanggapi Umpan Balik, UC-11 - Masuk Melalui Akun Google, UC-12 - Form Pengajuan Pertanyaan |
+| C-03 - `Administrator` | UC-05 - Mengelola Jadwal Konsultan, UC-07 - Mengelola FAQ, UC-09 - Menanggapi Umpan Balik, UC-10 - Memantau Status Server, UC-11 - Masuk Melalui Akun Google |
+| C-04 - `SesiAutentikasi` | UC-11 - Masuk Melalui Akun Google |
+| C-05 - `DailyAffirmation` | UC-01 - Menyetel Daily Affirmations |
+| C-06 - `Reminder` | UC-02 - Menyetel Pengingat Kesehatan |
+| C-07 - `Notifikasi` | UC-01 - Menyetel Daily Affirmations, UC-02 - Menyetel Pengingat Kesehatan |
+| C-08 - `GoogleCalendarService` | UC-03 - Melihat Kalender Terintegrasi, UC-04 - Memesan Sesi Konsultasi |
+| C-09 - `KalenderGabungan` | UC-03 - Melihat Kalender Terintegrasi, UC-04 - Memesan Sesi Konsultasi, UC-05 - Mengelola Jadwal Konsultan |
+| C-10 - `Konsultan` | UC-04 - Memesan Sesi Konsultasi, UC-05 - Mengelola Jadwal Konsultan |
+| C-11 - `JadwalKonsultasi` | UC-03 - Melihat Kalender Terintegrasi, UC-04 - Memesan Sesi Konsultasi, UC-05 - Mengelola Jadwal Konsultan |
+| C-12 - `FAQ` | UC-06 - Melihat FAQ, UC-07 - Mengelola FAQ |
+| C-13 - `PengajuanPertanyaan` | UC-12 - Form Pengajuan Pertanyaan |
+| C-14 - `UmpanBalik` | UC-08 - Memberikan Umpan Balik, UC-09 - Menanggapi Umpan Balik |
+| C-15 - `StatusServer` | UC-10 - Memantau Status Server |
+| C-16 - `LoginView` | UC-11 - Masuk Melalui Akun Google |
+| C-17 - `AffirmationView` | UC-01 - Menyetel Daily Affirmations |
+| C-18 - `ReminderView` | UC-02 - Menyetel Pengingat Kesehatan |
+| C-19 - `CalendarView` | UC-03 - Melihat Kalender Terintegrasi |
+| C-20 - `ConsultationBookingView` | UC-04 - Memesan Sesi Konsultasi |
+| C-21 - `ConsultationManagementView` | UC-05 - Mengelola Jadwal Konsultan |
+| C-22 - `FAQView` | UC-06 - Melihat FAQ, UC-07 - Mengelola FAQ, UC-12 - Form Pengajuan Pertanyaan |
+| C-23 - `FeedbackView` | UC-08 - Memberikan Umpan Balik, UC-09 - Menanggapi Umpan Balik |
+| C-24 - `ServerStatusView` | UC-10 - Memantau Status Server |
+| C-25 - `AuthController` | UC-11 - Masuk Melalui Akun Google |
+| C-26 - `AffirmationController` | UC-01 - Menyetel Daily Affirmations |
+| C-27 - `ReminderController` | UC-02 - Menyetel Pengingat Kesehatan |
+| C-28 - `CalendarController` | UC-03 - Melihat Kalender Terintegrasi |
+| C-29 - `ConsultationController` | UC-04 - Memesan Sesi Konsultasi, UC-05 - Mengelola Jadwal Konsultan |
+| C-30 - `FAQController` | UC-06 - Melihat FAQ, UC-07 - Mengelola FAQ, UC-12 - Form Pengajuan Pertanyaan |
+| C-31 - `FeedbackController` | UC-08 - Memberikan Umpan Balik, UC-09 - Menanggapi Umpan Balik |
+| C-32 - `ServerStatusController` | UC-10 - Memantau Status Server |
+| C-33 - `Validasi` | UC-01 - Menyetel Daily Affirmations, UC-02 - Menyetel Pengingat Kesehatan, UC-04 - Memesan Sesi Konsultasi, UC-05 - Mengelola Jadwal Konsultan, UC-07 - Mengelola FAQ, UC-08 - Memberikan Umpan Balik, UC-09 - Menanggapi Umpan Balik, UC-12 - Form Pengajuan Pertanyaan |
+| C-34 - `GoogleAuthService` | UC-11 - Masuk Melalui Akun Google |
+| C-35 - `CloudflareD1Database` | UC-01 - Menyetel Daily Affirmations, UC-02 - Menyetel Pengingat Kesehatan, UC-04 - Memesan Sesi Konsultasi, UC-05 - Mengelola Jadwal Konsultan, UC-07 - Mengelola FAQ, UC-08 - Memberikan Umpan Balik, UC-09 - Menanggapi Umpan Balik, UC-12 - Form Pengajuan Pertanyaan |
