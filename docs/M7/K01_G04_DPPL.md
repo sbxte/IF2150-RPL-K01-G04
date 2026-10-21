@@ -9,7 +9,9 @@ DESKRIPSI PERANCANGAN PERANGKAT LUNAK (DPPL)
 
 ## Sehati
 
-### _[Logo Perangkat Lunak]_
+<p align="center">
+<img alt="Logo Sehati" src="./assets/sehati-logo.png" width="160">
+</p>
 
 ### Untuk: Aurelia Jennifer Gunawan
 
