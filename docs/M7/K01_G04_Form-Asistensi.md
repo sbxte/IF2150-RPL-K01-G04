@@ -4,8 +4,8 @@
 
 | Informasi                | Keterangan      |
 | ------------------------ | --------------- |
-| **Hari**                 | ...             |
-| **Tanggal**              | .../.../2026    |
+| **Hari**                 | Jumat           |
+| **Tanggal**              | 09/10/2026      |
 | **Kelas**                | K01             |
 | **Nomor Kelompok**       | G04             |
 | **Nama Kelompok**        | LompatMulai     |
@@ -23,8 +23,8 @@
 
 ### Catatan
 
-...
+- Asistensi Akbar
 
 ## Dokumentasi
 
-...
+- Asistensi Akbar
