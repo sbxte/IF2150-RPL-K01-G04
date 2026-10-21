@@ -31,19 +31,10 @@ Dipersiapkan oleh:
 
 ## Daftar Perubahan
 
-| Revisi | Deskripsi                                                                                                                               |
-| ------ | --------------------------------------------------------------------------------------------------------------------------------------- |
-| _A_    | _Deskripsikan perubahan yang dilakukan dari dokumen sebelumnya pada dokumen ini. Jika tidak terdapat perubahan, harap kosongkan tabel._ |
+| Revisi | Deskripsi |
+| ------ | --------- |
 
 ---
-
-<br>
-
-> **Petunjuk pengerjaan:** _[Silahkan hapus bagian ini setelah selesai mengerjakan]_
->
-> Dokumen ini melanjutkan **Spesifikasi Kebutuhan Perangkat Lunak (SKPL)** dan **Arsitektur Perangkat Lunak (APL)**. Gunakan nama, ID, kebutuhan, dan use case yang konsisten dengan kedua dokumen tersebut. Contoh pola ID baru di bawah dapat disesuaikan dengan kesepakatan kelompok, ID yang sudah ada tetap dipertahankan.
-
-<br>
 
 ---
 
@@ -424,15 +415,15 @@ BAB ini menjabarkan realisasi seluruh 12 _use case_ pada SKPL (UC-01 sampai UC-1
 
 Tabel 3.1. Identifikasi Kelas Use Case UC-01
 
-| No  | Nama Kelas Perancangan | Nama Kelas Analisis Terkait |
-| :-- | :--------------------- | :-------------------------- |
-| 1 | `Mahasiswa` | `Mahasiswa` (C-02) |
-| 2 | `AffirmationView` | - |
-| 3 | `AffirmationController` | - |
-| 4 | `Validasi` | - |
-| 5 | `DailyAffirmation` | `DailyAffirmation` (C-05) |
-| 6 | `CloudflareD1Database` | - |
-| 7 | `Notifikasi` | `Notifikasi` (C-07) |
+| No  | Nama Kelas Perancangan  | Nama Kelas Analisis Terkait |
+| :-- | :---------------------- | :-------------------------- |
+| 1   | `Mahasiswa`             | `Mahasiswa` (C-02)          |
+| 2   | `AffirmationView`       | -                           |
+| 3   | `AffirmationController` | -                           |
+| 4   | `Validasi`              | -                           |
+| 5   | `DailyAffirmation`      | `DailyAffirmation` (C-05)   |
+| 6   | `CloudflareD1Database`  | -                           |
+| 7   | `Notifikasi`            | `Notifikasi` (C-07)         |
 
 ### 3.1.2 Sequence Diagram
 
@@ -503,7 +494,6 @@ sequenceDiagram
 </p>
 
 ### 3.1.3 Diagram Kelas
-
 
 ```mermaid
 classDiagram
@@ -578,13 +568,13 @@ Tabel 3.2. Identifikasi Kelas Use Case UC-02
 
 | No  | Nama Kelas Perancangan | Nama Kelas Analisis Terkait |
 | :-- | :--------------------- | :-------------------------- |
-| 1 | `Mahasiswa` | `Mahasiswa` (C-02) |
-| 2 | `ReminderView` | - |
-| 3 | `ReminderController` | - |
-| 4 | `Validasi` | - |
-| 5 | `Reminder` | `Reminder` (C-06) |
-| 6 | `CloudflareD1Database` | - |
-| 7 | `Notifikasi` | `Notifikasi` (C-07) |
+| 1   | `Mahasiswa`            | `Mahasiswa` (C-02)          |
+| 2   | `ReminderView`         | -                           |
+| 3   | `ReminderController`   | -                           |
+| 4   | `Validasi`             | -                           |
+| 5   | `Reminder`             | `Reminder` (C-06)           |
+| 6   | `CloudflareD1Database` | -                           |
+| 7   | `Notifikasi`           | `Notifikasi` (C-07)         |
 
 ### 3.2.2 Sequence Diagram
 
@@ -655,7 +645,6 @@ sequenceDiagram
 </p>
 
 ### 3.2.3 Diagram Kelas
-
 
 ```mermaid
 classDiagram
@@ -728,14 +717,14 @@ classDiagram
 
 Tabel 3.3. Identifikasi Kelas Use Case UC-03
 
-| No  | Nama Kelas Perancangan | Nama Kelas Analisis Terkait |
-| :-- | :--------------------- | :-------------------------- |
-| 1 | `Mahasiswa` | `Mahasiswa` (C-02) |
-| 2 | `CalendarView` | - |
-| 3 | `CalendarController` | - |
-| 4 | `GoogleCalendarService` | `GoogleCalendarService` (C-08) |
-| 5 | `JadwalKonsultasi` | `JadwalKonsultasi` (C-11) |
-| 6 | `KalenderGabungan` | `KalenderGabungan` (C-09) |
+| No  | Nama Kelas Perancangan  | Nama Kelas Analisis Terkait    |
+| :-- | :---------------------- | :----------------------------- |
+| 1   | `Mahasiswa`             | `Mahasiswa` (C-02)             |
+| 2   | `CalendarView`          | -                              |
+| 3   | `CalendarController`    | -                              |
+| 4   | `GoogleCalendarService` | `GoogleCalendarService` (C-08) |
+| 5   | `JadwalKonsultasi`      | `JadwalKonsultasi` (C-11)      |
+| 6   | `KalenderGabungan`      | `KalenderGabungan` (C-09)      |
 
 ### 3.3.2 Sequence Diagram
 
@@ -791,7 +780,6 @@ sequenceDiagram
 </p>
 
 ### 3.3.3 Diagram Kelas
-
 
 ```mermaid
 classDiagram
@@ -857,17 +845,17 @@ classDiagram
 
 Tabel 3.4. Identifikasi Kelas Use Case UC-04
 
-| No  | Nama Kelas Perancangan | Nama Kelas Analisis Terkait |
-| :-- | :--------------------- | :-------------------------- |
-| 1 | `Mahasiswa` | `Mahasiswa` (C-02) |
-| 2 | `ConsultationBookingView` | - |
-| 3 | `ConsultationController` | - |
-| 4 | `Konsultan` | `Konsultan` (C-10) |
-| 5 | `JadwalKonsultasi` | `JadwalKonsultasi` (C-11) |
-| 6 | `Validasi` | - |
-| 7 | `KalenderGabungan` | `KalenderGabungan` (C-09) |
-| 8 | `GoogleCalendarService` | `GoogleCalendarService` (C-08) |
-| 9 | `CloudflareD1Database` | - |
+| No  | Nama Kelas Perancangan    | Nama Kelas Analisis Terkait    |
+| :-- | :------------------------ | :----------------------------- |
+| 1   | `Mahasiswa`               | `Mahasiswa` (C-02)             |
+| 2   | `ConsultationBookingView` | -                              |
+| 3   | `ConsultationController`  | -                              |
+| 4   | `Konsultan`               | `Konsultan` (C-10)             |
+| 5   | `JadwalKonsultasi`        | `JadwalKonsultasi` (C-11)      |
+| 6   | `Validasi`                | -                              |
+| 7   | `KalenderGabungan`        | `KalenderGabungan` (C-09)      |
+| 8   | `GoogleCalendarService`   | `GoogleCalendarService` (C-08) |
+| 9   | `CloudflareD1Database`    | -                              |
 
 ### 3.4.2 Sequence Diagram
 
@@ -1002,7 +990,6 @@ sequenceDiagram
 
 ### 3.4.3 Diagram Kelas
 
-
 ```mermaid
 classDiagram
     class Mahasiswa {
@@ -1095,16 +1082,16 @@ classDiagram
 
 Tabel 3.5. Identifikasi Kelas Use Case UC-05
 
-| No  | Nama Kelas Perancangan | Nama Kelas Analisis Terkait |
-| :-- | :--------------------- | :-------------------------- |
-| 1 | `Administrator` | `Administrator` (C-03) |
-| 2 | `ConsultationManagementView` | - |
-| 3 | `ConsultationController` | - |
-| 4 | `Konsultan` | `Konsultan` (C-10) |
-| 5 | `JadwalKonsultasi` | `JadwalKonsultasi` (C-11) |
-| 6 | `Validasi` | - |
-| 7 | `KalenderGabungan` | `KalenderGabungan` (C-09) |
-| 8 | `CloudflareD1Database` | - |
+| No  | Nama Kelas Perancangan       | Nama Kelas Analisis Terkait |
+| :-- | :--------------------------- | :-------------------------- |
+| 1   | `Administrator`              | `Administrator` (C-03)      |
+| 2   | `ConsultationManagementView` | -                           |
+| 3   | `ConsultationController`     | -                           |
+| 4   | `Konsultan`                  | `Konsultan` (C-10)          |
+| 5   | `JadwalKonsultasi`           | `JadwalKonsultasi` (C-11)   |
+| 6   | `Validasi`                   | -                           |
+| 7   | `KalenderGabungan`           | `KalenderGabungan` (C-09)   |
+| 8   | `CloudflareD1Database`       | -                           |
 
 ### 3.5.2 Sequence Diagram
 
@@ -1230,7 +1217,6 @@ sequenceDiagram
 
 ### 3.5.3 Diagram Kelas
 
-
 ```mermaid
 classDiagram
     class Administrator {
@@ -1316,10 +1302,10 @@ Tabel 3.6. Identifikasi Kelas Use Case UC-06
 
 | No  | Nama Kelas Perancangan | Nama Kelas Analisis Terkait |
 | :-- | :--------------------- | :-------------------------- |
-| 1 | `Mahasiswa` | `Mahasiswa` (C-02) |
-| 2 | `FAQView` | - |
-| 3 | `FAQController` | - |
-| 4 | `FAQ` | `FAQ` (C-12) |
+| 1   | `Mahasiswa`            | `Mahasiswa` (C-02)          |
+| 2   | `FAQView`              | -                           |
+| 3   | `FAQController`        | -                           |
+| 4   | `FAQ`                  | `FAQ` (C-12)                |
 
 ### 3.6.2 Sequence Diagram
 
@@ -1382,7 +1368,6 @@ sequenceDiagram
 </p>
 
 ### 3.6.3 Diagram Kelas
-
 
 ```mermaid
 classDiagram
@@ -1447,12 +1432,12 @@ Tabel 3.7. Identifikasi Kelas Use Case UC-07
 
 | No  | Nama Kelas Perancangan | Nama Kelas Analisis Terkait |
 | :-- | :--------------------- | :-------------------------- |
-| 1 | `Administrator` | `Administrator` (C-03) |
-| 2 | `FAQView` | - |
-| 3 | `FAQController` | - |
-| 4 | `FAQ` | `FAQ` (C-12) |
-| 5 | `Validasi` | - |
-| 6 | `CloudflareD1Database` | - |
+| 1   | `Administrator`        | `Administrator` (C-03)      |
+| 2   | `FAQView`              | -                           |
+| 3   | `FAQController`        | -                           |
+| 4   | `FAQ`                  | `FAQ` (C-12)                |
+| 5   | `Validasi`             | -                           |
+| 6   | `CloudflareD1Database` | -                           |
 
 ### 3.7.2 Sequence Diagram
 
@@ -1543,7 +1528,6 @@ sequenceDiagram
 
 ### 3.7.3 Diagram Kelas
 
-
 ```mermaid
 classDiagram
     class Administrator {
@@ -1621,12 +1605,12 @@ Tabel 3.8. Identifikasi Kelas Use Case UC-08
 
 | No  | Nama Kelas Perancangan | Nama Kelas Analisis Terkait |
 | :-- | :--------------------- | :-------------------------- |
-| 1 | `Mahasiswa` | `Mahasiswa` (C-02) |
-| 2 | `FeedbackView` | - |
-| 3 | `FeedbackController` | - |
-| 4 | `UmpanBalik` | `UmpanBalik` (C-14) |
-| 5 | `Validasi` | - |
-| 6 | `CloudflareD1Database` | - |
+| 1   | `Mahasiswa`            | `Mahasiswa` (C-02)          |
+| 2   | `FeedbackView`         | -                           |
+| 3   | `FeedbackController`   | -                           |
+| 4   | `UmpanBalik`           | `UmpanBalik` (C-14)         |
+| 5   | `Validasi`             | -                           |
+| 6   | `CloudflareD1Database` | -                           |
 
 ### 3.8.2 Sequence Diagram
 
@@ -1693,7 +1677,6 @@ sequenceDiagram
 </p>
 
 ### 3.8.3 Diagram Kelas
-
 
 ```mermaid
 classDiagram
@@ -1764,13 +1747,13 @@ Tabel 3.9. Identifikasi Kelas Use Case UC-09
 
 | No  | Nama Kelas Perancangan | Nama Kelas Analisis Terkait |
 | :-- | :--------------------- | :-------------------------- |
-| 1 | `Administrator` | `Administrator` (C-03) |
-| 2 | `Mahasiswa` | `Mahasiswa` (C-02) |
-| 3 | `FeedbackView` | - |
-| 4 | `FeedbackController` | - |
-| 5 | `UmpanBalik` | `UmpanBalik` (C-14) |
-| 6 | `Validasi` | - |
-| 7 | `CloudflareD1Database` | - |
+| 1   | `Administrator`        | `Administrator` (C-03)      |
+| 2   | `Mahasiswa`            | `Mahasiswa` (C-02)          |
+| 3   | `FeedbackView`         | -                           |
+| 4   | `FeedbackController`   | -                           |
+| 5   | `UmpanBalik`           | `UmpanBalik` (C-14)         |
+| 6   | `Validasi`             | -                           |
+| 7   | `CloudflareD1Database` | -                           |
 
 ### 3.9.2 Sequence Diagram
 
@@ -1850,7 +1833,6 @@ sequenceDiagram
 
 ### 3.9.3 Diagram Kelas
 
-
 ```mermaid
 classDiagram
     class Administrator {
@@ -1923,12 +1905,12 @@ classDiagram
 
 Tabel 3.10. Identifikasi Kelas Use Case UC-10
 
-| No  | Nama Kelas Perancangan | Nama Kelas Analisis Terkait |
-| :-- | :--------------------- | :-------------------------- |
-| 1 | `Administrator` | `Administrator` (C-03) |
-| 2 | `ServerStatusView` | - |
-| 3 | `ServerStatusController` | - |
-| 4 | `StatusServer` | `StatusServer` (C-15) |
+| No  | Nama Kelas Perancangan   | Nama Kelas Analisis Terkait |
+| :-- | :----------------------- | :-------------------------- |
+| 1   | `Administrator`          | `Administrator` (C-03)      |
+| 2   | `ServerStatusView`       | -                           |
+| 3   | `ServerStatusController` | -                           |
+| 4   | `StatusServer`           | `StatusServer` (C-15)       |
 
 ### 3.10.2 Sequence Diagram
 
@@ -1960,7 +1942,6 @@ sequenceDiagram
 </p>
 
 ### 3.10.3 Diagram Kelas
-
 
 ```mermaid
 classDiagram
@@ -2005,13 +1986,13 @@ Tabel 3.11. Identifikasi Kelas Use Case UC-11
 
 | No  | Nama Kelas Perancangan | Nama Kelas Analisis Terkait |
 | :-- | :--------------------- | :-------------------------- |
-| 1 | `Pengguna` | `Pengguna` (C-01) |
-| 2 | `Mahasiswa` | `Mahasiswa` (C-02) |
-| 3 | `Administrator` | `Administrator` (C-03) |
-| 4 | `LoginView` | - |
-| 5 | `AuthController` | - |
-| 6 | `SesiAutentikasi` | `SesiAutentikasi` (C-04) |
-| 7 | `GoogleAuthService` | - |
+| 1   | `Pengguna`             | `Pengguna` (C-01)           |
+| 2   | `Mahasiswa`            | `Mahasiswa` (C-02)          |
+| 3   | `Administrator`        | `Administrator` (C-03)      |
+| 4   | `LoginView`            | -                           |
+| 5   | `AuthController`       | -                           |
+| 6   | `SesiAutentikasi`      | `SesiAutentikasi` (C-04)    |
+| 7   | `GoogleAuthService`    | -                           |
 
 ### 3.11.2 Sequence Diagram
 
@@ -2070,7 +2051,6 @@ sequenceDiagram
 </p>
 
 ### 3.11.3 Diagram Kelas
-
 
 ```mermaid
 classDiagram
@@ -2139,14 +2119,14 @@ classDiagram
 
 Tabel 3.12. Identifikasi Kelas Use Case UC-12
 
-| No  | Nama Kelas Perancangan | Nama Kelas Analisis Terkait |
-| :-- | :--------------------- | :-------------------------- |
-| 1 | `Mahasiswa` | `Mahasiswa` (C-02) |
-| 2 | `FAQView` | - |
-| 3 | `FAQController` | - |
-| 4 | `Validasi` | - |
-| 5 | `PengajuanPertanyaan` | `PengajuanPertanyaan` (C-13) |
-| 6 | `CloudflareD1Database` | - |
+| No  | Nama Kelas Perancangan | Nama Kelas Analisis Terkait  |
+| :-- | :--------------------- | :--------------------------- |
+| 1   | `Mahasiswa`            | `Mahasiswa` (C-02)           |
+| 2   | `FAQView`              | -                            |
+| 3   | `FAQController`        | -                            |
+| 4   | `Validasi`             | -                            |
+| 5   | `PengajuanPertanyaan`  | `PengajuanPertanyaan` (C-13) |
+| 6   | `CloudflareD1Database` | -                            |
 
 ### 3.12.2 Sequence Diagram
 
@@ -2213,7 +2193,6 @@ sequenceDiagram
 </p>
 
 ### 3.12.3 Diagram Kelas
-
 
 ```mermaid
 classDiagram
@@ -2620,43 +2599,43 @@ classDiagram
 
 Tabel 4.1. Daftar Kelas Perancangan Keseluruhan
 
-| ID Kelas | Nama Kelas | Atribut | Metode/Operasi |
-| :------- | :--------- | :------ | :------------- |
-| C-01 | `Pengguna` | `-id: String`<br>`-nama: String`<br>`-email: String`<br>`-googleId: String` | - |
-| C-02 | `Mahasiswa` | `-nim: String` | - |
-| C-03 | `Administrator` | - | - |
-| C-04 | `SesiAutentikasi` | `-token: String`<br>`-waktuLogin: DateTime`<br>`-status: String` | `+autentikasiPengguna(kodeOtorisasi: String): Boolean`<br>`+verifikasiToken(token: String): Boolean`<br>`+logout(): void` |
-| C-05 | `DailyAffirmation` | `-konten: String`<br>`-waktuKirim: Time` | `+aturWaktuKirim(waktu: Time): Boolean`<br>`+kirimAfirmasi(): void` |
-| C-06 | `Reminder` | `-jenis: String`<br>`-waktu: Time` | `+aturWaktuKirim(waktu: Time): Boolean`<br>`+kirimPengingat(): void` |
-| C-07 | `Notifikasi` | `-idNotifikasi: String`<br>`-isi: String`<br>`-waktuKirim: DateTime` | `+kirimNotifikasi(): void`<br>`+tampilkanNotifikasi(): void` |
-| C-08 | `GoogleCalendarService` | `-accessToken: String` | `+ambilKalender(): List<Event>`<br>`+cekBentrokJadwal(jadwal: JadwalKonsultasi): Boolean` |
-| C-09 | `KalenderGabungan` | `-daftarEvent: List<Event>` | `+gabungkanJadwal(google: List<Event>, jadwal: List<JadwalKonsultasi>): List<Event>`<br>`+jadwalBentrok(jadwal: JadwalKonsultasi): Boolean`<br>`+ubahKalender(jadwal: JadwalKonsultasi): Boolean` |
-| C-10 | `Konsultan` | `-nama: String`<br>`-spesialisasi: String` | `+ambilDaftarKonsultan(): List<Konsultan>` |
-| C-11 | `JadwalKonsultasi` | `-idJadwal: String`<br>`-waktu: DateTime`<br>`-status: String` | `+ambilKalender(): List<JadwalKonsultasi>`<br>`+ambilKalender(konsultan: Konsultan): List<JadwalKonsultasi>`<br>`+simpanJadwal(): Boolean`<br>`+perbaruiJadwal(): Boolean`<br>`+pesanSesi(): Boolean` |
-| C-12 | `FAQ` | `-idFAQ: String`<br>`-pertanyaan: String`<br>`-jawaban: String` | `+ambilDaftarPertanyaan(): List<FAQ>`<br>`+cariFAQ(kataKunci: String): List<FAQ>`<br>`+tambahFAQ(pertanyaan: String, jawaban: String): Boolean`<br>`+ubahFAQ(idFAQ: String, pertanyaan: String, jawaban: String): Boolean`<br>`+hapusFAQ(idFAQ: String): Boolean` |
-| C-13 | `PengajuanPertanyaan` | `-idPertanyaan: String`<br>`-isiPertanyaan: String` | `+ajukanPertanyaan(isi: String): Boolean` |
-| C-14 | `UmpanBalik` | `-idUmpanBalik: String`<br>`-isi: String`<br>`-tanggapan: String` | `+ambilListUmpanBalik(): List<UmpanBalik>`<br>`+kirimUmpanBalik(isi: String): Boolean`<br>`+berikanTanggapan(tanggapan: String): Boolean` |
-| C-15 | `StatusServer` | `-jenis: String`<br>`-statusUptime: Boolean`<br>`-waktuCek: DateTime` | `+ambilStatusServer(jenis: String): StatusServer`<br>`+cekStatusServer(): Boolean` |
-| C-16 | `LoginView` | - | `+masukLamanLogin(): void`<br>`+isiLoginPage(kodeOtorisasi: String): void`<br>`+tampilkanLoginPage(): void`<br>`+loadPageUtama(): void`<br>`+showError(pesan: String): void` |
-| C-17 | `AffirmationView` | `-waktuTerpilih: Time` | `+bukaPageAffirmasi(): void`<br>`+pilihWaktuPengiriman(waktu: Time): void`<br>`+tampilkanOpsiAffirmasi(): void`<br>`+tampilkanSetelanTersimpan(): void`<br>`+showError(pesan: String): void` |
-| C-18 | `ReminderView` | `-waktuTerpilih: Time` | `+bukaPageReminder(): void`<br>`+pilihWaktuPengiriman(waktu: Time): void`<br>`+tampilkanOpsiReminder(): void`<br>`+tampilkanSetelanTersimpan(): void`<br>`+showError(pesan: String): void` |
-| C-19 | `CalendarView` | - | `+bukaPageCalendar(): void`<br>`+tampilkanKalender(kalender: List<Event>): void`<br>`+showErrorMessage(pesan: String): void` |
-| C-20 | `ConsultationBookingView` | - | `+bukaPageKonsultasi(): void`<br>`+pilihKonsultan(konsultan: Konsultan): void`<br>`+pilihSesi(jadwal: JadwalKonsultasi): void`<br>`+tampilkanOpsiKonsultasi(daftar: List<Konsultan>): void`<br>`+tampilkanKalender(jadwal: List<JadwalKonsultasi>): void`<br>`+tampilkanSetelanTersimpan(): void`<br>`+showError(pesan: String): void` |
-| C-21 | `ConsultationManagementView` | - | `+bukaPageKonsultasi(): void`<br>`+pilihKonsultan(konsultan: Konsultan): void`<br>`+perbaruiJadwal(jadwal: JadwalKonsultasi): void`<br>`+tampilkanOpsiKonsultasi(daftar: List<Konsultan>): void`<br>`+tampilkanKalender(jadwal: List<JadwalKonsultasi>): void`<br>`+tampilkanSetelanTersimpan(): void`<br>`+showError(pesan: String): void` |
-| C-22 | `FAQView` | - | `+bukaFAQ(): void`<br>`+cariFAQ(kataKunci: String): void`<br>`+tambahFAQ(pertanyaan: String, jawaban: String): void`<br>`+ubahFAQ(idFAQ: String, pertanyaan: String, jawaban: String): void`<br>`+hapusFAQ(idFAQ: String): void`<br>`+bukaFormPertanyaan(): void`<br>`+isiFormPertanyaan(isi: String): void`<br>`+tampilkanFAQ(daftar: List<FAQ>): void`<br>`+tampilkanTawaranPengajuan(): void`<br>`+tampilkanFormPenambahanPertanyaan(): void`<br>`+tampilkanSetelanTersimpan(): void`<br>`+showError(pesan: String): void` |
-| C-23 | `FeedbackView` | - | `+bukaUmpanBalik(): void`<br>`+isiFormFeedback(isi: String): void`<br>`+bukaListFeedback(): void`<br>`+tanggapiFeedback(tanggapan: String): void`<br>`+tampilkanFormFeedback(): void`<br>`+tampilkanListFeedback(daftar: List<UmpanBalik>): void`<br>`+tampilkanFeedbackTersimpan(): void`<br>`+showError(pesan: String): void` |
-| C-24 | `ServerStatusView` | - | `+cekStatusServer(jenis: String): void`<br>`+tampilkanStatusServer(status: StatusServer): void` |
-| C-25 | `AuthController` | - | `+tampilkanLoginPage(): void`<br>`+kirimData(kodeOtorisasi: String): void` |
-| C-26 | `AffirmationController` | - | `+tampilkanOpsiAffirmasi(): void`<br>`+submitWaktuPengiriman(waktu: Time): void` |
-| C-27 | `ReminderController` | - | `+tampilkanOpsiReminder(): void`<br>`+submitWaktuPengiriman(waktu: Time): void` |
-| C-28 | `CalendarController` | - | `+tampilkanCalendar(): void` |
-| C-29 | `ConsultationController` | - | `+tampilkanOpsiKonsultasi(): void`<br>`+submitKonsultan(konsultan: Konsultan): void`<br>`+updateStatusKonsultasi(jadwal: JadwalKonsultasi): void` |
-| C-30 | `FAQController` | - | `+tampilkanFAQ(): void`<br>`+cariFAQ(kataKunci: String): void`<br>`+tambahFAQ(pertanyaan: String, jawaban: String): void`<br>`+ubahFAQ(idFAQ: String, pertanyaan: String, jawaban: String): void`<br>`+hapusFAQ(idFAQ: String): void`<br>`+muatFormPenambahanPertanyaan(): void`<br>`+kirimPertanyaan(isi: String): void` |
-| C-31 | `FeedbackController` | - | `+tampilkanFormFeedback(): void`<br>`+kirimFeedback(isi: String): void`<br>`+tampilkanListFeedback(): void`<br>`+kirimTanggapan(tanggapan: String): void` |
-| C-32 | `ServerStatusController` | - | `+tampilkanStatusServer(jenis: String): void` |
-| C-33 | `Validasi` | - | `+validasiWaktu(waktu: Time): Boolean`<br>`+validasiKonsultan(konsultan: Konsultan): Boolean`<br>`+validasiJadwal(jadwal: JadwalKonsultasi): Boolean`<br>`+validasiInput(isi: List<String>): Boolean` |
-| C-34 | `GoogleAuthService` | `-authCode: String`<br>`-accessToken: String`<br>`-refreshToken: String` | `+validasi(kodeOtorisasi: String): Boolean` |
-| C-35 | `CloudflareD1Database` | - | `+simpanWaktuKirim(waktu: Time): Boolean`<br>`+simpanKalender(jadwal: JadwalKonsultasi): Boolean`<br>`+simpanPerubahan(data: String): Boolean` |
+| ID Kelas | Nama Kelas                   | Atribut                                                                     | Metode/Operasi                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| :------- | :--------------------------- | :-------------------------------------------------------------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| C-01     | `Pengguna`                   | `-id: String`<br>`-nama: String`<br>`-email: String`<br>`-googleId: String` | -                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| C-02     | `Mahasiswa`                  | `-nim: String`                                                              | -                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| C-03     | `Administrator`              | -                                                                           | -                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| C-04     | `SesiAutentikasi`            | `-token: String`<br>`-waktuLogin: DateTime`<br>`-status: String`            | `+autentikasiPengguna(kodeOtorisasi: String): Boolean`<br>`+verifikasiToken(token: String): Boolean`<br>`+logout(): void`                                                                                                                                                                                                                                                                                                                                                                                                     |
+| C-05     | `DailyAffirmation`           | `-konten: String`<br>`-waktuKirim: Time`                                    | `+aturWaktuKirim(waktu: Time): Boolean`<br>`+kirimAfirmasi(): void`                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| C-06     | `Reminder`                   | `-jenis: String`<br>`-waktu: Time`                                          | `+aturWaktuKirim(waktu: Time): Boolean`<br>`+kirimPengingat(): void`                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| C-07     | `Notifikasi`                 | `-idNotifikasi: String`<br>`-isi: String`<br>`-waktuKirim: DateTime`        | `+kirimNotifikasi(): void`<br>`+tampilkanNotifikasi(): void`                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| C-08     | `GoogleCalendarService`      | `-accessToken: String`                                                      | `+ambilKalender(): List<Event>`<br>`+cekBentrokJadwal(jadwal: JadwalKonsultasi): Boolean`                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| C-09     | `KalenderGabungan`           | `-daftarEvent: List<Event>`                                                 | `+gabungkanJadwal(google: List<Event>, jadwal: List<JadwalKonsultasi>): List<Event>`<br>`+jadwalBentrok(jadwal: JadwalKonsultasi): Boolean`<br>`+ubahKalender(jadwal: JadwalKonsultasi): Boolean`                                                                                                                                                                                                                                                                                                                             |
+| C-10     | `Konsultan`                  | `-nama: String`<br>`-spesialisasi: String`                                  | `+ambilDaftarKonsultan(): List<Konsultan>`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| C-11     | `JadwalKonsultasi`           | `-idJadwal: String`<br>`-waktu: DateTime`<br>`-status: String`              | `+ambilKalender(): List<JadwalKonsultasi>`<br>`+ambilKalender(konsultan: Konsultan): List<JadwalKonsultasi>`<br>`+simpanJadwal(): Boolean`<br>`+perbaruiJadwal(): Boolean`<br>`+pesanSesi(): Boolean`                                                                                                                                                                                                                                                                                                                         |
+| C-12     | `FAQ`                        | `-idFAQ: String`<br>`-pertanyaan: String`<br>`-jawaban: String`             | `+ambilDaftarPertanyaan(): List<FAQ>`<br>`+cariFAQ(kataKunci: String): List<FAQ>`<br>`+tambahFAQ(pertanyaan: String, jawaban: String): Boolean`<br>`+ubahFAQ(idFAQ: String, pertanyaan: String, jawaban: String): Boolean`<br>`+hapusFAQ(idFAQ: String): Boolean`                                                                                                                                                                                                                                                             |
+| C-13     | `PengajuanPertanyaan`        | `-idPertanyaan: String`<br>`-isiPertanyaan: String`                         | `+ajukanPertanyaan(isi: String): Boolean`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| C-14     | `UmpanBalik`                 | `-idUmpanBalik: String`<br>`-isi: String`<br>`-tanggapan: String`           | `+ambilListUmpanBalik(): List<UmpanBalik>`<br>`+kirimUmpanBalik(isi: String): Boolean`<br>`+berikanTanggapan(tanggapan: String): Boolean`                                                                                                                                                                                                                                                                                                                                                                                     |
+| C-15     | `StatusServer`               | `-jenis: String`<br>`-statusUptime: Boolean`<br>`-waktuCek: DateTime`       | `+ambilStatusServer(jenis: String): StatusServer`<br>`+cekStatusServer(): Boolean`                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| C-16     | `LoginView`                  | -                                                                           | `+masukLamanLogin(): void`<br>`+isiLoginPage(kodeOtorisasi: String): void`<br>`+tampilkanLoginPage(): void`<br>`+loadPageUtama(): void`<br>`+showError(pesan: String): void`                                                                                                                                                                                                                                                                                                                                                  |
+| C-17     | `AffirmationView`            | `-waktuTerpilih: Time`                                                      | `+bukaPageAffirmasi(): void`<br>`+pilihWaktuPengiriman(waktu: Time): void`<br>`+tampilkanOpsiAffirmasi(): void`<br>`+tampilkanSetelanTersimpan(): void`<br>`+showError(pesan: String): void`                                                                                                                                                                                                                                                                                                                                  |
+| C-18     | `ReminderView`               | `-waktuTerpilih: Time`                                                      | `+bukaPageReminder(): void`<br>`+pilihWaktuPengiriman(waktu: Time): void`<br>`+tampilkanOpsiReminder(): void`<br>`+tampilkanSetelanTersimpan(): void`<br>`+showError(pesan: String): void`                                                                                                                                                                                                                                                                                                                                    |
+| C-19     | `CalendarView`               | -                                                                           | `+bukaPageCalendar(): void`<br>`+tampilkanKalender(kalender: List<Event>): void`<br>`+showErrorMessage(pesan: String): void`                                                                                                                                                                                                                                                                                                                                                                                                  |
+| C-20     | `ConsultationBookingView`    | -                                                                           | `+bukaPageKonsultasi(): void`<br>`+pilihKonsultan(konsultan: Konsultan): void`<br>`+pilihSesi(jadwal: JadwalKonsultasi): void`<br>`+tampilkanOpsiKonsultasi(daftar: List<Konsultan>): void`<br>`+tampilkanKalender(jadwal: List<JadwalKonsultasi>): void`<br>`+tampilkanSetelanTersimpan(): void`<br>`+showError(pesan: String): void`                                                                                                                                                                                        |
+| C-21     | `ConsultationManagementView` | -                                                                           | `+bukaPageKonsultasi(): void`<br>`+pilihKonsultan(konsultan: Konsultan): void`<br>`+perbaruiJadwal(jadwal: JadwalKonsultasi): void`<br>`+tampilkanOpsiKonsultasi(daftar: List<Konsultan>): void`<br>`+tampilkanKalender(jadwal: List<JadwalKonsultasi>): void`<br>`+tampilkanSetelanTersimpan(): void`<br>`+showError(pesan: String): void`                                                                                                                                                                                   |
+| C-22     | `FAQView`                    | -                                                                           | `+bukaFAQ(): void`<br>`+cariFAQ(kataKunci: String): void`<br>`+tambahFAQ(pertanyaan: String, jawaban: String): void`<br>`+ubahFAQ(idFAQ: String, pertanyaan: String, jawaban: String): void`<br>`+hapusFAQ(idFAQ: String): void`<br>`+bukaFormPertanyaan(): void`<br>`+isiFormPertanyaan(isi: String): void`<br>`+tampilkanFAQ(daftar: List<FAQ>): void`<br>`+tampilkanTawaranPengajuan(): void`<br>`+tampilkanFormPenambahanPertanyaan(): void`<br>`+tampilkanSetelanTersimpan(): void`<br>`+showError(pesan: String): void` |
+| C-23     | `FeedbackView`               | -                                                                           | `+bukaUmpanBalik(): void`<br>`+isiFormFeedback(isi: String): void`<br>`+bukaListFeedback(): void`<br>`+tanggapiFeedback(tanggapan: String): void`<br>`+tampilkanFormFeedback(): void`<br>`+tampilkanListFeedback(daftar: List<UmpanBalik>): void`<br>`+tampilkanFeedbackTersimpan(): void`<br>`+showError(pesan: String): void`                                                                                                                                                                                               |
+| C-24     | `ServerStatusView`           | -                                                                           | `+cekStatusServer(jenis: String): void`<br>`+tampilkanStatusServer(status: StatusServer): void`                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| C-25     | `AuthController`             | -                                                                           | `+tampilkanLoginPage(): void`<br>`+kirimData(kodeOtorisasi: String): void`                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| C-26     | `AffirmationController`      | -                                                                           | `+tampilkanOpsiAffirmasi(): void`<br>`+submitWaktuPengiriman(waktu: Time): void`                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| C-27     | `ReminderController`         | -                                                                           | `+tampilkanOpsiReminder(): void`<br>`+submitWaktuPengiriman(waktu: Time): void`                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| C-28     | `CalendarController`         | -                                                                           | `+tampilkanCalendar(): void`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| C-29     | `ConsultationController`     | -                                                                           | `+tampilkanOpsiKonsultasi(): void`<br>`+submitKonsultan(konsultan: Konsultan): void`<br>`+updateStatusKonsultasi(jadwal: JadwalKonsultasi): void`                                                                                                                                                                                                                                                                                                                                                                             |
+| C-30     | `FAQController`              | -                                                                           | `+tampilkanFAQ(): void`<br>`+cariFAQ(kataKunci: String): void`<br>`+tambahFAQ(pertanyaan: String, jawaban: String): void`<br>`+ubahFAQ(idFAQ: String, pertanyaan: String, jawaban: String): void`<br>`+hapusFAQ(idFAQ: String): void`<br>`+muatFormPenambahanPertanyaan(): void`<br>`+kirimPertanyaan(isi: String): void`                                                                                                                                                                                                     |
+| C-31     | `FeedbackController`         | -                                                                           | `+tampilkanFormFeedback(): void`<br>`+kirimFeedback(isi: String): void`<br>`+tampilkanListFeedback(): void`<br>`+kirimTanggapan(tanggapan: String): void`                                                                                                                                                                                                                                                                                                                                                                     |
+| C-32     | `ServerStatusController`     | -                                                                           | `+tampilkanStatusServer(jenis: String): void`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| C-33     | `Validasi`                   | -                                                                           | `+validasiWaktu(waktu: Time): Boolean`<br>`+validasiKonsultan(konsultan: Konsultan): Boolean`<br>`+validasiJadwal(jadwal: JadwalKonsultasi): Boolean`<br>`+validasiInput(isi: List<String>): Boolean`                                                                                                                                                                                                                                                                                                                         |
+| C-34     | `GoogleAuthService`          | `-authCode: String`<br>`-accessToken: String`<br>`-refreshToken: String`    | `+validasi(kodeOtorisasi: String): Boolean`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| C-35     | `CloudflareD1Database`       | -                                                                           | `+simpanWaktuKirim(waktu: Time): Boolean`<br>`+simpanKalender(jadwal: JadwalKonsultasi): Boolean`<br>`+simpanPerubahan(data: String): Boolean`                                                                                                                                                                                                                                                                                                                                                                                |
 
 <br>
 
@@ -2668,40 +2647,40 @@ Matriks ini memetakan setiap kelas perancangan terhadap _use case_ yang direalis
 
 Tabel 5.1. Matriks Kerunutan Kelas terhadap Use Case
 
-| Kelas | Use Case Terkait |
-| :---- | :--------------- |
-| C-01 - `Pengguna` | UC-11 - Masuk Melalui Akun Google |
-| C-02 - `Mahasiswa` | UC-01 - Menyetel Daily Affirmations, UC-02 - Menyetel Pengingat Kesehatan, UC-03 - Melihat Kalender Terintegrasi, UC-04 - Memesan Sesi Konsultasi, UC-06 - Melihat FAQ, UC-08 - Memberikan Umpan Balik, UC-09 - Menanggapi Umpan Balik, UC-11 - Masuk Melalui Akun Google, UC-12 - Form Pengajuan Pertanyaan |
-| C-03 - `Administrator` | UC-05 - Mengelola Jadwal Konsultan, UC-07 - Mengelola FAQ, UC-09 - Menanggapi Umpan Balik, UC-10 - Memantau Status Server, UC-11 - Masuk Melalui Akun Google |
-| C-04 - `SesiAutentikasi` | UC-11 - Masuk Melalui Akun Google |
-| C-05 - `DailyAffirmation` | UC-01 - Menyetel Daily Affirmations |
-| C-06 - `Reminder` | UC-02 - Menyetel Pengingat Kesehatan |
-| C-07 - `Notifikasi` | UC-01 - Menyetel Daily Affirmations, UC-02 - Menyetel Pengingat Kesehatan |
-| C-08 - `GoogleCalendarService` | UC-03 - Melihat Kalender Terintegrasi, UC-04 - Memesan Sesi Konsultasi |
-| C-09 - `KalenderGabungan` | UC-03 - Melihat Kalender Terintegrasi, UC-04 - Memesan Sesi Konsultasi, UC-05 - Mengelola Jadwal Konsultan |
-| C-10 - `Konsultan` | UC-04 - Memesan Sesi Konsultasi, UC-05 - Mengelola Jadwal Konsultan |
-| C-11 - `JadwalKonsultasi` | UC-03 - Melihat Kalender Terintegrasi, UC-04 - Memesan Sesi Konsultasi, UC-05 - Mengelola Jadwal Konsultan |
-| C-12 - `FAQ` | UC-06 - Melihat FAQ, UC-07 - Mengelola FAQ |
-| C-13 - `PengajuanPertanyaan` | UC-12 - Form Pengajuan Pertanyaan |
-| C-14 - `UmpanBalik` | UC-08 - Memberikan Umpan Balik, UC-09 - Menanggapi Umpan Balik |
-| C-15 - `StatusServer` | UC-10 - Memantau Status Server |
-| C-16 - `LoginView` | UC-11 - Masuk Melalui Akun Google |
-| C-17 - `AffirmationView` | UC-01 - Menyetel Daily Affirmations |
-| C-18 - `ReminderView` | UC-02 - Menyetel Pengingat Kesehatan |
-| C-19 - `CalendarView` | UC-03 - Melihat Kalender Terintegrasi |
-| C-20 - `ConsultationBookingView` | UC-04 - Memesan Sesi Konsultasi |
-| C-21 - `ConsultationManagementView` | UC-05 - Mengelola Jadwal Konsultan |
-| C-22 - `FAQView` | UC-06 - Melihat FAQ, UC-07 - Mengelola FAQ, UC-12 - Form Pengajuan Pertanyaan |
-| C-23 - `FeedbackView` | UC-08 - Memberikan Umpan Balik, UC-09 - Menanggapi Umpan Balik |
-| C-24 - `ServerStatusView` | UC-10 - Memantau Status Server |
-| C-25 - `AuthController` | UC-11 - Masuk Melalui Akun Google |
-| C-26 - `AffirmationController` | UC-01 - Menyetel Daily Affirmations |
-| C-27 - `ReminderController` | UC-02 - Menyetel Pengingat Kesehatan |
-| C-28 - `CalendarController` | UC-03 - Melihat Kalender Terintegrasi |
-| C-29 - `ConsultationController` | UC-04 - Memesan Sesi Konsultasi, UC-05 - Mengelola Jadwal Konsultan |
-| C-30 - `FAQController` | UC-06 - Melihat FAQ, UC-07 - Mengelola FAQ, UC-12 - Form Pengajuan Pertanyaan |
-| C-31 - `FeedbackController` | UC-08 - Memberikan Umpan Balik, UC-09 - Menanggapi Umpan Balik |
-| C-32 - `ServerStatusController` | UC-10 - Memantau Status Server |
-| C-33 - `Validasi` | UC-01 - Menyetel Daily Affirmations, UC-02 - Menyetel Pengingat Kesehatan, UC-04 - Memesan Sesi Konsultasi, UC-05 - Mengelola Jadwal Konsultan, UC-07 - Mengelola FAQ, UC-08 - Memberikan Umpan Balik, UC-09 - Menanggapi Umpan Balik, UC-12 - Form Pengajuan Pertanyaan |
-| C-34 - `GoogleAuthService` | UC-11 - Masuk Melalui Akun Google |
-| C-35 - `CloudflareD1Database` | UC-01 - Menyetel Daily Affirmations, UC-02 - Menyetel Pengingat Kesehatan, UC-04 - Memesan Sesi Konsultasi, UC-05 - Mengelola Jadwal Konsultan, UC-07 - Mengelola FAQ, UC-08 - Memberikan Umpan Balik, UC-09 - Menanggapi Umpan Balik, UC-12 - Form Pengajuan Pertanyaan |
+| Kelas                               | Use Case Terkait                                                                                                                                                                                                                                                                                             |
+| :---------------------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| C-01 - `Pengguna`                   | UC-11 - Masuk Melalui Akun Google                                                                                                                                                                                                                                                                            |
+| C-02 - `Mahasiswa`                  | UC-01 - Menyetel Daily Affirmations, UC-02 - Menyetel Pengingat Kesehatan, UC-03 - Melihat Kalender Terintegrasi, UC-04 - Memesan Sesi Konsultasi, UC-06 - Melihat FAQ, UC-08 - Memberikan Umpan Balik, UC-09 - Menanggapi Umpan Balik, UC-11 - Masuk Melalui Akun Google, UC-12 - Form Pengajuan Pertanyaan |
+| C-03 - `Administrator`              | UC-05 - Mengelola Jadwal Konsultan, UC-07 - Mengelola FAQ, UC-09 - Menanggapi Umpan Balik, UC-10 - Memantau Status Server, UC-11 - Masuk Melalui Akun Google                                                                                                                                                 |
+| C-04 - `SesiAutentikasi`            | UC-11 - Masuk Melalui Akun Google                                                                                                                                                                                                                                                                            |
+| C-05 - `DailyAffirmation`           | UC-01 - Menyetel Daily Affirmations                                                                                                                                                                                                                                                                          |
+| C-06 - `Reminder`                   | UC-02 - Menyetel Pengingat Kesehatan                                                                                                                                                                                                                                                                         |
+| C-07 - `Notifikasi`                 | UC-01 - Menyetel Daily Affirmations, UC-02 - Menyetel Pengingat Kesehatan                                                                                                                                                                                                                                    |
+| C-08 - `GoogleCalendarService`      | UC-03 - Melihat Kalender Terintegrasi, UC-04 - Memesan Sesi Konsultasi                                                                                                                                                                                                                                       |
+| C-09 - `KalenderGabungan`           | UC-03 - Melihat Kalender Terintegrasi, UC-04 - Memesan Sesi Konsultasi, UC-05 - Mengelola Jadwal Konsultan                                                                                                                                                                                                   |
+| C-10 - `Konsultan`                  | UC-04 - Memesan Sesi Konsultasi, UC-05 - Mengelola Jadwal Konsultan                                                                                                                                                                                                                                          |
+| C-11 - `JadwalKonsultasi`           | UC-03 - Melihat Kalender Terintegrasi, UC-04 - Memesan Sesi Konsultasi, UC-05 - Mengelola Jadwal Konsultan                                                                                                                                                                                                   |
+| C-12 - `FAQ`                        | UC-06 - Melihat FAQ, UC-07 - Mengelola FAQ                                                                                                                                                                                                                                                                   |
+| C-13 - `PengajuanPertanyaan`        | UC-12 - Form Pengajuan Pertanyaan                                                                                                                                                                                                                                                                            |
+| C-14 - `UmpanBalik`                 | UC-08 - Memberikan Umpan Balik, UC-09 - Menanggapi Umpan Balik                                                                                                                                                                                                                                               |
+| C-15 - `StatusServer`               | UC-10 - Memantau Status Server                                                                                                                                                                                                                                                                               |
+| C-16 - `LoginView`                  | UC-11 - Masuk Melalui Akun Google                                                                                                                                                                                                                                                                            |
+| C-17 - `AffirmationView`            | UC-01 - Menyetel Daily Affirmations                                                                                                                                                                                                                                                                          |
+| C-18 - `ReminderView`               | UC-02 - Menyetel Pengingat Kesehatan                                                                                                                                                                                                                                                                         |
+| C-19 - `CalendarView`               | UC-03 - Melihat Kalender Terintegrasi                                                                                                                                                                                                                                                                        |
+| C-20 - `ConsultationBookingView`    | UC-04 - Memesan Sesi Konsultasi                                                                                                                                                                                                                                                                              |
+| C-21 - `ConsultationManagementView` | UC-05 - Mengelola Jadwal Konsultan                                                                                                                                                                                                                                                                           |
+| C-22 - `FAQView`                    | UC-06 - Melihat FAQ, UC-07 - Mengelola FAQ, UC-12 - Form Pengajuan Pertanyaan                                                                                                                                                                                                                                |
+| C-23 - `FeedbackView`               | UC-08 - Memberikan Umpan Balik, UC-09 - Menanggapi Umpan Balik                                                                                                                                                                                                                                               |
+| C-24 - `ServerStatusView`           | UC-10 - Memantau Status Server                                                                                                                                                                                                                                                                               |
+| C-25 - `AuthController`             | UC-11 - Masuk Melalui Akun Google                                                                                                                                                                                                                                                                            |
+| C-26 - `AffirmationController`      | UC-01 - Menyetel Daily Affirmations                                                                                                                                                                                                                                                                          |
+| C-27 - `ReminderController`         | UC-02 - Menyetel Pengingat Kesehatan                                                                                                                                                                                                                                                                         |
+| C-28 - `CalendarController`         | UC-03 - Melihat Kalender Terintegrasi                                                                                                                                                                                                                                                                        |
+| C-29 - `ConsultationController`     | UC-04 - Memesan Sesi Konsultasi, UC-05 - Mengelola Jadwal Konsultan                                                                                                                                                                                                                                          |
+| C-30 - `FAQController`              | UC-06 - Melihat FAQ, UC-07 - Mengelola FAQ, UC-12 - Form Pengajuan Pertanyaan                                                                                                                                                                                                                                |
+| C-31 - `FeedbackController`         | UC-08 - Memberikan Umpan Balik, UC-09 - Menanggapi Umpan Balik                                                                                                                                                                                                                                               |
+| C-32 - `ServerStatusController`     | UC-10 - Memantau Status Server                                                                                                                                                                                                                                                                               |
+| C-33 - `Validasi`                   | UC-01 - Menyetel Daily Affirmations, UC-02 - Menyetel Pengingat Kesehatan, UC-04 - Memesan Sesi Konsultasi, UC-05 - Mengelola Jadwal Konsultan, UC-07 - Mengelola FAQ, UC-08 - Memberikan Umpan Balik, UC-09 - Menanggapi Umpan Balik, UC-12 - Form Pengajuan Pertanyaan                                     |
+| C-34 - `GoogleAuthService`          | UC-11 - Masuk Melalui Akun Google                                                                                                                                                                                                                                                                            |
+| C-35 - `CloudflareD1Database`       | UC-01 - Menyetel Daily Affirmations, UC-02 - Menyetel Pengingat Kesehatan, UC-04 - Memesan Sesi Konsultasi, UC-05 - Mengelola Jadwal Konsultan, UC-07 - Mengelola FAQ, UC-08 - Memberikan Umpan Balik, UC-09 - Menanggapi Umpan Balik, UC-12 - Form Pengajuan Pertanyaan                                     |
