@@ -1,7 +1,7 @@
 <h1>
 IF2150 REKAYASA PERANGKAT LUNAK
 <br>
-TUGAS 5
+TUGAS 8
 <br>
 DESKRIPSI PERANCANGAN PERANGKAT LUNAK (DPPL)
 </h1>
@@ -36,16 +36,6 @@ Dipersiapkan oleh:
 | Revisi | Deskripsi |
 | ------ | --------- |
 | ...    | ...       |
-
----
-
-<br>
-
-> **Petunjuk pengerjaan:** _[Silahkan hapus bagian ini setelah selesai mengerjakan]_
->
-> Dokumen ini melanjutkan **Deskripsi Perancangan Perangkat Lunak**. Gunakan nama, ID, kebutuhan, dan use case yang konsisten dengan kedua dokumen tersebut. Contoh pola ID baru di bawah dapat disesuaikan dengan kesepakatan kelompok, ID yang sudah ada tetap dipertahankan.
-
-<br>
 
 ---
 
@@ -136,7 +126,7 @@ Dokumen ini merujuk pada sumber-sumber berikut.
 
 ## 1.6 Deskripsi Umum Dokumen (Ikhtisar)
 
-Dokumen ini disusun dalam lima bab. BAB 1 memuat pendahuluan yang mencakup tujuan, lingkup masalah, definisi istilah, aturan penomoran, referensi, dan ikhtisar dokumen. BAB 2 menjelaskan perancangan arsitektur, mulai dari lingkungan implementasi, _style/pattern_ yang menjadi acuan, identifikasi komponen, hingga _logical view_ sistem. BAB 3 menjabarkan realisasi setiap _use case_ melalui identifikasi kelas perancangan, _sequence diagram_ untuk setiap skenario, dan diagram kelas per _use case_. BAB 4 menyajikan diagram kelas perancangan keseluruhan beserta daftar atribut dan operasi seluruh kelas. BAB 5 menutup dokumen dengan matriks kerunutan yang memetakan setiap kelas perancangan terhadap _use case_ yang direalisasikannya.
+Dokumen ini disusun dalam tujuh bab. BAB 1 memuat pendahuluan yang mencakup tujuan, lingkup masalah, definisi istilah, aturan penomoran, referensi, dan ikhtisar dokumen. BAB 2 menjelaskan perancangan arsitektur, mulai dari lingkungan implementasi, _style/pattern_ yang menjadi acuan, identifikasi komponen, hingga _logical view_ sistem. BAB 3 menjabarkan realisasi setiap _use case_ melalui identifikasi kelas perancangan, _sequence diagram_ untuk setiap skenario, dan diagram kelas per _use case_. BAB 4 menyajikan diagram kelas perancangan keseluruhan beserta daftar atribut dan operasi seluruh kelas. BAB 5 merinci setiap kelas perancangan, yaitu operasi dan atributnya beserta _visibility_ dan tipe. BAB 6 memuat perancangan antarmuka berupa rancangan layar beserta spesifikasi objeknya. BAB 7 menutup dokumen dengan matriks kerunutan yang memetakan setiap kelas perancangan terhadap _use case_ yang direalisasikannya.
 
 <br>
 
@@ -2617,7 +2607,7 @@ Tabel 4.1. Daftar Kelas Perancangan Keseluruhan
 | C-01     | `Pengguna`                   | `-id: String`<br>`-nama: String`<br>`-email: String`<br>`-googleId: String` | -                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | C-02     | `Mahasiswa`                  | `-nim: String`                                                              | -                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | C-03     | `Administrator`              | -                                                                           | -                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
-| C-04     | `SesiAutentikasi`            | `-token: String`<br>`-waktuLogin: DateTime`<br>`-status: String`            | `+autentikasiPengguna(kodeOtorisasi: String): Boolean`<br>`+verifikasiToken(token: String): Boolean`<br>`+logout(): vo`                                                                                                                                                                                                                                                                                                                                                                                                       |
+| C-04     | `SesiAutentikasi`            | `-token: String`<br>`-waktuLogin: DateTime`<br>`-status: String`            | `+autentikasiPengguna(kodeOtorisasi: String): Boolean`<br>`+verifikasiToken(token: String): Boolean`<br>`+logout(): void`                                                                                                                                                                                                                                                                                                                                                                                                       |
 | C-05     | `DailyAffirmation`           | `-konten: String`<br>`-waktuKirim: Time`                                    | `+aturWaktuKirim(waktu: Time): Boolean`<br>`+kirimAfirmasi(): void`                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | C-06     | `Reminder`                   | `-jenis: String`<br>`-waktu: Time`                                          | `+aturWaktuKirim(waktu: Time): Boolean`<br>`+kirimPengingat(): void`                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
 | C-07     | `Notifikasi`                 | `-idNotifikasi: String`<br>`-isi: String`<br>`-waktuKirim: DateTime`        | `+kirimNotifikasi(): void`<br>`+tampilkanNotifikasi(): void`                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
@@ -2656,65 +2646,746 @@ Tabel 4.1. Daftar Kelas Perancangan Keseluruhan
 
 # BAB 5: Perancangan Rinci Kelas
 
-Bagian ini diisi dengan daftar seluruh kelas dalam tabel berikut:
+Bab ini merinci seluruh 35 kelas perancangan dari BAB 4. Tabel 5.1 memetakan setiap kelas perancangan ke kelas analisis pada SKPL. Setiap kelas kemudian dijabarkan pada subbab tersendiri berisi operasi dan atributnya, lengkap dengan _visibility_ dan tipe.
 
 Tabel 5.1. Daftar Kelas Perancangan dan Kelas Analisis Terkait
 
-| No  | Nama Kelas Perancangan     | Nama Kelas Analisis Terkait              |
-| --- | -------------------------- | ---------------------------------------- |
-| 1   | _[Nama kelas perancangan]_ | _[Nama kelas analisis pada SKPL atau -]_ |
-| 2   | _[Nama kelas perancangan]_ | _[Nama kelas analisis pada SKPL atau -]_ |
-| ... | _..._                      | _..._                                    |
+| No  | Nama Kelas Perancangan | Nama Kelas Analisis Terkait |
+| --- | ---------------------- | --------------------------- |
+| 1 | `Pengguna` | `Pengguna` (C-01) |
+| 2 | `Mahasiswa` | `Mahasiswa` (C-02) |
+| 3 | `Administrator` | `Administrator` (C-03) |
+| 4 | `SesiAutentikasi` | `SesiAutentikasi` (C-04) |
+| 5 | `DailyAffirmation` | `DailyAffirmation` (C-05) |
+| 6 | `Reminder` | `Reminder` (C-06) |
+| 7 | `Notifikasi` | `Notifikasi` (C-07) |
+| 8 | `GoogleCalendarService` | `GoogleCalendarService` (C-08) |
+| 9 | `KalenderGabungan` | `KalenderGabungan` (C-09) |
+| 10 | `Konsultan` | `Konsultan` (C-10) |
+| 11 | `JadwalKonsultasi` | `JadwalKonsultasi` (C-11) |
+| 12 | `FAQ` | `FAQ` (C-12) |
+| 13 | `PengajuanPertanyaan` | `PengajuanPertanyaan` (C-13) |
+| 14 | `UmpanBalik` | `UmpanBalik` (C-14) |
+| 15 | `StatusServer` | `StatusServer` (C-15) |
+| 16 | `LoginView` | - |
+| 17 | `AffirmationView` | - |
+| 18 | `ReminderView` | - |
+| 19 | `CalendarView` | - |
+| 20 | `ConsultationBookingView` | - |
+| 21 | `ConsultationManagementView` | - |
+| 22 | `FAQView` | - |
+| 23 | `FeedbackView` | - |
+| 24 | `ServerStatusView` | - |
+| 25 | `AuthController` | - |
+| 26 | `AffirmationController` | - |
+| 27 | `ReminderController` | - |
+| 28 | `CalendarController` | - |
+| 29 | `ConsultationController` | - |
+| 30 | `FAQController` | - |
+| 31 | `FeedbackController` | - |
+| 32 | `ServerStatusController` | - |
+| 33 | `Validasi` | - |
+| 34 | `GoogleAuthService` | - |
+| 35 | `CloudflareD1Database` | - |
 
-Untuk **setiap kelas**, identifikasi operasi berdasarkan tanggung jawab kelas beserta _visibility_-nya, serta atribut beserta _visibility_ dan tipenya. Buat subbab tersendiri untuk setiap kelas.
+## 5.1 Kelas Pengguna
 
-## 5.1 Kelas [Nama Kelas 1]
+**Nama Kelas:** `Pengguna`  
+**ID Kelas:** C-01
 
-**Nama Kelas:** _[Nama kelas]_  
-**ID Kelas:** _[ID kelas]_
+Tabel 5.1.1. Operasi Kelas Pengguna
 
-Tabel 5.1.1. Operasi Kelas [Nama Kelas 1]
+| Nama Operasi | Visibility (private, public) | Keterangan |
+| ------------ | ---------------------------- | ---------- |
+| - | - | - |
 
-| Nama Operasi                                                 | Visibility (private, public) | Keterangan                 |
-| ------------------------------------------------------------ | ---------------------------- | -------------------------- |
-| _[Signature operasi, termasuk parameter dan tipe kembalian]_ | _[Visibility]_               | _[Tanggung jawab operasi]_ |
-| _..._                                                        | _..._                        | _..._                      |
+Tabel 5.1.2. Atribut Kelas Pengguna
 
-Tabel 5.1.2. Atribut Kelas [Nama Kelas 1]
+| Nama Atribut | Visibility (private, public) | Tipe |
+| ------------ | ---------------------------- | ---- |
+| `id` | private | `String` |
+| `nama` | private | `String` |
+| `email` | private | `String` |
+| `googleId` | private | `String` |
 
-| Nama Atribut     | Visibility (private, public) | Tipe                                              |
-| ---------------- | ---------------------------- | ------------------------------------------------- |
-| _[Nama atribut]_ | _[Visibility]_               | _[Tipe sesuai bahasa pemrograman yang digunakan]_ |
-| _..._            | _..._                        | _..._                                             |
+## 5.2 Kelas Mahasiswa
 
-### 5.1.1 Algoritma/Query
+**Nama Kelas:** `Mahasiswa`  
+**ID Kelas:** C-02
 
-Bagian ini diisi untuk kerangka algoritma proses yang dianggap cukup penting. Algoritma dapat dituliskan sebagai _pseudocode_. Implementasi _skeleton code_ juga dapat digunakan untuk kelas yang sudah terdefinisi pada bahasa pemrograman tertentu.
+Tabel 5.2.1. Operasi Kelas Mahasiswa
 
-**Nama Kelas:** _[Nama kelas]_  
-**Nama Operasi:** _[Signature operasi]_  
-**ID Algoritma:** _[Algo-001]_
+| Nama Operasi | Visibility (private, public) | Keterangan |
+| ------------ | ---------------------------- | ---------- |
+| - | - | - |
 
-```text
-[Tuliskan pseudocode algoritma operasi di sini.]
-```
+Tabel 5.2.2. Atribut Kelas Mahasiswa
 
-Jika operasi mengacu pada query tertentu, lengkapi tabel berikut.
+| Nama Atribut | Visibility (private, public) | Tipe |
+| ------------ | ---------------------------- | ---- |
+| `nim` | private | `String` |
 
-Tabel 5.1.1. Query Operasi [Nama Operasi]
+## 5.3 Kelas Administrator
 
-| No Query  | Query              | Keterangan       |
-| --------- | ------------------ | ---------------- |
-| _[Q-001]_ | _[Tuliskan query]_ | _[Fungsi query]_ |
-| _..._     | _..._              | _..._            |
+**Nama Kelas:** `Administrator`  
+**ID Kelas:** C-03
 
-### 5.1.2 Algoritma/Query
+Tabel 5.3.1. Operasi Kelas Administrator
 
-_[Ulangi pola 5.1.1 untuk operasi penting berikutnya pada kelas yang sama, jika ada.]_
+| Nama Operasi | Visibility (private, public) | Keterangan |
+| ------------ | ---------------------------- | ---------- |
+| - | - | - |
 
-## 5.2 Kelas [Nama Kelas Berikutnya]
+Tabel 5.3.2. Atribut Kelas Administrator
 
-_[Ulangi pola 5.1: nama dan ID kelas, tabel operasi, tabel atribut, serta subbab algoritma/query untuk operasi penting jika diperlukan.]_
+| Nama Atribut | Visibility (private, public) | Tipe |
+| ------------ | ---------------------------- | ---- |
+| - | - | - |
+
+## 5.4 Kelas SesiAutentikasi
+
+**Nama Kelas:** `SesiAutentikasi`  
+**ID Kelas:** C-04
+
+Tabel 5.4.1. Operasi Kelas SesiAutentikasi
+
+| Nama Operasi | Visibility (private, public) | Keterangan |
+| ------------ | ---------------------------- | ---------- |
+| `autentikasiPengguna(kodeOtorisasi: String): Boolean` | public | Membuat sesi login setelah kode otorisasi Google dinyatakan valid. Mengembalikan true bila sesi berhasil dibuat. |
+| `verifikasiToken(token: String): Boolean` | public | Memeriksa bahwa token sesi aplikasi masih valid untuk permintaan berikutnya. |
+| `logout(): void` | public | Mengakhiri sesi dan menghapus token sesi. |
+
+Tabel 5.4.2. Atribut Kelas SesiAutentikasi
+
+| Nama Atribut | Visibility (private, public) | Tipe |
+| ------------ | ---------------------------- | ---- |
+| `token` | private | `String` |
+| `waktuLogin` | private | `DateTime` |
+| `status` | private | `String` |
+
+## 5.5 Kelas DailyAffirmation
+
+**Nama Kelas:** `DailyAffirmation`  
+**ID Kelas:** C-05
+
+Tabel 5.5.1. Operasi Kelas DailyAffirmation
+
+| Nama Operasi | Visibility (private, public) | Keterangan |
+| ------------ | ---------------------------- | ---------- |
+| `aturWaktuKirim(waktu: Time): Boolean` | public | Menetapkan waktu pengiriman daily affirmation dan meminta penyimpanannya ke database. Mengembalikan true bila berhasil. |
+| `kirimAfirmasi(): void` | public | Mengirim konten afirmasi pada waktu yang ditetapkan dengan memicu Notifikasi. |
+
+Tabel 5.5.2. Atribut Kelas DailyAffirmation
+
+| Nama Atribut | Visibility (private, public) | Tipe |
+| ------------ | ---------------------------- | ---- |
+| `konten` | private | `String` |
+| `waktuKirim` | private | `Time` |
+
+## 5.6 Kelas Reminder
+
+**Nama Kelas:** `Reminder`  
+**ID Kelas:** C-06
+
+Tabel 5.6.1. Operasi Kelas Reminder
+
+| Nama Operasi | Visibility (private, public) | Keterangan |
+| ------------ | ---------------------------- | ---------- |
+| `aturWaktuKirim(waktu: Time): Boolean` | public | Menetapkan waktu pengingat dan meminta penyimpanannya ke database. Mengembalikan true bila berhasil. |
+| `kirimPengingat(): void` | public | Mengirim pengingat sesuai jenis (makan, tidur, olahraga) pada waktu yang ditetapkan. |
+
+Tabel 5.6.2. Atribut Kelas Reminder
+
+| Nama Atribut | Visibility (private, public) | Tipe |
+| ------------ | ---------------------------- | ---- |
+| `jenis` | private | `String` |
+| `waktu` | private | `Time` |
+
+## 5.7 Kelas Notifikasi
+
+**Nama Kelas:** `Notifikasi`  
+**ID Kelas:** C-07
+
+Tabel 5.7.1. Operasi Kelas Notifikasi
+
+| Nama Operasi | Visibility (private, public) | Keterangan |
+| ------------ | ---------------------------- | ---------- |
+| `kirimNotifikasi(): void` | public | Mengirim satu notifikasi ke pengguna, dipicu oleh DailyAffirmation atau Reminder. |
+| `tampilkanNotifikasi(): void` | public | Menampilkan notifikasi pada aplikasi di mana pun pengguna berada. |
+
+Tabel 5.7.2. Atribut Kelas Notifikasi
+
+| Nama Atribut | Visibility (private, public) | Tipe |
+| ------------ | ---------------------------- | ---- |
+| `idNotifikasi` | private | `String` |
+| `isi` | private | `String` |
+| `waktuKirim` | private | `DateTime` |
+
+## 5.8 Kelas GoogleCalendarService
+
+**Nama Kelas:** `GoogleCalendarService`  
+**ID Kelas:** C-08
+
+Tabel 5.8.1. Operasi Kelas GoogleCalendarService
+
+| Nama Operasi | Visibility (private, public) | Keterangan |
+| ------------ | ---------------------------- | ---------- |
+| `ambilKalender(): List<Event>` | public | Mengambil event pengguna dari Google Calendar API memakai access token. |
+| `cekBentrokJadwal(jadwal: JadwalKonsultasi): Boolean` | public | Memeriksa informasi free/busy pengguna. Mengembalikan true bila jadwal yang dipilih bentrok dengan event di kalender. |
+
+Tabel 5.8.2. Atribut Kelas GoogleCalendarService
+
+| Nama Atribut | Visibility (private, public) | Tipe |
+| ------------ | ---------------------------- | ---- |
+| `accessToken` | private | `String` |
+
+## 5.9 Kelas KalenderGabungan
+
+**Nama Kelas:** `KalenderGabungan`  
+**ID Kelas:** C-09
+
+Tabel 5.9.1. Operasi Kelas KalenderGabungan
+
+| Nama Operasi | Visibility (private, public) | Keterangan |
+| ------------ | ---------------------------- | ---------- |
+| `gabungkanJadwal(google: List<Event>, jadwal: List<JadwalKonsultasi>): List<Event>` | public | Menggabungkan event Google Calendar dan jadwal konsultasi menjadi satu daftar event untuk satu tampilan kalender. |
+| `jadwalBentrok(jadwal: JadwalKonsultasi): Boolean` | public | Memeriksa bentrok jadwal yang dipilih lewat GoogleCalendarService. Mengembalikan true bila bentrok. |
+| `ubahKalender(jadwal: JadwalKonsultasi): Boolean` | public | Memperbarui kalender dengan jadwal konsultasi dan menyimpannya ke database. Mengembalikan true bila berhasil. |
+
+Tabel 5.9.2. Atribut Kelas KalenderGabungan
+
+| Nama Atribut | Visibility (private, public) | Tipe |
+| ------------ | ---------------------------- | ---- |
+| `daftarEvent` | private | `List<Event>` |
+
+## 5.10 Kelas Konsultan
+
+**Nama Kelas:** `Konsultan`  
+**ID Kelas:** C-10
+
+Tabel 5.10.1. Operasi Kelas Konsultan
+
+| Nama Operasi | Visibility (private, public) | Keterangan |
+| ------------ | ---------------------------- | ---------- |
+| `ambilDaftarKonsultan(): List<Konsultan>` | public | Mengambil daftar konsultan yang terdaftar. |
+
+Tabel 5.10.2. Atribut Kelas Konsultan
+
+| Nama Atribut | Visibility (private, public) | Tipe |
+| ------------ | ---------------------------- | ---- |
+| `nama` | private | `String` |
+| `spesialisasi` | private | `String` |
+
+## 5.11 Kelas JadwalKonsultasi
+
+**Nama Kelas:** `JadwalKonsultasi`  
+**ID Kelas:** C-11
+
+Tabel 5.11.1. Operasi Kelas JadwalKonsultasi
+
+| Nama Operasi | Visibility (private, public) | Keterangan |
+| ------------ | ---------------------------- | ---------- |
+| `ambilKalender(): List<JadwalKonsultasi>` | public | Mengambil seluruh jadwal konsultasi dari database. |
+| `ambilKalender(konsultan: Konsultan): List<JadwalKonsultasi>` | public | Mengambil jadwal konsultasi milik satu konsultan dari database. |
+| `simpanJadwal(): Boolean` | public | Menyimpan slot jadwal konsultasi baru. Mengembalikan true bila berhasil. |
+| `perbaruiJadwal(): Boolean` | public | Memperbarui data slot jadwal konsultasi. Mengembalikan true bila berhasil. |
+| `pesanSesi(): Boolean` | public | Menandai slot jadwal sebagai terpesan. Mengembalikan true bila berhasil. |
+
+Tabel 5.11.2. Atribut Kelas JadwalKonsultasi
+
+| Nama Atribut | Visibility (private, public) | Tipe |
+| ------------ | ---------------------------- | ---- |
+| `idJadwal` | private | `String` |
+| `waktu` | private | `DateTime` |
+| `status` | private | `String` |
+
+## 5.12 Kelas FAQ
+
+**Nama Kelas:** `FAQ`  
+**ID Kelas:** C-12
+
+Tabel 5.12.1. Operasi Kelas FAQ
+
+| Nama Operasi | Visibility (private, public) | Keterangan |
+| ------------ | ---------------------------- | ---------- |
+| `ambilDaftarPertanyaan(): List<FAQ>` | public | Mengambil seluruh pasangan pertanyaan dan jawaban FAQ. |
+| `cariFAQ(kataKunci: String): List<FAQ>` | public | Mencari FAQ berdasarkan kata kunci. Mengembalikan daftar kosong bila tidak ada yang cocok. |
+| `tambahFAQ(pertanyaan: String, jawaban: String): Boolean` | public | Menambahkan pasangan pertanyaan dan jawaban baru ke database. Mengembalikan true bila berhasil. |
+| `ubahFAQ(idFAQ: String, pertanyaan: String, jawaban: String): Boolean` | public | Mengubah pertanyaan dan/atau jawaban suatu FAQ di database. Mengembalikan true bila berhasil. |
+| `hapusFAQ(idFAQ: String): Boolean` | public | Menghapus suatu FAQ beserta jawabannya dari database. Mengembalikan true bila berhasil. |
+
+Tabel 5.12.2. Atribut Kelas FAQ
+
+| Nama Atribut | Visibility (private, public) | Tipe |
+| ------------ | ---------------------------- | ---- |
+| `idFAQ` | private | `String` |
+| `pertanyaan` | private | `String` |
+| `jawaban` | private | `String` |
+
+## 5.13 Kelas PengajuanPertanyaan
+
+**Nama Kelas:** `PengajuanPertanyaan`  
+**ID Kelas:** C-13
+
+Tabel 5.13.1. Operasi Kelas PengajuanPertanyaan
+
+| Nama Operasi | Visibility (private, public) | Keterangan |
+| ------------ | ---------------------------- | ---------- |
+| `ajukanPertanyaan(isi: String): Boolean` | public | Menyimpan pertanyaan pengguna di luar FAQ ke database. Mengembalikan true bila berhasil. |
+
+Tabel 5.13.2. Atribut Kelas PengajuanPertanyaan
+
+| Nama Atribut | Visibility (private, public) | Tipe |
+| ------------ | ---------------------------- | ---- |
+| `idPertanyaan` | private | `String` |
+| `isiPertanyaan` | private | `String` |
+
+## 5.14 Kelas UmpanBalik
+
+**Nama Kelas:** `UmpanBalik`  
+**ID Kelas:** C-14
+
+Tabel 5.14.1. Operasi Kelas UmpanBalik
+
+| Nama Operasi | Visibility (private, public) | Keterangan |
+| ------------ | ---------------------------- | ---------- |
+| `ambilListUmpanBalik(): List<UmpanBalik>` | public | Mengambil daftar umpan balik beserta tanggapannya. |
+| `kirimUmpanBalik(isi: String): Boolean` | public | Menyimpan umpan balik dari Mahasiswa ke database. Mengembalikan true bila berhasil. |
+| `berikanTanggapan(tanggapan: String): Boolean` | public | Menyimpan tanggapan Administrator pada suatu umpan balik. Mengembalikan true bila berhasil. |
+
+Tabel 5.14.2. Atribut Kelas UmpanBalik
+
+| Nama Atribut | Visibility (private, public) | Tipe |
+| ------------ | ---------------------------- | ---- |
+| `idUmpanBalik` | private | `String` |
+| `isi` | private | `String` |
+| `tanggapan` | private | `String` |
+
+## 5.15 Kelas StatusServer
+
+**Nama Kelas:** `StatusServer`  
+**ID Kelas:** C-15
+
+Tabel 5.15.1. Operasi Kelas StatusServer
+
+| Nama Operasi | Visibility (private, public) | Keterangan |
+| ------------ | ---------------------------- | ---------- |
+| `ambilStatusServer(jenis: String): StatusServer` | public | Mengambil status uptime untuk jenis yang diminta ("website" atau "server"). |
+| `cekStatusServer(): Boolean` | public | Memeriksa apakah layanan up atau down, lalu memperbarui statusUptime dan waktuCek. |
+
+Tabel 5.15.2. Atribut Kelas StatusServer
+
+| Nama Atribut | Visibility (private, public) | Tipe |
+| ------------ | ---------------------------- | ---- |
+| `jenis` | private | `String` |
+| `statusUptime` | private | `Boolean` |
+| `waktuCek` | private | `DateTime` |
+
+## 5.16 Kelas LoginView
+
+**Nama Kelas:** `LoginView`  
+**ID Kelas:** C-16
+
+Tabel 5.16.1. Operasi Kelas LoginView
+
+| Nama Operasi | Visibility (private, public) | Keterangan |
+| ------------ | ---------------------------- | ---------- |
+| `masukLamanLogin(): void` | public | Aksi pengguna membuka laman masuk. |
+| `isiLoginPage(kodeOtorisasi: String): void` | public | Menerima hasil autentikasi Google dari pengguna dan meneruskannya ke AuthController. |
+| `tampilkanLoginPage(): void` | public | Menampilkan laman masuk dengan tombol masuk akun Google. |
+| `loadPageUtama(): void` | public | Menampilkan halaman utama setelah login berhasil. |
+| `showError(pesan: String): void` | public | Menampilkan pesan kesalahan ketika login gagal. |
+
+Tabel 5.16.2. Atribut Kelas LoginView
+
+| Nama Atribut | Visibility (private, public) | Tipe |
+| ------------ | ---------------------------- | ---- |
+| - | - | - |
+
+## 5.17 Kelas AffirmationView
+
+**Nama Kelas:** `AffirmationView`  
+**ID Kelas:** C-17
+
+Tabel 5.17.1. Operasi Kelas AffirmationView
+
+| Nama Operasi | Visibility (private, public) | Keterangan |
+| ------------ | ---------------------------- | ---------- |
+| `bukaPageAffirmasi(): void` | public | Aksi pengguna membuka halaman pengaturan daily affirmations dan meminta opsi waktu dari controller. |
+| `pilihWaktuPengiriman(waktu: Time): void` | public | Menerima waktu pengiriman yang dipilih pengguna dan mengirimkannya ke controller. |
+| `tampilkanOpsiAffirmasi(): void` | public | Menampilkan opsi waktu pengiriman daily affirmations. |
+| `tampilkanSetelanTersimpan(): void` | public | Menampilkan konfirmasi bahwa setelan tersimpan. |
+| `showError(pesan: String): void` | public | Menampilkan pesan kesalahan ketika setelan gagal disimpan. |
+
+Tabel 5.17.2. Atribut Kelas AffirmationView
+
+| Nama Atribut | Visibility (private, public) | Tipe |
+| ------------ | ---------------------------- | ---- |
+| `waktuTerpilih` | private | `Time` |
+
+## 5.18 Kelas ReminderView
+
+**Nama Kelas:** `ReminderView`  
+**ID Kelas:** C-18
+
+Tabel 5.18.1. Operasi Kelas ReminderView
+
+| Nama Operasi | Visibility (private, public) | Keterangan |
+| ------------ | ---------------------------- | ---------- |
+| `bukaPageReminder(): void` | public | Aksi pengguna membuka halaman pengaturan pengingat dan meminta opsi waktu dari controller. |
+| `pilihWaktuPengiriman(waktu: Time): void` | public | Menerima waktu pengingat yang dipilih pengguna dan mengirimkannya ke controller. |
+| `tampilkanOpsiReminder(): void` | public | Menampilkan opsi waktu pengingat makan, tidur, dan olahraga. |
+| `tampilkanSetelanTersimpan(): void` | public | Menampilkan konfirmasi bahwa setelan tersimpan. |
+| `showError(pesan: String): void` | public | Menampilkan pesan kesalahan ketika setelan gagal disimpan. |
+
+Tabel 5.18.2. Atribut Kelas ReminderView
+
+| Nama Atribut | Visibility (private, public) | Tipe |
+| ------------ | ---------------------------- | ---- |
+| `waktuTerpilih` | private | `Time` |
+
+## 5.19 Kelas CalendarView
+
+**Nama Kelas:** `CalendarView`  
+**ID Kelas:** C-19
+
+Tabel 5.19.1. Operasi Kelas CalendarView
+
+| Nama Operasi | Visibility (private, public) | Keterangan |
+| ------------ | ---------------------------- | ---------- |
+| `bukaPageCalendar(): void` | public | Aksi pengguna membuka kalender dan meminta kalender gabungan dari controller. |
+| `tampilkanKalender(kalender: List<Event>): void` | public | Menampilkan kalender gabungan berisi event Google Calendar dan jadwal konsultasi. |
+| `showErrorMessage(pesan: String): void` | public | Menampilkan pesan kesalahan dan tombol Refresh ketika data event gagal diambil. |
+
+Tabel 5.19.2. Atribut Kelas CalendarView
+
+| Nama Atribut | Visibility (private, public) | Tipe |
+| ------------ | ---------------------------- | ---- |
+| - | - | - |
+
+## 5.20 Kelas ConsultationBookingView
+
+**Nama Kelas:** `ConsultationBookingView`  
+**ID Kelas:** C-20
+
+Tabel 5.20.1. Operasi Kelas ConsultationBookingView
+
+| Nama Operasi | Visibility (private, public) | Keterangan |
+| ------------ | ---------------------------- | ---------- |
+| `bukaPageKonsultasi(): void` | public | Aksi Mahasiswa membuka halaman pemesanan dan meminta daftar konsultan dari controller. |
+| `pilihKonsultan(konsultan: Konsultan): void` | public | Menerima konsultan yang dipilih dan mengirimkannya ke controller. |
+| `pilihSesi(jadwal: JadwalKonsultasi): void` | public | Menerima slot jadwal yang dipilih dan meminta controller memperbarui status konsultasi. |
+| `tampilkanOpsiKonsultasi(daftar: List<Konsultan>): void` | public | Menampilkan daftar konsultan yang dapat dipilih. |
+| `tampilkanKalender(jadwal: List<JadwalKonsultasi>): void` | public | Menampilkan jadwal konsultasi yang tersedia untuk konsultan terpilih. |
+| `tampilkanSetelanTersimpan(): void` | public | Menampilkan konfirmasi bahwa sesi berhasil dipesan. |
+| `showError(pesan: String): void` | public | Menampilkan pesan kesalahan ketika data gagal diambil atau pesanan gagal disimpan. |
+
+Tabel 5.20.2. Atribut Kelas ConsultationBookingView
+
+| Nama Atribut | Visibility (private, public) | Tipe |
+| ------------ | ---------------------------- | ---- |
+| - | - | - |
+
+## 5.21 Kelas ConsultationManagementView
+
+**Nama Kelas:** `ConsultationManagementView`  
+**ID Kelas:** C-21
+
+Tabel 5.21.1. Operasi Kelas ConsultationManagementView
+
+| Nama Operasi | Visibility (private, public) | Keterangan |
+| ------------ | ---------------------------- | ---------- |
+| `bukaPageKonsultasi(): void` | public | Aksi Administrator membuka dashboard jadwal konsultasi dan meminta daftar konsultan dari controller. |
+| `pilihKonsultan(konsultan: Konsultan): void` | public | Menerima konsultan yang dipilih dan mengirimkannya ke controller. |
+| `perbaruiJadwal(jadwal: JadwalKonsultasi): void` | public | Menerima perubahan jadwal dari Administrator dan mengirimkannya ke controller. |
+| `tampilkanOpsiKonsultasi(daftar: List<Konsultan>): void` | public | Menampilkan daftar konsultan yang dapat dipilih. |
+| `tampilkanKalender(jadwal: List<JadwalKonsultasi>): void` | public | Menampilkan jadwal konsultasi konsultan terpilih. |
+| `tampilkanSetelanTersimpan(): void` | public | Menampilkan konfirmasi bahwa perubahan jadwal tersimpan. |
+| `showError(pesan: String): void` | public | Menampilkan pesan kesalahan ketika data gagal diambil atau perubahan gagal disimpan. |
+
+Tabel 5.21.2. Atribut Kelas ConsultationManagementView
+
+| Nama Atribut | Visibility (private, public) | Tipe |
+| ------------ | ---------------------------- | ---- |
+| - | - | - |
+
+## 5.22 Kelas FAQView
+
+**Nama Kelas:** `FAQView`  
+**ID Kelas:** C-22
+
+Tabel 5.22.1. Operasi Kelas FAQView
+
+| Nama Operasi | Visibility (private, public) | Keterangan |
+| ------------ | ---------------------------- | ---------- |
+| `bukaFAQ(): void` | public | Aksi pengguna membuka halaman FAQ dan meminta daftar FAQ dari controller. |
+| `cariFAQ(kataKunci: String): void` | public | Menerima kata kunci pencarian dan mengirimkannya ke controller. |
+| `tambahFAQ(pertanyaan: String, jawaban: String): void` | public | Menerima pertanyaan dan jawaban baru dari Administrator dan mengirimkannya ke controller. |
+| `ubahFAQ(idFAQ: String, pertanyaan: String, jawaban: String): void` | public | Menerima perubahan pertanyaan atau jawaban dari Administrator dan mengirimkannya ke controller. |
+| `hapusFAQ(idFAQ: String): void` | public | Menerima permintaan Administrator menghapus suatu FAQ dan mengirimkannya ke controller. |
+| `bukaFormPertanyaan(): void` | public | Aksi Mahasiswa membuka form pengajuan pertanyaan di luar FAQ. |
+| `isiFormPertanyaan(isi: String): void` | public | Menerima isi pertanyaan yang diajukan Mahasiswa dan mengirimkannya ke controller. |
+| `tampilkanFAQ(daftar: List<FAQ>): void` | public | Menampilkan daftar FAQ atau hasil pencarian. |
+| `tampilkanTawaranPengajuan(): void` | public | Menampilkan tawaran mengajukan pertanyaan ketika pencarian tidak menemukan hasil. |
+| `tampilkanFormPenambahanPertanyaan(): void` | public | Menampilkan form pengajuan pertanyaan. |
+| `tampilkanSetelanTersimpan(): void` | public | Menampilkan konfirmasi bahwa perubahan atau pertanyaan tersimpan. |
+| `showError(pesan: String): void` | public | Menampilkan pesan kesalahan ketika data gagal disimpan. |
+
+Tabel 5.22.2. Atribut Kelas FAQView
+
+| Nama Atribut | Visibility (private, public) | Tipe |
+| ------------ | ---------------------------- | ---- |
+| - | - | - |
+
+## 5.23 Kelas FeedbackView
+
+**Nama Kelas:** `FeedbackView`  
+**ID Kelas:** C-23
+
+Tabel 5.23.1. Operasi Kelas FeedbackView
+
+| Nama Operasi | Visibility (private, public) | Keterangan |
+| ------------ | ---------------------------- | ---------- |
+| `bukaUmpanBalik(): void` | public | Aksi Mahasiswa membuka form umpan balik dan meminta form dari controller. |
+| `isiFormFeedback(isi: String): void` | public | Menerima isi umpan balik dari Mahasiswa dan mengirimkannya ke controller. |
+| `bukaListFeedback(): void` | public | Aksi pengguna membuka daftar umpan balik dan meminta daftarnya dari controller. |
+| `tanggapiFeedback(tanggapan: String): void` | public | Menerima tanggapan Administrator dan mengirimkannya ke controller. |
+| `tampilkanFormFeedback(): void` | public | Menampilkan form umpan balik. |
+| `tampilkanListFeedback(daftar: List<UmpanBalik>): void` | public | Menampilkan daftar umpan balik beserta tanggapannya. |
+| `tampilkanFeedbackTersimpan(): void` | public | Menampilkan konfirmasi bahwa umpan balik atau tanggapan tersimpan. |
+| `showError(pesan: String): void` | public | Menampilkan pesan kesalahan ketika data gagal disimpan. |
+
+Tabel 5.23.2. Atribut Kelas FeedbackView
+
+| Nama Atribut | Visibility (private, public) | Tipe |
+| ------------ | ---------------------------- | ---- |
+| - | - | - |
+
+## 5.24 Kelas ServerStatusView
+
+**Nama Kelas:** `ServerStatusView`  
+**ID Kelas:** C-24
+
+Tabel 5.24.1. Operasi Kelas ServerStatusView
+
+| Nama Operasi | Visibility (private, public) | Keterangan |
+| ------------ | ---------------------------- | ---------- |
+| `cekStatusServer(jenis: String): void` | public | Aksi Administrator meminta status uptime untuk jenis tertentu ("website" atau "server"). |
+| `tampilkanStatusServer(status: StatusServer): void` | public | Menampilkan status uptime kepada Administrator. |
+
+Tabel 5.24.2. Atribut Kelas ServerStatusView
+
+| Nama Atribut | Visibility (private, public) | Tipe |
+| ------------ | ---------------------------- | ---- |
+| - | - | - |
+
+## 5.25 Kelas AuthController
+
+**Nama Kelas:** `AuthController`  
+**ID Kelas:** C-25
+
+Tabel 5.25.1. Operasi Kelas AuthController
+
+| Nama Operasi | Visibility (private, public) | Keterangan |
+| ------------ | ---------------------------- | ---------- |
+| `tampilkanLoginPage(): void` | public | Mengembalikan data laman masuk ke LoginView. |
+| `kirimData(kodeOtorisasi: String): void` | public | Meminta GoogleAuthService memvalidasi kode otorisasi, lalu membuat sesi lewat SesiAutentikasi bila valid. |
+
+Tabel 5.25.2. Atribut Kelas AuthController
+
+| Nama Atribut | Visibility (private, public) | Tipe |
+| ------------ | ---------------------------- | ---- |
+| - | - | - |
+
+## 5.26 Kelas AffirmationController
+
+**Nama Kelas:** `AffirmationController`  
+**ID Kelas:** C-26
+
+Tabel 5.26.1. Operasi Kelas AffirmationController
+
+| Nama Operasi | Visibility (private, public) | Keterangan |
+| ------------ | ---------------------------- | ---------- |
+| `tampilkanOpsiAffirmasi(): void` | public | Mengembalikan opsi waktu pengiriman ke AffirmationView. |
+| `submitWaktuPengiriman(waktu: Time): void` | public | Memvalidasi waktu lewat Validasi, mengatur waktu pada DailyAffirmation, lalu memicu Notifikasi bila berhasil. |
+
+Tabel 5.26.2. Atribut Kelas AffirmationController
+
+| Nama Atribut | Visibility (private, public) | Tipe |
+| ------------ | ---------------------------- | ---- |
+| - | - | - |
+
+## 5.27 Kelas ReminderController
+
+**Nama Kelas:** `ReminderController`  
+**ID Kelas:** C-27
+
+Tabel 5.27.1. Operasi Kelas ReminderController
+
+| Nama Operasi | Visibility (private, public) | Keterangan |
+| ------------ | ---------------------------- | ---------- |
+| `tampilkanOpsiReminder(): void` | public | Mengembalikan opsi waktu pengingat ke ReminderView. |
+| `submitWaktuPengiriman(waktu: Time): void` | public | Memvalidasi waktu lewat Validasi, mengatur waktu pada Reminder, lalu memicu Notifikasi bila berhasil. |
+
+Tabel 5.27.2. Atribut Kelas ReminderController
+
+| Nama Atribut | Visibility (private, public) | Tipe |
+| ------------ | ---------------------------- | ---- |
+| - | - | - |
+
+## 5.28 Kelas CalendarController
+
+**Nama Kelas:** `CalendarController`  
+**ID Kelas:** C-28
+
+Tabel 5.28.1. Operasi Kelas CalendarController
+
+| Nama Operasi | Visibility (private, public) | Keterangan |
+| ------------ | ---------------------------- | ---------- |
+| `tampilkanCalendar(): void` | public | Mengambil event dari GoogleCalendarService dan jadwal dari JadwalKonsultasi, menggabungkannya lewat KalenderGabungan, lalu mengembalikannya ke CalendarView. |
+
+Tabel 5.28.2. Atribut Kelas CalendarController
+
+| Nama Atribut | Visibility (private, public) | Tipe |
+| ------------ | ---------------------------- | ---- |
+| - | - | - |
+
+## 5.29 Kelas ConsultationController
+
+**Nama Kelas:** `ConsultationController`  
+**ID Kelas:** C-29
+
+Tabel 5.29.1. Operasi Kelas ConsultationController
+
+| Nama Operasi | Visibility (private, public) | Keterangan |
+| ------------ | ---------------------------- | ---------- |
+| `tampilkanOpsiKonsultasi(): void` | public | Mengambil daftar konsultan dari Konsultan dan mengembalikannya ke view. |
+| `submitKonsultan(konsultan: Konsultan): void` | public | Memvalidasi konsultan lewat Validasi, mengambil jadwal konsultan dari JadwalKonsultasi, lalu mengembalikannya ke view. |
+| `updateStatusKonsultasi(jadwal: JadwalKonsultasi): void` | public | Memvalidasi jadwal (untuk Administrator) atau memeriksa bentrok (untuk Mahasiswa), lalu memperbarui kalender dan status jadwal. |
+
+Tabel 5.29.2. Atribut Kelas ConsultationController
+
+| Nama Atribut | Visibility (private, public) | Tipe |
+| ------------ | ---------------------------- | ---- |
+| - | - | - |
+
+## 5.30 Kelas FAQController
+
+**Nama Kelas:** `FAQController`  
+**ID Kelas:** C-30
+
+Tabel 5.30.1. Operasi Kelas FAQController
+
+| Nama Operasi | Visibility (private, public) | Keterangan |
+| ------------ | ---------------------------- | ---------- |
+| `tampilkanFAQ(): void` | public | Mengambil daftar FAQ dari FAQ dan mengembalikannya ke FAQView. |
+| `cariFAQ(kataKunci: String): void` | public | Mencari FAQ lewat FAQ dan mengembalikan hasilnya ke FAQView. |
+| `tambahFAQ(pertanyaan: String, jawaban: String): void` | public | Memvalidasi input lewat Validasi, lalu meminta FAQ menambahkan data. |
+| `ubahFAQ(idFAQ: String, pertanyaan: String, jawaban: String): void` | public | Memvalidasi input lewat Validasi, lalu meminta FAQ mengubah data. |
+| `hapusFAQ(idFAQ: String): void` | public | Meminta FAQ menghapus data. |
+| `muatFormPenambahanPertanyaan(): void` | public | Mengembalikan form pengajuan pertanyaan ke FAQView. |
+| `kirimPertanyaan(isi: String): void` | public | Memvalidasi input lewat Validasi, lalu meminta PengajuanPertanyaan menyimpan pertanyaan. |
+
+Tabel 5.30.2. Atribut Kelas FAQController
+
+| Nama Atribut | Visibility (private, public) | Tipe |
+| ------------ | ---------------------------- | ---- |
+| - | - | - |
+
+## 5.31 Kelas FeedbackController
+
+**Nama Kelas:** `FeedbackController`  
+**ID Kelas:** C-31
+
+Tabel 5.31.1. Operasi Kelas FeedbackController
+
+| Nama Operasi | Visibility (private, public) | Keterangan |
+| ------------ | ---------------------------- | ---------- |
+| `tampilkanFormFeedback(): void` | public | Mengembalikan form umpan balik ke FeedbackView. |
+| `kirimFeedback(isi: String): void` | public | Memvalidasi input lewat Validasi, lalu meminta UmpanBalik menyimpan umpan balik. |
+| `tampilkanListFeedback(): void` | public | Mengambil daftar umpan balik dari UmpanBalik dan mengembalikannya ke FeedbackView. |
+| `kirimTanggapan(tanggapan: String): void` | public | Memvalidasi input lewat Validasi, lalu meminta UmpanBalik menyimpan tanggapan. |
+
+Tabel 5.31.2. Atribut Kelas FeedbackController
+
+| Nama Atribut | Visibility (private, public) | Tipe |
+| ------------ | ---------------------------- | ---- |
+| - | - | - |
+
+## 5.32 Kelas ServerStatusController
+
+**Nama Kelas:** `ServerStatusController`  
+**ID Kelas:** C-32
+
+Tabel 5.32.1. Operasi Kelas ServerStatusController
+
+| Nama Operasi | Visibility (private, public) | Keterangan |
+| ------------ | ---------------------------- | ---------- |
+| `tampilkanStatusServer(jenis: String): void` | public | Mengambil status uptime dari StatusServer dan mengembalikannya ke ServerStatusView. |
+
+Tabel 5.32.2. Atribut Kelas ServerStatusController
+
+| Nama Atribut | Visibility (private, public) | Tipe |
+| ------------ | ---------------------------- | ---- |
+| - | - | - |
+
+## 5.33 Kelas Validasi
+
+**Nama Kelas:** `Validasi`  
+**ID Kelas:** C-33
+
+Tabel 5.33.1. Operasi Kelas Validasi
+
+| Nama Operasi | Visibility (private, public) | Keterangan |
+| ------------ | ---------------------------- | ---------- |
+| `validasiWaktu(waktu: Time): Boolean` | public | Memeriksa format dan rentang waktu. Mengembalikan true bila valid. |
+| `validasiKonsultan(konsultan: Konsultan): Boolean` | public | Memeriksa bahwa konsultan yang dipilih terdaftar. Mengembalikan true bila valid. |
+| `validasiJadwal(jadwal: JadwalKonsultasi): Boolean` | public | Memeriksa kelengkapan dan kewajaran data jadwal konsultasi. Mengembalikan true bila valid. |
+| `validasiInput(isi: List<String>): Boolean` | public | Memeriksa bahwa isian wajib terisi. Mengembalikan true bila valid. |
+
+Tabel 5.33.2. Atribut Kelas Validasi
+
+| Nama Atribut | Visibility (private, public) | Tipe |
+| ------------ | ---------------------------- | ---- |
+| - | - | - |
+
+## 5.34 Kelas GoogleAuthService
+
+**Nama Kelas:** `GoogleAuthService`  
+**ID Kelas:** C-34
+
+Tabel 5.34.1. Operasi Kelas GoogleAuthService
+
+| Nama Operasi | Visibility (private, public) | Keterangan |
+| ------------ | ---------------------------- | ---------- |
+| `validasi(kodeOtorisasi: String): Boolean` | public | Menukar kode otorisasi dengan access token dan refresh token Google. Mengembalikan true bila kode valid. |
+
+Tabel 5.34.2. Atribut Kelas GoogleAuthService
+
+| Nama Atribut | Visibility (private, public) | Tipe |
+| ------------ | ---------------------------- | ---- |
+| `authCode` | private | `String` |
+| `accessToken` | private | `String` |
+| `refreshToken` | private | `String` |
+
+## 5.35 Kelas CloudflareD1Database
+
+**Nama Kelas:** `CloudflareD1Database`  
+**ID Kelas:** C-35
+
+Tabel 5.35.1. Operasi Kelas CloudflareD1Database
+
+| Nama Operasi | Visibility (private, public) | Keterangan |
+| ------------ | ---------------------------- | ---------- |
+| `simpanWaktuKirim(waktu: Time): Boolean` | public | Menyimpan waktu pengiriman DailyAffirmation atau Reminder ke D1. |
+| `simpanKalender(jadwal: JadwalKonsultasi): Boolean` | public | Menyimpan perubahan kalender atau jadwal konsultasi ke D1. |
+| `simpanPerubahan(data: String): Boolean` | public | Menyimpan perubahan data umum (FAQ, UmpanBalik, PengajuanPertanyaan) ke D1. |
+
+Tabel 5.35.2. Atribut Kelas CloudflareD1Database
+
+| Nama Atribut | Visibility (private, public) | Tipe |
+| ------------ | ---------------------------- | ---- |
+| - | - | - |
 
 <br>
 
