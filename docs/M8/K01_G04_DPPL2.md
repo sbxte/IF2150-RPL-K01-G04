@@ -38,6 +38,8 @@ Dipersiapkan oleh:
 | REV-M8-01 | Menambahkan atribut `waktuSelesai` (DateTime) pada kelas `JadwalKonsultasi` (C-11) untuk menyimpan waktu selesai sesi konsultasi. Perubahan tampak pada diagram kelas UC-03, UC-04, dan UC-05 (BAB 3), diagram kelas keseluruhan dan Tabel 4.1 (BAB 4), serta atribut kelas pada BAB 5. |
 | REV-M8-02 | Menambahkan atribut `idKonsultan` (String) pada kelas `Konsultan` (C-10) sebagai pengenal konsultan. Perubahan tampak pada diagram kelas UC-04 dan UC-05 (BAB 3), diagram kelas keseluruhan dan Tabel 4.1 (BAB 4), serta atribut kelas pada BAB 5. |
 | REV-M8-03 | Menambahkan atribut `tokenPush` (String) dan operasi `daftarkanPerangkat(tokenPush: String): Boolean` pada kelas `SesiAutentikasi` (C-04), serta operasi `daftarkanPerangkat(tokenPush: String): void` pada kelas `LoginView` (C-16) dan `AuthController` (C-25), untuk pendaftaran perangkat notifikasi push. Kelas `CloudflareD1Database` (C-35) kini juga terlibat pada UC-11. Perubahan tampak pada sequence diagram dan diagram kelas UC-11 (BAB 3), diagram kelas keseluruhan dan Tabel 4.1 (BAB 4), atribut dan operasi kelas pada BAB 5, serta matriks kerunutan (BAB 7). |
+| REV-M8-04 | Menambahkan komponen dan kelas `HomeView` (C-36) untuk layar Beranda yang dibuka setelah login sesuai peran pengguna. Perubahan tampak pada Tabel 2.2, Gambar 2.1, dan _Logical View_ (BAB 2), sequence diagram dan diagram kelas UC-11 (BAB 3), diagram kelas keseluruhan dan Tabel 4.1 (BAB 4), BAB 5, serta matriks kerunutan (BAB 7). Subbab skema basis data bergeser menjadi 5.37. |
+| REV-M8-05 | Menambahkan operasi `ambilAfirmasiHariIni()` pada `AffirmationController` (C-26), `ambilSesiBerikutnya()` pada `ConsultationController` (C-29), `ambilAfirmasi()` pada `DailyAffirmation` (C-05), dan `ambilSesiBerikutnya()` pada `JadwalKonsultasi` (C-11), agar beranda dapat menampilkan afirmasi dan sesi konsultasi berikutnya. `HomeView` kini memanggil `AffirmationController`, `ConsultationController`, dan `ServerStatusController`. Perubahan tampak pada _Logical View_ (BAB 2), diagram kelas UC-01, UC-03, UC-04, dan UC-05 (BAB 3), diagram kelas keseluruhan dan Tabel 4.1 (BAB 4), BAB 5, serta BAB 6. |
 
 ---
 
@@ -168,7 +170,7 @@ config:
 ---
 flowchart TB
     subgraph CLIENT["Client: Aplikasi Mobile React Native (Expo)"]
-        V["View<br/>LoginView, AffirmationView, ReminderView, CalendarView,<br/>ConsultationBookingView, ConsultationManagementView,<br/>FAQView, FeedbackView, ServerStatusView"]
+        V["View<br/>LoginView, HomeView, AffirmationView, ReminderView, CalendarView,<br/>ConsultationBookingView, ConsultationManagementView,<br/>FAQView, FeedbackView, ServerStatusView"]
     end
 
     subgraph SERVER["Server: Hono di Cloudflare Workers"]
@@ -205,6 +207,7 @@ Tabel 2.2. Identifikasi Komponen/Modul/Subsistem
 | Nama Komponen                | Jenis               | Penjelasan                                                                                                        |
 | ---------------------------- | ------------------- | ----------------------------------------------------------------------------------------------------------------- |
 | `LoginView`                  | _View_              | Menampilkan tombol masuk dengan akun Google dan meneruskan hasil otentikasi ke `AuthController`.                  |
+| `HomeView`                   | _View_              | Menampilkan beranda sesuai peran pengguna (Mahasiswa atau Administrator), berisi ringkasan dan menu menuju setiap fitur. |
 | `AffirmationView`            | _View_              | Menampilkan input waktu pengiriman _daily affirmations_ dan meneruskan ke `AffirmationController`.                |
 | `ReminderView`               | _View_              | Menampilkan input waktu pengingat makan/tidur/olahraga dan meneruskan ke `ReminderController`.                    |
 | `CalendarView`               | _View_              | Menampilkan kalender gabungan dan meneruskan aksi "Lihat Kalender"/"_Refresh_" ke `CalendarController`.           |
@@ -242,15 +245,15 @@ Tabel 2.2. Identifikasi Komponen/Modul/Subsistem
 
 ## 2.4 Model Arsitektur Perangkat Lunak
 
-BAB ini menggambarkan arsitektur Sehati dari satu sudut pandang yang mencakup seluruh sistem, yaitu _Logical View_. Diagram memuat seluruh 35 komponen pada Tabel 2.2 dengan nama yang sama, dan mengikuti _pattern_ _client-server_ dengan MVC pada BAB 2.
+BAB ini menggambarkan arsitektur Sehati dari satu sudut pandang yang mencakup seluruh sistem, yaitu _Logical View_. Diagram memuat seluruh 36 komponen pada Tabel 2.2 dengan nama yang sama, dan mengikuti _pattern_ _client-server_ dengan MVC pada BAB 2.
 
 ### 2.4.1 _Logical View_
 
 _Logical view_ dipilih karena hal terpenting yang perlu dijelaskan pada Sehati adalah pembagian tanggung jawab antar komponen: _view_ di sisi _client_, serta _controller_, _model_, dan layanan pendukung di sisi _server_. Pembagian ini langsung menjawab kebutuhan SKPL, yaitu satu _server_ yang memegang data bersama untuk dua aktor dan satu-satunya yang memanggil Google. _Process view_ tidak dipilih karena sistem ini tidak memiliki alur proses paralel yang rumit, dan _physical view_ tidak dipilih karena lingkungan operasinya sudah dijelaskan pada Tabel 2.1.
 
-Diagram pada Gambar 2.2 adalah _block diagram_ yang memuat seluruh 35 komponen Tabel 2.2:
+Diagram pada Gambar 2.2 adalah _block diagram_ yang memuat seluruh 36 komponen Tabel 2.2:
 
-- 9 _view_,
+- 10 _view_,
 - 8 _controller_,
 - 1 validasi,
 - 14 _model_,
@@ -274,6 +277,7 @@ flowchart TB
         FeedbackView
         ServerStatusView
         LoginView
+        HomeView
         CalendarView
         ConsultationBookingView
         ConsultationManagementView
@@ -330,6 +334,10 @@ flowchart TB
     FeedbackView -.->|Memanggil| FeedbackController
     ServerStatusView -.->|Memanggil| ServerStatusController
     LoginView -.->|Memanggil| AuthController
+    LoginView -.->|Membuka| HomeView
+    HomeView -.->|Memanggil| AffirmationController
+    HomeView -.->|Memanggil| ConsultationController
+    HomeView -.->|Memanggil| ServerStatusController
     CalendarView -.->|Memanggil| CalendarController
     ConsultationBookingView -.->|Memanggil| ConsultationController
     ConsultationManagementView -.->|Memanggil| ConsultationController
@@ -381,7 +389,7 @@ Relasi antar komponen pada Gambar 2.2:
 
 1. **_View_ → _Controller_** (memanggil)
 
-Setiap _view_ memanggil _controller_ untuk fiturnya. `LoginView` memanggil `AuthController`, dan `ConsultationBookingView` serta `ConsultationManagementView` sama-sama memanggil `ConsultationController`.
+Setiap _view_ memanggil _controller_ untuk fiturnya. `LoginView` memanggil `AuthController`, dan `ConsultationBookingView` serta `ConsultationManagementView` sama-sama memanggil `ConsultationController`. `HomeView` memanggil `AffirmationController`, `ConsultationController`, dan `ServerStatusController` untuk mengisi ringkasan beranda.
 
 2. **_Controller_ → _Model_** (akses)
 
@@ -519,6 +527,7 @@ classDiagram
         <<control>>
         +tampilkanOpsiAffirmasi(): void
         +submitWaktuPengiriman(waktu: Time): void
+        +ambilAfirmasiHariIni(): DailyAffirmation
     }
     class Validasi {
         <<control>>
@@ -533,6 +542,7 @@ classDiagram
         -waktuKirim: Time
         +aturWaktuKirim(waktu: Time): Boolean
         +kirimAfirmasi(): void
+        +ambilAfirmasi(): DailyAffirmation
     }
     class CloudflareD1Database {
         <<entity>>
@@ -819,6 +829,7 @@ classDiagram
         +simpanJadwal(): Boolean
         +perbaruiJadwal(): Boolean
         +pesanSesi(): Boolean
+        +ambilSesiBerikutnya(): JadwalKonsultasi
     }
     class KalenderGabungan {
         <<entity>>
@@ -1017,6 +1028,7 @@ classDiagram
         +tampilkanOpsiKonsultasi(): void
         +submitKonsultan(konsultan: Konsultan): void
         +updateStatusKonsultasi(jadwal: JadwalKonsultasi): void
+        +ambilSesiBerikutnya(): JadwalKonsultasi
     }
     class Konsultan {
         <<entity>>
@@ -1036,6 +1048,7 @@ classDiagram
         +simpanJadwal(): Boolean
         +perbaruiJadwal(): Boolean
         +pesanSesi(): Boolean
+        +ambilSesiBerikutnya(): JadwalKonsultasi
     }
     class Validasi {
         <<control>>
@@ -1245,6 +1258,7 @@ classDiagram
         +tampilkanOpsiKonsultasi(): void
         +submitKonsultan(konsultan: Konsultan): void
         +updateStatusKonsultasi(jadwal: JadwalKonsultasi): void
+        +ambilSesiBerikutnya(): JadwalKonsultasi
     }
     class Konsultan {
         <<entity>>
@@ -1264,6 +1278,7 @@ classDiagram
         +simpanJadwal(): Boolean
         +perbaruiJadwal(): Boolean
         +pesanSesi(): Boolean
+        +ambilSesiBerikutnya(): JadwalKonsultasi
     }
     class Validasi {
         <<control>>
@@ -2004,6 +2019,7 @@ Tabel 3.11. Identifikasi Kelas Use Case UC-11
 | 6   | `SesiAutentikasi`      | `SesiAutentikasi` (C-04)    |
 | 7   | `GoogleAuthService`    | -                           |
 | 8   | `CloudflareD1Database` | -                           |
+| 9   | `HomeView`             | -                           |
 
 ### 3.11.2 Sequence Diagram
 
@@ -2015,6 +2031,7 @@ Skenario normal ini dijalankan oleh algoritma Algo-001 (subbab 5.4.1) untuk logi
 sequenceDiagram
     actor Pengguna
     participant LoginView@{ "type": "boundary" }
+    participant HomeView@{ "type": "boundary" }
     participant AuthController@{ "type": "control" }
     participant GoogleAuthService@{ "type": "entity" }
     participant SesiAutentikasi@{ "type": "entity" }
@@ -2039,6 +2056,8 @@ sequenceDiagram
     CloudflareD1Database-->>-SesiAutentikasi: berhasil
     SesiAutentikasi-->>-AuthController: sesi dibuat
     AuthController-->>-LoginView: login berhasil
+    LoginView->>+HomeView: tampilkanBeranda(peran)
+    HomeView-->>-LoginView: beranda sesuai peran
     LoginView-->>-Pengguna: loadPageUtama()
     Note over LoginView,AuthController: Setelah login, aplikasi meminta izin notifikasi dan mengambil Expo push token
     LoginView->>+LoginView: daftarkanPerangkat(tokenPush)
@@ -2108,6 +2127,12 @@ classDiagram
         +showError(pesan: String): void
         +daftarkanPerangkat(tokenPush: String): void
     }
+    class HomeView {
+        <<boundary>>
+        -peran: String
+        +tampilkanBeranda(peran: String): void
+        +bukaMenu(menu: String): void
+    }
     class AuthController {
         <<control>>
         +tampilkanLoginPage(): void
@@ -2143,6 +2168,8 @@ classDiagram
     Pengguna "1" --> "0..*" SesiAutentikasi : memiliki
     Pengguna "1" --> "1" LoginView : mengakses
     LoginView "1" --> "1" AuthController : memanggil
+    Pengguna "1" --> "1" HomeView : mengakses
+    LoginView ..> HomeView : membuka
     AuthController ..> SesiAutentikasi : akses
     AuthController ..> GoogleAuthService : akses
     SesiAutentikasi ..> CloudflareD1Database : disimpan di
@@ -2339,6 +2366,7 @@ classDiagram
         -waktuKirim: Time
         +aturWaktuKirim(waktu: Time): Boolean
         +kirimAfirmasi(): void
+        +ambilAfirmasi(): DailyAffirmation
     }
     class Reminder {
         <<entity>>
@@ -2386,6 +2414,7 @@ classDiagram
         +simpanJadwal(): Boolean
         +perbaruiJadwal(): Boolean
         +pesanSesi(): Boolean
+        +ambilSesiBerikutnya(): JadwalKonsultasi
     }
     class FAQ {
         <<entity>>
@@ -2429,6 +2458,12 @@ classDiagram
         +loadPageUtama(): void
         +showError(pesan: String): void
         +daftarkanPerangkat(tokenPush: String): void
+    }
+    class HomeView {
+        <<boundary>>
+        -peran: String
+        +tampilkanBeranda(peran: String): void
+        +bukaMenu(menu: String): void
     }
     class AffirmationView {
         <<boundary>>
@@ -2515,6 +2550,7 @@ classDiagram
         <<control>>
         +tampilkanOpsiAffirmasi(): void
         +submitWaktuPengiriman(waktu: Time): void
+        +ambilAfirmasiHariIni(): DailyAffirmation
     }
     class ReminderController {
         <<control>>
@@ -2530,6 +2566,7 @@ classDiagram
         +tampilkanOpsiKonsultasi(): void
         +submitKonsultan(konsultan: Konsultan): void
         +updateStatusKonsultasi(jadwal: JadwalKonsultasi): void
+        +ambilSesiBerikutnya(): JadwalKonsultasi
     }
     class FAQController {
         <<control>>
@@ -2604,6 +2641,11 @@ classDiagram
     Administrator "1" --> "1" FeedbackView : mengakses
     Administrator "1" --> "1" ServerStatusView : mengakses
     LoginView "1" --> "1" AuthController : memanggil
+    Pengguna "1" --> "1" HomeView : mengakses
+    LoginView ..> HomeView : membuka
+    HomeView ..> AffirmationController : memanggil
+    HomeView ..> ConsultationController : memanggil
+    HomeView ..> ServerStatusController : memanggil
     AffirmationView "1" --> "1" AffirmationController : memanggil
     ReminderView "1" --> "1" ReminderController : memanggil
     CalendarView "1" --> "1" CalendarController : memanggil
@@ -2654,13 +2696,13 @@ Tabel 4.1. Daftar Kelas Perancangan Keseluruhan
 | C-02     | `Mahasiswa`                  | `-nim: String`                                                              | -                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | C-03     | `Administrator`              | -                                                                           | -                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | C-04 | `SesiAutentikasi` | `-token: String`<br>`-waktuLogin: DateTime`<br>`-status: String`<br>`-tokenPush: String` | `+autentikasiPengguna(kodeOtorisasi: String): Boolean`<br>`+verifikasiToken(token: String): Boolean`<br>`+logout(): void`<br>`+daftarkanPerangkat(tokenPush: String): Boolean` |
-| C-05     | `DailyAffirmation`           | `-konten: String`<br>`-waktuKirim: Time`                                    | `+aturWaktuKirim(waktu: Time): Boolean`<br>`+kirimAfirmasi(): void`                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| C-05 | `DailyAffirmation` | `-konten: String`<br>`-waktuKirim: Time` | `+aturWaktuKirim(waktu: Time): Boolean`<br>`+kirimAfirmasi(): void`<br>`+ambilAfirmasi(): DailyAffirmation` |
 | C-06     | `Reminder`                   | `-jenis: String`<br>`-waktu: Time`                                          | `+aturWaktuKirim(waktu: Time): Boolean`<br>`+kirimPengingat(): void`                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
 | C-07     | `Notifikasi`                 | `-idNotifikasi: String`<br>`-isi: String`<br>`-waktuKirim: DateTime`        | `+kirimNotifikasi(): void`<br>`+tampilkanNotifikasi(): void`                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
 | C-08     | `GoogleCalendarService`      | `-accessToken: String`                                                      | `+ambilKalender(): List<Event>`<br>`+cekBentrokJadwal(jadwal: JadwalKonsultasi): Boolean`                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | C-09     | `KalenderGabungan`           | `-daftarEvent: List<Event>`                                                 | `+gabungkanJadwal(google: List<Event>, jadwal: List<JadwalKonsultasi>): List<Event>`<br>`+jadwalBentrok(jadwal: JadwalKonsultasi): Boolean`<br>`+ubahKalender(jadwal: JadwalKonsultasi): Boolean`                                                                                                                                                                                                                                                                                                                             |
 | C-10     | `Konsultan`                  | `-idKonsultan: String`<br>`-nama: String`<br>`-spesialisasi: String`                                  | `+ambilDaftarKonsultan(): List<Konsultan>`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
-| C-11     | `JadwalKonsultasi`           | `-idJadwal: String`<br>`-waktu: DateTime`<br>`-waktuSelesai: DateTime`<br>`-status: String`              | `+ambilKalender(): List<JadwalKonsultasi>`<br>`+ambilKalender(konsultan: Konsultan): List<JadwalKonsultasi>`<br>`+simpanJadwal(): Boolean`<br>`+perbaruiJadwal(): Boolean`<br>`+pesanSesi(): Boolean`                                                                                                                                                                                                                                                                                                                         |
+| C-11 | `JadwalKonsultasi` | `-idJadwal: String`<br>`-waktu: DateTime`<br>`-waktuSelesai: DateTime`<br>`-status: String` | `+ambilKalender(): List<JadwalKonsultasi>`<br>`+ambilKalender(konsultan: Konsultan): List<JadwalKonsultasi>`<br>`+simpanJadwal(): Boolean`<br>`+perbaruiJadwal(): Boolean`<br>`+pesanSesi(): Boolean`<br>`+ambilSesiBerikutnya(): JadwalKonsultasi` |
 | C-12     | `FAQ`                        | `-idFAQ: String`<br>`-pertanyaan: String`<br>`-jawaban: String`             | `+ambilDaftarPertanyaan(): List<FAQ>`<br>`+cariFAQ(kataKunci: String): List<FAQ>`<br>`+tambahFAQ(pertanyaan: String, jawaban: String): Boolean`<br>`+ubahFAQ(idFAQ: String, pertanyaan: String, jawaban: String): Boolean`<br>`+hapusFAQ(idFAQ: String): Boolean`                                                                                                                                                                                                                                                             |
 | C-13     | `PengajuanPertanyaan`        | `-idPertanyaan: String`<br>`-isiPertanyaan: String`                         | `+ajukanPertanyaan(isi: String): Boolean`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | C-14     | `UmpanBalik`                 | `-idUmpanBalik: String`<br>`-isi: String`<br>`-tanggapan: String`           | `+ambilListUmpanBalik(): List<UmpanBalik>`<br>`+kirimUmpanBalik(isi: String): Boolean`<br>`+berikanTanggapan(tanggapan: String): Boolean`                                                                                                                                                                                                                                                                                                                                                                                     |
@@ -2675,16 +2717,17 @@ Tabel 4.1. Daftar Kelas Perancangan Keseluruhan
 | C-23     | `FeedbackView`               | -                                                                           | `+bukaUmpanBalik(): void`<br>`+isiFormFeedback(isi: String): void`<br>`+bukaListFeedback(): void`<br>`+tanggapiFeedback(tanggapan: String): void`<br>`+tampilkanFormFeedback(): void`<br>`+tampilkanListFeedback(daftar: List<UmpanBalik>): void`<br>`+tampilkanFeedbackTersimpan(): void`<br>`+showError(pesan: String): void`                                                                                                                                                                                               |
 | C-24     | `ServerStatusView`           | -                                                                           | `+cekStatusServer(jenis: String): void`<br>`+tampilkanStatusServer(status: StatusServer): void`                                                                                                                                                                                                                                                                                                                                                                                                                               |
 | C-25 | `AuthController` | - | `+tampilkanLoginPage(): void`<br>`+kirimData(kodeOtorisasi: String): void`<br>`+daftarkanPerangkat(tokenPush: String): void` |
-| C-26     | `AffirmationController`      | -                                                                           | `+tampilkanOpsiAffirmasi(): void`<br>`+submitWaktuPengiriman(waktu: Time): void`                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| C-26 | `AffirmationController` | - | `+tampilkanOpsiAffirmasi(): void`<br>`+submitWaktuPengiriman(waktu: Time): void`<br>`+ambilAfirmasiHariIni(): DailyAffirmation` |
 | C-27     | `ReminderController`         | -                                                                           | `+tampilkanOpsiReminder(): void`<br>`+submitWaktuPengiriman(waktu: Time): void`                                                                                                                                                                                                                                                                                                                                                                                                                                               |
 | C-28     | `CalendarController`         | -                                                                           | `+tampilkanCalendar(): void`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
-| C-29     | `ConsultationController`     | -                                                                           | `+tampilkanOpsiKonsultasi(): void`<br>`+submitKonsultan(konsultan: Konsultan): void`<br>`+updateStatusKonsultasi(jadwal: JadwalKonsultasi): void`                                                                                                                                                                                                                                                                                                                                                                             |
+| C-29 | `ConsultationController` | - | `+tampilkanOpsiKonsultasi(): void`<br>`+submitKonsultan(konsultan: Konsultan): void`<br>`+updateStatusKonsultasi(jadwal: JadwalKonsultasi): void`<br>`+ambilSesiBerikutnya(): JadwalKonsultasi` |
 | C-30     | `FAQController`              | -                                                                           | `+tampilkanFAQ(): void`<br>`+cariFAQ(kataKunci: String): void`<br>`+tambahFAQ(pertanyaan: String, jawaban: String): void`<br>`+ubahFAQ(idFAQ: String, pertanyaan: String, jawaban: String): void`<br>`+hapusFAQ(idFAQ: String): void`<br>`+muatFormPenambahanPertanyaan(): void`<br>`+kirimPertanyaan(isi: String): void`                                                                                                                                                                                                     |
 | C-31     | `FeedbackController`         | -                                                                           | `+tampilkanFormFeedback(): void`<br>`+kirimFeedback(isi: String): void`<br>`+tampilkanListFeedback(): void`<br>`+kirimTanggapan(tanggapan: String): void`                                                                                                                                                                                                                                                                                                                                                                     |
 | C-32     | `ServerStatusController`     | -                                                                           | `+tampilkanStatusServer(jenis: String): void`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
 | C-33     | `Validasi`                   | -                                                                           | `+validasiWaktu(waktu: Time): Boolean`<br>`+validasiKonsultan(konsultan: Konsultan): Boolean`<br>`+validasiJadwal(jadwal: JadwalKonsultasi): Boolean`<br>`+validasiInput(isi: List<String>): Boolean`                                                                                                                                                                                                                                                                                                                         |
 | C-34     | `GoogleAuthService`          | `-authCode: String`<br>`-accessToken: String`<br>`-refreshToken: String`    | `+validasi(kodeOtorisasi: String): Boolean`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 | C-35     | `CloudflareD1Database`       | -                                                                           | `+simpanWaktuKirim(waktu: Time): Boolean`<br>`+simpanKalender(jadwal: JadwalKonsultasi): Boolean`<br>`+simpanPerubahan(data: String): Boolean`                                                                                                                                                                                                                                                                                                                                                                                |
+| C-36 | `HomeView` | `-peran: String` | `+tampilkanBeranda(peran: String): void`<br>`+bukaMenu(menu: String): void` |
 
 <br>
 
@@ -2692,7 +2735,7 @@ Tabel 4.1. Daftar Kelas Perancangan Keseluruhan
 
 # BAB 5: Perancangan Rinci Kelas
 
-Bab ini merinci seluruh 35 kelas perancangan dari BAB 4. Tabel 5.1 memetakan setiap kelas perancangan ke kelas analisis pada SKPL. Setiap kelas kemudian dijabarkan pada subbab tersendiri berisi operasi dan atributnya, lengkap dengan _visibility_ dan tipe. Skema basis data yang mendasari penyimpanan dan kueri dijabarkan pada subbab 5.36.
+Bab ini merinci seluruh 36 kelas perancangan dari BAB 4. Tabel 5.1 memetakan setiap kelas perancangan ke kelas analisis pada SKPL. Setiap kelas kemudian dijabarkan pada subbab tersendiri berisi operasi dan atributnya, lengkap dengan _visibility_ dan tipe. Skema basis data yang mendasari penyimpanan dan kueri dijabarkan pada subbab 5.37.
 
 Tabel 5.1. Daftar Kelas Perancangan dan Kelas Analisis Terkait
 
@@ -2733,6 +2776,7 @@ Tabel 5.1. Daftar Kelas Perancangan dan Kelas Analisis Terkait
 | 33 | `Validasi` | - |
 | 34 | `GoogleAuthService` | - |
 | 35 | `CloudflareD1Database` | - |
+| 36 | `HomeView` | - |
 
 ## 5.1 Kelas Pengguna
 
@@ -2826,7 +2870,8 @@ FUNCTION autentikasiPengguna(kodeOtorisasi)
   IF pengguna kosong THEN                 // pendaftaran otomatis pada login pertama
     profil <- nama dan email pada id token Google
     id     <- buat ID unik
-    nim    <- bagian sebelum "@" pada profil.email, bila profil.email berakhiran "@" + DOMAIN_KAMPUS; selain itu kosong
+    nim    <- bagian sebelum "@" pada profil.email, bila domain email termasuk DOMAIN_KAMPUS; selain itu kosong
+           // DOMAIN_KAMPUS = {"std.stei.itb.ac.id", "mahasiswa.itb.ac.id"}
     CloudflareD1Database.simpanPerubahan(data)        // aksi "daftar_pengguna" dengan (id, profil.nama, profil.email, googleId, nim); lihat Algo-030
     pengguna <- jalankan Q-001 dengan googleId     // baca ulang, aman bila ada login bersamaan
   this.token       <- buat token acak 32 byte (heksadesimal)
@@ -2894,6 +2939,7 @@ Tabel 5.5.1. Operasi Kelas DailyAffirmation
 | ------------ | ---------------------------- | ---------- |
 | `aturWaktuKirim(waktu: Time): Boolean` | public | Menetapkan waktu pengiriman daily affirmation dan meminta penyimpanannya ke database. Mengembalikan true bila berhasil. |
 | `kirimAfirmasi(): void` | public | Mengirim konten afirmasi pada waktu yang ditetapkan dengan memicu Notifikasi. |
+| `ambilAfirmasi(): DailyAffirmation` | public | Membaca konten dan waktu kirim afirmasi milik Mahasiswa (Q-041). |
 
 Tabel 5.5.2. Atribut Kelas DailyAffirmation
 
@@ -3224,6 +3270,7 @@ Tabel 5.11.1. Operasi Kelas JadwalKonsultasi
 | `simpanJadwal(): Boolean` | public | Menyimpan slot jadwal konsultasi baru. Mengembalikan true bila berhasil. |
 | `perbaruiJadwal(): Boolean` | public | Memperbarui data slot jadwal konsultasi. Mengembalikan true bila berhasil. |
 | `pesanSesi(): Boolean` | public | Menandai slot jadwal sebagai terpesan. Mengembalikan true bila berhasil. |
+| `ambilSesiBerikutnya(): JadwalKonsultasi` | public | Membaca sesi berstatus terpesan milik Mahasiswa yang paling dekat waktunya, beserta konsultannya (Q-042). Mengembalikan kosong bila tidak ada. |
 
 Tabel 5.11.2. Atribut Kelas JadwalKonsultasi
 
@@ -3449,7 +3496,7 @@ Tabel 5.16.1. Operasi Kelas LoginView
 | `masukLamanLogin(): void` | public | Aksi pengguna membuka laman masuk. |
 | `isiLoginPage(kodeOtorisasi: String): void` | public | Menerima hasil autentikasi Google dari pengguna dan meneruskannya ke AuthController. |
 | `tampilkanLoginPage(): void` | public | Menampilkan laman masuk dengan tombol masuk akun Google. |
-| `loadPageUtama(): void` | public | Menampilkan halaman utama setelah login berhasil. |
+| `loadPageUtama(): void` | public | Membuka beranda (`HomeView`) sesuai peran pengguna setelah login berhasil. |
 | `showError(pesan: String): void` | public | Menampilkan pesan kesalahan ketika login gagal. |
 | `daftarkanPerangkat(tokenPush: String): void` | public | Meminta izin notifikasi, mengambil Expo push token perangkat, lalu mengirimkannya ke AuthController setelah login berhasil. |
 
@@ -3666,6 +3713,7 @@ Tabel 5.26.1. Operasi Kelas AffirmationController
 | ------------ | ---------------------------- | ---------- |
 | `tampilkanOpsiAffirmasi(): void` | public | Mengembalikan opsi waktu pengiriman ke AffirmationView. |
 | `submitWaktuPengiriman(waktu: Time): void` | public | Memvalidasi waktu lewat Validasi, mengatur waktu pada DailyAffirmation, lalu memicu Notifikasi bila berhasil. |
+| `ambilAfirmasiHariIni(): DailyAffirmation` | public | Mengambil afirmasi milik Mahasiswa lewat `DailyAffirmation.ambilAfirmasi()` untuk kartu afirmasi di beranda (I-02). |
 
 Tabel 5.26.2. Atribut Kelas AffirmationController
 
@@ -3720,6 +3768,7 @@ Tabel 5.29.1. Operasi Kelas ConsultationController
 | `tampilkanOpsiKonsultasi(): void` | public | Mengambil daftar konsultan dari Konsultan dan mengembalikannya ke view. |
 | `submitKonsultan(konsultan: Konsultan): void` | public | Memvalidasi konsultan lewat Validasi, mengambil jadwal konsultan dari JadwalKonsultasi, lalu mengembalikannya ke view. |
 | `updateStatusKonsultasi(jadwal: JadwalKonsultasi): void` | public | Memvalidasi jadwal (untuk Administrator) atau memeriksa bentrok (untuk Mahasiswa), lalu memperbarui kalender dan status jadwal. |
+| `ambilSesiBerikutnya(): JadwalKonsultasi` | public | Mengambil sesi konsultasi terdekat yang sudah dipesan Mahasiswa lewat `JadwalKonsultasi.ambilSesiBerikutnya()` untuk kartu sesi di beranda (I-02). |
 
 Tabel 5.29.2. Atribut Kelas ConsultationController
 
@@ -4040,16 +4089,64 @@ Tabel 5.35.5. Query Operasi simpanPerubahan
 | Q-039 | `UPDATE umpan_balik SET tanggapan = ?, id_administrator = ? WHERE id_umpan_balik = ?` | Menyimpan tanggapan Administrator. |
 | Q-040 | `INSERT INTO pengajuan_pertanyaan (id_pertanyaan, id_mahasiswa, isi_pertanyaan) VALUES (?, ?, ?)` | Menyimpan pertanyaan di luar FAQ. |
 
-## 5.36 Skema Basis Data
+## 5.36 Kelas HomeView
 
-Subbab ini menjabarkan skema basis data Cloudflare D1 (SQLite) yang menyimpan atribut kelas _entity_ pada subbab 5.1 sampai 5.35. Skema ini menjadi dasar operasi penyimpanan pada kelas `CloudflareD1Database` dan kueri pada operasi kelas.
+**Nama Kelas:** `HomeView`  
+**ID Kelas:** C-36
 
-Tabel 5.36.1. Pemetaan Kelas ke Tabel
+Tabel 5.36.1. Operasi Kelas HomeView
+
+| Nama Operasi | Visibility (private, public) | Keterangan |
+| ------------ | ---------------------------- | ---------- |
+| `tampilkanBeranda(peran: String): void` | public | Mengambil data ringkasan dari _controller_ terkait (Algo-031), lalu menampilkan beranda sesuai peran. Untuk Mahasiswa: afirmasi hari ini, sesi konsultasi berikutnya, dan menu fitur. Untuk Administrator: status layanan, ringkasan, dan menu pengelolaan. |
+| `bukaMenu(menu: String): void` | public | Membuka layar fitur yang dipilih dari menu beranda. |
+
+Tabel 5.36.2. Atribut Kelas HomeView
+
+| Nama Atribut | Visibility (private, public) | Tipe |
+| ------------ | ---------------------------- | ---- |
+| `peran` | private | `String` |
+
+### 5.36.1 Algoritma/Query
+
+**Nama Kelas:** `HomeView`  
+**Nama Operasi:** `tampilkanBeranda(peran: String): void`  
+**ID Algoritma:** Algo-031
+
+```text
+PROCEDURE tampilkanBeranda(peran)
+  this.peran <- peran
+  IF peran = "mahasiswa" THEN
+    afirmasi <- AffirmationController.ambilAfirmasiHariIni()     // DailyAffirmation.ambilAfirmasi(), Q-041
+    sesi     <- ConsultationController.ambilSesiBerikutnya()     // JadwalKonsultasi.ambilSesiBerikutnya(), Q-042
+    IF afirmasi ada THEN tampilkan kartu afirmasi (konten, waktuKirim)
+    ELSE tampilkan ajakan mengatur afirmasi yang membuka I-04
+    IF sesi ada THEN tampilkan kartu sesi berikutnya (waktu, waktuSelesai, nama konsultan)
+    ELSE tampilkan ajakan memesan sesi yang membuka I-07
+    tampilkan menu Mahasiswa dan bilah tab
+  ELSE                                                            // administrator
+    FOR EACH jenis IN ["website", "server"]
+      status[jenis] <- ServerStatusController.tampilkanStatusServer(jenis)   // StatusServer.ambilStatusServer, Algo-020
+    tampilkan kartu status layanan dan menu Administrator
+```
+
+Tabel 5.36.3. Query Operasi tampilkanBeranda
+
+| No Query | Query | Keterangan |
+| -------- | ----- | ---------- |
+| Q-041 | `SELECT id_affirmation, konten, waktu_kirim FROM daily_affirmation WHERE id_mahasiswa = ? LIMIT 1` | Dijalankan oleh `DailyAffirmation.ambilAfirmasi()`. Mengambil afirmasi milik Mahasiswa. |
+| Q-042 | `SELECT j.id_jadwal, j.waktu, j.waktu_selesai, k.nama, k.spesialisasi FROM jadwal_konsultasi j JOIN konsultan k ON k.id_konsultan = j.id_konsultan WHERE j.id_mahasiswa = ? AND j.status = 'terpesan' AND j.waktu >= ? ORDER BY j.waktu LIMIT 1` | Dijalankan oleh `JadwalKonsultasi.ambilSesiBerikutnya()`. Mengambil sesi terpesan terdekat milik Mahasiswa mulai dari waktu sekarang. |
+
+## 5.37 Skema Basis Data
+
+Subbab ini menjabarkan skema basis data Cloudflare D1 (SQLite) yang menyimpan atribut kelas _entity_ pada subbab 5.1 sampai 5.36. Skema ini menjadi dasar operasi penyimpanan pada kelas `CloudflareD1Database` dan kueri pada operasi kelas.
+
+Tabel 5.37.1. Pemetaan Kelas ke Tabel
 
 | Kelas | Tabel | Keterangan |
 | ----- | ----- | ---------- |
 | `Pengguna`, `Administrator` | `pengguna` | Kolom `peran` membedakan Mahasiswa dan Administrator. `Administrator` tidak memiliki atribut sendiri, sehingga tidak diberi tabel. |
-| `Mahasiswa` | `mahasiswa` | Menyimpan `nim`, berelasi satu-satu dengan `pengguna`. `nim` diturunkan dari bagian lokal email kampus (domain `mahasiswa.itb.ac.id`) dan bernilai NULL bila email bukan email kampus. |
+| `Mahasiswa` | `mahasiswa` | Menyimpan `nim`, berelasi satu-satu dengan `pengguna`. `nim` diturunkan dari bagian lokal email kampus (domain `std.stei.itb.ac.id` atau `mahasiswa.itb.ac.id`) dan bernilai NULL bila email bukan email kampus. |
 | `SesiAutentikasi` | `sesi_autentikasi` | Satu pengguna dapat memiliki beberapa sesi. Kolom `token_push` menyimpan Expo push token perangkat yang menjalankan sesi, dipakai untuk mengirim notifikasi push. |
 | `GoogleAuthService`, `GoogleCalendarService` | `token_google` | Hanya menyimpan access token dan refresh token Google milik pengguna, dalam bentuk terenkripsi. Kedua kelas layanan itu sendiri tidak disimpan. |
 | `DailyAffirmation` | `daily_affirmation` | Dimiliki satu Mahasiswa. |
@@ -4062,7 +4159,7 @@ Tabel 5.36.1. Pemetaan Kelas ke Tabel
 | `PengajuanPertanyaan` | `pengajuan_pertanyaan` | Pertanyaan di luar FAQ dari satu Mahasiswa. |
 | `UmpanBalik` | `umpan_balik` | Umpan balik Mahasiswa. `tanggapan` dan `id_administrator` terisi setelah Administrator menanggapi. |
 | `StatusServer` | `status_server` | Satu baris untuk setiap pemeriksaan status, dibedakan oleh kolom `jenis` (website atau server). |
-| _View_, _Controller_, `Validasi`, `CloudflareD1Database` | - | Bukan _entity_, sehingga tidak memiliki tabel. |
+| _View_ (termasuk `HomeView`), _Controller_, `Validasi`, `CloudflareD1Database` | - | Bukan _entity_, sehingga tidak memiliki tabel. |
 
 Ketentuan umum skema:
 
@@ -4172,7 +4269,7 @@ erDiagram
 ```
 
 <p align="center">
-<i>Gambar 5.36.1. Diagram Relasi Entitas Basis Data Sehati</i>
+<i>Gambar 5.37.1. Diagram Relasi Entitas Basis Data Sehati</i>
 </p>
 
 Skema berikut dapat dijalankan langsung pada Cloudflare D1.
@@ -4308,43 +4405,424 @@ CREATE INDEX idx_status_jenis_waktu   ON status_server (jenis, waktu_cek DESC);
 
 # BAB 6: Perancangan Antarmuka
 
-## 6.1 Rancangan Antarmuka [ID Layar 1]
+Rancangan antarmuka Sehati dibuat sebagai prototipe di Figma ([Sehati - Rancangan Antarmuka](https://www.figma.com/design/OqbMU5rHz4uQwCNpkvndPY)). Seluruh layar dirancang untuk ponsel berukuran 390 × 844 piksel dan disusun dari komponen bersama (tombol, isian, banner, lencana, bilah tab, dan kartu menu) dengan warna yang diambil dari logo Sehati.
 
-Masukkan versi awal prototipe antarmuka, dimana untuk setiap antarmuka/layar, tuliskan spesifikasi rinci objek yang ditampilkan dan reaksi sistem terhadap interaksi pengguna.
+Setiap subbab memuat satu layar beserta spesifikasi objeknya. Kolom Keterangan menyebut reaksi sistem, layar tujuan, operasi kelas, dan ID algoritma pada BAB 5. Objek bertanda "(kondisional)" hanya tampil pada kondisi tertentu, misalnya pesan galat pada skenario alternatif. Data pada gambar adalah contoh.
 
-**Antarmuka:** _[ID layar]_  
-**Nama Layar:** _[Nama layar]_
+## 6.1 Rancangan Antarmuka I-01
+
+**Antarmuka:** I-01  
+**Nama Layar:** Masuk  
+**Kelas View:** `LoginView`  
+**Use Case:** UC-11
 
 <p align="center">
-<img alt="Contoh Logical View pada P/L E-Commerce" src="./assets/diagram/contoh-design.png" width="50%">
+<img alt="Rancangan Antarmuka I-01 - Masuk" src="./assets/antarmuka/I-01.png" width="300">
 </p>
 <p align="center">
-<i>Gambar 6.1. Rancangan Antarmuka [ID Layar] - [Nama Layar]</i>
+<i>Gambar 6.1. Rancangan Antarmuka I-01 - Masuk</i>
 </p>
 
-Tabel 6.1. Spesifikasi Objek Antarmuka [ID Layar]
+Tabel 6.1. Spesifikasi Objek Antarmuka I-01
 
-| Id_Objek     | Jenis                                          | Konten                            | Keterangan                                                                 |
-| ------------ | ---------------------------------------------- | --------------------------------- | -------------------------------------------------------------------------- |
-| _[ID objek]_ | _[Jenis objek, misalnya Button, RTF Box, dll]_ | _[String yang tampil pada layar]_ | _[Reaksi sistem, layar tujuan, tautan, atau ID algoritma yang dijalankan]_ |
-| _[ID objek]_ | _[Jenis objek]_                                | _[Konten yang ditampilkan]_       | _[Reaksi sistem atau nama file terkait beserta deskripsi ringkasnya]_      |
-| _..._        | _..._                                          | _..._                             | _..._                                                                      |
+| Id_Objek | Jenis | Konten | Keterangan |
+| -------- | ----- | ------ | ---------- |
+| I-01-01 | Gambar | Logo Sehati | Identitas aplikasi. |
+| I-01-02 | Label | "Sehati" | Nama aplikasi. |
+| I-01-03 | Label | "Teman sehat mental dan kesejahteraan mahasiswa" | Slogan aplikasi. |
+| I-01-04 | Button | "Masuk dengan Google" | Membuka halaman otorisasi Google. Kode otorisasi diteruskan lewat `LoginView.isiLoginPage(kodeOtorisasi)` ke `AuthController.kirimData(kodeOtorisasi)`, yang menjalankan Algo-001. Akun Mahasiswa baru dibuat otomatis pada login pertama. Setelah berhasil, `HomeView.tampilkanBeranda(peran)` membuka I-02 (Mahasiswa) atau I-03 (Administrator), lalu perangkat didaftarkan untuk notifikasi (Algo-003). |
+| I-01-05 | Label | Keterangan akun kampus | Menjelaskan bahwa masuk memakai akun Google kampus dan akun dibuat otomatis. |
+| I-01-06 | Banner galat (kondisional) | "Masuk dengan Google gagal. Silakan coba lagi." | Tampil bila validasi Google gagal (UC-11 skenario alternatif 1). Pengguna tetap di I-01. |
 
-## 6.X Rancangan Antarmuka [ID Layar X]
+## 6.2 Rancangan Antarmuka I-02
 
-_[Ulangi pola 6.1 untuk layar berikutnya sampai semua layar teridentifikasi]_
+**Antarmuka:** I-02  
+**Nama Layar:** Beranda Mahasiswa  
+**Kelas View:** `HomeView`  
+**Use Case:** UC-11
 
-## 6.Y Rancangan Antarmuka Keseluruhan
+<p align="center">
+<img alt="Rancangan Antarmuka I-02 - Beranda Mahasiswa" src="./assets/antarmuka/I-02.png" width="300">
+</p>
+<p align="center">
+<i>Gambar 6.2. Rancangan Antarmuka I-02 - Beranda Mahasiswa</i>
+</p>
 
-Tuliskan daftar gambar seluruh antarmuka. Berikan ID unik untuk setiap tampilan dan gunakan ID yang sama pada subbab perancangan antarmuka masing-masing.
+Tabel 6.2. Spesifikasi Objek Antarmuka I-02
 
-Tabel 6.Y. Rancangan Antarmuka Keseluruhan
+| Id_Objek | Jenis | Konten | Keterangan |
+| -------- | ----- | ------ | ---------- |
+| I-02-01 | Label | "Selamat pagi," dan nama Mahasiswa | Sapaan sesuai waktu dan nama pengguna. |
+| I-02-02 | Button ikon | Ikon lonceng | Menampilkan daftar notifikasi yang diterima (`Notifikasi.tampilkanNotifikasi()`). |
+| I-02-03 | Kartu | "Afirmasi hari ini" dan isi afirmasi | Data dari `AffirmationController.ambilAfirmasiHariIni()` dan `DailyAffirmation.ambilAfirmasi()` (Algo-031, Q-041). Bila belum ada afirmasi, kartu berisi ajakan mengatur afirmasi. Menekan kartu membuka I-04. |
+| I-02-04 | Kartu | "Sesi konsultasi berikutnya", tanggal, waktu, konsultan, lencana "Terjadwal" | Data dari `ConsultationController.ambilSesiBerikutnya()` dan `JadwalKonsultasi.ambilSesiBerikutnya()` (Algo-031, Q-042). Bila belum ada sesi, kartu berisi ajakan memesan sesi yang membuka I-07. Menekan kartu membuka I-06. |
+| I-02-05 | MenuTile (6 buah) | Afirmasi, Pengingat, Kalender, Konsultasi, FAQ, Umpan Balik | `HomeView.bukaMenu(menu)` membuka I-04, I-05, I-06, I-07, I-09, atau I-11. |
+| I-02-06 | TabBar | Bilah tab Mahasiswa: Beranda, Kalender, Konsultasi, Pengingat, FAQ | Navigasi utama Mahasiswa: Beranda ke I-02, Kalender ke I-06, Konsultasi ke I-07, Pengingat ke I-05, FAQ ke I-09. |
 
-| No       | Tampilan Antarmuka                                                             |
-| -------- | ------------------------------------------------------------------------------ |
-| _[I-01]_ | <img src="./assets/diagram/contoh-design.png" alt="Contoh Desain" width="400"> |
-| _[I-02]_ | _[Sisipkan gambar antarmuka I-02]_                                             |
-| _[I-XX]_ | _[Sisipkan gambar antarmuka berikutnya]_                                       |
+## 6.3 Rancangan Antarmuka I-03
+
+**Antarmuka:** I-03  
+**Nama Layar:** Beranda Administrator  
+**Kelas View:** `HomeView`  
+**Use Case:** UC-11
+
+<p align="center">
+<img alt="Rancangan Antarmuka I-03 - Beranda Administrator" src="./assets/antarmuka/I-03.png" width="300">
+</p>
+<p align="center">
+<i>Gambar 6.3. Rancangan Antarmuka I-03 - Beranda Administrator</i>
+</p>
+
+Tabel 6.3. Spesifikasi Objek Antarmuka I-03
+
+| Id_Objek | Jenis | Konten | Keterangan |
+| -------- | ----- | ------ | ---------- |
+| I-03-01 | Label | "Panel Administrator" dan "Halo, Admin" | Sapaan untuk Administrator. |
+| I-03-02 | Button ikon | Ikon keluar | Menjalankan `SesiAutentikasi.logout()` lalu kembali ke I-01. |
+| I-03-03 | Kartu | "Status layanan": Website dan Server dengan lencana Up/Down | Diisi oleh `HomeView.tampilkanBeranda` lewat `ServerStatusController.tampilkanStatusServer(jenis)` dan `StatusServer.ambilStatusServer(jenis)` (Algo-031, Algo-020). Menekan kartu membuka I-15. |
+| I-03-04 | MenuTile (4 buah) | Jadwal Konsultan, Kelola FAQ, Umpan Balik, Status Server | `HomeView.bukaMenu(menu)` membuka I-12, I-13, I-14, atau I-15. |
+
+## 6.4 Rancangan Antarmuka I-04
+
+**Antarmuka:** I-04  
+**Nama Layar:** Daily Affirmations  
+**Kelas View:** `AffirmationView`  
+**Use Case:** UC-01
+
+<p align="center">
+<img alt="Rancangan Antarmuka I-04 - Daily Affirmations" src="./assets/antarmuka/I-04.png" width="300">
+</p>
+<p align="center">
+<i>Gambar 6.4. Rancangan Antarmuka I-04 - Daily Affirmations</i>
+</p>
+
+Tabel 6.4. Spesifikasi Objek Antarmuka I-04
+
+| Id_Objek | Jenis | Konten | Keterangan |
+| -------- | ----- | ------ | ---------- |
+| I-04-01 | AppBar | Tombol kembali dan judul "Daily Affirmations" | Tombol kembali menutup layar dan kembali ke layar sebelumnya. |
+| I-04-02 | Kartu | "Contoh afirmasi" dan isi afirmasi | Pratinjau isi afirmasi yang akan dikirim. |
+| I-04-03 | Toggle | "Kirim afirmasi harian" | Mengaktifkan atau menonaktifkan pengiriman afirmasi harian. |
+| I-04-04 | Text field | Label "Waktu pengiriman", isi "07:00" | Menekan kolom membuka pemilih waktu. Waktu dikirim lewat `AffirmationView.pilihWaktuPengiriman(waktu)`. |
+| I-04-05 | Chip (4 buah) | "06:00", "07:00", "08:00", "21:00" | Mengisi I-04-04 dengan waktu yang dipilih. Chip aktif berwarna merah. |
+| I-04-06 | Label | Keterangan pengiriman | Menjelaskan bahwa afirmasi dikirim setiap hari pada waktu terpilih. |
+| I-04-07 | Button | "Simpan Setelan" | `AffirmationController.submitWaktuPengiriman(waktu)`: `Validasi.validasiWaktu` (Algo-023), lalu `DailyAffirmation.aturWaktuKirim` (Algo-004). Bila berhasil, `AffirmationView.tampilkanSetelanTersimpan()` menampilkan konfirmasi. |
+| I-04-08 | Banner galat (kondisional) | "Setelan gagal disimpan. Silakan coba lagi." | Tampil bila penyimpanan gagal (UC-01 skenario alternatif 1). |
+| I-04-09 | TabBar | Bilah tab Mahasiswa: Beranda, Kalender, Konsultasi, Pengingat, FAQ (Pengingat aktif) | Navigasi utama Mahasiswa: Beranda ke I-02, Kalender ke I-06, Konsultasi ke I-07, Pengingat ke I-05, FAQ ke I-09. |
+
+## 6.5 Rancangan Antarmuka I-05
+
+**Antarmuka:** I-05  
+**Nama Layar:** Pengingat Kesehatan  
+**Kelas View:** `ReminderView`  
+**Use Case:** UC-02
+
+<p align="center">
+<img alt="Rancangan Antarmuka I-05 - Pengingat Kesehatan" src="./assets/antarmuka/I-05.png" width="300">
+</p>
+<p align="center">
+<i>Gambar 6.5. Rancangan Antarmuka I-05 - Pengingat Kesehatan</i>
+</p>
+
+Tabel 6.5. Spesifikasi Objek Antarmuka I-05
+
+| Id_Objek | Jenis | Konten | Keterangan |
+| -------- | ----- | ------ | ---------- |
+| I-05-01 | AppBar | Tombol kembali dan judul "Pengingat Kesehatan" | Tombol kembali menutup layar dan kembali ke layar sebelumnya. |
+| I-05-02 | Label | Penjelasan pengingat | Menjelaskan fungsi layar. |
+| I-05-03 | Kartu (3 buah) | Makan, Tidur, Olahraga, masing-masing dengan ikon, keterangan, waktu, dan sakelar | Satu kartu untuk setiap jenis pengingat. |
+| I-05-04 | Text field waktu | "12:00", "22:00", "17:00" | Menekan waktu membuka pemilih waktu. Waktu dikirim lewat `ReminderView.pilihWaktuPengiriman(waktu)`. |
+| I-05-05 | Toggle (3 buah) | Aktif atau nonaktif | Mengaktifkan atau menonaktifkan pengingat jenis tersebut. |
+| I-05-06 | Button | "Simpan Setelan" | `ReminderController.submitWaktuPengiriman(waktu)`: `Validasi.validasiWaktu` (Algo-023), lalu `Reminder.aturWaktuKirim` (Algo-006). Bila berhasil, menampilkan konfirmasi setelan tersimpan. |
+| I-05-07 | Banner galat (kondisional) | "Setelan gagal disimpan. Silakan coba lagi." | Tampil bila penyimpanan gagal (UC-02 skenario alternatif 1). |
+| I-05-08 | TabBar | Bilah tab Mahasiswa: Beranda, Kalender, Konsultasi, Pengingat, FAQ (Pengingat aktif) | Navigasi utama Mahasiswa: Beranda ke I-02, Kalender ke I-06, Konsultasi ke I-07, Pengingat ke I-05, FAQ ke I-09. |
+
+## 6.6 Rancangan Antarmuka I-06
+
+**Antarmuka:** I-06  
+**Nama Layar:** Kalender Terintegrasi  
+**Kelas View:** `CalendarView`  
+**Use Case:** UC-03
+
+<p align="center">
+<img alt="Rancangan Antarmuka I-06 - Kalender Terintegrasi" src="./assets/antarmuka/I-06.png" width="300">
+</p>
+<p align="center">
+<i>Gambar 6.6. Rancangan Antarmuka I-06 - Kalender Terintegrasi</i>
+</p>
+
+Tabel 6.6. Spesifikasi Objek Antarmuka I-06
+
+| Id_Objek | Jenis | Konten | Keterangan |
+| -------- | ----- | ------ | ---------- |
+| I-06-01 | AppBar | Judul "Kalender" | Judul layar utama tab Kalender. |
+| I-06-02 | Label | "Oktober 2026" | Bulan yang sedang ditampilkan. |
+| I-06-03 | Button | "Muat ulang" | Menjalankan ulang `CalendarView.bukaPageCalendar()` dan `CalendarController.tampilkanCalendar()`: event Google (Algo-009), jadwal konsultasi (Algo-015), lalu digabung (Algo-011). |
+| I-06-04 | Pemilih hari (7 tombol) | "Sen 27" sampai "Min 2" | Memilih hari. Daftar acara di bawahnya mengikuti hari terpilih. |
+| I-06-05 | Lencana (2 buah) | "Google Calendar", "Sesi konsultasi" | Keterangan warna penanda acara. |
+| I-06-06 | Kartu acara (daftar) | Judul acara, jam, dan sumber | Hasil `KalenderGabungan.gabungkanJadwal` (Algo-011) yang ditampilkan lewat `CalendarView.tampilkanKalender(kalender)`. Penanda biru untuk event Google, merah untuk sesi konsultasi. |
+| I-06-07 | Banner galat (kondisional) | "Gagal mengambil data event. Tekan Muat ulang untuk mencoba lagi." | Tampil lewat `CalendarView.showErrorMessage(pesan)` bila event gagal diambil (UC-03 skenario alternatif 1). Tombol I-06-03 dipakai untuk mencoba lagi. |
+| I-06-08 | TabBar | Bilah tab Mahasiswa: Beranda, Kalender, Konsultasi, Pengingat, FAQ (Kalender aktif) | Navigasi utama Mahasiswa: Beranda ke I-02, Kalender ke I-06, Konsultasi ke I-07, Pengingat ke I-05, FAQ ke I-09. |
+
+## 6.7 Rancangan Antarmuka I-07
+
+**Antarmuka:** I-07  
+**Nama Layar:** Pilih Konsultan  
+**Kelas View:** `ConsultationBookingView`  
+**Use Case:** UC-04
+
+<p align="center">
+<img alt="Rancangan Antarmuka I-07 - Pilih Konsultan" src="./assets/antarmuka/I-07.png" width="300">
+</p>
+<p align="center">
+<i>Gambar 6.7. Rancangan Antarmuka I-07 - Pilih Konsultan</i>
+</p>
+
+Tabel 6.7. Spesifikasi Objek Antarmuka I-07
+
+| Id_Objek | Jenis | Konten | Keterangan |
+| -------- | ----- | ------ | ---------- |
+| I-07-01 | AppBar | Judul "Pesan Konsultasi" | Judul layar utama tab Konsultasi. |
+| I-07-02 | Label | "Langkah 1 dari 2" | Penanda langkah pemesanan. |
+| I-07-03 | Label | Penjelasan pemilihan konsultan | Menjelaskan bahwa jadwal sudah dicocokkan dengan Google Calendar. |
+| I-07-04 | Kartu konsultan (daftar) | Inisial, nama, spesialisasi, dan jumlah slot tersedia | Data dari `Konsultan.ambilDaftarKonsultan()` (Algo-014). Menekan kartu menjalankan `ConsultationBookingView.pilihKonsultan(konsultan)` dan `ConsultationController.submitKonsultan(konsultan)`: `Validasi.validasiKonsultan` (Algo-024) dan `JadwalKonsultasi.ambilKalender(konsultan)` (Algo-015), lalu membuka I-08. |
+| I-07-05 | Banner galat (kondisional) | "Gagal mengambil data jadwal konsultasi. Tekan Muat ulang untuk mencoba lagi." | Tampil bila data jadwal gagal diambil (UC-04 skenario alternatif 1). |
+| I-07-06 | TabBar | Bilah tab Mahasiswa: Beranda, Kalender, Konsultasi, Pengingat, FAQ (Konsultasi aktif) | Navigasi utama Mahasiswa: Beranda ke I-02, Kalender ke I-06, Konsultasi ke I-07, Pengingat ke I-05, FAQ ke I-09. |
+
+## 6.8 Rancangan Antarmuka I-08
+
+**Antarmuka:** I-08  
+**Nama Layar:** Pilih Sesi dan Konfirmasi  
+**Kelas View:** `ConsultationBookingView`  
+**Use Case:** UC-04
+
+<p align="center">
+<img alt="Rancangan Antarmuka I-08 - Pilih Sesi dan Konfirmasi" src="./assets/antarmuka/I-08.png" width="300">
+</p>
+<p align="center">
+<i>Gambar 6.8. Rancangan Antarmuka I-08 - Pilih Sesi dan Konfirmasi</i>
+</p>
+
+Tabel 6.8. Spesifikasi Objek Antarmuka I-08
+
+| Id_Objek | Jenis | Konten | Keterangan |
+| -------- | ----- | ------ | ---------- |
+| I-08-01 | AppBar | Tombol kembali dan judul "Pilih Sesi" | Tombol kembali menutup layar dan kembali ke layar sebelumnya. |
+| I-08-02 | Label | "Langkah 2 dari 2" | Penanda langkah pemesanan. |
+| I-08-03 | Kartu | Konsultan terpilih | Menampilkan konsultan yang dipilih pada I-07. |
+| I-08-04 | Chip tanggal (3 buah) | "Kam, 30 Okt", "Jum, 31 Okt", "Sen, 3 Nov" | Memilih tanggal. Daftar slot mengikuti tanggal terpilih. |
+| I-08-05 | Pilihan slot (daftar) | Jam dan lencana "Tersedia", "Terpesan", atau "Bentrok dengan kalendermu" | Menekan slot tersedia menjalankan `ConsultationBookingView.pilihSesi(jadwal)`. Slot terpesan dan slot yang bentrok dengan event Google Calendar tidak dapat dipilih. |
+| I-08-06 | Banner info | "Slot dicek terhadap Google Calendar-mu sebelum pesanan disimpan." | Informasi pemeriksaan bentrok. |
+| I-08-07 | Button | "Konfirmasi Pesanan" | `ConsultationController.updateStatusKonsultasi(jadwal)` (Algo-022): `KalenderGabungan.jadwalBentrok` (Algo-012), `KalenderGabungan.ubahKalender` (Algo-013), lalu `JadwalKonsultasi.pesanSesi` (Algo-016). Bila berhasil, menampilkan konfirmasi dan sesi muncul pada I-02 dan I-06. |
+| I-08-08 | Banner galat (kondisional) | "Sesi gagal dipesan. Silakan tekan Konfirmasi sekali lagi." | Tampil bila pesanan gagal disimpan (UC-04 skenario alternatif 2). |
+| I-08-09 | TabBar | Bilah tab Mahasiswa: Beranda, Kalender, Konsultasi, Pengingat, FAQ (Konsultasi aktif) | Navigasi utama Mahasiswa: Beranda ke I-02, Kalender ke I-06, Konsultasi ke I-07, Pengingat ke I-05, FAQ ke I-09. |
+
+## 6.9 Rancangan Antarmuka I-09
+
+**Antarmuka:** I-09  
+**Nama Layar:** FAQ dan Pencarian  
+**Kelas View:** `FAQView`  
+**Use Case:** UC-06
+
+<p align="center">
+<img alt="Rancangan Antarmuka I-09 - FAQ dan Pencarian" src="./assets/antarmuka/I-09.png" width="300">
+</p>
+<p align="center">
+<i>Gambar 6.9. Rancangan Antarmuka I-09 - FAQ dan Pencarian</i>
+</p>
+
+Tabel 6.9. Spesifikasi Objek Antarmuka I-09
+
+| Id_Objek | Jenis | Konten | Keterangan |
+| -------- | ----- | ------ | ---------- |
+| I-09-01 | AppBar | Judul "FAQ" | Judul layar utama tab FAQ. |
+| I-09-02 | Text field | Label "Cari pertanyaan" | `FAQView.cariFAQ(kataKunci)` diteruskan ke `FAQController.cariFAQ` dan `FAQ.cariFAQ` (Algo-017). Hasil ditampilkan lewat `FAQView.tampilkanFAQ(daftar)`. |
+| I-09-03 | Label | "3 pertanyaan ditemukan" | Jumlah hasil pencarian. |
+| I-09-04 | Accordion (daftar) | Pertanyaan, dan jawaban saat dibuka | Menekan pertanyaan membuka atau menutup jawabannya. |
+| I-09-05 | Kartu | "Tidak menemukan jawaban?" | Tawaran mengajukan pertanyaan (`FAQView.tampilkanTawaranPengajuan()`). Disorot saat pencarian tidak menemukan hasil (UC-06 skenario alternatif 1). |
+| I-09-06 | Button | "Ajukan Pertanyaan" | `FAQView.bukaFormPertanyaan()` membuka I-10. |
+| I-09-07 | TabBar | Bilah tab Mahasiswa: Beranda, Kalender, Konsultasi, Pengingat, FAQ (FAQ aktif) | Navigasi utama Mahasiswa: Beranda ke I-02, Kalender ke I-06, Konsultasi ke I-07, Pengingat ke I-05, FAQ ke I-09. |
+
+## 6.10 Rancangan Antarmuka I-10
+
+**Antarmuka:** I-10  
+**Nama Layar:** Form Pengajuan Pertanyaan  
+**Kelas View:** `FAQView`  
+**Use Case:** UC-12
+
+<p align="center">
+<img alt="Rancangan Antarmuka I-10 - Form Pengajuan Pertanyaan" src="./assets/antarmuka/I-10.png" width="300">
+</p>
+<p align="center">
+<i>Gambar 6.10. Rancangan Antarmuka I-10 - Form Pengajuan Pertanyaan</i>
+</p>
+
+Tabel 6.10. Spesifikasi Objek Antarmuka I-10
+
+| Id_Objek | Jenis | Konten | Keterangan |
+| -------- | ----- | ------ | ---------- |
+| I-10-01 | AppBar | Tombol kembali dan judul "Ajukan Pertanyaan" | Tombol kembali menutup layar dan kembali ke layar sebelumnya. |
+| I-10-02 | Label | Penjelasan pengajuan | Menjelaskan bahwa pertanyaan dikirim ke Administrator. |
+| I-10-03 | Text area | Label "Pertanyaan" | Isi pertanyaan dikirim lewat `FAQView.isiFormPertanyaan(isi)`. |
+| I-10-04 | Label | "52/500 karakter" | Penghitung karakter, maksimal 500. |
+| I-10-05 | Button | "Kirim Pertanyaan" | `FAQController.kirimPertanyaan(isi)`: `Validasi.validasiInput` (Algo-026), lalu `PengajuanPertanyaan.ajukanPertanyaan` yang disimpan lewat `CloudflareD1Database.simpanPerubahan` (Algo-030). |
+| I-10-06 | Banner sukses (kondisional) | "Pertanyaan berhasil dikirim. Terima kasih!" | Tampil bila pertanyaan tersimpan. |
+| I-10-07 | Banner galat (kondisional) | "Pertanyaan gagal disimpan. Silakan coba lagi." | Tampil bila penyimpanan gagal (UC-12 skenario alternatif 1). |
+| I-10-08 | TabBar | Bilah tab Mahasiswa: Beranda, Kalender, Konsultasi, Pengingat, FAQ (FAQ aktif) | Navigasi utama Mahasiswa: Beranda ke I-02, Kalender ke I-06, Konsultasi ke I-07, Pengingat ke I-05, FAQ ke I-09. |
+
+## 6.11 Rancangan Antarmuka I-11
+
+**Antarmuka:** I-11  
+**Nama Layar:** Umpan Balik  
+**Kelas View:** `FeedbackView`  
+**Use Case:** UC-08
+
+<p align="center">
+<img alt="Rancangan Antarmuka I-11 - Umpan Balik" src="./assets/antarmuka/I-11.png" width="300">
+</p>
+<p align="center">
+<i>Gambar 6.11. Rancangan Antarmuka I-11 - Umpan Balik</i>
+</p>
+
+Tabel 6.11. Spesifikasi Objek Antarmuka I-11
+
+| Id_Objek | Jenis | Konten | Keterangan |
+| -------- | ----- | ------ | ---------- |
+| I-11-01 | AppBar | Tombol kembali dan judul "Umpan Balik" | Tombol kembali menutup layar dan kembali ke layar sebelumnya. |
+| I-11-02 | Label | Penjelasan umpan balik | Menjelaskan bahwa umpan balik dibaca dan ditanggapi Administrator. |
+| I-11-03 | Text area | Label "Umpan balik" | Isi umpan balik dikirim lewat `FeedbackView.isiFormFeedback(isi)`. |
+| I-11-04 | Button | "Kirim Umpan Balik" | `FeedbackController.kirimFeedback(isi)`: `Validasi.validasiInput` (Algo-026), lalu `UmpanBalik.kirimUmpanBalik` yang disimpan lewat `CloudflareD1Database.simpanPerubahan` (Algo-030). Bila berhasil, `FeedbackView.tampilkanFeedbackTersimpan()` menampilkan konfirmasi. |
+| I-11-05 | Banner galat (kondisional) | "Umpan balik gagal disimpan. Silakan coba lagi." | Tampil bila penyimpanan gagal (UC-08 skenario alternatif 1). |
+| I-11-06 | Kartu (daftar) | Umpan balik sebelumnya: tanggal, isi, lencana status, dan tanggapan Administrator | Data dari `UmpanBalik.ambilListUmpanBalik()` (Algo-018). Tanggapan tampil setelah Administrator menanggapi pada I-14. Bila tanggapan gagal dimuat (UC-09 skenario alternatif 1), kartu tampil tanpa tanggapan. |
+| I-11-07 | TabBar | Bilah tab Mahasiswa: Beranda, Kalender, Konsultasi, Pengingat, FAQ (Beranda aktif) | Navigasi utama Mahasiswa: Beranda ke I-02, Kalender ke I-06, Konsultasi ke I-07, Pengingat ke I-05, FAQ ke I-09. |
+
+## 6.12 Rancangan Antarmuka I-12
+
+**Antarmuka:** I-12  
+**Nama Layar:** Kelola Jadwal Konsultan  
+**Kelas View:** `ConsultationManagementView`  
+**Use Case:** UC-05
+
+<p align="center">
+<img alt="Rancangan Antarmuka I-12 - Kelola Jadwal Konsultan" src="./assets/antarmuka/I-12.png" width="300">
+</p>
+<p align="center">
+<i>Gambar 6.12. Rancangan Antarmuka I-12 - Kelola Jadwal Konsultan</i>
+</p>
+
+Tabel 6.12. Spesifikasi Objek Antarmuka I-12
+
+| Id_Objek | Jenis | Konten | Keterangan |
+| -------- | ----- | ------ | ---------- |
+| I-12-01 | AppBar | Tombol kembali dan judul "Jadwal Konsultan" | Tombol kembali menutup layar dan kembali ke layar sebelumnya. |
+| I-12-02 | Text field (pilihan) | Label "Konsultan", isi nama konsultan | Memilih konsultan lewat `ConsultationManagementView.pilihKonsultan(konsultan)` dan `ConsultationController.submitKonsultan(konsultan)` (Algo-024, Algo-015). |
+| I-12-03 | Chip tanggal (3 buah) | "Kam, 30 Okt", "Jum, 31 Okt", "Sen, 3 Nov" | Memilih tanggal. Daftar slot mengikuti tanggal terpilih. |
+| I-12-04 | Kartu slot (daftar) | Jam, lencana "Terpesan" atau "Tersedia", dan tombol ubah | Menekan tombol ubah membuka panel I-12-05 untuk slot tersebut. |
+| I-12-05 | Panel | "Ubah slot" dengan kolom "Mulai" dan "Selesai" | Perubahan dikirim lewat `ConsultationManagementView.perbaruiJadwal(jadwal)`. |
+| I-12-06 | Button | "Simpan" | `ConsultationController.updateStatusKonsultasi(jadwal)` (Algo-022): `Validasi.validasiJadwal` (Algo-025), lalu `KalenderGabungan.ubahKalender` (Algo-013) dan `CloudflareD1Database.simpanKalender` (Algo-029). |
+| I-12-07 | Banner galat (kondisional) | "Perubahan jadwal gagal disimpan. Tekan Simpan sekali lagi." | Tampil di panel bila perubahan gagal disimpan (UC-05 skenario alternatif 2). |
+| I-12-08 | Banner galat (kondisional) | "Gagal mengambil data jadwal konsultasi. Tekan Muat ulang untuk mencoba lagi." | Tampil bila data jadwal gagal diambil (UC-05 skenario alternatif 1). |
+| I-12-09 | Button | "Tambah Slot" | Membuka panel I-12-05 kosong untuk slot baru, yang disimpan lewat `JadwalKonsultasi.simpanJadwal()`. |
+
+## 6.13 Rancangan Antarmuka I-13
+
+**Antarmuka:** I-13  
+**Nama Layar:** Kelola FAQ  
+**Kelas View:** `FAQView`  
+**Use Case:** UC-07
+
+<p align="center">
+<img alt="Rancangan Antarmuka I-13 - Kelola FAQ" src="./assets/antarmuka/I-13.png" width="300">
+</p>
+<p align="center">
+<i>Gambar 6.13. Rancangan Antarmuka I-13 - Kelola FAQ</i>
+</p>
+
+Tabel 6.13. Spesifikasi Objek Antarmuka I-13
+
+| Id_Objek | Jenis | Konten | Keterangan |
+| -------- | ----- | ------ | ---------- |
+| I-13-01 | AppBar | Tombol kembali dan judul "Kelola FAQ" | Tombol kembali menutup layar dan kembali ke layar sebelumnya. |
+| I-13-02 | Kartu FAQ (daftar) | Pertanyaan dan jawaban singkat | Data dari `FAQ.ambilDaftarPertanyaan()`. |
+| I-13-03 | Button ikon (per kartu) | Ikon ubah | Mengisi formulir I-13-05 dengan FAQ terpilih. Perubahan disimpan lewat `FAQView.ubahFAQ` dan `FAQController.ubahFAQ` (Algo-026, Algo-030). |
+| I-13-04 | Button ikon (per kartu) | Ikon hapus | Setelah konfirmasi, `FAQView.hapusFAQ(idFAQ)` diteruskan ke `FAQController.hapusFAQ` dan `FAQ.hapusFAQ` (Algo-030). |
+| I-13-05 | Formulir | "Tambah FAQ" dengan kolom "Pertanyaan" dan area teks "Jawaban" | Isian FAQ baru atau FAQ yang sedang diubah. |
+| I-13-06 | Button | "Simpan FAQ" | `FAQController.tambahFAQ(pertanyaan, jawaban)`: `Validasi.validasiInput` (Algo-026), lalu `FAQ.tambahFAQ` yang disimpan lewat `CloudflareD1Database.simpanPerubahan` (Algo-030). |
+| I-13-07 | Banner galat (kondisional) | "FAQ gagal disimpan. Silakan coba lagi." | Tampil bila penambahan, perubahan, atau penghapusan gagal (UC-07 skenario alternatif 1). |
+
+## 6.14 Rancangan Antarmuka I-14
+
+**Antarmuka:** I-14  
+**Nama Layar:** Tanggapi Umpan Balik  
+**Kelas View:** `FeedbackView`  
+**Use Case:** UC-09
+
+<p align="center">
+<img alt="Rancangan Antarmuka I-14 - Tanggapi Umpan Balik" src="./assets/antarmuka/I-14.png" width="300">
+</p>
+<p align="center">
+<i>Gambar 6.14. Rancangan Antarmuka I-14 - Tanggapi Umpan Balik</i>
+</p>
+
+Tabel 6.14. Spesifikasi Objek Antarmuka I-14
+
+| Id_Objek | Jenis | Konten | Keterangan |
+| -------- | ----- | ------ | ---------- |
+| I-14-01 | AppBar | Tombol kembali dan judul "Umpan Balik" | Tombol kembali menutup layar dan kembali ke layar sebelumnya. |
+| I-14-02 | Chip filter (3 buah) | "Semua", "Belum ditanggapi", "Ditanggapi" | Menyaring daftar umpan balik. |
+| I-14-03 | Kartu umpan balik (daftar) | Inisial dan nama pengirim, tanggal, lencana status, isi umpan balik | Data dari `UmpanBalik.ambilListUmpanBalik()` (Algo-018). Menekan kartu membuka kolom tanggapan. |
+| I-14-04 | Text area | Label "Tanggapan" | Isi tanggapan dikirim lewat `FeedbackView.tanggapiFeedback(tanggapan)`. |
+| I-14-05 | Button | "Kirim Tanggapan" | `FeedbackController.kirimTanggapan(tanggapan)`: `Validasi.validasiInput` (Algo-026), lalu `UmpanBalik.berikanTanggapan` (Algo-019). Tanggapan tampil pada I-11 milik pengirim. |
+| I-14-06 | Banner galat (kondisional) | "Tanggapan gagal disimpan. Silakan coba lagi." | Tampil bila tanggapan gagal disimpan. |
+
+## 6.15 Rancangan Antarmuka I-15
+
+**Antarmuka:** I-15  
+**Nama Layar:** Status Server  
+**Kelas View:** `ServerStatusView`  
+**Use Case:** UC-10
+
+<p align="center">
+<img alt="Rancangan Antarmuka I-15 - Status Server" src="./assets/antarmuka/I-15.png" width="300">
+</p>
+<p align="center">
+<i>Gambar 6.15. Rancangan Antarmuka I-15 - Status Server</i>
+</p>
+
+Tabel 6.15. Spesifikasi Objek Antarmuka I-15
+
+| Id_Objek | Jenis | Konten | Keterangan |
+| -------- | ----- | ------ | ---------- |
+| I-15-01 | AppBar | Tombol kembali dan judul "Status Server" | Tombol kembali menutup layar dan kembali ke layar sebelumnya. |
+| I-15-02 | Kartu | Website: lencana Up/Down dan waktu pemeriksaan terakhir | `ServerStatusView.cekStatusServer("website")` diteruskan ke `ServerStatusController.tampilkanStatusServer` dan `StatusServer.ambilStatusServer` (Algo-020). |
+| I-15-03 | Kartu | Server: lencana Up/Down dan waktu pemeriksaan terakhir | Sama seperti I-15-02 dengan jenis "server". |
+| I-15-04 | Banner info | "Target ketersediaan minimal 90% (KNF-01)." | Informasi target ketersediaan. |
+| I-15-05 | Daftar | Riwayat pemeriksaan: waktu, jenis, lencana Up/Down | Riwayat pemeriksaan terbaru dari tabel `status_server`. |
+| I-15-06 | Button | "Periksa Sekarang" | Menjalankan `StatusServer.cekStatusServer()` (Algo-021) untuk kedua jenis, lalu memperbarui I-15-02 dan I-15-03. |
+
+## 6.16 Rancangan Antarmuka Keseluruhan
+
+Daftar seluruh layar beserta ID-nya. ID yang sama dipakai pada subbab perancangan antarmuka masing-masing.
+
+Tabel 6.16. Rancangan Antarmuka Keseluruhan
+
+| No | Tampilan Antarmuka |
+| -- | ------------------ |
+| I-01<br>Masuk | <img src="./assets/antarmuka/I-01.png" alt="I-01 Masuk" width="200"> |
+| I-02<br>Beranda Mahasiswa | <img src="./assets/antarmuka/I-02.png" alt="I-02 Beranda Mahasiswa" width="200"> |
+| I-03<br>Beranda Administrator | <img src="./assets/antarmuka/I-03.png" alt="I-03 Beranda Administrator" width="200"> |
+| I-04<br>Daily Affirmations | <img src="./assets/antarmuka/I-04.png" alt="I-04 Daily Affirmations" width="200"> |
+| I-05<br>Pengingat Kesehatan | <img src="./assets/antarmuka/I-05.png" alt="I-05 Pengingat Kesehatan" width="200"> |
+| I-06<br>Kalender Terintegrasi | <img src="./assets/antarmuka/I-06.png" alt="I-06 Kalender Terintegrasi" width="200"> |
+| I-07<br>Pilih Konsultan | <img src="./assets/antarmuka/I-07.png" alt="I-07 Pilih Konsultan" width="200"> |
+| I-08<br>Pilih Sesi dan Konfirmasi | <img src="./assets/antarmuka/I-08.png" alt="I-08 Pilih Sesi dan Konfirmasi" width="200"> |
+| I-09<br>FAQ dan Pencarian | <img src="./assets/antarmuka/I-09.png" alt="I-09 FAQ dan Pencarian" width="200"> |
+| I-10<br>Form Pengajuan Pertanyaan | <img src="./assets/antarmuka/I-10.png" alt="I-10 Form Pengajuan Pertanyaan" width="200"> |
+| I-11<br>Umpan Balik | <img src="./assets/antarmuka/I-11.png" alt="I-11 Umpan Balik" width="200"> |
+| I-12<br>Kelola Jadwal Konsultan | <img src="./assets/antarmuka/I-12.png" alt="I-12 Kelola Jadwal Konsultan" width="200"> |
+| I-13<br>Kelola FAQ | <img src="./assets/antarmuka/I-13.png" alt="I-13 Kelola FAQ" width="200"> |
+| I-14<br>Tanggapi Umpan Balik | <img src="./assets/antarmuka/I-14.png" alt="I-14 Tanggapi Umpan Balik" width="200"> |
+| I-15<br>Status Server | <img src="./assets/antarmuka/I-15.png" alt="I-15 Status Server" width="200"> |
 
 <br>
 
@@ -4393,3 +4871,4 @@ Tabel 7.1. Matriks Kerunutan Kelas terhadap Use Case
 | C-33 - `Validasi`                   | UC-01 - Menyetel Daily Affirmations, UC-02 - Menyetel Pengingat Kesehatan, UC-04 - Memesan Sesi Konsultasi, UC-05 - Mengelola Jadwal Konsultan, UC-07 - Mengelola FAQ, UC-08 - Memberikan Umpan Balik, UC-09 - Menanggapi Umpan Balik, UC-12 - Form Pengajuan Pertanyaan                                     |
 | C-34 - `GoogleAuthService`          | UC-11 - Masuk Melalui Akun Google                                                                                                                                                                                                                                                                            |
 | C-35 - `CloudflareD1Database`       | UC-01 - Menyetel Daily Affirmations, UC-02 - Menyetel Pengingat Kesehatan, UC-04 - Memesan Sesi Konsultasi, UC-05 - Mengelola Jadwal Konsultan, UC-07 - Mengelola FAQ, UC-08 - Memberikan Umpan Balik, UC-09 - Menanggapi Umpan Balik, UC-11 - Masuk Melalui Akun Google, UC-12 - Form Pengajuan Pertanyaan                                     |
+| C-36 - `HomeView`                   | UC-11 - Masuk Melalui Akun Google |
