@@ -33,9 +33,11 @@ Dipersiapkan oleh:
 
 ## Daftar Perubahan
 
-| Revisi | Deskripsi |
-| ------ | --------- |
-| ...    | ...       |
+| Revisi    | Deskripsi |
+| --------- | --------- |
+| REV-M8-01 | Menambahkan atribut `waktuSelesai` (DateTime) pada kelas `JadwalKonsultasi` (C-11) untuk menyimpan waktu selesai sesi konsultasi. Perubahan tampak pada diagram kelas UC-03, UC-04, dan UC-05 (BAB 3), diagram kelas keseluruhan dan Tabel 4.1 (BAB 4), serta atribut kelas pada BAB 5. |
+| REV-M8-02 | Menambahkan atribut `idKonsultan` (String) pada kelas `Konsultan` (C-10) sebagai pengenal konsultan. Perubahan tampak pada diagram kelas UC-04 dan UC-05 (BAB 3), diagram kelas keseluruhan dan Tabel 4.1 (BAB 4), serta atribut kelas pada BAB 5. |
+| REV-M8-03 | Menambahkan atribut `tokenPush` (String) dan operasi `daftarkanPerangkat(tokenPush: String): Boolean` pada kelas `SesiAutentikasi` (C-04), serta operasi `daftarkanPerangkat(tokenPush: String): void` pada kelas `LoginView` (C-16) dan `AuthController` (C-25), untuk pendaftaran perangkat notifikasi push. Kelas `CloudflareD1Database` (C-35) kini juga terlibat pada UC-11. Perubahan tampak pada sequence diagram dan diagram kelas UC-11 (BAB 3), diagram kelas keseluruhan dan Tabel 4.1 (BAB 4), atribut dan operasi kelas pada BAB 5, serta matriks kerunutan (BAB 7). |
 
 ---
 
@@ -810,6 +812,7 @@ classDiagram
         <<entity>>
         -idJadwal: String
         -waktu: DateTime
+        -waktuSelesai: DateTime
         -status: String
         +ambilKalender(): List~JadwalKonsultasi~
         +ambilKalender(konsultan: Konsultan): List~JadwalKonsultasi~
@@ -1017,6 +1020,7 @@ classDiagram
     }
     class Konsultan {
         <<entity>>
+        -idKonsultan: String
         -nama: String
         -spesialisasi: String
         +ambilDaftarKonsultan(): List~Konsultan~
@@ -1025,6 +1029,7 @@ classDiagram
         <<entity>>
         -idJadwal: String
         -waktu: DateTime
+        -waktuSelesai: DateTime
         -status: String
         +ambilKalender(): List~JadwalKonsultasi~
         +ambilKalender(konsultan: Konsultan): List~JadwalKonsultasi~
@@ -1243,6 +1248,7 @@ classDiagram
     }
     class Konsultan {
         <<entity>>
+        -idKonsultan: String
         -nama: String
         -spesialisasi: String
         +ambilDaftarKonsultan(): List~Konsultan~
@@ -1251,6 +1257,7 @@ classDiagram
         <<entity>>
         -idJadwal: String
         -waktu: DateTime
+        -waktuSelesai: DateTime
         -status: String
         +ambilKalender(): List~JadwalKonsultasi~
         +ambilKalender(konsultan: Konsultan): List~JadwalKonsultasi~
@@ -1996,8 +2003,11 @@ Tabel 3.11. Identifikasi Kelas Use Case UC-11
 | 5   | `AuthController`       | -                           |
 | 6   | `SesiAutentikasi`      | `SesiAutentikasi` (C-04)    |
 | 7   | `GoogleAuthService`    | -                           |
+| 8   | `CloudflareD1Database` | -                           |
 
 ### 3.11.2 Sequence Diagram
+
+Skenario normal ini dijalankan oleh algoritma Algo-001 (subbab 5.4.1) untuk login dan pendaftaran akun otomatis pada login pertama, Algo-003 (subbab 5.4.3) untuk pendaftaran perangkat notifikasi, dan Algo-030 (subbab 5.35.3) untuk penyimpanan ke basis data.
 
 - **Skenario Normal**
 
@@ -2008,6 +2018,7 @@ sequenceDiagram
     participant AuthController@{ "type": "control" }
     participant GoogleAuthService@{ "type": "entity" }
     participant SesiAutentikasi@{ "type": "entity" }
+    participant CloudflareD1Database@{ "type": "entity" }
 
     Pengguna->>+LoginView: masukLamanLogin()
     LoginView->>+AuthController: tampilkanLoginPage()
@@ -2018,9 +2029,26 @@ sequenceDiagram
     AuthController->>+GoogleAuthService: validasi(kodeOtorisasi)
     GoogleAuthService-->>-AuthController: valid
     AuthController->>+SesiAutentikasi: autentikasiPengguna(kodeOtorisasi)
+    opt akun belum terdaftar (login pertama)
+        SesiAutentikasi->>+CloudflareD1Database: simpanPerubahan("daftar_pengguna")
+        CloudflareD1Database-->>-SesiAutentikasi: akun dan NIM tersimpan
+    end
+    SesiAutentikasi->>+CloudflareD1Database: simpanPerubahan("buat_sesi")
+    CloudflareD1Database-->>-SesiAutentikasi: berhasil
+    SesiAutentikasi->>+CloudflareD1Database: simpanPerubahan("simpan_token_google")
+    CloudflareD1Database-->>-SesiAutentikasi: berhasil
     SesiAutentikasi-->>-AuthController: sesi dibuat
     AuthController-->>-LoginView: login berhasil
     LoginView-->>-Pengguna: loadPageUtama()
+    Note over LoginView,AuthController: Setelah login, aplikasi meminta izin notifikasi dan mengambil Expo push token
+    LoginView->>+LoginView: daftarkanPerangkat(tokenPush)
+    LoginView->>+AuthController: daftarkanPerangkat(tokenPush)
+    AuthController->>+SesiAutentikasi: daftarkanPerangkat(tokenPush)
+    SesiAutentikasi->>+CloudflareD1Database: simpanPerubahan("daftar_perangkat")
+    CloudflareD1Database-->>-SesiAutentikasi: berhasil
+    SesiAutentikasi-->>-AuthController: true
+    AuthController-->>-LoginView: perangkat terdaftar
+    LoginView-->>-LoginView: token push terkirim
 ```
 
 <p align="center">
@@ -2078,20 +2106,24 @@ classDiagram
         +tampilkanLoginPage(): void
         +loadPageUtama(): void
         +showError(pesan: String): void
+        +daftarkanPerangkat(tokenPush: String): void
     }
     class AuthController {
         <<control>>
         +tampilkanLoginPage(): void
         +kirimData(kodeOtorisasi: String): void
+        +daftarkanPerangkat(tokenPush: String): void
     }
     class SesiAutentikasi {
         <<entity>>
         -token: String
         -waktuLogin: DateTime
         -status: String
+        -tokenPush: String
         +autentikasiPengguna(kodeOtorisasi: String): Boolean
         +verifikasiToken(token: String): Boolean
         +logout(): void
+        +daftarkanPerangkat(tokenPush: String): Boolean
     }
     class GoogleAuthService {
         <<entity>>
@@ -2100,6 +2132,12 @@ classDiagram
         -refreshToken: String
         +validasi(kodeOtorisasi: String): Boolean
     }
+    class CloudflareD1Database {
+        <<entity>>
+        +simpanWaktuKirim(waktu: Time): Boolean
+        +simpanKalender(jadwal: JadwalKonsultasi): Boolean
+        +simpanPerubahan(data: String): Boolean
+    }
     Pengguna <|-- Mahasiswa
     Pengguna <|-- Administrator
     Pengguna "1" --> "0..*" SesiAutentikasi : memiliki
@@ -2107,6 +2145,7 @@ classDiagram
     LoginView "1" --> "1" AuthController : memanggil
     AuthController ..> SesiAutentikasi : akses
     AuthController ..> GoogleAuthService : akses
+    SesiAutentikasi ..> CloudflareD1Database : disimpan di
 ```
 
 <p align="center">
@@ -2288,9 +2327,11 @@ classDiagram
         -token: String
         -waktuLogin: DateTime
         -status: String
+        -tokenPush: String
         +autentikasiPengguna(kodeOtorisasi: String): Boolean
         +verifikasiToken(token: String): Boolean
         +logout(): void
+        +daftarkanPerangkat(tokenPush: String): Boolean
     }
     class DailyAffirmation {
         <<entity>>
@@ -2329,6 +2370,7 @@ classDiagram
     }
     class Konsultan {
         <<entity>>
+        -idKonsultan: String
         -nama: String
         -spesialisasi: String
         +ambilDaftarKonsultan(): List~Konsultan~
@@ -2337,6 +2379,7 @@ classDiagram
         <<entity>>
         -idJadwal: String
         -waktu: DateTime
+        -waktuSelesai: DateTime
         -status: String
         +ambilKalender(): List~JadwalKonsultasi~
         +ambilKalender(konsultan: Konsultan): List~JadwalKonsultasi~
@@ -2385,6 +2428,7 @@ classDiagram
         +tampilkanLoginPage(): void
         +loadPageUtama(): void
         +showError(pesan: String): void
+        +daftarkanPerangkat(tokenPush: String): void
     }
     class AffirmationView {
         <<boundary>>
@@ -2465,6 +2509,7 @@ classDiagram
         <<control>>
         +tampilkanLoginPage(): void
         +kirimData(kodeOtorisasi: String): void
+        +daftarkanPerangkat(tokenPush: String): void
     }
     class AffirmationController {
         <<control>>
@@ -2594,6 +2639,7 @@ classDiagram
     FAQ ..> CloudflareD1Database : disimpan di
     UmpanBalik ..> CloudflareD1Database : disimpan di
     PengajuanPertanyaan ..> CloudflareD1Database : disimpan di
+    SesiAutentikasi ..> CloudflareD1Database : disimpan di
 ```
 
 <p align="center">
@@ -2607,19 +2653,19 @@ Tabel 4.1. Daftar Kelas Perancangan Keseluruhan
 | C-01     | `Pengguna`                   | `-id: String`<br>`-nama: String`<br>`-email: String`<br>`-googleId: String` | -                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | C-02     | `Mahasiswa`                  | `-nim: String`                                                              | -                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | C-03     | `Administrator`              | -                                                                           | -                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
-| C-04     | `SesiAutentikasi`            | `-token: String`<br>`-waktuLogin: DateTime`<br>`-status: String`            | `+autentikasiPengguna(kodeOtorisasi: String): Boolean`<br>`+verifikasiToken(token: String): Boolean`<br>`+logout(): void`                                                                                                                                                                                                                                                                                                                                                                                                       |
+| C-04 | `SesiAutentikasi` | `-token: String`<br>`-waktuLogin: DateTime`<br>`-status: String`<br>`-tokenPush: String` | `+autentikasiPengguna(kodeOtorisasi: String): Boolean`<br>`+verifikasiToken(token: String): Boolean`<br>`+logout(): void`<br>`+daftarkanPerangkat(tokenPush: String): Boolean` |
 | C-05     | `DailyAffirmation`           | `-konten: String`<br>`-waktuKirim: Time`                                    | `+aturWaktuKirim(waktu: Time): Boolean`<br>`+kirimAfirmasi(): void`                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | C-06     | `Reminder`                   | `-jenis: String`<br>`-waktu: Time`                                          | `+aturWaktuKirim(waktu: Time): Boolean`<br>`+kirimPengingat(): void`                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
 | C-07     | `Notifikasi`                 | `-idNotifikasi: String`<br>`-isi: String`<br>`-waktuKirim: DateTime`        | `+kirimNotifikasi(): void`<br>`+tampilkanNotifikasi(): void`                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
 | C-08     | `GoogleCalendarService`      | `-accessToken: String`                                                      | `+ambilKalender(): List<Event>`<br>`+cekBentrokJadwal(jadwal: JadwalKonsultasi): Boolean`                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | C-09     | `KalenderGabungan`           | `-daftarEvent: List<Event>`                                                 | `+gabungkanJadwal(google: List<Event>, jadwal: List<JadwalKonsultasi>): List<Event>`<br>`+jadwalBentrok(jadwal: JadwalKonsultasi): Boolean`<br>`+ubahKalender(jadwal: JadwalKonsultasi): Boolean`                                                                                                                                                                                                                                                                                                                             |
-| C-10     | `Konsultan`                  | `-nama: String`<br>`-spesialisasi: String`                                  | `+ambilDaftarKonsultan(): List<Konsultan>`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
-| C-11     | `JadwalKonsultasi`           | `-idJadwal: String`<br>`-waktu: DateTime`<br>`-status: String`              | `+ambilKalender(): List<JadwalKonsultasi>`<br>`+ambilKalender(konsultan: Konsultan): List<JadwalKonsultasi>`<br>`+simpanJadwal(): Boolean`<br>`+perbaruiJadwal(): Boolean`<br>`+pesanSesi(): Boolean`                                                                                                                                                                                                                                                                                                                         |
+| C-10     | `Konsultan`                  | `-idKonsultan: String`<br>`-nama: String`<br>`-spesialisasi: String`                                  | `+ambilDaftarKonsultan(): List<Konsultan>`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| C-11     | `JadwalKonsultasi`           | `-idJadwal: String`<br>`-waktu: DateTime`<br>`-waktuSelesai: DateTime`<br>`-status: String`              | `+ambilKalender(): List<JadwalKonsultasi>`<br>`+ambilKalender(konsultan: Konsultan): List<JadwalKonsultasi>`<br>`+simpanJadwal(): Boolean`<br>`+perbaruiJadwal(): Boolean`<br>`+pesanSesi(): Boolean`                                                                                                                                                                                                                                                                                                                         |
 | C-12     | `FAQ`                        | `-idFAQ: String`<br>`-pertanyaan: String`<br>`-jawaban: String`             | `+ambilDaftarPertanyaan(): List<FAQ>`<br>`+cariFAQ(kataKunci: String): List<FAQ>`<br>`+tambahFAQ(pertanyaan: String, jawaban: String): Boolean`<br>`+ubahFAQ(idFAQ: String, pertanyaan: String, jawaban: String): Boolean`<br>`+hapusFAQ(idFAQ: String): Boolean`                                                                                                                                                                                                                                                             |
 | C-13     | `PengajuanPertanyaan`        | `-idPertanyaan: String`<br>`-isiPertanyaan: String`                         | `+ajukanPertanyaan(isi: String): Boolean`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | C-14     | `UmpanBalik`                 | `-idUmpanBalik: String`<br>`-isi: String`<br>`-tanggapan: String`           | `+ambilListUmpanBalik(): List<UmpanBalik>`<br>`+kirimUmpanBalik(isi: String): Boolean`<br>`+berikanTanggapan(tanggapan: String): Boolean`                                                                                                                                                                                                                                                                                                                                                                                     |
 | C-15     | `StatusServer`               | `-jenis: String`<br>`-statusUptime: Boolean`<br>`-waktuCek: DateTime`       | `+ambilStatusServer(jenis: String): StatusServer`<br>`+cekStatusServer(): Boolean`                                                                                                                                                                                                                                                                                                                                                                                                                                            |
-| C-16     | `LoginView`                  | -                                                                           | `+masukLamanLogin(): void`<br>`+isiLoginPage(kodeOtorisasi: String): void`<br>`+tampilkanLoginPage(): void`<br>`+loadPageUtama(): void`<br>`+showError(pesan: String): void`                                                                                                                                                                                                                                                                                                                                                  |
+| C-16 | `LoginView` | - | `+masukLamanLogin(): void`<br>`+isiLoginPage(kodeOtorisasi: String): void`<br>`+tampilkanLoginPage(): void`<br>`+loadPageUtama(): void`<br>`+showError(pesan: String): void`<br>`+daftarkanPerangkat(tokenPush: String): void` |
 | C-17     | `AffirmationView`            | `-waktuTerpilih: Time`                                                      | `+bukaPageAffirmasi(): void`<br>`+pilihWaktuPengiriman(waktu: Time): void`<br>`+tampilkanOpsiAffirmasi(): void`<br>`+tampilkanSetelanTersimpan(): void`<br>`+showError(pesan: String): void`                                                                                                                                                                                                                                                                                                                                  |
 | C-18     | `ReminderView`               | `-waktuTerpilih: Time`                                                      | `+bukaPageReminder(): void`<br>`+pilihWaktuPengiriman(waktu: Time): void`<br>`+tampilkanOpsiReminder(): void`<br>`+tampilkanSetelanTersimpan(): void`<br>`+showError(pesan: String): void`                                                                                                                                                                                                                                                                                                                                    |
 | C-19     | `CalendarView`               | -                                                                           | `+bukaPageCalendar(): void`<br>`+tampilkanKalender(kalender: List<Event>): void`<br>`+showErrorMessage(pesan: String): void`                                                                                                                                                                                                                                                                                                                                                                                                  |
@@ -2628,7 +2674,7 @@ Tabel 4.1. Daftar Kelas Perancangan Keseluruhan
 | C-22     | `FAQView`                    | -                                                                           | `+bukaFAQ(): void`<br>`+cariFAQ(kataKunci: String): void`<br>`+tambahFAQ(pertanyaan: String, jawaban: String): void`<br>`+ubahFAQ(idFAQ: String, pertanyaan: String, jawaban: String): void`<br>`+hapusFAQ(idFAQ: String): void`<br>`+bukaFormPertanyaan(): void`<br>`+isiFormPertanyaan(isi: String): void`<br>`+tampilkanFAQ(daftar: List<FAQ>): void`<br>`+tampilkanTawaranPengajuan(): void`<br>`+tampilkanFormPenambahanPertanyaan(): void`<br>`+tampilkanSetelanTersimpan(): void`<br>`+showError(pesan: String): void` |
 | C-23     | `FeedbackView`               | -                                                                           | `+bukaUmpanBalik(): void`<br>`+isiFormFeedback(isi: String): void`<br>`+bukaListFeedback(): void`<br>`+tanggapiFeedback(tanggapan: String): void`<br>`+tampilkanFormFeedback(): void`<br>`+tampilkanListFeedback(daftar: List<UmpanBalik>): void`<br>`+tampilkanFeedbackTersimpan(): void`<br>`+showError(pesan: String): void`                                                                                                                                                                                               |
 | C-24     | `ServerStatusView`           | -                                                                           | `+cekStatusServer(jenis: String): void`<br>`+tampilkanStatusServer(status: StatusServer): void`                                                                                                                                                                                                                                                                                                                                                                                                                               |
-| C-25     | `AuthController`             | -                                                                           | `+tampilkanLoginPage(): void`<br>`+kirimData(kodeOtorisasi: String): void`                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| C-25 | `AuthController` | - | `+tampilkanLoginPage(): void`<br>`+kirimData(kodeOtorisasi: String): void`<br>`+daftarkanPerangkat(tokenPush: String): void` |
 | C-26     | `AffirmationController`      | -                                                                           | `+tampilkanOpsiAffirmasi(): void`<br>`+submitWaktuPengiriman(waktu: Time): void`                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | C-27     | `ReminderController`         | -                                                                           | `+tampilkanOpsiReminder(): void`<br>`+submitWaktuPengiriman(waktu: Time): void`                                                                                                                                                                                                                                                                                                                                                                                                                                               |
 | C-28     | `CalendarController`         | -                                                                           | `+tampilkanCalendar(): void`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
@@ -2646,7 +2692,7 @@ Tabel 4.1. Daftar Kelas Perancangan Keseluruhan
 
 # BAB 5: Perancangan Rinci Kelas
 
-Bab ini merinci seluruh 35 kelas perancangan dari BAB 4. Tabel 5.1 memetakan setiap kelas perancangan ke kelas analisis pada SKPL. Setiap kelas kemudian dijabarkan pada subbab tersendiri berisi operasi dan atributnya, lengkap dengan _visibility_ dan tipe.
+Bab ini merinci seluruh 35 kelas perancangan dari BAB 4. Tabel 5.1 memetakan setiap kelas perancangan ke kelas analisis pada SKPL. Setiap kelas kemudian dijabarkan pada subbab tersendiri berisi operasi dan atributnya, lengkap dengan _visibility_ dan tipe. Skema basis data yang mendasari penyimpanan dan kueri dijabarkan pada subbab 5.36.
 
 Tabel 5.1. Daftar Kelas Perancangan dan Kelas Analisis Terkait
 
@@ -2751,9 +2797,10 @@ Tabel 5.4.1. Operasi Kelas SesiAutentikasi
 
 | Nama Operasi | Visibility (private, public) | Keterangan |
 | ------------ | ---------------------------- | ---------- |
-| `autentikasiPengguna(kodeOtorisasi: String): Boolean` | public | Membuat sesi login setelah kode otorisasi Google dinyatakan valid. Mengembalikan true bila sesi berhasil dibuat. |
+| `autentikasiPengguna(kodeOtorisasi: String): Boolean` | public | Membuat sesi login setelah kode otorisasi Google dinyatakan valid. Pada login pertama, akun Mahasiswa dibuat otomatis dari profil Google. Mengembalikan true bila sesi berhasil dibuat. |
 | `verifikasiToken(token: String): Boolean` | public | Memeriksa bahwa token sesi aplikasi masih valid untuk permintaan berikutnya. |
 | `logout(): void` | public | Mengakhiri sesi dan menghapus token sesi. |
+| `daftarkanPerangkat(tokenPush: String): Boolean` | public | Menyimpan Expo push token perangkat pada sesi aktif agar server dapat mengirim notifikasi push ke perangkat tersebut. |
 
 Tabel 5.4.2. Atribut Kelas SesiAutentikasi
 
@@ -2762,6 +2809,79 @@ Tabel 5.4.2. Atribut Kelas SesiAutentikasi
 | `token` | private | `String` |
 | `waktuLogin` | private | `DateTime` |
 | `status` | private | `String` |
+| `tokenPush` | private | `String` |
+
+### 5.4.1 Algoritma/Query
+
+**Nama Kelas:** `SesiAutentikasi`  
+**Nama Operasi:** `autentikasiPengguna(kodeOtorisasi: String): Boolean`  
+**ID Algoritma:** Algo-001
+
+```text
+FUNCTION autentikasiPengguna(kodeOtorisasi)
+  IF NOT GoogleAuthService.validasi(kodeOtorisasi) THEN
+    RETURN false
+  googleId <- googleId pada id token Google yang telah divalidasi
+  pengguna <- jalankan Q-001 dengan googleId
+  IF pengguna kosong THEN                 // pendaftaran otomatis pada login pertama
+    profil <- nama dan email pada id token Google
+    id     <- buat ID unik
+    nim    <- bagian sebelum "@" pada profil.email, bila profil.email berakhiran "@" + DOMAIN_KAMPUS; selain itu kosong
+    CloudflareD1Database.simpanPerubahan(data)        // aksi "daftar_pengguna" dengan (id, profil.nama, profil.email, googleId, nim); lihat Algo-030
+    pengguna <- jalankan Q-001 dengan googleId     // baca ulang, aman bila ada login bersamaan
+  this.token       <- buat token acak 32 byte (heksadesimal)
+  this.waktuLogin  <- waktu sekarang
+  this.status      <- "aktif"
+  CloudflareD1Database.simpanPerubahan(data)          // aksi "buat_sesi" dengan (token, pengguna.id_pengguna, waktuLogin)
+  accessEnc  <- enkripsiAES256GCM(GoogleAuthService.accessToken, KUNCI_TOKEN)
+  refreshEnc <- enkripsiAES256GCM(GoogleAuthService.refreshToken, KUNCI_TOKEN)   // bisa kosong
+  CloudflareD1Database.simpanPerubahan(data)          // aksi "simpan_token_google" dengan (pengguna.id_pengguna, accessEnc, refreshEnc, kedaluwarsa)
+  RETURN true
+```
+
+Tabel 5.4.3. Query Operasi autentikasiPengguna
+
+| No Query | Query | Keterangan |
+| -------- | ----- | ---------- |
+| Q-001 | `SELECT id_pengguna, peran FROM pengguna WHERE google_id = ?` | Mencari akun terdaftar berdasarkan google_id dari Google. |
+
+### 5.4.2 Algoritma/Query
+
+**Nama Kelas:** `SesiAutentikasi`  
+**Nama Operasi:** `verifikasiToken(token: String): Boolean`  
+**ID Algoritma:** Algo-002
+
+```text
+FUNCTION verifikasiToken(token)
+  sesi <- jalankan Q-002 dengan token
+  IF sesi kosong ATAU sesi.status <> "aktif" THEN
+    RETURN false
+  IF waktu sekarang - sesi.waktu_login > BATAS_SESI THEN
+    jalankan Q-003 dengan token
+    RETURN false
+  RETURN true
+```
+
+Tabel 5.4.4. Query Operasi verifikasiToken
+
+| No Query | Query | Keterangan |
+| -------- | ----- | ---------- |
+| Q-002 | `SELECT id_pengguna, waktu_login, status FROM sesi_autentikasi WHERE token = ?` | Membaca sesi berdasarkan token. |
+| Q-003 | `UPDATE sesi_autentikasi SET status = 'berakhir' WHERE token = ?` | Mengakhiri sesi. Dipakai juga oleh operasi logout(). |
+
+### 5.4.3 Algoritma/Query
+
+**Nama Kelas:** `SesiAutentikasi`  
+**Nama Operasi:** `daftarkanPerangkat(tokenPush: String): Boolean`  
+**ID Algoritma:** Algo-003
+
+```text
+FUNCTION daftarkanPerangkat(tokenPush)   // dipanggil aplikasi setelah login berhasil dan izin notifikasi diberikan
+  IF tokenPush tidak cocok dengan pola ^Expo(nent)?PushToken\[.+\]$ THEN
+    RETURN false
+  this.tokenPush <- tokenPush
+  RETURN CloudflareD1Database.simpanPerubahan(data)   // aksi "daftar_perangkat" dengan (tokenPush, this.token); lihat Algo-030
+```
 
 ## 5.5 Kelas DailyAffirmation
 
@@ -2782,6 +2902,39 @@ Tabel 5.5.2. Atribut Kelas DailyAffirmation
 | `konten` | private | `String` |
 | `waktuKirim` | private | `Time` |
 
+### 5.5.1 Algoritma/Query
+
+**Nama Kelas:** `DailyAffirmation`  
+**Nama Operasi:** `aturWaktuKirim(waktu: Time): Boolean`  
+**ID Algoritma:** Algo-004
+
+```text
+FUNCTION aturWaktuKirim(waktu)       // dipanggil setelah Validasi.validasiWaktu(waktu) bernilai true
+  this.waktuKirim <- waktu
+  RETURN CloudflareD1Database.simpanWaktuKirim(waktu)   // lihat Algo-028
+```
+
+### 5.5.2 Algoritma/Query
+
+**Nama Kelas:** `DailyAffirmation`  
+**Nama Operasi:** `kirimAfirmasi(): void`  
+**ID Algoritma:** Algo-005
+
+```text
+PROCEDURE kirimAfirmasi()            // dijalankan penjadwal (Cloudflare Cron Trigger) setiap menit
+  sekarang <- waktu sekarang berformat "HH:MM" (WIB)
+  daftar   <- jalankan Q-004 dengan sekarang
+  FOR EACH a IN daftar
+    n <- Notifikasi baru(isi = a.konten, id_mahasiswa = a.id_mahasiswa, id_affirmation = a.id_affirmation)
+    n.kirimNotifikasi()
+```
+
+Tabel 5.5.3. Query Operasi kirimAfirmasi
+
+| No Query | Query | Keterangan |
+| -------- | ----- | ---------- |
+| Q-004 | `SELECT id_affirmation, id_mahasiswa, konten FROM daily_affirmation WHERE waktu_kirim = ?` | Mencari afirmasi yang jatuh tempo pada menit ini. |
+
 ## 5.6 Kelas Reminder
 
 **Nama Kelas:** `Reminder`  
@@ -2800,6 +2953,39 @@ Tabel 5.6.2. Atribut Kelas Reminder
 | ------------ | ---------------------------- | ---- |
 | `jenis` | private | `String` |
 | `waktu` | private | `Time` |
+
+### 5.6.1 Algoritma/Query
+
+**Nama Kelas:** `Reminder`  
+**Nama Operasi:** `aturWaktuKirim(waktu: Time): Boolean`  
+**ID Algoritma:** Algo-006
+
+```text
+FUNCTION aturWaktuKirim(waktu)       // dipanggil setelah Validasi.validasiWaktu(waktu) bernilai true
+  this.waktu <- waktu
+  RETURN CloudflareD1Database.simpanWaktuKirim(waktu)   // lihat Algo-028
+```
+
+### 5.6.2 Algoritma/Query
+
+**Nama Kelas:** `Reminder`  
+**Nama Operasi:** `kirimPengingat(): void`  
+**ID Algoritma:** Algo-007
+
+```text
+PROCEDURE kirimPengingat()           // dijalankan penjadwal (Cloudflare Cron Trigger) setiap menit
+  sekarang <- waktu sekarang berformat "HH:MM" (WIB)
+  daftar   <- jalankan Q-005 dengan sekarang
+  FOR EACH r IN daftar
+    n <- Notifikasi baru(isi = teksPengingat(r.jenis), id_mahasiswa = r.id_mahasiswa, id_reminder = r.id_reminder)
+    n.kirimNotifikasi()
+```
+
+Tabel 5.6.3. Query Operasi kirimPengingat
+
+| No Query | Query | Keterangan |
+| -------- | ----- | ---------- |
+| Q-005 | `SELECT id_reminder, id_mahasiswa, jenis FROM reminder WHERE waktu = ?` | Mencari pengingat yang jatuh tempo pada menit ini. |
 
 ## 5.7 Kelas Notifikasi
 
@@ -2821,6 +3007,35 @@ Tabel 5.7.2. Atribut Kelas Notifikasi
 | `isi` | private | `String` |
 | `waktuKirim` | private | `DateTime` |
 
+### 5.7.1 Algoritma/Query
+
+**Nama Kelas:** `Notifikasi`  
+**Nama Operasi:** `kirimNotifikasi(): void`  
+**ID Algoritma:** Algo-008
+
+```text
+PROCEDURE kirimNotifikasi()
+  this.idNotifikasi <- buat ID unik
+  this.waktuKirim   <- waktu sekarang
+  jalankan Q-006 dengan (idNotifikasi, id_mahasiswa, id_affirmation, id_reminder, isi, waktuKirim)
+  daftar <- jalankan Q-007 dengan id_mahasiswa
+  IF daftar kosong THEN
+    RETURN                                // notifikasi tetap tercatat, tetapi belum ada perangkat terdaftar
+  pesan <- untuk setiap token t pada daftar: {to: t, title: "Sehati", body: isi, sound: "default"}
+  respons <- POST https://exp.host/--/api/v2/push/send dengan pesan (JSON, maksimal 100 pesan per permintaan)
+  FOR EACH tiket, p IN respons.data BERSAMA pesan             // urutan tiket sama dengan urutan pesan
+    IF tiket.status = "error" DAN tiket.details.error = "DeviceNotRegistered" THEN
+      jalankan Q-008 dengan p.to
+```
+
+Tabel 5.7.3. Query Operasi kirimNotifikasi
+
+| No Query | Query | Keterangan |
+| -------- | ----- | ---------- |
+| Q-006 | `INSERT INTO notifikasi (id_notifikasi, id_mahasiswa, id_affirmation, id_reminder, isi, waktu_kirim) VALUES (?, ?, ?, ?, ?, ?)` | Mencatat notifikasi. Tepat satu dari id_affirmation atau id_reminder berisi nilai, yang lain NULL. |
+| Q-007 | `SELECT DISTINCT token_push FROM sesi_autentikasi WHERE id_pengguna = ? AND status = 'aktif' AND token_push IS NOT NULL` | Mengambil Expo push token dari seluruh sesi aktif milik penerima. |
+| Q-008 | `UPDATE sesi_autentikasi SET token_push = NULL WHERE token_push = ?` | Mengosongkan token yang ditolak Expo (DeviceNotRegistered). |
+
 ## 5.8 Kelas GoogleCalendarService
 
 **Nama Kelas:** `GoogleCalendarService`  
@@ -2838,6 +3053,55 @@ Tabel 5.8.2. Atribut Kelas GoogleCalendarService
 | Nama Atribut | Visibility (private, public) | Tipe |
 | ------------ | ---------------------------- | ---- |
 | `accessToken` | private | `String` |
+
+### 5.8.1 Algoritma/Query
+
+**Nama Kelas:** `GoogleCalendarService`  
+**Nama Operasi:** `ambilKalender(): List<Event>`  
+**ID Algoritma:** Algo-009
+
+```text
+FUNCTION ambilKalender()
+  accessToken <- ambilTokenValid()
+  respons <- GET https://www.googleapis.com/calendar/v3/calendars/primary/events
+             (header Authorization: Bearer accessToken, parameter timeMin, timeMax, singleEvents=true)
+  IF respons.status <> 200 THEN
+    lempar kesalahan "gagal mengambil event"
+  RETURN respons.items
+
+FUNCTION ambilTokenValid()            // fungsi bantu
+  baris <- jalankan Q-009 dengan id pengguna
+  access <- dekripsiAES256GCM(baris.access_token, KUNCI_TOKEN)
+  IF waktu sekarang < baris.kedaluwarsa THEN
+    RETURN access
+  refresh <- dekripsiAES256GCM(baris.refresh_token, KUNCI_TOKEN)
+  baru <- POST https://oauth2.googleapis.com/token (grant_type=refresh_token, refresh_token=refresh)
+  jalankan Q-010 dengan (enkripsiAES256GCM(baru.access_token, KUNCI_TOKEN), baru.kedaluwarsa, id pengguna)
+  RETURN baru.access_token
+```
+
+Tabel 5.8.3. Query Operasi ambilKalender
+
+| No Query | Query | Keterangan |
+| -------- | ----- | ---------- |
+| Q-009 | `SELECT access_token, refresh_token, kedaluwarsa FROM token_google WHERE id_pengguna = ?` | Membaca token Google pengguna (terenkripsi). |
+| Q-010 | `UPDATE token_google SET access_token = ?, kedaluwarsa = ? WHERE id_pengguna = ?` | Menyimpan access token baru (terenkripsi) setelah diperbarui. |
+
+### 5.8.2 Algoritma/Query
+
+**Nama Kelas:** `GoogleCalendarService`  
+**Nama Operasi:** `cekBentrokJadwal(jadwal: JadwalKonsultasi): Boolean`  
+**ID Algoritma:** Algo-010
+
+```text
+FUNCTION cekBentrokJadwal(jadwal)
+  accessToken <- ambilTokenValid()      // lihat Algo-009
+  respons <- POST https://www.googleapis.com/calendar/v3/freeBusy
+             (timeMin = jadwal.waktu, timeMax = jadwal.waktuSelesai, items = [{id: "primary"}])
+  IF respons.status <> 200 THEN
+    lempar kesalahan "gagal memeriksa kalender"
+  RETURN panjang(respons.calendars.primary.busy) > 0
+```
 
 ## 5.9 Kelas KalenderGabungan
 
@@ -2858,6 +3122,58 @@ Tabel 5.9.2. Atribut Kelas KalenderGabungan
 | ------------ | ---------------------------- | ---- |
 | `daftarEvent` | private | `List<Event>` |
 
+### 5.9.1 Algoritma/Query
+
+**Nama Kelas:** `KalenderGabungan`  
+**Nama Operasi:** `gabungkanJadwal(google: List<Event>, jadwal: List<JadwalKonsultasi>): List<Event>`  
+**ID Algoritma:** Algo-011
+
+```text
+FUNCTION gabungkanJadwal(google, jadwal)
+  hasil <- daftar kosong
+  FOR EACH e IN google
+    tambahkan {judul: e.summary, mulai: e.start, selesai: e.end, sumber: "google"} ke hasil
+  FOR EACH j IN jadwal
+    tambahkan {judul: "Sesi konsultasi", mulai: j.waktu, selesai: j.waktuSelesai, sumber: j.status} ke hasil
+  urutkan hasil menurut mulai, naik
+  this.daftarEvent <- hasil
+  RETURN hasil
+```
+
+### 5.9.2 Algoritma/Query
+
+**Nama Kelas:** `KalenderGabungan`  
+**Nama Operasi:** `jadwalBentrok(jadwal: JadwalKonsultasi): Boolean`  
+**ID Algoritma:** Algo-012
+
+```text
+FUNCTION jadwalBentrok(jadwal)
+  IF GoogleCalendarService.cekBentrokJadwal(jadwal) THEN
+    RETURN true                         // bentrok dengan event Google Calendar
+  baris <- jalankan Q-011 dengan (id Mahasiswa, jadwal.waktuSelesai, jadwal.waktu)
+  RETURN baris tidak kosong             // bentrok dengan sesi lain yang sudah dipesan
+```
+
+Tabel 5.9.3. Query Operasi jadwalBentrok
+
+| No Query | Query | Keterangan |
+| -------- | ----- | ---------- |
+| Q-011 | `SELECT 1 FROM jadwal_konsultasi WHERE id_mahasiswa = ? AND status = 'terpesan' AND waktu < ? AND waktu_selesai > ? LIMIT 1` | Memeriksa apakah Mahasiswa sudah memesan sesi lain yang waktunya tumpang tindih (waktu < selesai baru DAN selesai > mulai baru). |
+
+### 5.9.3 Algoritma/Query
+
+**Nama Kelas:** `KalenderGabungan`  
+**Nama Operasi:** `ubahKalender(jadwal: JadwalKonsultasi): Boolean`  
+**ID Algoritma:** Algo-013
+
+```text
+FUNCTION ubahKalender(jadwal)
+  ok <- CloudflareD1Database.simpanKalender(jadwal)   // lihat Algo-029
+  IF ok THEN
+    muat ulang this.daftarEvent
+  RETURN ok
+```
+
 ## 5.10 Kelas Konsultan
 
 **Nama Kelas:** `Konsultan`  
@@ -2873,8 +3189,26 @@ Tabel 5.10.2. Atribut Kelas Konsultan
 
 | Nama Atribut | Visibility (private, public) | Tipe |
 | ------------ | ---------------------------- | ---- |
+| `idKonsultan` | private | `String` |
 | `nama` | private | `String` |
 | `spesialisasi` | private | `String` |
+
+### 5.10.1 Algoritma/Query
+
+**Nama Kelas:** `Konsultan`  
+**Nama Operasi:** `ambilDaftarKonsultan(): List<Konsultan>`  
+**ID Algoritma:** Algo-014
+
+```text
+FUNCTION ambilDaftarKonsultan()
+  RETURN jalankan Q-012
+```
+
+Tabel 5.10.3. Query Operasi ambilDaftarKonsultan
+
+| No Query | Query | Keterangan |
+| -------- | ----- | ---------- |
+| Q-012 | `SELECT id_konsultan, nama, spesialisasi FROM konsultan ORDER BY nama` | Mengambil seluruh konsultan terdaftar. |
 
 ## 5.11 Kelas JadwalKonsultasi
 
@@ -2897,7 +3231,43 @@ Tabel 5.11.2. Atribut Kelas JadwalKonsultasi
 | ------------ | ---------------------------- | ---- |
 | `idJadwal` | private | `String` |
 | `waktu` | private | `DateTime` |
+| `waktuSelesai` | private | `DateTime` |
 | `status` | private | `String` |
+
+### 5.11.1 Algoritma/Query
+
+**Nama Kelas:** `JadwalKonsultasi`  
+**Nama Operasi:** `ambilKalender(): List<JadwalKonsultasi> dan ambilKalender(konsultan: Konsultan): List<JadwalKonsultasi>`  
+**ID Algoritma:** Algo-015
+
+```text
+FUNCTION ambilKalender()
+  RETURN jalankan Q-013
+
+FUNCTION ambilKalender(konsultan)
+  RETURN jalankan Q-014 dengan (konsultan.idKonsultan, waktu sekarang)
+```
+
+Tabel 5.11.3. Query Operasi ambilKalender
+
+| No Query | Query | Keterangan |
+| -------- | ----- | ---------- |
+| Q-013 | `SELECT id_jadwal, id_konsultan, waktu, waktu_selesai, status FROM jadwal_konsultasi ORDER BY waktu` | Mengambil seluruh jadwal konsultasi (untuk kalender gabungan). |
+| Q-014 | `SELECT id_jadwal, waktu, waktu_selesai, status FROM jadwal_konsultasi WHERE id_konsultan = ? AND waktu >= ? ORDER BY waktu` | Mengambil slot mendatang milik satu konsultan. |
+
+### 5.11.2 Algoritma/Query
+
+**Nama Kelas:** `JadwalKonsultasi`  
+**Nama Operasi:** `pesanSesi(): Boolean`  
+**ID Algoritma:** Algo-016
+
+```text
+FUNCTION pesanSesi()                  // dipanggil setelah KalenderGabungan.ubahKalender(jadwal) bernilai true
+  IF this.status <> "tersedia" THEN
+    RETURN false
+  this.status <- "terpesan"             // penyimpanan sudah dilakukan oleh Algo-029
+  RETURN true
+```
 
 ## 5.12 Kelas FAQ
 
@@ -2921,6 +3291,24 @@ Tabel 5.12.2. Atribut Kelas FAQ
 | `idFAQ` | private | `String` |
 | `pertanyaan` | private | `String` |
 | `jawaban` | private | `String` |
+
+### 5.12.1 Algoritma/Query
+
+**Nama Kelas:** `FAQ`  
+**Nama Operasi:** `cariFAQ(kataKunci: String): List<FAQ>`  
+**ID Algoritma:** Algo-017
+
+```text
+FUNCTION cariFAQ(kataKunci)
+  pola <- "%" + escape(kataKunci, '!') + "%"   // % dan _ pada kataKunci di-escape dengan '!'
+  RETURN jalankan Q-015 dengan (pola, pola)      // daftar kosong bila tidak ada yang cocok
+```
+
+Tabel 5.12.3. Query Operasi cariFAQ
+
+| No Query | Query | Keterangan |
+| -------- | ----- | ---------- |
+| Q-015 | `SELECT id_faq, pertanyaan, jawaban FROM faq WHERE pertanyaan LIKE ? ESCAPE '!' OR jawaban LIKE ? ESCAPE '!' ORDER BY pertanyaan` | Mencari FAQ yang pertanyaan atau jawabannya memuat kata kunci. |
 
 ## 5.13 Kelas PengajuanPertanyaan
 
@@ -2961,6 +3349,35 @@ Tabel 5.14.2. Atribut Kelas UmpanBalik
 | `isi` | private | `String` |
 | `tanggapan` | private | `String` |
 
+### 5.14.1 Algoritma/Query
+
+**Nama Kelas:** `UmpanBalik`  
+**Nama Operasi:** `ambilListUmpanBalik(): List<UmpanBalik>`  
+**ID Algoritma:** Algo-018
+
+```text
+FUNCTION ambilListUmpanBalik()
+  RETURN jalankan Q-016
+```
+
+Tabel 5.14.3. Query Operasi ambilListUmpanBalik
+
+| No Query | Query | Keterangan |
+| -------- | ----- | ---------- |
+| Q-016 | `SELECT u.id_umpan_balik, p.nama AS nama_mahasiswa, u.isi, u.tanggapan FROM umpan_balik u JOIN pengguna p ON p.id_pengguna = u.id_mahasiswa ORDER BY u.rowid DESC` | Mengambil seluruh umpan balik terbaru lebih dulu, beserta nama pengirim dan tanggapan (NULL bila belum ditanggapi). |
+
+### 5.14.2 Algoritma/Query
+
+**Nama Kelas:** `UmpanBalik`  
+**Nama Operasi:** `berikanTanggapan(tanggapan: String): Boolean`  
+**ID Algoritma:** Algo-019
+
+```text
+FUNCTION berikanTanggapan(tanggapan)  // dipanggil setelah Validasi.validasiInput bernilai true
+  this.tanggapan <- tanggapan
+  RETURN CloudflareD1Database.simpanPerubahan(data)   // data = {aksi: "tanggapi_umpan_balik", ...}, lihat Algo-030
+```
+
 ## 5.15 Kelas StatusServer
 
 **Nama Kelas:** `StatusServer`  
@@ -2981,6 +3398,45 @@ Tabel 5.15.2. Atribut Kelas StatusServer
 | `statusUptime` | private | `Boolean` |
 | `waktuCek` | private | `DateTime` |
 
+### 5.15.1 Algoritma/Query
+
+**Nama Kelas:** `StatusServer`  
+**Nama Operasi:** `ambilStatusServer(jenis: String): StatusServer`  
+**ID Algoritma:** Algo-020
+
+```text
+FUNCTION ambilStatusServer(jenis)    // jenis: "website" atau "server"
+  baris <- jalankan Q-017 dengan jenis
+  RETURN StatusServer(jenis, baris.status_uptime = 1, baris.waktu_cek)
+```
+
+Tabel 5.15.3. Query Operasi ambilStatusServer
+
+| No Query | Query | Keterangan |
+| -------- | ----- | ---------- |
+| Q-017 | `SELECT jenis, status_uptime, waktu_cek FROM status_server WHERE jenis = ? ORDER BY waktu_cek DESC LIMIT 1` | Mengambil hasil pemeriksaan terakhir untuk jenis tertentu. |
+
+### 5.15.2 Algoritma/Query
+
+**Nama Kelas:** `StatusServer`  
+**Nama Operasi:** `cekStatusServer(): Boolean`  
+**ID Algoritma:** Algo-021
+
+```text
+FUNCTION cekStatusServer()           // dijalankan penjadwal secara berkala
+  respons <- HTTP GET ke alamat sesuai this.jenis, batas waktu 5 detik
+  this.statusUptime <- (respons ada DAN respons.status antara 200 dan 299)
+  this.waktuCek     <- waktu sekarang
+  jalankan Q-018 dengan (jenis, statusUptime, waktuCek)
+  RETURN this.statusUptime
+```
+
+Tabel 5.15.4. Query Operasi cekStatusServer
+
+| No Query | Query | Keterangan |
+| -------- | ----- | ---------- |
+| Q-018 | `INSERT INTO status_server (jenis, status_uptime, waktu_cek) VALUES (?, ?, ?)` | Mencatat hasil satu pemeriksaan status. |
+
 ## 5.16 Kelas LoginView
 
 **Nama Kelas:** `LoginView`  
@@ -2995,6 +3451,7 @@ Tabel 5.16.1. Operasi Kelas LoginView
 | `tampilkanLoginPage(): void` | public | Menampilkan laman masuk dengan tombol masuk akun Google. |
 | `loadPageUtama(): void` | public | Menampilkan halaman utama setelah login berhasil. |
 | `showError(pesan: String): void` | public | Menampilkan pesan kesalahan ketika login gagal. |
+| `daftarkanPerangkat(tokenPush: String): void` | public | Meminta izin notifikasi, mengambil Expo push token perangkat, lalu mengirimkannya ke AuthController setelah login berhasil. |
 
 Tabel 5.16.2. Atribut Kelas LoginView
 
@@ -3190,6 +3647,7 @@ Tabel 5.25.1. Operasi Kelas AuthController
 | ------------ | ---------------------------- | ---------- |
 | `tampilkanLoginPage(): void` | public | Mengembalikan data laman masuk ke LoginView. |
 | `kirimData(kodeOtorisasi: String): void` | public | Meminta GoogleAuthService memvalidasi kode otorisasi, lalu membuat sesi lewat SesiAutentikasi bila valid. |
+| `daftarkanPerangkat(tokenPush: String): void` | public | Meneruskan Expo push token dari LoginView ke SesiAutentikasi untuk disimpan pada sesi aktif. |
 
 Tabel 5.25.2. Atribut Kelas AuthController
 
@@ -3268,6 +3726,27 @@ Tabel 5.29.2. Atribut Kelas ConsultationController
 | Nama Atribut | Visibility (private, public) | Tipe |
 | ------------ | ---------------------------- | ---- |
 | - | - | - |
+
+### 5.29.1 Algoritma/Query
+
+**Nama Kelas:** `ConsultationController`  
+**Nama Operasi:** `updateStatusKonsultasi(jadwal: JadwalKonsultasi): void`  
+**ID Algoritma:** Algo-022
+
+```text
+PROCEDURE updateStatusKonsultasi(jadwal)
+  IF peran pengguna = "administrator" THEN             // UC-05 mengelola jadwal
+    IF NOT Validasi.validasiJadwal(jadwal) THEN
+      kembalikan kesalahan ke view; RETURN
+    hasil <- KalenderGabungan.ubahKalender(jadwal)
+  ELSE                                                   // UC-04 memesan sesi
+    IF KalenderGabungan.jadwalBentrok(jadwal) THEN
+      kembalikan kesalahan "jadwal bentrok" ke view; RETURN
+    hasil <- KalenderGabungan.ubahKalender(jadwal)
+    IF hasil THEN
+      hasil <- jadwal.pesanSesi()
+  kembalikan hasil ke view                               // sukses atau pesan kesalahan
+```
 
 ## 5.30 Kelas FAQController
 
@@ -3349,6 +3828,69 @@ Tabel 5.33.2. Atribut Kelas Validasi
 | ------------ | ---------------------------- | ---- |
 | - | - | - |
 
+### 5.33.1 Algoritma/Query
+
+**Nama Kelas:** `Validasi`  
+**Nama Operasi:** `validasiWaktu(waktu: Time): Boolean`  
+**ID Algoritma:** Algo-023
+
+```text
+FUNCTION validasiWaktu(waktu)
+  IF waktu kosong THEN RETURN false
+  RETURN waktu cocok dengan pola ^([01][0-9]|2[0-3]):[0-5][0-9]$   // format HH:MM
+```
+
+### 5.33.2 Algoritma/Query
+
+**Nama Kelas:** `Validasi`  
+**Nama Operasi:** `validasiKonsultan(konsultan: Konsultan): Boolean`  
+**ID Algoritma:** Algo-024
+
+```text
+FUNCTION validasiKonsultan(konsultan)
+  RETURN jalankan Q-019 dengan konsultan.idKonsultan menghasilkan baris
+```
+
+Tabel 5.33.3. Query Operasi validasiKonsultan
+
+| No Query | Query | Keterangan |
+| -------- | ----- | ---------- |
+| Q-019 | `SELECT 1 FROM konsultan WHERE id_konsultan = ?` | Memeriksa bahwa konsultan terdaftar. |
+
+### 5.33.3 Algoritma/Query
+
+**Nama Kelas:** `Validasi`  
+**Nama Operasi:** `validasiJadwal(jadwal: JadwalKonsultasi): Boolean`  
+**ID Algoritma:** Algo-025
+
+```text
+FUNCTION validasiJadwal(jadwal)
+  IF jadwal.waktu atau jadwal.waktuSelesai bukan waktu ISO 8601 yang valid THEN RETURN false
+  IF jadwal.waktuSelesai <= jadwal.waktu THEN RETURN false
+  IF NOT validasiKonsultan(jadwal.konsultan) THEN RETURN false
+  tumpang <- jalankan Q-020 dengan (idKonsultan, jadwal.idJadwal, jadwal.waktuSelesai, jadwal.waktu)
+  RETURN tumpang kosong
+```
+
+Tabel 5.33.4. Query Operasi validasiJadwal
+
+| No Query | Query | Keterangan |
+| -------- | ----- | ---------- |
+| Q-020 | `SELECT 1 FROM jadwal_konsultasi WHERE id_konsultan = ? AND id_jadwal <> ? AND waktu < ? AND waktu_selesai > ? LIMIT 1` | Memeriksa apakah slot baru tumpang tindih dengan slot lain milik konsultan yang sama. |
+
+### 5.33.4 Algoritma/Query
+
+**Nama Kelas:** `Validasi`  
+**Nama Operasi:** `validasiInput(isi: List<String>): Boolean`  
+**ID Algoritma:** Algo-026
+
+```text
+FUNCTION validasiInput(isi)
+  FOR EACH teks IN isi
+    IF teks kosong ATAU hanya berisi spasi THEN RETURN false
+  RETURN true
+```
+
 ## 5.34 Kelas GoogleAuthService
 
 **Nama Kelas:** `GoogleAuthService`  
@@ -3368,6 +3910,24 @@ Tabel 5.34.2. Atribut Kelas GoogleAuthService
 | `accessToken` | private | `String` |
 | `refreshToken` | private | `String` |
 
+### 5.34.1 Algoritma/Query
+
+**Nama Kelas:** `GoogleAuthService`  
+**Nama Operasi:** `validasi(kodeOtorisasi: String): Boolean`  
+**ID Algoritma:** Algo-027
+
+```text
+FUNCTION validasi(kodeOtorisasi)
+  respons <- POST https://oauth2.googleapis.com/token
+             (code = kodeOtorisasi, client_id, client_secret, redirect_uri, grant_type = authorization_code)
+  IF respons.status <> 200 THEN
+    RETURN false
+  this.authCode     <- kodeOtorisasi
+  this.accessToken  <- respons.access_token
+  this.refreshToken <- respons.refresh_token           // dapat kosong bila Google tidak mengirimnya
+  RETURN true
+```
+
 ## 5.35 Kelas CloudflareD1Database
 
 **Nama Kelas:** `CloudflareD1Database`  
@@ -3379,13 +3939,368 @@ Tabel 5.35.1. Operasi Kelas CloudflareD1Database
 | ------------ | ---------------------------- | ---------- |
 | `simpanWaktuKirim(waktu: Time): Boolean` | public | Menyimpan waktu pengiriman DailyAffirmation atau Reminder ke D1. |
 | `simpanKalender(jadwal: JadwalKonsultasi): Boolean` | public | Menyimpan perubahan kalender atau jadwal konsultasi ke D1. |
-| `simpanPerubahan(data: String): Boolean` | public | Menyimpan perubahan data umum (FAQ, UmpanBalik, PengajuanPertanyaan) ke D1. |
+| `simpanPerubahan(data: String): Boolean` | public | Menyimpan perubahan data umum ke D1: FAQ, umpan balik, pengajuan pertanyaan, akun pengguna, sesi, token Google, dan perangkat notifikasi. |
 
 Tabel 5.35.2. Atribut Kelas CloudflareD1Database
 
 | Nama Atribut | Visibility (private, public) | Tipe |
 | ------------ | ---------------------------- | ---- |
 | - | - | - |
+
+### 5.35.1 Algoritma/Query
+
+**Nama Kelas:** `CloudflareD1Database`  
+**Nama Operasi:** `simpanWaktuKirim(waktu: Time): Boolean`  
+**ID Algoritma:** Algo-028
+
+```text
+FUNCTION simpanWaktuKirim(waktu)    // entitas pemanggil: DailyAffirmation atau Reminder
+  IF entitas adalah DailyAffirmation THEN
+    baris <- jalankan Q-021 dengan id Mahasiswa
+    IF baris kosong THEN jalankan Q-023 dengan (ID baru, id Mahasiswa, KONTEN_BAWAAN, waktu)
+    ELSE                 jalankan Q-022 dengan (waktu, baris.id_affirmation)
+  ELSE                                   // Reminder
+    baris <- jalankan Q-024 dengan (id Mahasiswa, jenis)
+    IF baris kosong THEN jalankan Q-026 dengan (ID baru, id Mahasiswa, jenis, waktu)
+    ELSE                 jalankan Q-025 dengan (waktu, baris.id_reminder)
+  RETURN true bila perintah berhasil, false bila terjadi kesalahan
+```
+
+Tabel 5.35.3. Query Operasi simpanWaktuKirim
+
+| No Query | Query | Keterangan |
+| -------- | ----- | ---------- |
+| Q-021 | `SELECT id_affirmation FROM daily_affirmation WHERE id_mahasiswa = ?` | Mencari pengaturan afirmasi milik Mahasiswa. |
+| Q-022 | `UPDATE daily_affirmation SET waktu_kirim = ? WHERE id_affirmation = ?` | Mengubah waktu kirim afirmasi yang sudah ada. |
+| Q-023 | `INSERT INTO daily_affirmation (id_affirmation, id_mahasiswa, konten, waktu_kirim) VALUES (?, ?, ?, ?)` | Membuat pengaturan afirmasi baru dengan konten bawaan. |
+| Q-024 | `SELECT id_reminder FROM reminder WHERE id_mahasiswa = ? AND jenis = ?` | Mencari pengingat milik Mahasiswa untuk satu jenis. |
+| Q-025 | `UPDATE reminder SET waktu = ? WHERE id_reminder = ?` | Mengubah waktu pengingat yang sudah ada. |
+| Q-026 | `INSERT INTO reminder (id_reminder, id_mahasiswa, jenis, waktu) VALUES (?, ?, ?, ?)` | Membuat pengingat baru. |
+
+### 5.35.2 Algoritma/Query
+
+**Nama Kelas:** `CloudflareD1Database`  
+**Nama Operasi:** `simpanKalender(jadwal: JadwalKonsultasi): Boolean`  
+**ID Algoritma:** Algo-029
+
+```text
+FUNCTION simpanKalender(jadwal)
+  IF peran pengguna = "administrator" THEN
+    hasil <- jalankan Q-027 dengan (jadwal.waktu, jadwal.waktuSelesai, jadwal.idJadwal)
+    RETURN hasil berhasil
+  hasil <- jalankan Q-028 dengan (id Mahasiswa, jadwal.idJadwal)
+  RETURN jumlah baris terubah = 1       // 0 berarti slot sudah dipesan orang lain
+```
+
+Tabel 5.35.4. Query Operasi simpanKalender
+
+| No Query | Query | Keterangan |
+| -------- | ----- | ---------- |
+| Q-027 | `UPDATE jadwal_konsultasi SET waktu = ?, waktu_selesai = ? WHERE id_jadwal = ?` | Administrator mengubah waktu mulai dan selesai slot. |
+| Q-028 | `UPDATE jadwal_konsultasi SET status = 'terpesan', id_mahasiswa = ? WHERE id_jadwal = ? AND status = 'tersedia'` | Mahasiswa memesan slot. Syarat status = 'tersedia' mencegah dua Mahasiswa memesan slot yang sama. |
+
+### 5.35.3 Algoritma/Query
+
+**Nama Kelas:** `CloudflareD1Database`  
+**Nama Operasi:** `simpanPerubahan(data: String): Boolean`  
+**ID Algoritma:** Algo-030
+
+```text
+FUNCTION simpanPerubahan(data)      // data: teks JSON {aksi, nilai...}
+  perintah <- baca data
+  SWITCH perintah.aksi
+    "daftar_pengguna"     : jalankan dalam satu batch Q-029 lalu Q-030
+    "buat_sesi"           : jalankan Q-031
+    "simpan_token_google" : jalankan Q-032
+    "daftar_perangkat"    : jalankan dalam satu batch Q-033 lalu Q-034
+    "tambah_faq"          : jalankan Q-035
+    "ubah_faq"            : jalankan Q-036
+    "hapus_faq"           : jalankan Q-037
+    "kirim_umpan_balik"   : jalankan Q-038
+    "tanggapi_umpan_balik": jalankan Q-039
+    "ajukan_pertanyaan"   : jalankan Q-040
+    DEFAULT               : RETURN false
+  RETURN true bila perintah berhasil, false bila terjadi kesalahan
+```
+
+Tabel 5.35.5. Query Operasi simpanPerubahan
+
+| No Query | Query | Keterangan |
+| -------- | ----- | ---------- |
+| Q-029 | `INSERT INTO pengguna (id_pengguna, nama, email, google_id, peran) VALUES (?, ?, ?, ?, 'mahasiswa') ON CONFLICT (google_id) DO NOTHING` | Mendaftarkan akun baru pada login pertama dengan peran mahasiswa. Bila google_id sudah ada (login bersamaan), perintah diabaikan. |
+| Q-030 | `INSERT INTO mahasiswa (id_pengguna, nim) SELECT id_pengguna, ? FROM pengguna WHERE id_pengguna = ? AND peran = 'mahasiswa'` | Membuat baris mahasiswa dengan nim hasil turunan email kampus (NULL bila bukan email kampus), hanya bila pengguna baru benar-benar tersimpan. |
+| Q-031 | `INSERT INTO sesi_autentikasi (token, id_pengguna, waktu_login, status) VALUES (?, ?, ?, 'aktif')` | Membuat sesi login baru. |
+| Q-032 | `INSERT INTO token_google (id_pengguna, access_token, refresh_token, kedaluwarsa) VALUES (?, ?, ?, ?) ON CONFLICT (id_pengguna) DO UPDATE SET access_token = excluded.access_token, refresh_token = COALESCE(excluded.refresh_token, token_google.refresh_token), kedaluwarsa = excluded.kedaluwarsa` | Menyimpan token Google (sudah terenkripsi AES-256-GCM). Refresh token lama dipertahankan bila Google tidak mengirim yang baru. |
+| Q-033 | `UPDATE sesi_autentikasi SET status = 'berakhir' WHERE token_push = ? AND token <> ?` | Mengakhiri sesi lain pada perangkat yang sama, sehingga satu perangkat hanya melayani satu sesi aktif. |
+| Q-034 | `UPDATE sesi_autentikasi SET token_push = ? WHERE token = ? AND status = 'aktif'` | Menyimpan Expo push token pada sesi aktif. |
+| Q-035 | `INSERT INTO faq (id_faq, pertanyaan, jawaban) VALUES (?, ?, ?)` | Menambah FAQ. |
+| Q-036 | `UPDATE faq SET pertanyaan = ?, jawaban = ? WHERE id_faq = ?` | Mengubah FAQ. |
+| Q-037 | `DELETE FROM faq WHERE id_faq = ?` | Menghapus FAQ. |
+| Q-038 | `INSERT INTO umpan_balik (id_umpan_balik, id_mahasiswa, isi) VALUES (?, ?, ?)` | Menyimpan umpan balik baru dari Mahasiswa. |
+| Q-039 | `UPDATE umpan_balik SET tanggapan = ?, id_administrator = ? WHERE id_umpan_balik = ?` | Menyimpan tanggapan Administrator. |
+| Q-040 | `INSERT INTO pengajuan_pertanyaan (id_pertanyaan, id_mahasiswa, isi_pertanyaan) VALUES (?, ?, ?)` | Menyimpan pertanyaan di luar FAQ. |
+
+## 5.36 Skema Basis Data
+
+Subbab ini menjabarkan skema basis data Cloudflare D1 (SQLite) yang menyimpan atribut kelas _entity_ pada subbab 5.1 sampai 5.35. Skema ini menjadi dasar operasi penyimpanan pada kelas `CloudflareD1Database` dan kueri pada operasi kelas.
+
+Tabel 5.36.1. Pemetaan Kelas ke Tabel
+
+| Kelas | Tabel | Keterangan |
+| ----- | ----- | ---------- |
+| `Pengguna`, `Administrator` | `pengguna` | Kolom `peran` membedakan Mahasiswa dan Administrator. `Administrator` tidak memiliki atribut sendiri, sehingga tidak diberi tabel. |
+| `Mahasiswa` | `mahasiswa` | Menyimpan `nim`, berelasi satu-satu dengan `pengguna`. `nim` diturunkan dari bagian lokal email kampus (domain `mahasiswa.itb.ac.id`) dan bernilai NULL bila email bukan email kampus. |
+| `SesiAutentikasi` | `sesi_autentikasi` | Satu pengguna dapat memiliki beberapa sesi. Kolom `token_push` menyimpan Expo push token perangkat yang menjalankan sesi, dipakai untuk mengirim notifikasi push. |
+| `GoogleAuthService`, `GoogleCalendarService` | `token_google` | Hanya menyimpan access token dan refresh token Google milik pengguna, dalam bentuk terenkripsi. Kedua kelas layanan itu sendiri tidak disimpan. |
+| `DailyAffirmation` | `daily_affirmation` | Dimiliki satu Mahasiswa. |
+| `Reminder` | `reminder` | Dimiliki satu Mahasiswa. Kolom `jenis` bernilai makan, tidur, atau olahraga. |
+| `Notifikasi` | `notifikasi` | Riwayat notifikasi yang dikirim ke satu Mahasiswa. Tepat satu dari `id_affirmation` atau `id_reminder` terisi, menunjuk `DailyAffirmation` atau `Reminder` yang memicunya. |
+| `KalenderGabungan` | - | Tidak disimpan. Dihitung saat dipakai dari event Google Calendar dan tabel `jadwal_konsultasi`. Operasi `simpanKalender` memperbarui `jadwal_konsultasi`. |
+| `Konsultan` | `konsultan` | Data konsultan yang didaftarkan Administrator. |
+| `JadwalKonsultasi` | `jadwal_konsultasi` | Satu slot milik satu konsultan. `waktu` adalah waktu mulai dan `waktu_selesai` adalah waktu selesai sesi, dipakai untuk memeriksa bentrok. Kolom `status` dan `id_mahasiswa` dijaga konsisten oleh batasan `CHECK`. |
+| `FAQ` | `faq` | Pasangan pertanyaan dan jawaban. |
+| `PengajuanPertanyaan` | `pengajuan_pertanyaan` | Pertanyaan di luar FAQ dari satu Mahasiswa. |
+| `UmpanBalik` | `umpan_balik` | Umpan balik Mahasiswa. `tanggapan` dan `id_administrator` terisi setelah Administrator menanggapi. |
+| `StatusServer` | `status_server` | Satu baris untuk setiap pemeriksaan status, dibedakan oleh kolom `jenis` (website atau server). |
+| _View_, _Controller_, `Validasi`, `CloudflareD1Database` | - | Bukan _entity_, sehingga tidak memiliki tabel. |
+
+Ketentuan umum skema:
+
+- Pendaftaran hanya melalui Google OAuth 2.0. Akun Mahasiswa dibuat otomatis pada login pertama (`peran` bernilai mahasiswa) dari nama, email, dan `google_id` pada akun Google, dengan `nim` diturunkan dari email kampus. Akun Administrator tidak dibuat lewat pendaftaran, melainkan ditetapkan dengan mengubah `peran` langsung pada basis data.
+- Kunci utama bertipe `TEXT` (misalnya UUID), kecuali `status_server` yang memakai `INTEGER` bertambah otomatis.
+- SQLite tidak memiliki tipe tanggal. Tipe `DateTime` pada kelas disimpan sebagai teks ISO 8601, tipe `Time` sebagai teks `HH:MM`, dan tipe `Boolean` sebagai `INTEGER` 0 atau 1.
+- Hubungan antartabel memakai _foreign key_ dengan `ON DELETE` yang sesuai. Pengecekan bahwa `id_administrator` merujuk pengguna berperan administrator dilakukan oleh server.
+- Notifikasi push memakai Expo Push Service. Aplikasi mengirim Expo push token ke server setelah login, dan server menyimpannya pada sesi aktif (`sesi_autentikasi.token_push`). Notifikasi dikirim ke seluruh token pada sesi aktif milik penerima. Token yang ditolak Expo (`DeviceNotRegistered`) dikosongkan, dan token akan hilang dari pengiriman saat sesi berakhir.
+- Token Google bersifat sensitif (KNF-02). Server mengenkripsi `access_token` dan `refresh_token` dengan AES-256-GCM sebelum disimpan, sehingga nilai tersimpan berupa teks base64 gabungan IV, ciphertext, dan tag. Kunci 256-bit disimpan sebagai _secret_ Cloudflare Workers dan tidak pernah disimpan di D1. Tabel `token_google` hanya dibaca dan ditulis oleh server.
+
+```mermaid
+erDiagram
+    pengguna ||--o| mahasiswa : "peran mahasiswa"
+    pengguna ||--o{ sesi_autentikasi : memiliki
+    pengguna ||--o| token_google : memiliki
+    pengguna |o--o{ umpan_balik : menanggapi
+    mahasiswa ||--o{ daily_affirmation : mengatur
+    mahasiswa ||--o{ reminder : mengatur
+    mahasiswa ||--o{ notifikasi : menerima
+    daily_affirmation |o--o{ notifikasi : memicu
+    reminder |o--o{ notifikasi : memicu
+    mahasiswa |o--o{ jadwal_konsultasi : memesan
+    mahasiswa ||--o{ pengajuan_pertanyaan : mengajukan
+    mahasiswa ||--o{ umpan_balik : memberikan
+    konsultan ||--o{ jadwal_konsultasi : memiliki
+
+    pengguna {
+        text id_pengguna PK
+        text nama
+        text email UK
+        text google_id UK
+        text peran
+    }
+    mahasiswa {
+        text id_pengguna PK, FK
+        text nim UK
+    }
+    sesi_autentikasi {
+        text token PK
+        text id_pengguna FK
+        text waktu_login
+        text status
+        text token_push
+    }
+    token_google {
+        text id_pengguna PK, FK
+        text access_token
+        text refresh_token
+        text kedaluwarsa
+    }
+    daily_affirmation {
+        text id_affirmation PK
+        text id_mahasiswa FK
+        text konten
+        text waktu_kirim
+    }
+    reminder {
+        text id_reminder PK
+        text id_mahasiswa FK
+        text jenis
+        text waktu
+    }
+    notifikasi {
+        text id_notifikasi PK
+        text id_mahasiswa FK
+        text id_affirmation FK
+        text id_reminder FK
+        text isi
+        text waktu_kirim
+    }
+    konsultan {
+        text id_konsultan PK
+        text nama
+        text spesialisasi
+    }
+    jadwal_konsultasi {
+        text id_jadwal PK
+        text id_konsultan FK
+        text waktu
+        text waktu_selesai
+        text status
+        text id_mahasiswa FK
+    }
+    faq {
+        text id_faq PK
+        text pertanyaan
+        text jawaban
+    }
+    pengajuan_pertanyaan {
+        text id_pertanyaan PK
+        text id_mahasiswa FK
+        text isi_pertanyaan
+    }
+    umpan_balik {
+        text id_umpan_balik PK
+        text id_mahasiswa FK
+        text isi
+        text tanggapan
+        text id_administrator FK
+    }
+    status_server {
+        integer id_status PK
+        text jenis
+        integer status_uptime
+        text waktu_cek
+    }
+```
+
+<p align="center">
+<i>Gambar 5.36.1. Diagram Relasi Entitas Basis Data Sehati</i>
+</p>
+
+Skema berikut dapat dijalankan langsung pada Cloudflare D1.
+
+```sql
+PRAGMA foreign_keys = ON;
+
+-- Pengguna (C-01), Mahasiswa (C-02), Administrator (C-03)
+CREATE TABLE pengguna (
+  id_pengguna TEXT PRIMARY KEY,
+  nama        TEXT NOT NULL,
+  email       TEXT NOT NULL UNIQUE,
+  google_id   TEXT NOT NULL UNIQUE,
+  peran       TEXT NOT NULL CHECK (peran IN ('mahasiswa', 'administrator'))
+);
+
+CREATE TABLE mahasiswa (
+  id_pengguna TEXT PRIMARY KEY REFERENCES pengguna (id_pengguna) ON DELETE CASCADE,
+  nim         TEXT UNIQUE            -- diturunkan dari email kampus; NULL bila email bukan email kampus
+);
+
+-- SesiAutentikasi (C-04)
+CREATE TABLE sesi_autentikasi (
+  token       TEXT PRIMARY KEY,
+  id_pengguna TEXT NOT NULL REFERENCES pengguna (id_pengguna) ON DELETE CASCADE,
+  waktu_login TEXT NOT NULL,
+  status      TEXT NOT NULL CHECK (status IN ('aktif', 'berakhir')),
+  token_push  TEXT                   -- Expo push token perangkat yang menjalankan sesi ini
+);
+
+-- Token Google milik pengguna (GoogleAuthService C-34, GoogleCalendarService C-08)
+-- access_token dan refresh_token disimpan sebagai ciphertext AES-256-GCM (base64 dari IV + ciphertext + tag)
+CREATE TABLE token_google (
+  id_pengguna   TEXT PRIMARY KEY REFERENCES pengguna (id_pengguna) ON DELETE CASCADE,
+  access_token  TEXT NOT NULL,
+  refresh_token TEXT,
+  kedaluwarsa   TEXT NOT NULL
+);
+
+-- DailyAffirmation (C-05)
+CREATE TABLE daily_affirmation (
+  id_affirmation TEXT PRIMARY KEY,
+  id_mahasiswa   TEXT NOT NULL REFERENCES mahasiswa (id_pengguna) ON DELETE CASCADE,
+  konten         TEXT NOT NULL,
+  waktu_kirim    TEXT NOT NULL
+);
+
+-- Reminder (C-06)
+CREATE TABLE reminder (
+  id_reminder  TEXT PRIMARY KEY,
+  id_mahasiswa TEXT NOT NULL REFERENCES mahasiswa (id_pengguna) ON DELETE CASCADE,
+  jenis        TEXT NOT NULL CHECK (jenis IN ('makan', 'tidur', 'olahraga')),
+  waktu        TEXT NOT NULL
+);
+
+-- Notifikasi (C-07)
+-- Sumber notifikasi: tepat satu dari id_affirmation atau id_reminder terisi
+CREATE TABLE notifikasi (
+  id_notifikasi  TEXT PRIMARY KEY,
+  id_mahasiswa   TEXT NOT NULL REFERENCES mahasiswa (id_pengguna) ON DELETE CASCADE,
+  id_affirmation TEXT REFERENCES daily_affirmation (id_affirmation) ON DELETE CASCADE,
+  id_reminder    TEXT REFERENCES reminder (id_reminder) ON DELETE CASCADE,
+  isi            TEXT NOT NULL,
+  waktu_kirim    TEXT NOT NULL,
+  CHECK ((id_affirmation IS NOT NULL) + (id_reminder IS NOT NULL) = 1)
+);
+
+-- Konsultan (C-10)
+CREATE TABLE konsultan (
+  id_konsultan TEXT PRIMARY KEY,
+  nama         TEXT NOT NULL,
+  spesialisasi TEXT NOT NULL
+);
+
+-- JadwalKonsultasi (C-11)
+CREATE TABLE jadwal_konsultasi (
+  id_jadwal    TEXT PRIMARY KEY,
+  id_konsultan  TEXT NOT NULL REFERENCES konsultan (id_konsultan) ON DELETE CASCADE,
+  waktu         TEXT NOT NULL,
+  waktu_selesai TEXT NOT NULL,
+  status        TEXT NOT NULL DEFAULT 'tersedia' CHECK (status IN ('tersedia', 'terpesan')),
+  id_mahasiswa  TEXT REFERENCES mahasiswa (id_pengguna) ON DELETE SET NULL,
+  UNIQUE (id_konsultan, waktu),
+  CHECK (waktu_selesai > waktu),
+  CHECK ((status = 'terpesan') = (id_mahasiswa IS NOT NULL))
+);
+
+-- FAQ (C-12)
+CREATE TABLE faq (
+  id_faq     TEXT PRIMARY KEY,
+  pertanyaan TEXT NOT NULL,
+  jawaban    TEXT NOT NULL
+);
+
+-- PengajuanPertanyaan (C-13)
+CREATE TABLE pengajuan_pertanyaan (
+  id_pertanyaan   TEXT PRIMARY KEY,
+  id_mahasiswa    TEXT NOT NULL REFERENCES mahasiswa (id_pengguna) ON DELETE CASCADE,
+  isi_pertanyaan  TEXT NOT NULL
+);
+
+-- UmpanBalik (C-14)
+CREATE TABLE umpan_balik (
+  id_umpan_balik   TEXT PRIMARY KEY,
+  id_mahasiswa     TEXT NOT NULL REFERENCES mahasiswa (id_pengguna) ON DELETE CASCADE,
+  isi              TEXT NOT NULL,
+  tanggapan        TEXT,
+  id_administrator TEXT REFERENCES pengguna (id_pengguna) ON DELETE SET NULL
+);
+
+-- StatusServer (C-15)
+CREATE TABLE status_server (
+  id_status     INTEGER PRIMARY KEY AUTOINCREMENT,
+  jenis         TEXT NOT NULL CHECK (jenis IN ('website', 'server')),
+  status_uptime INTEGER NOT NULL CHECK (status_uptime IN (0, 1)),
+  waktu_cek     TEXT NOT NULL
+);
+
+CREATE INDEX idx_sesi_pengguna        ON sesi_autentikasi (id_pengguna);
+CREATE INDEX idx_sesi_push            ON sesi_autentikasi (token_push);
+CREATE INDEX idx_affirmation_mhs      ON daily_affirmation (id_mahasiswa);
+CREATE INDEX idx_reminder_mhs         ON reminder (id_mahasiswa);
+CREATE INDEX idx_notifikasi_mhs       ON notifikasi (id_mahasiswa);
+CREATE INDEX idx_jadwal_waktu         ON jadwal_konsultasi (id_konsultan, waktu, waktu_selesai);
+CREATE INDEX idx_jadwal_mhs           ON jadwal_konsultasi (id_mahasiswa);
+CREATE INDEX idx_umpan_balik_mhs      ON umpan_balik (id_mahasiswa);
+CREATE INDEX idx_status_jenis_waktu   ON status_server (jenis, waktu_cek DESC);
+```
 
 <br>
 
@@ -3477,4 +4392,4 @@ Tabel 7.1. Matriks Kerunutan Kelas terhadap Use Case
 | C-32 - `ServerStatusController`     | UC-10 - Memantau Status Server                                                                                                                                                                                                                                                                               |
 | C-33 - `Validasi`                   | UC-01 - Menyetel Daily Affirmations, UC-02 - Menyetel Pengingat Kesehatan, UC-04 - Memesan Sesi Konsultasi, UC-05 - Mengelola Jadwal Konsultan, UC-07 - Mengelola FAQ, UC-08 - Memberikan Umpan Balik, UC-09 - Menanggapi Umpan Balik, UC-12 - Form Pengajuan Pertanyaan                                     |
 | C-34 - `GoogleAuthService`          | UC-11 - Masuk Melalui Akun Google                                                                                                                                                                                                                                                                            |
-| C-35 - `CloudflareD1Database`       | UC-01 - Menyetel Daily Affirmations, UC-02 - Menyetel Pengingat Kesehatan, UC-04 - Memesan Sesi Konsultasi, UC-05 - Mengelola Jadwal Konsultan, UC-07 - Mengelola FAQ, UC-08 - Memberikan Umpan Balik, UC-09 - Menanggapi Umpan Balik, UC-12 - Form Pengajuan Pertanyaan                                     |
+| C-35 - `CloudflareD1Database`       | UC-01 - Menyetel Daily Affirmations, UC-02 - Menyetel Pengingat Kesehatan, UC-04 - Memesan Sesi Konsultasi, UC-05 - Mengelola Jadwal Konsultan, UC-07 - Mengelola FAQ, UC-08 - Memberikan Umpan Balik, UC-09 - Menanggapi Umpan Balik, UC-11 - Masuk Melalui Akun Google, UC-12 - Form Pengajuan Pertanyaan                                     |
