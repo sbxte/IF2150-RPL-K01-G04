@@ -61,8 +61,6 @@ Semua definisi dan singkatan yang digunakan dalam dokumen ini beserta penjelasan
 
 Tabel 1.3. Definisi Istilah dan Singkatan
 
-Tabel 1.3. Definisi Istilah dan Singkatan
-
 | Singkatan, Akronim, atau Istilah | Penjelasan                                                                                                                                                                                   |
 | -------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | P/L                              | Singkatan dari **Perangkat Lunak**, yaitu aplikasi yang memberikan perintah kepada komputer untuk menjalankan tugas tertentu.                                                                |
@@ -113,6 +111,10 @@ Tabel 1.4. Aturan Penomoran
 | _Use Case_               | UC-XX     | Nomor urut dua digit mulai dari 01 (contoh: UC-01).                                                             |
 | Kelas                    | C-XX      | Nomor urut dua digit mulai dari 01 (contoh: C-01).                                                              |
 | Aktor                    | Tidak ada | Aktor tidak diberi ID dan dirujuk dengan namanya (Mahasiswa, Administrator).                                    |
+| Algoritma                | Algo-XXX  | Nomor urut tiga digit mulai dari 001 (contoh: Algo-001). Dipakai pada subbab algoritma di BAB 5. |
+| Query                    | Q-XXX     | Nomor urut tiga digit mulai dari 001 (contoh: Q-001). Dipakai pada tabel query di BAB 5. |
+| Antarmuka                | I-XX      | Nomor urut dua digit mulai dari 01 (contoh: I-01). Dipakai pada BAB 6. |
+| Objek antarmuka          | I-XX-YY   | ID antarmuka diikuti nomor urut objek dua digit (contoh: I-04-07). Dipakai pada tabel spesifikasi objek di BAB 6. |
 
 ## 1.5 Referensi
 
@@ -130,7 +132,7 @@ Dokumen ini merujuk pada sumber-sumber berikut.
 
 ## 1.6 Deskripsi Umum Dokumen (Ikhtisar)
 
-Dokumen ini disusun dalam tujuh bab. BAB 1 memuat pendahuluan yang mencakup tujuan, lingkup masalah, definisi istilah, aturan penomoran, referensi, dan ikhtisar dokumen. BAB 2 menjelaskan perancangan arsitektur, mulai dari lingkungan implementasi, _style/pattern_ yang menjadi acuan, identifikasi komponen, hingga _logical view_ sistem. BAB 3 menjabarkan realisasi setiap _use case_ melalui identifikasi kelas perancangan, _sequence diagram_ untuk setiap skenario, dan diagram kelas per _use case_. BAB 4 menyajikan diagram kelas perancangan keseluruhan beserta daftar atribut dan operasi seluruh kelas. BAB 5 merinci setiap kelas perancangan, yaitu operasi dan atributnya beserta _visibility_ dan tipe. BAB 6 memuat perancangan antarmuka berupa rancangan layar beserta spesifikasi objeknya. BAB 7 menutup dokumen dengan matriks kerunutan yang memetakan setiap kelas perancangan terhadap _use case_ yang direalisasikannya.
+Dokumen ini disusun dalam tujuh bab. BAB 1 memuat pendahuluan yang mencakup tujuan, lingkup masalah, definisi istilah, aturan penomoran, referensi, dan ikhtisar dokumen. BAB 2 menjelaskan perancangan arsitektur, mulai dari lingkungan implementasi, _style/pattern_ yang menjadi acuan, identifikasi komponen, hingga _logical view_ sistem. BAB 3 menjabarkan realisasi setiap _use case_ melalui identifikasi kelas perancangan, _sequence diagram_ untuk setiap skenario, dan diagram kelas per _use case_. BAB 4 menyajikan diagram kelas perancangan keseluruhan beserta daftar atribut dan operasi seluruh kelas. BAB 5 merinci setiap kelas perancangan, yaitu operasi dan atributnya beserta _visibility_ dan tipe, algoritma dan _query_ untuk operasi penting, serta skema basis data. BAB 6 memuat perancangan antarmuka berupa rancangan layar beserta spesifikasi objeknya. BAB 7 menutup dokumen dengan matriks kerunutan yang memetakan setiap kelas perancangan terhadap _use case_ yang direalisasikannya.
 
 <br>
 
@@ -245,7 +247,7 @@ Tabel 2.2. Identifikasi Komponen/Modul/Subsistem
 
 ## 2.4 Model Arsitektur Perangkat Lunak
 
-BAB ini menggambarkan arsitektur Sehati dari satu sudut pandang yang mencakup seluruh sistem, yaitu _Logical View_. Diagram memuat seluruh 36 komponen pada Tabel 2.2 dengan nama yang sama, dan mengikuti _pattern_ _client-server_ dengan MVC pada BAB 2.
+Subbab ini menggambarkan arsitektur Sehati dari satu sudut pandang yang mencakup seluruh sistem, yaitu _Logical View_. Diagram memuat seluruh 36 komponen pada Tabel 2.2 dengan nama yang sama, dan mengikuti _pattern_ _client-server_ dengan MVC pada subbab 2.2.
 
 ### 2.4.1 _Logical View_
 
