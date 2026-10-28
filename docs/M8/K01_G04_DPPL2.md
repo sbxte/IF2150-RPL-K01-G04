@@ -4874,3 +4874,15 @@ Tabel 7.1. Matriks Kerunutan Kelas terhadap Use Case
 | C-34 - `GoogleAuthService`          | UC-11 - Masuk Melalui Akun Google                                                                                                                                                                                                                                                                            |
 | C-35 - `CloudflareD1Database`       | UC-01 - Menyetel Daily Affirmations, UC-02 - Menyetel Pengingat Kesehatan, UC-04 - Memesan Sesi Konsultasi, UC-05 - Mengelola Jadwal Konsultan, UC-07 - Mengelola FAQ, UC-08 - Memberikan Umpan Balik, UC-09 - Menanggapi Umpan Balik, UC-11 - Masuk Melalui Akun Google, UC-12 - Form Pengajuan Pertanyaan                                     |
 | C-36 - `HomeView`                   | UC-11 - Masuk Melalui Akun Google |
+
+<br>
+
+---
+
+# Lampiran
+
+Prototipe rancangan antarmuka (BAB 6), beserta komponen, variabel warna, dan gaya teks yang dipakai, dapat dilihat pada berkas Figma berikut:
+
+[Sehati - Rancangan Antarmuka](https://www.figma.com/design/OqbMU5rHz4uQwCNpkvndPY)
+
+Tautan lengkap: https://www.figma.com/design/OqbMU5rHz4uQwCNpkvndPY
