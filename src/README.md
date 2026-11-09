@@ -248,7 +248,47 @@ Test berjalan terhadap basis data SQLite sungguhan: `test/harness.ts` menyediaka
 
 ### Rilis (APK)
 
-**TODO (#6, Iqi):** cara membangun dan mengunduh APK rilis `v9.0`.
+#### Mengunduh dan memasang
+
+APK terlampir pada [rilis `v9.0`](https://github.com/sbxte/IF2150-RPL-K01-G04/releases/tag/v9.0) (berkas `sehati-v9.0.apk`).
+
+1. Unduh APK di ponsel Android, lalu buka berkasnya.
+2. Bila diminta, izinkan pemasangan dari sumber tidak dikenal untuk peramban atau pengelola berkas yang dipakai.
+3. Buka **Sehati**, lalu masuk melalui **Mode demo** (Mahasiswa atau Administrator, lihat bagian 6).
+
+APK rilis sudah terhubung ke backend yang di-*deploy* di `https://sehati.sbxte.net` dan mengaktifkan mode demo, sehingga tidak perlu menjalankan backend sendiri. Bila backend tersebut tidak dapat diakses, jalankan aplikasi dari *source* (bagian 5) dengan backend lokal.
+
+#### Membangun APK
+
+APK dibangun dengan [EAS Build](https://docs.expo.dev/build/introduction/) milik Expo pada proyek `@tszcodess-team/rpl` (`owner` dan `extra.eas.projectId` di `app.json`). Diperlukan akun Expo yang menjadi anggota organisasi `tszcodess-team`.
+
+```bash
+cd src/mobile
+bunx eas-cli login                                              # sekali saja
+bunx eas-cli build --platform android --profile production      # APK rilis
+bunx eas-cli build --platform android --profile development     # development build
+```
+
+Build berjalan di server Expo (sekitar 10–20 menit). Setelah selesai, perintah menampilkan tautan unduhan APK, yang juga tersedia di halaman *Builds* proyek pada [expo.dev](https://expo.dev). Profil build ada di `src/mobile/eas.json`:
+
+| Profil | Hasil | Keterangan |
+|---|---|---|
+| `production` | APK rilis untuk `v9.0` | `EXPO_PUBLIC_API_URL=https://sehati.sbxte.net` dan `EXPO_PUBLIC_MODE_DEMO=1` ditanam saat build (`.env` lokal tidak ikut diunggah). `versionCode` naik otomatis setiap build. |
+| `development` | APK *development build* (`expo-dev-client`) | Memuat kode dari `bunx expo start` seperti Expo Go, tetapi mendukung notifikasi *push* di Android. Memakai `.env` lokal. |
+
+Kedua profil menghasilkan `.apk` (bukan `.aab` Play Store) dan memakai Bun 1.4.4. *Keystore* penanda tangan APK dibuat dan disimpan oleh EAS, sehingga tidak ada di repositori.
+
+Notifikasi *push* di Android memerlukan Firebase (proyek `sehati-75469`):
+
+- `google-services.json` **tidak di-*commit*** karena memuat API key (M9 A.3). EAS mengambilnya dari variabel rahasia bertipe *file* `GOOGLE_SERVICES_JSON`, dan `app.config.ts` meneruskannya ke `android.googleServicesFile`. Untuk build lokal, unduh berkas itu dari Firebase console ke `src/mobile/`.
+- Kunci *service account* FCM V1 diunggah ke kredensial EAS (`bunx eas-cli credentials`), tidak disimpan di repositori.
+
+Melampirkan APK ke rilis setelah tag `v9.0` dibuat di `main`:
+
+```bash
+curl -L -o sehati-v9.0.apk "<tautan APK dari EAS>"
+gh release upload v9.0 sehati-v9.0.apk
+```
 
 ## 6. Akun dan Data Uji
 
