@@ -56,7 +56,7 @@ openssl rand -base64 32
 | `GOOGLE_CLIENT_ID` | OAuth client id, sent in the code exchange and refresh grant (Algo-027). Not secret. |
 | `GOOGLE_CLIENT_SECRET` | OAuth client secret, required by Google at both grants. This is why the exchange happens server-side — it must never reach the mobile app. |
 | `GOOGLE_REDIRECT_URI` | This backend's `/api/auth/google/callback` URL. Must **exactly** match the redirect URI registered in Google Cloud Console. A mismatch yields `redirect_uri_mismatch`. |
-| `API_BASE_URL` | Base URL the uptime cron probes (Algo-021). Optional; without it probes record `down`. |
+| `API_BASE_URL` | Base URL the uptime cron probes (Algo-021). Optional; without it probes record `down`. The cron probes it twice with different intent: `website` checks the origin (`<API_BASE_URL>/`, any 2xx or 3xx counts) and `server` checks `<API_BASE_URL>/health`, which reports Worker and D1 health. They can therefore disagree — a reachable origin with a failing `/health` means the Worker is up but its data layer is not. |
 | `MODE_DEMO` | Set to `1` to enable `POST /api/auth/demo`, which signs in as the seeded Mahasiswa or Administrator account without Google (for assistants testing the APK). Optional; any other value or unset keeps the route disabled (404). Requires the seed to have been run on that database. |
 
 Only `KUNCI_TOKEN`, `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, and

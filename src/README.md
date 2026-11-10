@@ -493,7 +493,7 @@ Status: `400` body tidak valid · `401` belum terautentikasi · `403` peran sala
 Satu *cron trigger* `* * * * *` menjalankan:
 
 - pengiriman afirmasi dan pengingat, mencatat notifikasi dan mengirim *push* Expo dalam batch maksimal 100 pesan, serta mengosongkan token yang dilaporkan `DeviceNotRegistered`
-- pemeriksaan *uptime* `website` dan `server` (memerlukan `API_BASE_URL`)
+- pemeriksaan *uptime* `website` (alamat publik, `<API_BASE_URL>/`) dan `server` (kesehatan Worker, `<API_BASE_URL>/health`), keduanya memerlukan `API_BASE_URL` dan dapat berbeda hasilnya
 
 Semua ini ada di handler `scheduled()`, bukan rute HTTP.
 
