@@ -258,6 +258,58 @@ describe("Algo-021 cekStatusServer (cron)", () => {
     ctx.tutup();
   });
 
+  test("website dan server memeriksa alamat berbeda", async () => {
+    // Regression: both used to probe `${API_BASE_URL}/health`, so I-15 showed the
+    // same number twice. website -> origin root, server -> /health.
+    const ctx = buatDbUji();
+    const dipanggil: string[] = [];
+    globalThis.fetch = vi.fn(async (input: any) => {
+      dipanggil.push(String(input?.url ?? input));
+      return new Response("ok", { status: 200 });
+    }) as any;
+
+    const { ctx: ectx, tunggu } = konteks();
+    await scheduled(
+      {} as any,
+      { D1: ctx.D1, API_BASE_URL: "https://sehati.test/" } as any,
+      ectx,
+    );
+    await tunggu();
+
+    expect(dipanggil).toContain("https://sehati.test/");
+    expect(dipanggil).toContain("https://sehati.test/health");
+    expect(new Set(dipanggil).size).toBe(2);
+    ctx.tutup();
+  });
+
+  test("website dan server dapat berbeda hasilnya", async () => {
+    const ctx = buatDbUji();
+    globalThis.fetch = vi.fn(async (input: any) => {
+      const url = String(input?.url ?? input);
+      // Origin is up, but the Worker's own health check fails (D1 down).
+      return url.endsWith("/health")
+        ? new Response("gagal", { status: 500 })
+        : new Response("ok", { status: 200 });
+    }) as any;
+
+    const { ctx: ectx, tunggu } = konteks();
+    await scheduled(
+      {} as any,
+      { D1: ctx.D1, API_BASE_URL: "https://sehati.test" } as any,
+      ectx,
+    );
+    await tunggu();
+
+    const rows = ctx.raw
+      .prepare("SELECT jenis, status_uptime FROM status_server ORDER BY jenis")
+      .all() as { jenis: string; status_uptime: number }[];
+    expect(rows).toEqual([
+      { jenis: "server", status_uptime: 0 },
+      { jenis: "website", status_uptime: 1 },
+    ]);
+    ctx.tutup();
+  });
+
   test("tanpa API_BASE_URL tetap mencatat pemeriksaan (down)", async () => {
     const ctx = buatDbUji();
     globalThis.fetch = vi.fn(async () => new Response("ok", { status: 200 })) as any;

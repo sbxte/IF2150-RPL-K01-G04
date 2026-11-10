@@ -111,9 +111,16 @@ async function jalankanPengingat(env: Env, db: ReturnType<typeof drizzle<typeof 
  * (5 s timeout) and records a `status_server` row (Q-018).
  */
 async function jalankanCekStatus(env: Env, db: ReturnType<typeof drizzle<typeof schema>>) {
-  const origin = (env as unknown as Record<string, string | undefined>).API_BASE_URL ?? "";
+  const origin = ((env as unknown as Record<string, string | undefined>).API_BASE_URL ?? "").replace(
+    /\/+$/,
+    "",
+  );
+  // `website` and `server` must probe different things, otherwise I-15 shows the
+  // same number twice. Website = is the public origin reachable at all (any 2xx/3xx);
+  // server = is the Worker healthy, which is what `/health` reports (status 500 when
+  // the D1 query behind it fails).
   const target: Record<JenisStatus, string> = {
-    website: origin ? `${origin}/health` : "",
+    website: origin ? `${origin}/` : "",
     server: origin ? `${origin}/health` : "",
   };
 
