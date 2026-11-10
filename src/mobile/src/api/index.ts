@@ -9,4 +9,12 @@ export {
   type JenisStatus,
   type StatusLayanan,
 } from './status';
+export {
+  ajukanPertanyaan,
+  ambilFaq,
+  hapusFaq,
+  tambahFaq,
+  ubahFaq,
+  type Faq,
+} from './faq';
 export { hapusSesi, keluar, pulihkanSesi, simpanSesi, type Pengguna, type Peran } from './sesi';
