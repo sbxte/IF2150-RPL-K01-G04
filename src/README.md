@@ -37,6 +37,7 @@ Arsitektur mengikuti DPPL (`docs/M8/K01_G04_DPPL2.md`): Client-Server + MVC, den
 | Notifikasi push | `expo-notifications` ~58.1.8 + `expo-device` ~58.0.5 |
 | Linter | ESLint 9 + `eslint-config-expo` |
 | Test | Vitest ^5.1.0 |
+| Build APK | [EAS Build](https://docs.expo.dev/build/introduction/) (`eas-cli` >= 27, profil di `eas.json`) + `expo-dev-client` ^58.0.18 |
 
 ### Backend (`src/backend`)
 
@@ -398,7 +399,7 @@ Catatan:
 - Setiap login demo membuat sesi baru melalui `POST /api/auth/demo`, bukan memakai token `dev-token-*`. Sesi tersimpan di perangkat (`expo-secure-store`), sehingga aplikasi langsung membuka Beranda saat dibuka kembali sampai pengguna keluar atau sesi melewati 30 hari.
 - Bila backend berjalan tanpa `MODE_DEMO=1`, rute login demo membalas 404 dan layar Masuk menampilkan pesan galat.
 - Isi Beranda dari data *seed*: Mahasiswa Uji belum punya afirmasi (kartu afirmasi berisi ajakan mengatur waktu di I-04) dan sudah punya satu sesi terpesan besok pukul 11.00 WIB. Di Beranda Administrator, kartu status layanan menampilkan "Belum dicek" sampai *cron* pertama berjalan. `wrangler dev` tidak menjalankan *cron* sendiri; jalankan `bun run dev -- --test-scheduled`, lalu picu pemeriksaan dengan `curl "http://localhost:8787/__scheduled?cron=*+*+*+*+*"` (dengan `API_BASE_URL` terisi agar hasilnya Up).
-- Login Google sungguhan memerlukan `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, dan `GOOGLE_REDIRECT_URI` (bagian 4). Google tidak menerima alamat IP LAN sebagai *redirect URI*, sehingga login Google dari ponsel memerlukan backend yang sudah di-*deploy* atau *tunnel* ber-HTTPS.
+- Login Google sungguhan dari ponsel paling mudah dicoba lewat backend yang sudah di-*deploy*: isi `EXPO_PUBLIC_API_URL=https://sehati.sbxte.net` di `src/mobile/.env` (APK rilis sudah memakai alamat ini). Backend lokal memerlukan `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, dan `GOOGLE_REDIRECT_URI` (bagian 4), tetapi Google tidak menerima alamat IP LAN sebagai *redirect URI*, sehingga dengan backend lokal login Google hanya berhasil dari peramban di komputer itu sendiri (`localhost`) atau melalui *tunnel* ber-HTTPS yang didaftarkan di OAuth client.
 
 ## 7. Modul dan Pembagian Tugas
 
