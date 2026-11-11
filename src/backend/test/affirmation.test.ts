@@ -234,4 +234,14 @@ describe("ReminderController (C-27) / Algo-028", () => {
     });
     expect(res.status).toBe(422);
   });
+
+  test("DELETE oleh administrator ditolak (403)", async () => {
+    const admin = buatSesiUji(ctx.raw, { idPengguna: "adm", peran: "administrator", token: "ta" });
+    const res = await minta(app, ctx.D1, {
+      method: "DELETE",
+      path: "/api/reminders/makan",
+      token: admin,
+    });
+    expect(res.status).toBe(403);
+  });
 });
