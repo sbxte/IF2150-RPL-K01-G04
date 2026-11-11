@@ -8,6 +8,7 @@ import {
   cariReminder,
   daftarReminder,
   hapusAfirmasi,
+  hapusReminder,
   ubahWaktuAfirmasi,
   ubahWaktuReminder,
 } from "../db/queries";
@@ -114,4 +115,18 @@ reminderRoutes.put("/:jenis", async (c) => {
   }
 
   return c.json({ ok: true, jenis, waktu });
+});
+
+/**
+ * I-05-05 toggle off: deletes the reminder of one `jenis` so the cron stops
+ * sending it. Idempotent — deleting when no row exists still succeeds.
+ */
+reminderRoutes.delete("/:jenis", async (c) => {
+  const jenis = c.req.param("jenis");
+  if (!JENIS_REMINDER.includes(jenis as JenisReminder)) {
+    throw gagalValidasi(`jenis harus salah satu dari: ${JENIS_REMINDER.join(", ")}`);
+  }
+
+  await hapusReminder(c.get("db"), c.get("idPengguna"), jenis);
+  return c.json({ ok: true, jenis });
 });
