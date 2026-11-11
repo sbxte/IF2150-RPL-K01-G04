@@ -33,9 +33,9 @@
     "vitest": "^5.1.0"
   },
   "scripts": {
-    "go": "expo start",
-    "go:android": "expo start --android",
-    "go:ios": "expo start --ios",
+    "go": "expo start --go",
+    "go:android": "expo start --go --android",
+    "go:ios": "expo start --go --ios",
     "go:web": "expo start --web",
     "app:android": "expo run:android",
     "app:ios": "expo run:ios",
