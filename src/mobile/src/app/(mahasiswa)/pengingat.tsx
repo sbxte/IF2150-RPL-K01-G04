@@ -95,19 +95,23 @@ function Formulir({ awal }: { awal: ItemPengingat[] }) {
 
   /** I-05-05: off deletes that reminder; on saves it at the picked time. */
   const ubahAktif = async (jenis: JenisPengingat, berikutnya: boolean) => {
-    setMenyimpan(jenis);
+    if (menyimpan !== null) return;
     setSukses(null);
     setGalat(false);
+    // Optimistic: move the Switch now, so it does not snap back while the request runs.
+    setSetelan((lama) => ({ ...lama, [jenis]: { ...lama[jenis], aktif: berikutnya } }));
+    setMenyimpan(jenis);
     try {
       await (berikutnya ? simpanPengingat(jenis, setelan[jenis].waktu) : hapusPengingat(jenis));
-      setSetelan((lama) => ({ ...lama, [jenis]: { ...lama[jenis], aktif: berikutnya } }));
       setSukses(
         berikutnya
           ? 'Pengingat diaktifkan.'
           : `Pengingat ${KARTU.find((k) => k.jenis === jenis)?.judul.toLowerCase()} dimatikan.`,
       );
     } catch {
-      setGalat(true); // I-05-07, UC-02 alternative scenario 1.
+      // Put the Switch back where the server still has it (UC-02 alternative 1).
+      setSetelan((lama) => ({ ...lama, [jenis]: { ...lama[jenis], aktif: !berikutnya } }));
+      setGalat(true);
     } finally {
       setMenyimpan(null);
     }
@@ -115,6 +119,7 @@ function Formulir({ awal }: { awal: ItemPengingat[] }) {
 
   /** I-05-06 `submitWaktuPengiriman`: saves the time of every active reminder. */
   const simpan = async () => {
+    if (menyimpan !== null) return;
     setMenyimpan('semua');
     setSukses(null);
     setGalat(false);
@@ -209,7 +214,12 @@ function Formulir({ awal }: { awal: ItemPengingat[] }) {
       })}
 
       {/* I-05-06 */}
-      <Tombol judul="Simpan Setelan" memuat={menyimpan === 'semua'} onPress={() => void simpan()} />
+      <Tombol
+        judul="Simpan Setelan"
+        memuat={menyimpan === 'semua'}
+        disabled={menyimpan !== null && menyimpan !== 'semua'}
+        onPress={() => void simpan()}
+      />
 
       {sukses && <Banner jenis="sukses">{sukses}</Banner>}
       {/* I-05-07 */}
