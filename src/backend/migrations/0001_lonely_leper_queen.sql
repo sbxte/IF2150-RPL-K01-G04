@@ -1,0 +1,1 @@
+ALTER TABLE `pengajuan_pertanyaan` ADD `waktu_pengajuan` text;

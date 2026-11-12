@@ -132,10 +132,12 @@ describe("PengajuanPertanyaan (UC-12)", () => {
     expect(res.status).toBe(201);
 
     const baris = ctx.raw
-      .prepare("SELECT isi_pertanyaan, id_mahasiswa FROM pengajuan_pertanyaan")
-      .get() as { isi_pertanyaan: string; id_mahasiswa: string };
+      .prepare("SELECT isi_pertanyaan, id_mahasiswa, waktu_pengajuan FROM pengajuan_pertanyaan")
+      .get() as { isi_pertanyaan: string; id_mahasiswa: string; waktu_pengajuan: string };
     expect(baris.isi_pertanyaan).toBe("Bagaimana cara ganti konsultan?");
     expect(baris.id_mahasiswa).toBe("mhs");
+    // B.1 no. 9: the submission time is recorded so the admin list can sort it.
+    expect(Number.isNaN(Date.parse(baris.waktu_pengajuan))).toBe(false);
     ctx.tutup();
   });
 
@@ -162,6 +164,80 @@ describe("PengajuanPertanyaan (UC-12)", () => {
       body: { isi: "x" },
     });
     expect(res.status).toBe(403);
+    ctx.tutup();
+  });
+
+  test("GET /api/questions khusus administrator, terbaru dulu dan memuat nama (B.1 no. 9)", async () => {
+    const ctx = buatDbUji();
+    const admin = buatSesiUji(ctx.raw, { idPengguna: "adm", peran: "administrator", token: "ta" });
+    const mhs = buatSesiUji(ctx.raw, {
+      idPengguna: "mhs",
+      peran: "mahasiswa",
+      token: "tm",
+      nama: "Sari",
+    });
+    ctx.raw
+      .prepare(
+        `INSERT INTO pengajuan_pertanyaan
+           (id_pertanyaan, id_mahasiswa, isi_pertanyaan, waktu_pengajuan)
+         VALUES (?, ?, ?, ?)`,
+      )
+      .run("p1", "mhs", "Pertanyaan lama", "2026-11-10T08:00:00.000Z");
+    ctx.raw
+      .prepare(
+        `INSERT INTO pengajuan_pertanyaan
+           (id_pertanyaan, id_mahasiswa, isi_pertanyaan, waktu_pengajuan)
+         VALUES (?, ?, ?, ?)`,
+      )
+      .run("p2", "mhs", "Pertanyaan baru", "2026-11-12T08:00:00.000Z");
+
+    const res = await minta(app, ctx.D1, { path: "/api/questions", token: admin });
+    expect(res.status).toBe(200);
+    const body = await json(res);
+    expect(body.pertanyaan.map((p: any) => p.idPertanyaan)).toEqual(["p2", "p1"]);
+    expect(body.pertanyaan[0]).toMatchObject({
+      isiPertanyaan: "Pertanyaan baru",
+      nama: "Sari",
+      waktuPengajuan: "2026-11-12T08:00:00.000Z",
+    });
+
+    const tolak = await minta(app, ctx.D1, { path: "/api/questions", token: mhs });
+    expect(tolak.status).toBe(403);
+    ctx.tutup();
+  });
+
+  test("DELETE /api/questions/:id menghapus pertanyaan (B.1 no. 9)", async () => {
+    const ctx = buatDbUji();
+    const admin = buatSesiUji(ctx.raw, { idPengguna: "adm", peran: "administrator", token: "ta" });
+    const mhs = buatSesiUji(ctx.raw, { idPengguna: "mhs", peran: "mahasiswa", token: "tm" });
+    ctx.raw
+      .prepare("INSERT INTO pengajuan_pertanyaan (id_pertanyaan, id_mahasiswa, isi_pertanyaan) VALUES (?,?,?)")
+      .run("p1", "mhs", "Hapus saya");
+
+    const res = await minta(app, ctx.D1, {
+      method: "DELETE",
+      path: "/api/questions/p1",
+      token: admin,
+    });
+    expect(res.status).toBe(200);
+    const jumlah = ctx.raw
+      .prepare("SELECT COUNT(*) AS n FROM pengajuan_pertanyaan")
+      .get() as { n: number };
+    expect(jumlah.n).toBe(0);
+
+    const tidakAda = await minta(app, ctx.D1, {
+      method: "DELETE",
+      path: "/api/questions/p1",
+      token: admin,
+    });
+    expect(tidakAda.status).toBe(404);
+
+    const tolak = await minta(app, ctx.D1, {
+      method: "DELETE",
+      path: "/api/questions/p1",
+      token: mhs,
+    });
+    expect(tolak.status).toBe(403);
     ctx.tutup();
   });
 });

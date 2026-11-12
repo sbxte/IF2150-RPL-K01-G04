@@ -554,9 +554,46 @@ export function hapusFaq(db: Db, idFaq: string) {
 /** Q-040 — submit a question outside the FAQ. */
 export function ajukanPertanyaan(
   db: Db,
-  data: { idPertanyaan: string; idMahasiswa: string; isiPertanyaan: string },
+  data: {
+    idPertanyaan: string;
+    idMahasiswa: string;
+    isiPertanyaan: string;
+    waktuPengajuan: string;
+  },
 ) {
   return db.insert(schema.pengajuanPertanyaan).values(data);
+}
+
+/**
+ * The Q-040 rows for the administrator (M9 B.1 no. 9), newest first with the
+ * student's name. The DPPL has no admin view of submissions, so this query is
+ * an addition; `rowid` breaks ties and keeps older NULL-dated rows in order.
+ */
+export function daftarPertanyaan(db: Db) {
+  return db
+    .select({
+      idPertanyaan: schema.pengajuanPertanyaan.idPertanyaan,
+      isiPertanyaan: schema.pengajuanPertanyaan.isiPertanyaan,
+      nama: schema.pengguna.nama,
+      waktuPengajuan: schema.pengajuanPertanyaan.waktuPengajuan,
+    })
+    .from(schema.pengajuanPertanyaan)
+    .innerJoin(
+      schema.mahasiswa,
+      eq(schema.pengajuanPertanyaan.idMahasiswa, schema.mahasiswa.idPengguna),
+    )
+    .innerJoin(schema.pengguna, eq(schema.mahasiswa.idPengguna, schema.pengguna.idPengguna))
+    .orderBy(
+      desc(schema.pengajuanPertanyaan.waktuPengajuan),
+      sql`${schema.pengajuanPertanyaan}.rowid DESC`,
+    );
+}
+
+/** Delete a submitted question (M9 B.1 no. 9; administrator only). */
+export function hapusPertanyaan(db: Db, idPertanyaan: string) {
+  return db
+    .delete(schema.pengajuanPertanyaan)
+    .where(eq(schema.pengajuanPertanyaan.idPertanyaan, idPertanyaan));
 }
 
 /* -------------------------------------------------------------------------- */

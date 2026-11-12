@@ -161,6 +161,8 @@ export const pengajuanPertanyaan = sqliteTable("pengajuan_pertanyaan", {
     .notNull()
     .references(() => mahasiswa.idPengguna, { onDelete: "cascade" }),
   isiPertanyaan: text("isi_pertanyaan").notNull(),
+  // When the student submitted it; NULL for rows created before this column existed.
+  waktuPengajuan: text("waktu_pengajuan"),
 });
 
 // UmpanBalik (C-14)
