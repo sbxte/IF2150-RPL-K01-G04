@@ -4,7 +4,7 @@ Sehati adalah aplikasi *mobile* pendukung kesehatan mental dan kesejahteraan mah
 
 Arsitektur mengikuti DPPL (`docs/M8/K01_G04_DPPL2.md`): Client-Server + MVC, dengan aplikasi Expo (React Native) sebagai klien dan Hono di Cloudflare Workers + D1 sebagai server.
 
-> Bagian bertanda **TODO** diisi oleh pemilik issue terkait sebelum rilis `v9.0`.
+> **Ingin langsung mencoba?** Pasang APK dari [rilis `v9.0`](https://github.com/sbxte/IF2150-RPL-K01-G04/releases/tag/v9.0) di ponsel Android dan masuk lewat **Mode demo**. Tidak perlu menjalankan backend sendiri (lihat [Rilis (APK)](#rilis-apk)).
 
 ## Daftar Isi
 
@@ -38,12 +38,14 @@ Arsitektur mengikuti DPPL (`docs/M8/K01_G04_DPPL2.md`): Client-Server + MVC, den
 | Notifikasi push | `expo-notifications` ~58.1.8 + `expo-device` ~58.0.5 |
 | Linter | ESLint 9 + `eslint-config-expo` |
 | Test | Vitest ^5.1.0 |
+| Build APK | [EAS Build](https://docs.expo.dev/build/introduction/) (`eas-cli` >= 27, profil di `eas.json`) + `expo-dev-client` ^58.0.18 |
 
 ### Backend (`src/backend`)
 
 | Komponen | Versi |
 |---|---|
 | [Bun](https://bun.com) | 1.4.x |
+| TypeScript | ^7 |
 | Hono | ^4.13.16 (routing) |
 | Drizzle ORM | ^0.45.4 |
 | Drizzle Kit | ^0.31.11 (migrasi) |
@@ -103,7 +105,7 @@ Prasyarat:
 
 - Node.js 22.13 atau lebih baru.
 - Git.
-- Untuk mencoba di ponsel: aplikasi **Expo Go** (App Store / Play Store). Ponsel dan komputer berada di jaringan Wi-Fi yang sama.
+- Untuk mencoba di ponsel: aplikasi **Expo Go** (App Store / Play Store). Ponsel dan komputer berada di jaringan Wi-Fi yang sama. Untuk sekadar memakai aplikasi di Android, cukup pasang APK rilis (bagian [Rilis (APK)](#rilis-apk)) tanpa prasyarat lain.
 - Opsional: Android Studio (emulator Android). Simulator iOS hanya tersedia di macOS.
 - **Bun 1.4.x** untuk mobile dan backend (`curl -fsSL https://bun.sh/install | bash`).
 
@@ -149,7 +151,7 @@ Nilai `EXPO_PUBLIC_API_URL` bergantung pada tempat aplikasi berjalan, karena `lo
 | Ponsel fisik (dev build) | idem, atau `https://sehati.sbxte.net` untuk Worker yang sudah di-*deploy* |
 | Emulator Android | `http://10.0.2.2:8787` |
 | Web atau simulator iOS di komputer yang sama | `http://localhost:8787` |
-| Backend yang sudah di-*deploy* | `https://<nama-worker>.<subdomain>.workers.dev` |
+| Backend yang sudah di-*deploy* | `https://sehati.sbxte.net` (juga tersedia di `https://sehati-backend.sbxte.workers.dev`) |
 
 File `.env` tidak di-*commit* (sudah ada di `.gitignore`). Variabel `EXPO_PUBLIC_*` ikut tertanam di aplikasi, jadi jangan isi rahasia apa pun di sana. Setelah mengubah `.env`, jalankan ulang `bunx expo start`.
 
@@ -183,9 +185,10 @@ Untuk produksi, rahasia dipasang lewat Wrangler, bukan `.dev.vars`:
 bunx wrangler secret put KUNCI_TOKEN
 bunx wrangler secret put GOOGLE_CLIENT_ID
 bunx wrangler secret put GOOGLE_CLIENT_SECRET
-bunx wrangler secret put GOOGLE_REDIRECT_URI
 bunx wrangler secret put MODE_DEMO   # opsional, isi 1 untuk login demo
 ```
+
+`GOOGLE_REDIRECT_URI` dan `API_BASE_URL` bukan rahasia, sehingga untuk Worker yang di-*deploy* keduanya ditulis di blok `vars` pada `wrangler.jsonc` (`https://sehati.sbxte.net/...`). Jangan memasang keduanya juga sebagai *secret*, karena Wrangler menolak nama yang sama di `vars` dan *secret*. *Redirect URI* produksi tersebut harus terdaftar di OAuth client pada Google Cloud Console, di samping URI lokal.
 
 ## 5. Menjalankan Aplikasi
 
@@ -195,7 +198,7 @@ Ada dua cara menjalankan aplikasi, dan keduanya berbeda kemampuan. Ringkasnya ju
 
 | | `bun run go:android` (Expo Go) | `bun run app:android` (dev build) |
 |---|---|---|
-| Perintah | `bunx expo start` lalu `a` | `bunx expo run:android` |
+| Perintah | `bunx expo start --go` lalu `a` | `bunx expo run:android` |
 | Yang dibuka | Aplikasi **Expo Go** | Aplikasi Sehati sendiri (`com.k01g04.sehati`) |
 | Kompilasi native | Tidak pernah | Ya, Gradle (5–10 menit pada build pertama) |
 | Skema *deep link* | `exp://` (milik Expo Go) | `sehati://` (milik aplikasi) |
@@ -206,14 +209,16 @@ Ada dua cara menjalankan aplikasi, dan keduanya berbeda kemampuan. Ringkasnya ju
 
 ```bash
 cd src/mobile
-bun run go:android      # atau: bunx expo start
+bun run go              # atau: bunx expo start --go
 ```
+
+Skrip `go*` memakai `--go` agar QR code ditujukan ke **Expo Go**. Tanpa *flag* itu, `bunx expo start` memakai mode *development build* (karena `expo-dev-client` terpasang) dan QR code `exp+rpl://` hanya dapat dibuka oleh *dev build*; di ponsel tanpa *dev build*, QR code dianggap tidak dapat dibuka aplikasi apa pun. Saat Metro sudah berjalan, tekan `s` untuk berpindah mode.
 
 Lalu pilih salah satu:
 
 - **iPhone:** pindai QR code dengan aplikasi Kamera, lalu buka di Expo Go.
 - **Android:** pindai QR code dari dalam Expo Go.
-- **Emulator Android:** tekan `a` di terminal.
+- **Emulator Android:** tekan `a` di terminal (atau langsung `bun run go:android`).
 - Jika QR code tidak muncul, buka Expo Go dan masukkan URL secara manual: `exp://<IP-LAN-komputer>:8081`.
 
 Jika ponsel tidak dapat terhubung (misalnya jaringan kampus memblokir antarperangkat), gunakan mode *tunnel*:
@@ -232,6 +237,8 @@ bun run app:android     # atau: bunx expo run:android
 Perintah ini membuat folder `android/` bila belum ada (di-*gitignore*), mengompilasi APK *debug*, memasangnya di perangkat atau emulator, lalu menjalankan Metro. Setelah build pertama, perubahan JavaScript cukup di-*reload* (`r`); kompilasi ulang hanya perlu bila konfigurasi native berubah — `app.json`/`app.config.ts`, `google-services.json`, atau penambahan paket native.
 
 > Jangan `ctrl-C` lalu `run:android` hanya untuk perubahan JavaScript: itu mengompilasi ulang native selama beberapa menit tanpa alasan.
+
+Tanpa Android Studio, *dev build* juga dapat dibangun di server Expo: pasang APK dari `bunx eas-cli build --platform android --profile development` (bagian [Rilis (APK)](#rilis-apk)), lalu jalankan `bunx expo start` **tanpa** `--go` dan pindai QR code atau pilih server dari daftar di aplikasi.
 
 #### `google-services.json` (khusus *push* Android)
 
@@ -294,6 +301,8 @@ bun run db:seed:local      # isi data uji (idempoten, aman diulang)
 bun run dev                # wrangler dev di http://localhost:8787
 ```
 
+Jalankan ketiganya di *foreground*. `db:migrate:local` menanyakan konfirmasi `y/n` sebelum menerapkan migrasi; bila dijalankan di latar belakang (`&`) atau prompt-nya dihentikan, tabel tidak terbentuk dan `db:seed:local` gagal. Untuk diakses dari ponsel di jaringan yang sama, gunakan `bun run dev -- --ip 0.0.0.0`.
+
 Pemeriksaan cepat:
 
 ```bash
@@ -317,7 +326,47 @@ Test berjalan terhadap basis data SQLite sungguhan: `test/harness.ts` menyediaka
 
 ### Rilis (APK)
 
-**TODO (#6, Iqi):** cara membangun dan mengunduh APK rilis `v9.0`.
+#### Mengunduh dan memasang
+
+APK terlampir pada [rilis `v9.0`](https://github.com/sbxte/IF2150-RPL-K01-G04/releases/tag/v9.0) (berkas `sehati-v9.0.apk`).
+
+1. Unduh APK di ponsel Android, lalu buka berkasnya.
+2. Bila diminta, izinkan pemasangan dari sumber tidak dikenal untuk peramban atau pengelola berkas yang dipakai.
+3. Buka **Sehati**, lalu masuk melalui **Mode demo** (Mahasiswa atau Administrator, lihat bagian 6).
+
+APK rilis sudah terhubung ke backend yang di-*deploy* di `https://sehati.sbxte.net` dan mengaktifkan mode demo, sehingga tidak perlu menjalankan backend sendiri. Bila backend tersebut tidak dapat diakses, jalankan aplikasi dari *source* (bagian 5) dengan backend lokal.
+
+#### Membangun APK
+
+APK dibangun dengan [EAS Build](https://docs.expo.dev/build/introduction/) milik Expo pada proyek `@tszcodess-team/rpl` (`owner` dan `extra.eas.projectId` di `app.json`). Diperlukan akun Expo yang menjadi anggota organisasi `tszcodess-team`.
+
+```bash
+cd src/mobile
+bunx eas-cli login                                              # sekali saja
+bunx eas-cli build --platform android --profile production      # APK rilis
+bunx eas-cli build --platform android --profile development     # development build
+```
+
+Build berjalan di server Expo (sekitar 10–20 menit). Setelah selesai, perintah menampilkan tautan unduhan APK, yang juga tersedia di halaman *Builds* proyek pada [expo.dev](https://expo.dev). Profil build ada di `src/mobile/eas.json`:
+
+| Profil | Hasil | Keterangan |
+|---|---|---|
+| `production` | APK rilis untuk `v9.0` | `EXPO_PUBLIC_API_URL=https://sehati.sbxte.net` dan `EXPO_PUBLIC_MODE_DEMO=1` ditanam saat build (`.env` lokal tidak ikut diunggah). `versionCode` naik otomatis setiap build. |
+| `development` | APK *development build* (`expo-dev-client`) | Memuat kode dari `bunx expo start` seperti Expo Go, tetapi mendukung notifikasi *push* di Android. Memakai `.env` lokal. |
+
+Kedua profil menghasilkan `.apk` (bukan `.aab` Play Store) dan memakai Bun 1.4.4. *Keystore* penanda tangan APK dibuat dan disimpan oleh EAS, sehingga tidak ada di repositori.
+
+Notifikasi *push* di Android memerlukan Firebase (proyek `sehati-75469`):
+
+- `google-services.json` diambil EAS dari variabel rahasia bertipe *file* `GOOGLE_SERVICES_JSON` (lihat [`google-services.json`](#google-servicesjson-khusus-push-android) di atas).
+- Kunci *service account* FCM V1 diunggah ke kredensial EAS (`bunx eas-cli credentials`), tidak disimpan di repositori.
+
+Melampirkan APK ke rilis setelah tag `v9.0` dibuat di `main`:
+
+```bash
+curl -L -o sehati-v9.0.apk "<tautan APK dari EAS>"
+gh release upload v9.0 sehati-v9.0.apk
+```
 
 ## 6. Akun dan Data Uji
 
@@ -366,7 +415,7 @@ Catatan:
 - Afirmasi harian (I-04): dari Beranda, ketuk kartu "Afirmasi hari ini" untuk membuka pengaturannya. Waktu dipilih lewat chip cepat atau pemilih waktu bawaan, lalu "Simpan Setelan" (`PUT /api/affirmation/time`). Toggle "Kirim afirmasi harian" yang dimatikan menghapus jadwal (`DELETE /api/affirmation`) sehingga kartu Beranda kembali menampilkan ajakan mengatur afirmasi; menyalakannya kembali membuat jadwal pada waktu yang sedang dipilih.
 - Umpan balik (I-11, **khusus Mahasiswa**): dari Beranda Mahasiswa buka menu **Umpan Balik**, tulis masukan lalu **Kirim Umpan Balik**. Administrator tidak dapat mengirim umpan balik (`POST /api/feedback` dijaga `requireRole("mahasiswa")`, sehingga membalas 403); peran Administrator memakai I-14 untuk menanggapi. Masukan yang sudah dikirim muncul di daftar "Umpan balik sebelumnya" dengan lencana **Belum ditanggapi**. Rute `GET /api/feedback/mine` hanya mengembalikan milik pemanggil, sehingga tiap mahasiswa hanya melihat masukannya sendiri.
 - Menanggapi umpan balik (I-14): login sebagai Administrator, buka **Umpan Balik** dari Beranda Administrator, lalu pakai chip **Semua / Belum ditanggapi / Ditanggapi**. Penyaringan dilakukan di server lewat `?status=belum|sudah`, jadi jumlah per chip tetap benar meski daftar dipotong `limit`. Isi kolom **Tanggapan** pada kartu lalu **Kirim Tanggapan**; lencana berubah menjadi **Ditanggapi** dan balasan itu langsung tampil pada daftar I-11 milik mahasiswa.
-- Login Google sungguhan memerlukan `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, dan `GOOGLE_REDIRECT_URI` (bagian 4). Google tidak menerima alamat IP LAN sebagai *redirect URI*, sehingga login Google dari ponsel memerlukan backend yang sudah di-*deploy* atau *tunnel* ber-HTTPS.
+- Login Google sungguhan dari ponsel paling mudah dicoba lewat backend yang sudah di-*deploy*: isi `EXPO_PUBLIC_API_URL=https://sehati.sbxte.net` di `src/mobile/.env` (APK rilis sudah memakai alamat ini). Backend lokal memerlukan `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, dan `GOOGLE_REDIRECT_URI` (bagian 4), tetapi Google tidak menerima alamat IP LAN sebagai *redirect URI*, sehingga dengan backend lokal login Google hanya berhasil dari peramban di komputer itu sendiri (`localhost`) atau melalui *tunnel* ber-HTTPS yang didaftarkan di OAuth client.
 
 ## 7. Modul dan Pembagian Tugas
 
@@ -376,7 +425,7 @@ Catatan:
 | #2 | Fondasi aplikasi Expo: navigasi, tema, komponen bersama, klien API | | Rifqi Irfan Indrawan (Iqi) |
 | #3 | Autentikasi (Google + login demo, token terenkripsi) | UC-11 | Rifqi Irfan Indrawan (Iqi) |
 | #4 | Beranda Mahasiswa dan Administrator | | Rifqi Irfan Indrawan (Iqi) |
-| #5 | Registrasi token *push notification* | | Rifqi Irfan Indrawan (Iqi) |
+| #5 | Registrasi token *push notification* (setelah login, I-01-04) | UC-11 | Rifqi Irfan Indrawan (Iqi) |
 | #6 | `src/README.md` dan rilis APK | | Rifqi Irfan Indrawan (Iqi) |
 | #7 | Afirmasi harian | UC-01 | Farish Firstian Erifiawan (Farish) |
 | #8 | Pengingat kesehatan | UC-02 | Farish Firstian Erifiawan (Farish) |
