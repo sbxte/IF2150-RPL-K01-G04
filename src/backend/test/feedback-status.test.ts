@@ -42,6 +42,83 @@ describe("FeedbackController (C-31)", () => {
     expect(res.status).toBe(422);
   });
 
+  test("GET /api/feedback/mine hanya umpan balik milik pemanggil (Q-043)", async () => {
+    // I-11-06: a student sees their own feedback and the admin's response, and
+    // nothing belonging to anyone else.
+    await minta(app, ctx.D1, { method: "POST", path: "/api/feedback", token: mhs, body: { isi: "punya Ana" } });
+    await minta(app, ctx.D1, { method: "POST", path: "/api/feedback", token: mhs2, body: { isi: "punya Budi" } });
+
+    const body = await json(await minta(app, ctx.D1, { path: "/api/feedback/mine", token: mhs }));
+    expect(body.feedback.map((f: any) => f.isi)).toEqual(["punya Ana"]);
+    // No join, so the student's own name is not repeated back to them.
+    expect(body.feedback[0]).not.toHaveProperty("namaMahasiswa");
+  });
+
+  test("/mine menampilkan tanggapan Administrator setelah ditanggapi", async () => {
+    const dibuat = await json(
+      await minta(app, ctx.D1, { method: "POST", path: "/api/feedback", token: mhs, body: { isi: "tolong" } }),
+    );
+    // Unanswered first: the badge on I-11-06 keys off tanggapan === null.
+    const sebelum = await json(await minta(app, ctx.D1, { path: "/api/feedback/mine", token: mhs }));
+    expect(sebelum.feedback[0].tanggapan).toBeNull();
+
+    await minta(app, ctx.D1, {
+      method: "PUT",
+      path: `/api/feedback/${dibuat.idUmpanBalik}/response`,
+      token: admin,
+      body: { tanggapan: "sudah kami tangani" },
+    });
+
+    const sesudah = await json(await minta(app, ctx.D1, { path: "/api/feedback/mine", token: mhs }));
+    expect(sesudah.feedback[0]).toMatchObject({
+      tanggapan: "sudah kami tangani",
+      idAdministrator: "adm",
+    });
+  });
+
+  test("/mine kosong bila belum pernah memberi umpan balik", async () => {
+    const body = await json(await minta(app, ctx.D1, { path: "/api/feedback/mine", token: mhs }));
+    expect(body.feedback).toEqual([]);
+  });
+
+  test("/mine menolak administrator (403)", async () => {
+    const res = await minta(app, ctx.D1, { path: "/api/feedback/mine", token: admin });
+    expect(res.status).toBe(403);
+  });
+
+  test("?status=belum menyaring yang belum ditanggapi (Q-016)", async () => {
+    await minta(app, ctx.D1, { method: "POST", path: "/api/feedback", token: mhs, body: { isi: "belum" } });
+    const dijawab = await json(
+      await minta(app, ctx.D1, { method: "POST", path: "/api/feedback", token: mhs2, body: { isi: "sudah" } }),
+    );
+    await minta(app, ctx.D1, {
+      method: "PUT",
+      path: `/api/feedback/${dijawab.idUmpanBalik}/response`,
+      token: admin,
+      body: { tanggapan: "ok" },
+    });
+
+    const belum = await json(
+      await minta(app, ctx.D1, { path: "/api/feedback?status=belum", token: admin }),
+    );
+    expect(belum.feedback.map((f: any) => f.isi)).toEqual(["belum"]);
+    expect(belum.status).toBe("belum");
+
+    const sudah = await json(
+      await minta(app, ctx.D1, { path: "/api/feedback?status=sudah", token: admin }),
+    );
+    expect(sudah.feedback.map((f: any) => f.isi)).toEqual(["sudah"]);
+  });
+
+  test("?status yang tidak dikenal diabaikan, bukan galat", async () => {
+    await minta(app, ctx.D1, { method: "POST", path: "/api/feedback", token: mhs, body: { isi: "x" } });
+    const body = await json(
+      await minta(app, ctx.D1, { path: "/api/feedback?status=ngawur", token: admin }),
+    );
+    expect(body.status).toBeNull();
+    expect(body.feedback).toHaveLength(1);
+  });
+
   test("GET /api/feedback hanya untuk administrator (403 untuk mahasiswa)", async () => {
     const res = await minta(app, ctx.D1, { path: "/api/feedback", token: mhs });
     expect(res.status).toBe(403);

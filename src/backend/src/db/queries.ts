@@ -578,20 +578,71 @@ export function kirimUmpanBalik(
   return db.insert(schema.umpanBalik).values(data);
 }
 
-/** Q-016 — feedback list newest first, with the student's name. */
-export function daftarUmpanBalik(db: Db, limit = 100, offset = 0) {
+/** Filter for the administrator list, from I-14-02's chips (M9 B.1 no. 12). */
+export type StatusUmpanBalik = "belum" | "sudah";
+
+const KOLOM_UMPAN_BALIK = {
+  idUmpanBalik: schema.umpanBalik.idUmpanBalik,
+  namaMahasiswa: schema.pengguna.nama,
+  isi: schema.umpanBalik.isi,
+  tanggapan: schema.umpanBalik.tanggapan,
+};
+
+/**
+ * Q-016 — feedback list newest first, with the student's name.
+ *
+ * `status` narrows to "belum" (no response yet) or "sudah" (answered); it backs
+ * I-14-02's three filter chips, which the DPPL describes but the query lacked.
+ *
+ * Measured with EXPLAIN QUERY PLAN: this is a plain `SCAN umpan_balik` with or
+ * without the filter, because `rowid DESC` already matches the table's own order
+ * so SQLite never needs a sort — it walks backwards and stops at the limit. The
+ * filter only costs an IS NULL test per visited row, so `status=belum` stays
+ * cheap. Do not "optimise" this into an index on `tanggapan`: the rowid order is
+ * what keeps it sort-free.
+ */
+export function daftarUmpanBalik(
+  db: Db,
+  opsi: { limit?: number; offset?: number; status?: StatusUmpanBalik } = {},
+) {
+  const limit = opsi.limit ?? 100;
+  const offset = opsi.offset ?? 0;
+  const filter =
+    opsi.status === "belum"
+      ? sql`${schema.umpanBalik.tanggapan} IS NULL`
+      : opsi.status === "sudah"
+        ? sql`${schema.umpanBalik.tanggapan} IS NOT NULL`
+        : undefined;
+
   return db
-    .select({
-      idUmpanBalik: schema.umpanBalik.idUmpanBalik,
-      namaMahasiswa: schema.pengguna.nama,
-      isi: schema.umpanBalik.isi,
-      tanggapan: schema.umpanBalik.tanggapan,
-    })
+    .select(KOLOM_UMPAN_BALIK)
     .from(schema.umpanBalik)
     .innerJoin(schema.pengguna, eq(schema.pengguna.idPengguna, schema.umpanBalik.idMahasiswa))
+    .where(filter)
     .orderBy(desc(sql`${schema.umpanBalik}.rowid`))
     .limit(limit)
     .offset(offset);
+}
+
+/**
+ * Q-043 — one Mahasiswa's own feedback, newest first (I-11-06).
+ *
+ * The DPPL shows a student their past feedback *and the admin's response*, but
+ * Q-016 is administrator-shaped and `GET /api/feedback` is admin-only, so there
+ * was no way to fill that list. No join: the reader already knows who they are.
+ */
+export function umpanBalikMilik(db: Db, idMahasiswa: string) {
+  return db
+    .select({
+      idUmpanBalik: schema.umpanBalik.idUmpanBalik,
+      isi: schema.umpanBalik.isi,
+      tanggapan: schema.umpanBalik.tanggapan,
+      // Lets I-11-06 show when it was answered; null until then.
+      idAdministrator: schema.umpanBalik.idAdministrator,
+    })
+    .from(schema.umpanBalik)
+    .where(eq(schema.umpanBalik.idMahasiswa, idMahasiswa))
+    .orderBy(desc(sql`${schema.umpanBalik}.rowid`));
 }
 
 /** Q-039 — administrator response. */
