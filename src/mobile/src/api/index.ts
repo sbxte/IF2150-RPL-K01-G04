@@ -1,13 +1,6 @@
 export { ambilAfirmasi, hapusAfirmasi, simpanWaktuAfirmasi, type Afirmasi } from './afirmasi';
 export { masukDemo, masukDenganGoogle } from './auth';
-export { ambilSesiBerikutnya, type SesiBerikutnya } from './konsultasi';
-export {
-  ambilPengingat,
-  hapusPengingat,
-  simpanPengingat,
-  type JenisPengingat,
-  type Pengingat,
-} from './pengingat';
+export { ambilDaftarKonsultan, ambilSlotKonsultan, pesanSesi, ambilSesiBerikutnya, simpanJadwal, perbaruiJadwal, type JadwalBaru, type Konsultan, type SlotKonsultasi, type SesiBerikutnya } from './konsultasi';
 export { daftarkanPerangkat } from './perangkat';
 export { api, ApiError, aturSaatTidakTerautentikasi, aturToken, KODE_KLIEN } from './client';
 export {
@@ -18,3 +11,8 @@ export {
   type StatusLayanan,
 } from './status';
 export { hapusSesi, keluar, pulihkanSesi, simpanSesi, type Pengguna, type Peran } from './sesi';
+export {
+  ambilKalender,
+  type EventKalender,
+  type HasilKalender,
+} from './kalender';

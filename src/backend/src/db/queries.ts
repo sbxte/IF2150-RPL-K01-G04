@@ -216,6 +216,11 @@ export function buatAfirmasi(
     waktuKirim: data.waktu,
   });
 }
+export function hapusAfirmasi(db: Db, idMahasiswa: string) {
+  return db
+    .delete(schema.dailyAffirmation)
+    .where(eq(schema.dailyAffirmation.idMahasiswa, idMahasiswa));
+}
 
 /** Q-041 — the student's affirmation (beranda card). */
 export function ambilAfirmasi(db: Db, idMahasiswa: string) {
@@ -228,13 +233,6 @@ export function ambilAfirmasi(db: Db, idMahasiswa: string) {
     .from(schema.dailyAffirmation)
     .where(eq(schema.dailyAffirmation.idMahasiswa, idMahasiswa))
     .limit(1);
-}
-
-/** Deletes the student's affirmation (I-04-03 toggle off). Not in the DPPL. */
-export function hapusAfirmasi(db: Db, idMahasiswa: string) {
-  return db
-    .delete(schema.dailyAffirmation)
-    .where(eq(schema.dailyAffirmation.idMahasiswa, idMahasiswa));
 }
 
 /** Q-024 — find the student's reminder of one `jenis`. */
@@ -282,18 +280,6 @@ export function daftarReminder(db: Db, idMahasiswa: string) {
     })
     .from(schema.reminder)
     .where(eq(schema.reminder.idMahasiswa, idMahasiswa));
-}
-
-/** Deletes one reminder of a student (I-05-05 toggle off). Not in the DPPL. */
-export function hapusReminder(db: Db, idMahasiswa: string, jenis: string) {
-  return db
-    .delete(schema.reminder)
-    .where(
-      and(
-        eq(schema.reminder.idMahasiswa, idMahasiswa),
-        eq(schema.reminder.jenis, jenis as "makan" | "tidur" | "olahraga"),
-      ),
-    );
 }
 
 /** Q-004 — affirmations due this minute (cron). */
@@ -360,17 +346,34 @@ export function konsultanAda(db: Db, idKonsultan: string) {
     .limit(1);
 }
 
-/** Q-013 — every slot (for the merged calendar). */
-export function semuaJadwal(db: Db) {
+/**
+ * Q-013 — slots that overlap the requested calendar window, with their consultant
+ * and the student who booked them (`gabungkanJadwal` decides what each student sees).
+ */
+export function semuaJadwal(db: Db, dari: string, sampai: string) {
   return db
     .select({
       idJadwal: schema.jadwalKonsultasi.idJadwal,
       idKonsultan: schema.jadwalKonsultasi.idKonsultan,
+      namaKonsultan: schema.konsultan.nama,
+      spesialisasi: schema.konsultan.spesialisasi,
       waktu: schema.jadwalKonsultasi.waktu,
       waktuSelesai: schema.jadwalKonsultasi.waktuSelesai,
       status: schema.jadwalKonsultasi.status,
+      idMahasiswa: schema.jadwalKonsultasi.idMahasiswa,
     })
     .from(schema.jadwalKonsultasi)
+    .innerJoin(
+      schema.konsultan,
+      eq(schema.konsultan.idKonsultan, schema.jadwalKonsultasi.idKonsultan),
+    )
+    // Include events that start before the window but end inside it.
+    .where(
+      and(
+        lt(schema.jadwalKonsultasi.waktu, sampai),
+        gt(schema.jadwalKonsultasi.waktuSelesai, dari),
+      ),
+    )
     .orderBy(schema.jadwalKonsultasi.waktu);
 }
 
@@ -428,6 +431,19 @@ export function sesiTumpangTindih(
     .limit(1);
 }
 
+/** Issue #11 — whether a student already has a booked session on a calendar day. */
+export function sesiMahasiswaPadaHari(db: Db, idMahasiswa: string, tanggal: string) {
+  return db
+    .select({ idJadwal: schema.jadwalKonsultasi.idJadwal })
+    .from(schema.jadwalKonsultasi)
+    .where(and(
+      eq(schema.jadwalKonsultasi.idMahasiswa, idMahasiswa),
+      eq(schema.jadwalKonsultasi.status, "terpesan"),
+      sql`substr(${schema.jadwalKonsultasi.waktu}, 1, 10) = ${tanggal}`,
+    ))
+    .limit(1);
+}
+
 /** Q-020 — does a slot overlap another slot of the same consultant? */
 export function slotKonsultanTumpang(
   db: Db,
@@ -440,8 +456,11 @@ export function slotKonsultanTumpang(
       and(
         eq(schema.jadwalKonsultasi.idKonsultan, data.idKonsultan),
         ne(schema.jadwalKonsultasi.idJadwal, data.idJadwal),
-        lt(schema.jadwalKonsultasi.waktu, data.waktuSelesai),
-        gt(schema.jadwalKonsultasi.waktuSelesai, data.waktu),
+        // Stored values may or may not carry milliseconds (the seed writes `...:00Z`, the API
+        // writes `...:00.000Z`); compare them in one canonical form so that back-to-back slots
+        // are never mistaken for overlapping ones.
+        sql`strftime('%Y-%m-%dT%H:%M:%fZ', ${schema.jadwalKonsultasi.waktu}) < ${data.waktuSelesai}`,
+        sql`strftime('%Y-%m-%dT%H:%M:%fZ', ${schema.jadwalKonsultasi.waktuSelesai}) > ${data.waktu}`,
       ),
     )
     .limit(1);
