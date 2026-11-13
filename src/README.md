@@ -34,6 +34,7 @@ Arsitektur mengikuti DPPL (`docs/M8/K01_G04_DPPL2.md`): Client-Server + MVC, den
 | Expo Router | ~58.0.30 (navigasi berbasis file) |
 | Plus Jakarta Sans | `@expo-google-fonts/plus-jakarta-sans` ^0.4.2 |
 | Ikon | `lucide-react-native` ^1.69.0 + `react-native-svg` 15.16.0 |
+| Pemilih waktu | `@react-native-community/datetimepicker` 9.2.1 |
 | Notifikasi push | `expo-notifications` ~58.1.8 + `expo-device` ~58.0.5 |
 | Linter | ESLint 9 + `eslint-config-expo` |
 | Test | Vitest ^5.1.0 |
@@ -351,6 +352,7 @@ Catatan:
 - Bila backend berjalan tanpa `MODE_DEMO=1`, rute login demo membalas 404 dan layar Masuk menampilkan pesan galat.
 - Isi Beranda dari data *seed*: Mahasiswa Uji belum punya afirmasi (kartu afirmasi berisi ajakan mengatur waktu di I-04) dan sudah punya satu sesi terpesan besok pukul 11.00 WIB. Di Beranda Administrator, kartu status layanan menampilkan "Belum dicek" sampai *cron* pertama berjalan. `wrangler dev` tidak menjalankan *cron* sendiri; jalankan `bun run dev -- --test-scheduled`, lalu picu pemeriksaan dengan `curl "http://localhost:8787/__scheduled?cron=*+*+*+*+*"` (dengan `API_BASE_URL` terisi agar hasilnya Up).
 - FAQ, pencarian, dan pengajuan pertanyaan (I-09/I-10/I-13): tab FAQ memuat tiga entri *seed*; kolom pencarian memicu pencarian 300 ms setelah berhenti mengetik (`GET /api/faq?q=`), dan kartu "Tidak menemukan jawaban?" disorot saat tidak ada hasil, dengan tombol yang membuka formulir pengajuan pertanyaan (maks. 500 karakter, `POST /api/questions`). Untuk kelola FAQ, masuk sebagai Administrator lalu buka Administrator → FAQ: tombol "Tambah FAQ" di atas daftar membuka layar formulir tersendiri, kolom "Cari FAQ" menyaring daftar lewat `GET /api/faq?q=` (jeda 300 ms), ikon pensil membuka formulir yang sama dengan isi FAQ terpilih, dan hapus lewat ikon tong sampah dengan konfirmasi (`POST`/`PUT`/`DELETE /api/faq`). Petak "Pertanyaan Masuk" di Beranda Administrator membuka antrean pertanyaan yang dikirim Mahasiswa lewat I-10, terbaru lebih dulu beserta nama dan waktu pengajuan (`GET /api/questions`); "Jawab" membuka formulir jawaban di bawah kartu, dan menyimpannya membuat FAQ (`POST /api/faq`) sekaligus menghapus pertanyaannya (`DELETE /api/questions/:id`), sedangkan "Hapus" menghapus tanpa menjawab.
+- Afirmasi harian (I-04): dari Beranda, ketuk kartu "Afirmasi hari ini" untuk membuka pengaturannya. Waktu dipilih lewat chip cepat atau pemilih waktu bawaan, lalu "Simpan Setelan" (`PUT /api/affirmation/time`). Toggle "Kirim afirmasi harian" yang dimatikan menghapus jadwal (`DELETE /api/affirmation`) sehingga kartu Beranda kembali menampilkan ajakan mengatur afirmasi; menyalakannya kembali membuat jadwal pada waktu yang sedang dipilih.
 - Login Google sungguhan memerlukan `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, dan `GOOGLE_REDIRECT_URI` (bagian 4). Google tidak menerima alamat IP LAN sebagai *redirect URI*, sehingga login Google dari ponsel memerlukan backend yang sudah di-*deploy* atau *tunnel* ber-HTTPS.
 
 ## 7. Modul dan Pembagian Tugas
@@ -417,6 +419,7 @@ Ringkasan konvensi untuk anggota yang mengerjakan layar:
 
   Contoh semua komponen ada di `src/mobile/src/app/komponen.tsx`.
 - **Ikon:** impor per ikon, misalnya `import House from 'lucide-react-native/icons/house';`. Mengimpor dari `'lucide-react-native'` langsung ikut membundel sekitar 1.600 ikon (+2,5 MB).
+- **Paket bergantung modul native:** pasang lewat `bunx expo install <paket>` (bukan `bun add`) supaya versinya cocok dengan Expo SDK dan *config plugin*-nya ditambahkan ke `app.json` secara otomatis — misalnya `@react-native-community/datetimepicker` (pemilih waktu I-04).
 - **Memanggil backend:** gunakan klien di `@/api`:
 
   ```ts
