@@ -8,7 +8,8 @@ CREATE TABLE `__new_status_server` (
 	CONSTRAINT "status_uptime_check" CHECK("__new_status_server"."status_uptime" IN (0, 1))
 );
 --> statement-breakpoint
-INSERT INTO `__new_status_server`("id_status", "jenis", "status_uptime", "waktu_cek") SELECT "id_status", CASE "jenis" WHEN 'website' THEN 'db' ELSE "jenis" END, "status_uptime", "waktu_cek" FROM `status_server`;--> statement-breakpoint
+DELETE FROM `status_server` WHERE "jenis" = 'website';--> statement-breakpoint
+INSERT INTO `__new_status_server`("id_status", "jenis", "status_uptime", "waktu_cek") SELECT "id_status", "jenis", "status_uptime", "waktu_cek" FROM `status_server`;--> statement-breakpoint
 DROP TABLE `status_server`;--> statement-breakpoint
 ALTER TABLE `__new_status_server` RENAME TO `status_server`;--> statement-breakpoint
 PRAGMA foreign_keys=ON;--> statement-breakpoint
