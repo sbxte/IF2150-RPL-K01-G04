@@ -1,6 +1,12 @@
 import { randomUUID } from "node:crypto";
 import { Hono } from "hono";
-import { daftarUmpanBalik, kirimUmpanBalik, tanggapiUmpanBalik } from "../db/queries";
+import {
+  daftarUmpanBalik,
+  kirimUmpanBalik,
+  tanggapiUmpanBalik,
+  umpanBalikMilik,
+  type StatusUmpanBalik,
+} from "../db/queries";
 import { gagalValidasi, tidakDitemukan } from "../lib/errors";
 import { angkaQuery, bacaBody } from "../lib/http";
 import { auth, requireRole, type AppEnv } from "../middleware/auth";
@@ -29,14 +35,34 @@ feedbackRoutes.post("/", requireRole("mahasiswa"), async (c) => {
 });
 
 /**
+ * UC-08 — I-11-06: the caller's own feedback, newest first (Q-043).
+ *
+ * The DPPL shows a Mahasiswa their past feedback and the administrator's
+ * response, but `GET /api/feedback` is administrator-only and returns everyone's,
+ * so this needed its own path. Registered before `/:id` style routes is not
+ * necessary here — there is no conflicting parameter route — but the explicit
+ * path keeps the student scope impossible to reach by accident.
+ */
+feedbackRoutes.get("/mine", requireRole("mahasiswa"), async (c) => {
+  const feedback = await umpanBalikMilik(c.get("db"), c.get("idPengguna"));
+  return c.json({ feedback });
+});
+
+/**
  * UC-09 — C-31 `tampilkanListFeedback()` / Q-016.
  * The DPPL sets no limit, so `?limit` (default 100, max 200) and `?offset` paginate.
+ * `?status=belum|sudah` backs I-14-02's filter chips; anything else is ignored,
+ * matching how `?limit` degrades rather than erroring.
  */
 feedbackRoutes.get("/", requireRole("administrator"), async (c) => {
   const limit = angkaQuery(c, "limit", 100, 200);
   const offset = angkaQuery(c, "offset", 0, 1_000_000);
-  const daftar = await daftarUmpanBalik(c.get("db"), limit, offset);
-  return c.json({ feedback: daftar, limit, offset });
+  const mentah = c.req.query("status");
+  const status: StatusUmpanBalik | undefined =
+    mentah === "belum" || mentah === "sudah" ? mentah : undefined;
+
+  const daftar = await daftarUmpanBalik(c.get("db"), { limit, offset, status });
+  return c.json({ feedback: daftar, limit, offset, status: status ?? null });
 });
 
 /** UC-09 — C-31 `kirimTanggapan()`, Algo-026 then Q-039. */
