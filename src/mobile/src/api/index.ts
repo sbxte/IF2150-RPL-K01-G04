@@ -11,3 +11,12 @@ export {
   type StatusLayanan,
 } from './status';
 export { hapusSesi, keluar, pulihkanSesi, simpanSesi, type Pengguna, type Peran } from './sesi';
+export {
+  ambilUmpanBalik,
+  ambilUmpanBalikSaya,
+  kirimUmpanBalik,
+  tanggapiUmpanBalik,
+  type StatusUmpanBalik,
+  type UmpanBalikAdmin,
+  type UmpanBalikSaya,
+} from './umpan-balik';
