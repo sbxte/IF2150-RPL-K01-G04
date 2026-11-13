@@ -1,4 +1,4 @@
-import House from 'lucide-react-native/icons/house';
+import Database from 'lucide-react-native/icons/database';
 import Server from 'lucide-react-native/icons/server';
 import type { LucideIcon } from 'lucide-react-native';
 import { ActivityIndicator, Pressable, StyleSheet, View } from 'react-native';
@@ -19,8 +19,8 @@ type Props = {
 };
 
 const BARIS: { kunci: keyof StatusLayanan; label: string; ikon: LucideIcon }[] = [
-  { kunci: 'website', label: 'Website', ikon: House },
   { kunci: 'server', label: 'Server', ikon: Server },
+  { kunci: 'db', label: 'Basis data', ikon: Database },
 ];
 
 /** I-03-03: Website and Server with an Up/Down badge each. */
@@ -44,7 +44,7 @@ export function KartuStatusLayanan({ status, onBuka, onCobaLagi }: Props) {
   }
 
   const data = status.data;
-  const terakhir = [data.website?.waktuCek, data.server?.waktuCek]
+  const terakhir = [data.server?.waktuCek, data.db?.waktuCek]
     .filter((w): w is string => !!w)
     .sort()
     .at(-1);

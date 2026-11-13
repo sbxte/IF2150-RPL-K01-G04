@@ -32,29 +32,29 @@ test('ambilStatus mengembalikan cek terakhir tanpa field jenis', async () => {
 });
 
 test('ambilStatus mengembalikan null jika layanan belum pernah dicek', async () => {
-  tiruFetch({ website: { isi: { status: null } } });
-  await expect(ambilStatus('website')).resolves.toBeNull();
+  tiruFetch({ db: { isi: { status: null } } });
+  await expect(ambilStatus('db')).resolves.toBeNull();
 });
 
-test('ambilStatusLayanan meminta website dan server lalu menggabungkannya', async () => {
+test('ambilStatusLayanan meminta server dan db lalu menggabungkannya', async () => {
   const fetchTiruan = tiruFetch({
-    website: { isi: { status: { jenis: 'website', statusUptime: true, waktuCek: '2026-11-09T03:00:00Z' } } },
+    db: { isi: { status: { jenis: 'db', statusUptime: true, waktuCek: '2026-11-09T03:00:00Z' } } },
     server: { isi: { status: null } },
   });
 
   await expect(ambilStatusLayanan()).resolves.toEqual({
-    website: { statusUptime: true, waktuCek: '2026-11-09T03:00:00Z' },
+    db: { statusUptime: true, waktuCek: '2026-11-09T03:00:00Z' },
     server: null,
   });
   expect(fetchTiruan.mock.calls.map(([url]) => url).sort()).toEqual([
+    'http://sehati.test/api/status/db',
     'http://sehati.test/api/status/server',
-    'http://sehati.test/api/status/website',
   ]);
 });
 
 test('ambilStatusLayanan gagal jika salah satu permintaan gagal', async () => {
   tiruFetch({
-    website: { isi: { status: null } },
+    db: { isi: { status: null } },
     server: { status: 500, isi: { error: { kode: 'GALAT_SERVER', pesan: 'Terjadi kesalahan pada server' } } },
   });
 

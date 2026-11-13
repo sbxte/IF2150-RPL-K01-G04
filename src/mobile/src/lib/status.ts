@@ -8,7 +8,7 @@ import type { CekStatus, JenisStatus } from '@/api/status';
 import { formatJam } from './waktu';
 
 export type BarisStatus = {
-  /** `website` / `server`, matching `status_server.jenis`. */
+  /** `server` / `db`, matching `status_server.jenis`. */
   jenis: JenisStatus;
   /** Title shown to the Administrator. */
   judul: string;
@@ -24,13 +24,13 @@ export type BarisStatus = {
 
 /** What each service row measures. Mirrors the two probe targets in Algo-021. */
 const META: Record<JenisStatus, { judul: string; keterangan: string }> = {
-  website: {
-    judul: 'Website',
-    keterangan: 'Alamat publik Sehati dapat diakses.',
-  },
   server: {
     judul: 'Server',
-    keterangan: 'Worker dan basis data D1 merespons dengan sehat.',
+    keterangan: 'Alamat publik Sehati menjangkau Worker.',
+  },
+  db: {
+    judul: 'Basis data',
+    keterangan: 'Worker dapat membaca basis data D1.',
   },
 };
 
@@ -59,16 +59,17 @@ export function barisStatus(jenis: JenisStatus, cek: CekStatus): BarisStatus {
 
 /** Both rows for the screen, in display order. */
 export function semuaBarisStatus(status: {
-  website: CekStatus;
   server: CekStatus;
+  db: CekStatus;
 }): BarisStatus[] {
-  return [barisStatus('website', status.website), barisStatus('server', status.server)];
+  // Dependency order: the database can only be up if the server is.
+  return [barisStatus('server', status.server), barisStatus('db', status.db)];
 }
 
 /** Time of the most recent check across both services, or `null` if never checked. */
-export function waktuCekTerakhir(status: { website: CekStatus; server: CekStatus }): string | null {
+export function waktuCekTerakhir(status: { server: CekStatus; db: CekStatus }): string | null {
   return (
-    [status.website?.waktuCek, status.server?.waktuCek]
+    [status.server?.waktuCek, status.db?.waktuCek]
       .filter((w): w is string => !!w)
       .sort()
       .at(-1) ?? null

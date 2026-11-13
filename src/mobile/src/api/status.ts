@@ -3,7 +3,7 @@
  */
 import { api } from './client';
 
-export type JenisStatus = 'website' | 'server';
+export type JenisStatus = 'server' | 'db';
 
 /** Latest check of one service (`StatusServer`); `null` if it was never checked. */
 export type CekStatus = {
@@ -24,6 +24,6 @@ export async function ambilStatus(jenis: JenisStatus): Promise<CekStatus> {
 
 /** Both services for the I-03 card, requested in parallel. */
 export async function ambilStatusLayanan(): Promise<StatusLayanan> {
-  const [website, server] = await Promise.all([ambilStatus('website'), ambilStatus('server')]);
-  return { website, server };
+  const [server, db] = await Promise.all([ambilStatus('server'), ambilStatus('db')]);
+  return { server, db };
 }

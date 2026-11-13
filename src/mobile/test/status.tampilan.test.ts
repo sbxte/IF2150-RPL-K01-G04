@@ -12,23 +12,23 @@ describe('barisStatus', () => {
   });
 
   test('menampilkan Down untuk layanan yang mati', () => {
-    const baris = barisStatus('website', CEK_DOWN);
-    expect(baris).toMatchObject({ jenis: 'website', label: 'Down', warna: 'merah' });
+    const baris = barisStatus('db', CEK_DOWN);
+    expect(baris).toMatchObject({ jenis: 'db', label: 'Down', warna: 'merah' });
   });
 
   test('belum pernah dicek bukan berarti Down', () => {
     // A fresh deployment has an empty status_server table; the cron fills it a
     // minute later. Showing "Down" there would report an outage that never happened.
-    const baris = barisStatus('website', null);
+    const baris = barisStatus('db', null);
     expect(baris).toMatchObject({ label: 'Belum dicek', warna: 'netral' });
     expect(baris.warna).not.toBe('merah');
   });
 
-  test('judul dan keterangan membedakan website dari server', () => {
-    const web = barisStatus('website', CEK_UP);
+  test('judul dan keterangan membedakan server dari basis data', () => {
     const srv = barisStatus('server', CEK_UP);
-    expect(web.judul).not.toBe(srv.judul);
-    expect(web.keterangan).not.toBe(srv.keterangan);
+    const basis = barisStatus('db', CEK_UP);
+    expect(basis.judul).not.toBe(srv.judul);
+    expect(basis.keterangan).not.toBe(srv.keterangan);
   });
 
   test('waktu ditampilkan dalam WIB', () => {
@@ -42,30 +42,30 @@ describe('barisStatus', () => {
 });
 
 describe('semuaBarisStatus', () => {
-  test('selalu mengembalikan dua baris, website lebih dulu', () => {
-    const baris = semuaBarisStatus({ website: CEK_UP, server: CEK_DOWN });
-    expect(baris.map((b) => b.jenis)).toEqual(['website', 'server']);
+  test('selalu mengembalikan dua baris, server lebih dulu', () => {
+    const baris = semuaBarisStatus({ server: CEK_UP, db: CEK_DOWN });
+    expect(baris.map((b) => b.jenis)).toEqual(['server', 'db']);
     expect(baris[0]?.label).toBe('Up');
     expect(baris[1]?.label).toBe('Down');
   });
 
   test('menangani keduanya belum dicek', () => {
-    const baris = semuaBarisStatus({ website: null, server: null });
+    const baris = semuaBarisStatus({ server: null, db: null });
     expect(baris.every((b) => b.warna === 'netral')).toBe(true);
   });
 });
 
 describe('waktuCekTerakhir', () => {
   test('null bila belum ada pemeriksaan sama sekali', () => {
-    expect(waktuCekTerakhir({ website: null, server: null })).toBeNull();
+    expect(waktuCekTerakhir({ server: null, db: null })).toBeNull();
   });
 
   test('memilih yang paling baru dari kedua layanan', () => {
-    expect(waktuCekTerakhir({ website: CEK_UP, server: CEK_DOWN })).toBe(CEK_DOWN.waktuCek);
+    expect(waktuCekTerakhir({ server: CEK_UP, db: CEK_DOWN })).toBe(CEK_DOWN.waktuCek);
   });
 
   test('mengabaikan layanan yang belum dicek', () => {
-    expect(waktuCekTerakhir({ website: null, server: CEK_UP })).toBe(CEK_UP.waktuCek);
-    expect(waktuCekTerakhir({ website: CEK_DOWN, server: null })).toBe(CEK_DOWN.waktuCek);
+    expect(waktuCekTerakhir({ server: null, db: CEK_UP })).toBe(CEK_UP.waktuCek);
+    expect(waktuCekTerakhir({ server: CEK_DOWN, db: null })).toBe(CEK_DOWN.waktuCek);
   });
 });
