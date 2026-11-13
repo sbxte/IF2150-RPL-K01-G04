@@ -283,6 +283,23 @@ describe("PengajuanPertanyaan (UC-12)", () => {
     ctx.tutup();
   });
 
+  test("GET /api/questions menolak batas waktu yang tidak valid", async () => {
+    const ctx = buatDbUji();
+    const admin = buatSesiUji(ctx.raw, { idPengguna: "adm", peran: "administrator", token: "ta" });
+
+    const kueri = [
+      "?sejak=bukan-tanggal",
+      "?sampai=bukan-tanggal",
+      "?sejak=2026-11-12",
+      "?sejak=2026-11-12T00:00:00.000Z&sampai=2026-11-10T00:00:00.000Z",
+    ];
+    for (const k of kueri) {
+      const res = await minta(app, ctx.D1, { path: `/api/questions${k}`, token: admin });
+      expect(res.status).toBe(422);
+    }
+    ctx.tutup();
+  });
+
   test("DELETE /api/questions/:id menghapus pertanyaan (B.1 no. 11)", async () => {
     const ctx = buatDbUji();
     const admin = buatSesiUji(ctx.raw, { idPengguna: "adm", peran: "administrator", token: "ta" });

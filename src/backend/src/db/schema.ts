@@ -148,24 +148,38 @@ export const jadwalKonsultasi = sqliteTable("jadwal_konsultasi", {
 ]);
 
 // FAQ (C-12)
-export const faq = sqliteTable("faq", {
-  idFaq: text("id_faq").primaryKey(),
-  pertanyaan: text("pertanyaan").notNull(),
-  jawaban: text("jawaban").notNull(),
-  // When the FAQ was added; NULL for rows created before this column existed.
-  waktuDibuat: text("waktu_dibuat"),
-});
+export const faq = sqliteTable(
+  "faq",
+  {
+    idFaq: text("id_faq").primaryKey(),
+    pertanyaan: text("pertanyaan").notNull(),
+    jawaban: text("jawaban").notNull(),
+    // When the FAQ was added; NULL for rows created before this column existed.
+    waktuDibuat: text("waktu_dibuat"),
+  },
+  (t) => [
+    // M9 B.1 no. 12: the administrator list sorts by this column.
+    index("idx_faq_waktu").on(t.waktuDibuat),
+  ],
+);
 
 // PengajuanPertanyaan (C-13)
-export const pengajuanPertanyaan = sqliteTable("pengajuan_pertanyaan", {
-  idPertanyaan: text("id_pertanyaan").primaryKey(),
-  idMahasiswa: text("id_mahasiswa")
-    .notNull()
-    .references(() => mahasiswa.idPengguna, { onDelete: "cascade" }),
-  isiPertanyaan: text("isi_pertanyaan").notNull(),
-  // When the student submitted it; NULL for rows created before this column existed.
-  waktuPengajuan: text("waktu_pengajuan"),
-});
+export const pengajuanPertanyaan = sqliteTable(
+  "pengajuan_pertanyaan",
+  {
+    idPertanyaan: text("id_pertanyaan").primaryKey(),
+    idMahasiswa: text("id_mahasiswa")
+      .notNull()
+      .references(() => mahasiswa.idPengguna, { onDelete: "cascade" }),
+    isiPertanyaan: text("isi_pertanyaan").notNull(),
+    // When the student submitted it; NULL for rows created before this column existed.
+    waktuPengajuan: text("waktu_pengajuan"),
+  },
+  (t) => [
+    // M9 B.1 no. 11: the queue sorts and filters by this column.
+    index("idx_pertanyaan_waktu").on(t.waktuPengajuan),
+  ],
+);
 
 // UmpanBalik (C-14)
 export const umpanBalik = sqliteTable("umpan_balik", {

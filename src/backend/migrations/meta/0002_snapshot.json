@@ -1,8 +1,8 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "04db2594-2649-4b56-a0dc-dfd0f92109ec",
-  "prevId": "cc878147-18f6-4fca-b250-15e4c0eabd03",
+  "id": "53cce56e-acf9-4383-977a-967fb60cc26a",
+  "prevId": "21838b5e-8b65-44c4-afd6-6111f70e9c74",
   "tables": {
     "daily_affirmation": {
       "name": "daily_affirmation",
@@ -86,13 +86,6 @@
           "type": "text",
           "primaryKey": false,
           "notNull": true,
-          "autoincrement": false
-        },
-        "waktu_dibuat": {
-          "name": "waktu_dibuat",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
           "autoincrement": false
         }
       },
@@ -425,13 +418,6 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
-        },
-        "waktu_pengajuan": {
-          "name": "waktu_pengajuan",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
         }
       },
       "indexes": {},
@@ -703,6 +689,13 @@
             "waktu_cek"
           ],
           "isUnique": false
+        },
+        "idx_status_waktu": {
+          "name": "idx_status_waktu",
+          "columns": [
+            "waktu_cek"
+          ],
+          "isUnique": false
         }
       },
       "foreignKeys": {},
@@ -711,7 +704,7 @@
       "checkConstraints": {
         "status_jenis_check": {
           "name": "status_jenis_check",
-          "value": "\"status_server\".\"jenis\" IN ('website', 'server')"
+          "value": "\"status_server\".\"jenis\" IN ('server', 'db')"
         },
         "status_uptime_check": {
           "name": "status_uptime_check",

@@ -1,1 +1,0 @@
-ALTER TABLE `faq` ADD `waktu_dibuat` text;

@@ -3,6 +3,7 @@ import { Hono } from "hono";
 import { ajukanPertanyaan, daftarPertanyaan, hapusPertanyaan } from "../db/queries";
 import { gagalValidasi, tidakDitemukan } from "../lib/errors";
 import { bacaBody } from "../lib/http";
+import { parseIso8601 } from "../lib/validasi";
 import { auth, requireRole, type AppEnv } from "../middleware/auth";
 
 /**
@@ -34,16 +35,30 @@ questionRoutes.post("/", requireRole("mahasiswa"), async (c) => {
   return c.json({ ok: true, idPertanyaan }, 201);
 });
 
+/** Parses an optional ISO-8601 bound, or throws 422 when it is present but malformed. */
+function batasWaktu(nama: "sejak" | "sampai", nilai: string | undefined): string | undefined {
+  if (nilai === undefined) return undefined;
+  const waktu = parseIso8601(nilai);
+  if (!waktu) throw gagalValidasi(`${nama} harus berupa waktu ISO-8601`);
+  return waktu.toISOString();
+}
+
 /**
  * Administrator — submitted questions, newest first (M9 B.1 no. 11).
  * `?q=` matches the question text or the student's name; `?sejak=`/`?sampai=`
  * bound the submission time.
  */
 questionRoutes.get("/", requireRole("administrator"), async (c) => {
+  const sejak = batasWaktu("sejak", c.req.query("sejak"));
+  const sampai = batasWaktu("sampai", c.req.query("sampai"));
+  if (sejak && sampai && sejak > sampai) {
+    throw gagalValidasi("sejak harus sebelum atau sama dengan sampai");
+  }
+
   const pertanyaan = await daftarPertanyaan(c.get("db"), {
     q: c.req.query("q"),
-    sejak: c.req.query("sejak"),
-    sampai: c.req.query("sampai"),
+    sejak,
+    sampai,
   });
   return c.json({ pertanyaan });
 });
