@@ -267,7 +267,7 @@ Pengiriman dijadwalkan oleh tiga Cloudflare Cron Trigger di `src/backend/wrangle
 | Cron | Tugas |
 |---|---|
 | `* * * * *` | `jalankanAfirmasi` (Algo-005) dan `jalankanPengingat` (Algo-007): mencari jadwal yang jatuh tempo pada menit ini (jam WIB "HH:MM"), mencatat baris `notifikasi` dengan sumbernya (`id_affirmation` atau `id_reminder`), lalu mengirim *push*. |
-| `*/5 * * * *` | `jalankanCekStatus` (Algo-021): memeriksa status *website* dan server, lalu mencatat `status_server`. |
+| `*/5 * * * *` | `jalankanCekStatus` (Algo-021): memeriksa `server` (`/health`) dan `db` (`/health/db`), lalu mencatat `status_server`. |
 | `0 */12 * * *` | Pembersihan data: `status_server` lebih dari 7 hari, `notifikasi` lebih dari 30 hari, dan sesi yang sudah berakhir atau melewati `BATAS_SESI_HARI`. |
 
 Judul *push* adalah "Afirmasi hari ini" atau "Pengingat kesehatan". Pengiriman memakai Expo Push API dalam batch maksimal 100 pesan, dan token yang ditolak dengan `DeviceNotRegistered` dikosongkan. Bila penerima belum punya token, notifikasi tetap tercatat dan hanya ditulis ke log. Untuk memeriksa hasilnya, lihat tabel `notifikasi` lewat `bun run db:studio:local`; baris dengan `id_affirmation` berasal dari afirmasi, sedangkan `id_reminder` dari pengingat.
@@ -494,6 +494,8 @@ Rujukan lengkap: [`backend/README.md`](./backend/README.md).
 | `GET` | `/api/feedback?status=belum\|sudah` | administrator |
 | `PUT` | `/api/feedback/:id/response` | administrator |
 | `GET` | `/api/status/:jenis` | semua |
+| `GET` | `/api/status/history?limit=` | semua |
+| `POST` | `/api/status/refresh` | administrator |
 | `GET` | `/health` | publik |
 
 Selain `/api/auth/google*` dan `/health`, semua rute memerlukan `Authorization: Bearer <token>`. Galat memakai satu amplop:
@@ -508,12 +510,18 @@ Status: `400` body tidak valid · `401` belum terautentikasi · `403` peran sala
 
 ### Tugas terjadwal
 
-Satu *cron trigger* `* * * * *` menjalankan:
+Tiga *cron trigger* berjalan dengan jadwal berbeda:
 
-- pengiriman afirmasi dan pengingat, mencatat notifikasi dan mengirim *push* Expo dalam batch maksimal 100 pesan, serta mengosongkan token yang dilaporkan `DeviceNotRegistered`
-- pemeriksaan *uptime* `website` dan `server` (memerlukan `API_BASE_URL`)
+- `* * * * *` — pengiriman afirmasi dan pengingat: mencatat notifikasi dan mengirim *push* Expo dalam batch maksimal 100 pesan, serta mengosongkan token yang dilaporkan `DeviceNotRegistered`. Dijalankan setiap menit karena `waktu_kirim` dicocokkan persis pada menit tersebut.
+- `*/5 * * * *` — pemeriksaan *uptime* `server` (`<API_BASE_URL>/health`, Worker menjawab) dan `db` (`<API_BASE_URL>/health/db`, Worker dapat membaca D1), keduanya memerlukan `API_BASE_URL`. `db` *up* mengimplikasikan `server` *up*, sehingga `db` *down* adalah satu-satunya sinyal yang membawa informasi baru. Hanya status 2xx yang dihitung *up*.
+- `0 */12 * * *` — pembersihan basis data: `status_server` lebih dari 7 hari, `notifikasi` lebih dari 30 hari, dan sesi yang sudah berakhir atau melewati `BATAS_SESI`.
 
 Semua ini ada di handler `scheduled()`, bukan rute HTTP.
+
+Selain jadwal di atas, Administrator dapat memicu pemeriksaan dari layar I-15 lewat `POST /api/status/refresh`.
+Rute ini menjalankan pemeriksaan yang sama dengan *cron* dan mengembalikan hasil terbaru, tetapi hanya untuk peran
+Administrator karena rute ini membuat Worker melakukan permintaan keluar. Bila hasil terakhir masih lebih baru dari
+30 detik, pemeriksaan dilewati dan respons memuat `diperiksa: false`, sehingga tombol tidak dapat dijadikan perulangan.
 
 ### Menambah endpoint
 

@@ -6,6 +6,9 @@ export { api, ApiError, aturSaatTidakTerautentikasi, aturToken, KODE_KLIEN } fro
 export {
   ambilStatus,
   ambilStatusLayanan,
+  ambilRiwayatStatus,
+  periksaStatusSekarang,
+  type RiwayatStatus,
   type CekStatus,
   type JenisStatus,
   type StatusLayanan,

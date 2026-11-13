@@ -183,14 +183,17 @@ export const umpanBalik = sqliteTable("umpan_balik", {
 // StatusServer (C-15)
 export const statusServer = sqliteTable("status_server", {
   idStatus: integer("id_status").primaryKey({ autoIncrement: true }),
-  jenis: text("jenis", { enum: ["website", "server"] }).notNull(),
+  jenis: text("jenis", { enum: ["server", "db"] }).notNull(),
   statusUptime: integer("status_uptime", { mode: "boolean" }).notNull(),
   waktuCek: text("waktu_cek").notNull(),
 }, (t) => [
-  check("status_jenis_check", sql`${t.jenis} IN ('website', 'server')`),
+  check("status_jenis_check", sql`${t.jenis} IN ('server', 'db')`),
   check("status_uptime_check", sql`${t.statusUptime} IN (0, 1)`),
   // SQLite can scan this index backwards, so it also serves ORDER BY waktu_cek DESC.
   index("idx_status_jenis_waktu").on(t.jenis, t.waktuCek),
+  // Serves the newest-first history list (Q-044): the composite index above
+  // leads with `jenis`, so an unfiltered `ORDER BY waktu_cek DESC` cannot use it.
+  index("idx_status_waktu").on(t.waktuCek),
 ]);
 
 /* -------------------------------------------------------------------------- */
