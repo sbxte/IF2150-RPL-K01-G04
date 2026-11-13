@@ -1,13 +1,31 @@
 import { Hono } from "hono";
-import { statusTerakhir } from "../db/queries";
+import { riwayatStatus, statusTerakhir } from "../db/queries";
 import { JENIS_STATUS, type JenisStatus } from "../config";
 import { gagalValidasi } from "../lib/errors";
+import { angkaQuery } from "../lib/http";
 import { jalankanCekStatus, probeMasihSegar } from "../lib/status-probe";
 import { auth, requireRole, type AppEnv } from "../middleware/auth";
 
 export const statusRoutes = new Hono<AppEnv>();
 
 statusRoutes.use("*", auth);
+
+/**
+ * I-15-05: the most recent checks across both services, newest first (Q-044).
+ *
+ * Registered before `/:jenis` — that route is a catch-all parameter and would
+ * otherwise swallow `/history` and reject it as an unknown jenis.
+ *
+ * Readable by any signed-in user, like `GET /api/status/:jenis` — it only exposes
+ * what the cards already show, just more of it. The list is bounded by the
+ * 7-day retention in `bersihkanDB`, and `?limit` clamps harder so a caller cannot
+ * ask for the whole table.
+ */
+statusRoutes.get("/history", async (c) => {
+  const limit = angkaQuery(c, "limit", 20, 100);
+  const riwayat = await riwayatStatus(c.get("db"), limit);
+  return c.json({ riwayat, limit });
+});
 
 /**
  * UC-10 — C-32 `tampilkanStatusServer(jenis)` / Algo-020, Q-017.

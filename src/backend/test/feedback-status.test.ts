@@ -153,6 +153,56 @@ describe("ServerStatusController (C-32) / Algo-020", () => {
   });
 });
 
+describe("GET /api/status/history (I-15-05, Q-044)", () => {
+  let ctx: ReturnType<typeof buatDbUji>;
+  let mhs: string;
+
+  beforeEach(() => {
+    ctx = buatDbUji(`
+      INSERT INTO status_server (jenis, status_uptime, waktu_cek) VALUES
+        ('server', 1, '2031-01-01T00:00:00Z'),
+        ('db',     0, '2031-01-02T00:00:00Z'),
+        ('server', 1, '2031-01-03T00:00:00Z');
+    `);
+    mhs = buatSesiUji(ctx.raw, { idPengguna: "mhs", peran: "mahasiswa", token: "tm" });
+  });
+  afterEach(() => ctx.tutup());
+
+  test("mengembalikan riwayat terbaru lebih dulu", async () => {
+    const body = await json(await minta(app, ctx.D1, { path: "/api/status/history", token: mhs }));
+
+    expect(body.riwayat.map((r: any) => r.waktuCek)).toEqual([
+      "2031-01-03T00:00:00Z",
+      "2031-01-02T00:00:00Z",
+      "2031-01-01T00:00:00Z",
+    ]);
+    expect(body.riwayat[0]).toMatchObject({ jenis: "server", statusUptime: true });
+  });
+
+  test("bukan ditelan rute /:jenis", async () => {
+    // `/history` is registered first; otherwise `/:jenis` would 422 here.
+    const res = await minta(app, ctx.D1, { path: "/api/status/history", token: mhs });
+    expect(res.status).toBe(200);
+  });
+
+  test("?limit menjepit jumlah baris dan tidak melebihi batas", async () => {
+    const dua = await json(await minta(app, ctx.D1, { path: "/api/status/history?limit=2", token: mhs }));
+    expect(dua.riwayat).toHaveLength(2);
+    expect(dua.limit).toBe(2);
+
+    const besar = await json(await minta(app, ctx.D1, { path: "/api/status/history?limit=9999", token: mhs }));
+    expect(besar.limit).toBe(100);
+  });
+
+  test("daftar kosong bila belum ada pemeriksaan", async () => {
+    const ctx2 = buatDbUji();
+    const t = buatSesiUji(ctx2.raw, { idPengguna: "x", peran: "mahasiswa", token: "tx" });
+    const body = await json(await minta(app, ctx2.D1, { path: "/api/status/history", token: t }));
+    expect(body.riwayat).toEqual([]);
+    ctx2.tutup();
+  });
+});
+
 describe("POST /api/status/refresh (I-15 Periksa Sekarang)", () => {
   let ctx: ReturnType<typeof buatDbUji>;
   let admin: string;
