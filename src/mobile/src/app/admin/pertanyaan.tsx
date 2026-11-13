@@ -192,12 +192,8 @@ export default function PertanyaanMasuk() {
           onChangeText={setKataKunci}
           autoCorrect={false}
         />
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.barisChip}
-          keyboardShouldPersistTaps="handled"
-        >
+        {/* Wraps instead of scrolling so every label stays fully visible. */}
+        <View style={styles.barisChip}>
           {RENTANG.map((r) => (
             <Chip
               key={r.nilai}
@@ -206,7 +202,7 @@ export default function PertanyaanMasuk() {
               onPress={() => setRentang(r.nilai)}
             />
           ))}
-        </ScrollView>
+        </View>
 
         {memuat && <ActivityIndicator size="large" color={warna.merah} style={styles.memuat} />}
         {galatMuat && (
@@ -299,7 +295,7 @@ export default function PertanyaanMasuk() {
 const styles = StyleSheet.create({
   layar: { flex: 1, backgroundColor: warna.latar },
   isi: { paddingHorizontal: jarak.md, paddingVertical: jarak.md, gap: jarak.sm },
-  barisChip: { gap: jarak.xs, paddingVertical: jarak.xxs },
+  barisChip: { flexDirection: 'row', flexWrap: 'wrap', gap: jarak.xs },
   memuat: { marginTop: jarak.xl },
   tengah: { alignItems: 'center', gap: jarak.sm },
   kartu: {
