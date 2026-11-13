@@ -456,8 +456,11 @@ export function slotKonsultanTumpang(
       and(
         eq(schema.jadwalKonsultasi.idKonsultan, data.idKonsultan),
         ne(schema.jadwalKonsultasi.idJadwal, data.idJadwal),
-        lt(schema.jadwalKonsultasi.waktu, data.waktuSelesai),
-        gt(schema.jadwalKonsultasi.waktuSelesai, data.waktu),
+        // Stored values may or may not carry milliseconds (the seed writes `...:00Z`, the API
+        // writes `...:00.000Z`); compare them in one canonical form so that back-to-back slots
+        // are never mistaken for overlapping ones.
+        sql`strftime('%Y-%m-%dT%H:%M:%fZ', ${schema.jadwalKonsultasi.waktu}) < ${data.waktuSelesai}`,
+        sql`strftime('%Y-%m-%dT%H:%M:%fZ', ${schema.jadwalKonsultasi.waktuSelesai}) > ${data.waktu}`,
       ),
     )
     .limit(1);

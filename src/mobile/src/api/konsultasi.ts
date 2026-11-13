@@ -38,3 +38,19 @@ export async function ambilSesiBerikutnya(): Promise<SesiBerikutnya | null> {
   const { session } = await api.get<{ session: SesiBerikutnya | null }>('/api/sessions/next');
   return session;
 }
+
+/** `JadwalKonsultasi.simpanJadwal()`: slot baru untuk konsultan (administrator, UC-05). 409 bila bentrok, 422 bila waktu tidak valid. */
+export type JadwalBaru = { idKonsultan: string; waktu: string; waktuSelesai: string };
+
+export async function simpanJadwal(jadwal: JadwalBaru): Promise<{ idJadwal: string }> {
+  const { idJadwal } = await api.post<{ ok: true; idJadwal: string }>('/api/slots', jadwal);
+  return { idJadwal };
+}
+
+/** `JadwalKonsultasi.perbaruiJadwal()` / Q-027: mengubah jam mulai dan selesai slot (administrator, UC-05). */
+export async function perbaruiJadwal(
+  idJadwal: string,
+  waktu: { waktu: string; waktuSelesai: string },
+): Promise<void> {
+  await api.patch<{ ok: true }>(`/api/slots/${encodeURIComponent(idJadwal)}`, waktu);
+}
