@@ -39,9 +39,9 @@ feedbackRoutes.post("/", requireRole("mahasiswa"), async (c) => {
  *
  * The DPPL shows a Mahasiswa their past feedback and the administrator's
  * response, but `GET /api/feedback` is administrator-only and returns everyone's,
- * so this needed its own path. Registered before `/:id` style routes is not
- * necessary here — there is no conflicting parameter route — but the explicit
- * path keeps the student scope impossible to reach by accident.
+ * so this needed its own path. A distinct path rather than a flag on the shared
+ * one keeps the student scope out of reach: there is no way to ask this route for
+ * someone else's rows.
  */
 feedbackRoutes.get("/mine", requireRole("mahasiswa"), async (c) => {
   const feedback = await umpanBalikMilik(c.get("db"), c.get("idPengguna"));

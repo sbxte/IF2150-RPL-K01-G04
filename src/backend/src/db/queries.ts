@@ -578,7 +578,7 @@ export function kirimUmpanBalik(
   return db.insert(schema.umpanBalik).values(data);
 }
 
-/** Filter for the administrator list, from I-14-02's chips (M9 B.1 no. 15). */
+/** Filter for the administrator list, from I-14-02's chips (M9 B.1 no. 12). */
 export type StatusUmpanBalik = "belum" | "sudah";
 
 const KOLOM_UMPAN_BALIK = {
