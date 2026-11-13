@@ -282,6 +282,18 @@ export function daftarReminder(db: Db, idMahasiswa: string) {
     .where(eq(schema.reminder.idMahasiswa, idMahasiswa));
 }
 
+/** Deletes one reminder of a student (I-05-05 toggle off). Not in the DPPL. */
+export function hapusReminder(db: Db, idMahasiswa: string, jenis: string) {
+  return db
+    .delete(schema.reminder)
+    .where(
+      and(
+        eq(schema.reminder.idMahasiswa, idMahasiswa),
+        eq(schema.reminder.jenis, jenis as "makan" | "tidur" | "olahraga"),
+      ),
+    );
+}
+
 /** Q-004 — affirmations due this minute (cron). */
 export function afirmasiJatuhTempo(db: Db, jamMenit: string) {
   return db

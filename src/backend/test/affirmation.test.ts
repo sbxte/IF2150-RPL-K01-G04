@@ -186,4 +186,62 @@ describe("ReminderController (C-27) / Algo-028", () => {
     });
     expect(res.status).toBe(422);
   });
+
+  test("DELETE menghentikan satu jenis lalu GET kembali null (I-05-05)", async () => {
+    await minta(app, ctx.D1, {
+      method: "PUT",
+      path: "/api/reminders/makan",
+      token: mhs,
+      body: { waktu: "12:00" },
+    });
+    await minta(app, ctx.D1, {
+      method: "PUT",
+      path: "/api/reminders/tidur",
+      token: mhs,
+      body: { waktu: "22:00" },
+    });
+
+    const res = await minta(app, ctx.D1, {
+      method: "DELETE",
+      path: "/api/reminders/makan",
+      token: mhs,
+    });
+    expect(res.status).toBe(200);
+    expect(await json(res)).toEqual({ ok: true, jenis: "makan" });
+
+    const body = await json(await minta(app, ctx.D1, { path: "/api/reminders", token: mhs }));
+    expect(body.reminders).toEqual([
+      { jenis: "makan", waktu: null },
+      { jenis: "tidur", waktu: "22:00" },
+      { jenis: "olahraga", waktu: null },
+    ]);
+  });
+
+  test("DELETE tanpa pengingat tetap 200 (idempoten)", async () => {
+    const res = await minta(app, ctx.D1, {
+      method: "DELETE",
+      path: "/api/reminders/olahraga",
+      token: mhs,
+    });
+    expect(res.status).toBe(200);
+  });
+
+  test("DELETE menolak jenis di luar enum", async () => {
+    const res = await minta(app, ctx.D1, {
+      method: "DELETE",
+      path: "/api/reminders/mandi",
+      token: mhs,
+    });
+    expect(res.status).toBe(422);
+  });
+
+  test("DELETE oleh administrator ditolak (403)", async () => {
+    const admin = buatSesiUji(ctx.raw, { idPengguna: "adm", peran: "administrator", token: "ta" });
+    const res = await minta(app, ctx.D1, {
+      method: "DELETE",
+      path: "/api/reminders/makan",
+      token: admin,
+    });
+    expect(res.status).toBe(403);
+  });
 });
