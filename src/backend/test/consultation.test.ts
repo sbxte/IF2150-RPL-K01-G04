@@ -363,7 +363,8 @@ describe("CalendarController — Algo-011 gabungkanJadwal", () => {
     expect(body.peringatan).toBeUndefined();
     const judul = body.events.map((e: any) => e.judul);
     expect(judul).toContain("Kuliah");
-    expect(judul).toContain("Sesi konsultasi");
+    // The label carries the consultant so two sessions are distinguishable (I-06).
+    expect(judul).toContain("Sesi konsultasi — Dr. Raisa");
     // Sorted ascending by start time.
     const mulai = body.events.map((e: any) => e.mulai);
     expect([...mulai].sort()).toEqual(mulai);

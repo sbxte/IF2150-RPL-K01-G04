@@ -128,3 +128,28 @@ describe('bandingkanMulai — urutan acara sepanjang hari', () => {
     expect(Number.isFinite(bandingkanMulai('bukan tanggal', '2031-06-01'))).toBe(true);
   });
 });
+
+describe('label sesi konsultasi', () => {
+  // Review on #27: several sessions rendered as the same "Sesi konsultasi".
+  test('menyertakan nama konsultan bila ada', () => {
+    const hasil = gabungkanJadwal([], [
+      { waktu: '2031-06-01T09:00:00Z', waktuSelesai: '2031-06-01T10:00:00Z', status: 'terpesan', namaKonsultan: 'Dr. Raisa' },
+    ]);
+    expect(hasil[0]?.judul).toBe('Sesi konsultasi — Dr. Raisa');
+  });
+
+  test('jatuh kembali ke label lama tanpa nama konsultan', () => {
+    const hasil = gabungkanJadwal([], [
+      { waktu: '2031-06-01T09:00:00Z', waktuSelesai: '2031-06-01T10:00:00Z', status: 'tersedia' },
+    ]);
+    expect(hasil[0]?.judul).toBe('Sesi konsultasi');
+  });
+
+  test('dua konsultan berbeda menghasilkan dua label berbeda', () => {
+    const hasil = gabungkanJadwal([], [
+      { waktu: '2031-06-01T09:00:00Z', waktuSelesai: '2031-06-01T10:00:00Z', status: 'terpesan', namaKonsultan: 'Dr. Raisa' },
+      { waktu: '2031-06-02T09:00:00Z', waktuSelesai: '2031-06-02T10:00:00Z', status: 'terpesan', namaKonsultan: 'Bagas, M.Pd.' },
+    ]);
+    expect(new Set(hasil.map((e) => e.judul)).size).toBe(2);
+  });
+});

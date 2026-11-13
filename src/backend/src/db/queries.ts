@@ -355,8 +355,12 @@ export function semuaJadwal(db: Db, dari: string, sampai: string) {
       waktu: schema.jadwalKonsultasi.waktu,
       waktuSelesai: schema.jadwalKonsultasi.waktuSelesai,
       status: schema.jadwalKonsultasi.status,
+      // The consultant distinguishes otherwise identical "Sesi konsultasi" rows
+      // in the agenda (I-06).
+      namaKonsultan: schema.konsultan.nama,
     })
     .from(schema.jadwalKonsultasi)
+    .innerJoin(schema.konsultan, eq(schema.konsultan.idKonsultan, schema.jadwalKonsultasi.idKonsultan))
     // Include events that start before the window but end inside it.
     .where(
       and(

@@ -37,7 +37,7 @@ function wakilMulai(nilai: string): number {
 
 export function gabungkanJadwal(
   google: EventGoogle[],
-  jadwal: { waktu: string; waktuSelesai: string; status: string }[],
+  jadwal: { waktu: string; waktuSelesai: string; status: string; namaKonsultan?: string }[],
 ): EventKalender[] {
   const hasil: EventKalender[] = [];
   for (const event of google) {
@@ -53,7 +53,8 @@ export function gabungkanJadwal(
   }
   for (const slot of jadwal) {
     hasil.push({
-      judul: "Sesi konsultasi",
+      // Name the consultant so two sessions in one week are distinguishable.
+      judul: slot.namaKonsultan ? `Sesi konsultasi — ${slot.namaKonsultan}` : "Sesi konsultasi",
       mulai: slot.waktu,
       selesai: slot.waktuSelesai,
       sumber: slot.status,
