@@ -3,6 +3,7 @@
 export { AppBar } from './AppBar';
 export { AreaTeks } from './AreaTeks';
 export { Banner } from './Banner';
+export { Chip } from './Chip';
 export { IsianTeks } from './IsianTeks';
 export { LayarSementara } from './LayarSementara';
 export { Lencana } from './Lencana';

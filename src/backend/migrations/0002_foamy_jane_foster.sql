@@ -1,0 +1,1 @@
+CREATE INDEX `idx_status_waktu` ON `status_server` (`waktu_cek`);

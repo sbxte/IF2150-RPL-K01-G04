@@ -1,4 +1,4 @@
-import { and, desc, eq, gt, gte, lt, ne, or, sql } from "drizzle-orm";
+import { and, desc, eq, gt, gte, lt, lte, ne, or, sql } from "drizzle-orm";
 import type { DrizzleD1Database } from "drizzle-orm/d1";
 import * as schema from "../db/schema";
 
@@ -360,13 +360,12 @@ export function semuaJadwal(db: Db, dari: string, sampai: string) {
       waktu: schema.jadwalKonsultasi.waktu,
       waktuSelesai: schema.jadwalKonsultasi.waktuSelesai,
       status: schema.jadwalKonsultasi.status,
-      idMahasiswa: schema.jadwalKonsultasi.idMahasiswa,
+      // The consultant distinguishes otherwise identical "Sesi konsultasi" rows
+      // in the agenda (I-06).
+      namaKonsultan: schema.konsultan.nama,
     })
     .from(schema.jadwalKonsultasi)
-    .innerJoin(
-      schema.konsultan,
-      eq(schema.konsultan.idKonsultan, schema.jadwalKonsultasi.idKonsultan),
-    )
+    .innerJoin(schema.konsultan, eq(schema.konsultan.idKonsultan, schema.jadwalKonsultasi.idKonsultan))
     // Include events that start before the window but end inside it.
     .where(
       and(
@@ -536,39 +535,51 @@ export function ambilSesiBerikutnya(db: Db, idMahasiswa: string, sekarang: strin
 
 const escapePattern = (s: string) => s.replace(/[!%_]/g, (ch) => `!${ch}`);
 
-/** Q-015 — keyword search; blank keyword lists everything. */
-export async function daftarFaq(db: Db, kataKunci?: string) {
-  if (kataKunci && kataKunci.trim().length > 0) {
-    const pola = `%${escapePattern(kataKunci.trim())}%`;
-    return db
-      .select({
-        idFaq: schema.faq.idFaq,
-        pertanyaan: schema.faq.pertanyaan,
-        jawaban: schema.faq.jawaban,
-      })
-      .from(schema.faq)
-      .where(
-        or(
-          sql`${schema.faq.pertanyaan} LIKE ${pola} ESCAPE '!'`,
-          sql`${schema.faq.jawaban} LIKE ${pola} ESCAPE '!'`,
-        ),
-      )
-      .orderBy(schema.faq.pertanyaan);
-  }
-  return db
+/** Sort order for the administrator FAQ list (M9 B.1 no. 12). */
+export type UrutFaq = "az" | "za" | "baru";
+
+/**
+ * Q-015 — keyword search; blank keyword lists everything.
+ * `urut` is an addition from M9 B.1 no. 12: `az` (default), `za`, or `baru`
+ * (newest first). Rows without `waktu_dibuat` sort last in `baru`.
+ */
+export async function daftarFaq(
+  db: Db,
+  opsi: { q?: string; urut?: UrutFaq } = {},
+) {
+  const kunci = opsi.q?.trim();
+  const pola = kunci ? `%${escapePattern(kunci)}%` : null;
+  const dasar = db
     .select({
       idFaq: schema.faq.idFaq,
       pertanyaan: schema.faq.pertanyaan,
       jawaban: schema.faq.jawaban,
     })
     .from(schema.faq)
-    .orderBy(schema.faq.pertanyaan);
+    .where(
+      pola
+        ? or(
+            sql`${schema.faq.pertanyaan} LIKE ${pola} ESCAPE '!'`,
+            sql`${schema.faq.jawaban} LIKE ${pola} ESCAPE '!'`,
+          )
+        : undefined,
+    );
+
+  if (opsi.urut === "za") return dasar.orderBy(desc(schema.faq.pertanyaan));
+  if (opsi.urut === "baru") {
+    return dasar.orderBy(
+      sql`${schema.faq.waktuDibuat} IS NULL`,
+      desc(schema.faq.waktuDibuat),
+      schema.faq.pertanyaan,
+    );
+  }
+  return dasar.orderBy(schema.faq.pertanyaan);
 }
 
-/** Q-035 — add FAQ. */
+/** Q-035 — add FAQ. `waktuDibuat` is stamped by the route (M9 B.1 no. 12). */
 export function tambahFaq(
   db: Db,
-  data: { idFaq: string; pertanyaan: string; jawaban: string },
+  data: { idFaq: string; pertanyaan: string; jawaban: string; waktuDibuat: string },
 ) {
   return db.insert(schema.faq).values(data);
 }
@@ -592,9 +603,71 @@ export function hapusFaq(db: Db, idFaq: string) {
 /** Q-040 — submit a question outside the FAQ. */
 export function ajukanPertanyaan(
   db: Db,
-  data: { idPertanyaan: string; idMahasiswa: string; isiPertanyaan: string },
+  data: {
+    idPertanyaan: string;
+    idMahasiswa: string;
+    isiPertanyaan: string;
+    waktuPengajuan: string;
+  },
 ) {
   return db.insert(schema.pengajuanPertanyaan).values(data);
+}
+
+/**
+ * The Q-040 rows for the administrator (M9 B.1 no. 11), newest first with the
+ * student's name. The DPPL has no admin view of submissions, so this query is
+ * an addition; `rowid` breaks ties and keeps older NULL-dated rows in order.
+ *
+ * `q` matches the question text or the student's name; `sejak`/`sampai` bound
+ * `waktu_pengajuan` (rows without a date only appear when unbounded).
+ */
+export function daftarPertanyaan(
+  db: Db,
+  opsi: { q?: string; sejak?: string; sampai?: string } = {},
+) {
+  const kunci = opsi.q?.trim();
+  const pola = kunci ? `%${escapePattern(kunci)}%` : null;
+
+  return db
+    .select({
+      idPertanyaan: schema.pengajuanPertanyaan.idPertanyaan,
+      isiPertanyaan: schema.pengajuanPertanyaan.isiPertanyaan,
+      nama: schema.pengguna.nama,
+      waktuPengajuan: schema.pengajuanPertanyaan.waktuPengajuan,
+    })
+    .from(schema.pengajuanPertanyaan)
+    .innerJoin(
+      schema.mahasiswa,
+      eq(schema.pengajuanPertanyaan.idMahasiswa, schema.mahasiswa.idPengguna),
+    )
+    .innerJoin(schema.pengguna, eq(schema.mahasiswa.idPengguna, schema.pengguna.idPengguna))
+    .where(
+      and(
+        pola
+          ? or(
+              sql`${schema.pengajuanPertanyaan.isiPertanyaan} LIKE ${pola} ESCAPE '!'`,
+              sql`${schema.pengguna.nama} LIKE ${pola} ESCAPE '!'`,
+            )
+          : undefined,
+        opsi.sejak
+          ? gte(schema.pengajuanPertanyaan.waktuPengajuan, opsi.sejak)
+          : undefined,
+        opsi.sampai
+          ? lte(schema.pengajuanPertanyaan.waktuPengajuan, opsi.sampai)
+          : undefined,
+      ),
+    )
+    .orderBy(
+      desc(schema.pengajuanPertanyaan.waktuPengajuan),
+      sql`${schema.pengajuanPertanyaan}.rowid DESC`,
+    );
+}
+
+/** Delete a submitted question (M9 B.1 no. 11; administrator only). */
+export function hapusPertanyaan(db: Db, idPertanyaan: string) {
+  return db
+    .delete(schema.pengajuanPertanyaan)
+    .where(eq(schema.pengajuanPertanyaan.idPertanyaan, idPertanyaan));
 }
 
 /* -------------------------------------------------------------------------- */
@@ -609,20 +682,71 @@ export function kirimUmpanBalik(
   return db.insert(schema.umpanBalik).values(data);
 }
 
-/** Q-016 — feedback list newest first, with the student's name. */
-export function daftarUmpanBalik(db: Db, limit = 100, offset = 0) {
+/** Filter for the administrator list, from I-14-02's chips (M9 B.1 no. 12). */
+export type StatusUmpanBalik = "belum" | "sudah";
+
+const KOLOM_UMPAN_BALIK = {
+  idUmpanBalik: schema.umpanBalik.idUmpanBalik,
+  namaMahasiswa: schema.pengguna.nama,
+  isi: schema.umpanBalik.isi,
+  tanggapan: schema.umpanBalik.tanggapan,
+};
+
+/**
+ * Q-016 — feedback list newest first, with the student's name.
+ *
+ * `status` narrows to "belum" (no response yet) or "sudah" (answered); it backs
+ * I-14-02's three filter chips, which the DPPL describes but the query lacked.
+ *
+ * Measured with EXPLAIN QUERY PLAN: this is a plain `SCAN umpan_balik` with or
+ * without the filter, because `rowid DESC` already matches the table's own order
+ * so SQLite never needs a sort — it walks backwards and stops at the limit. The
+ * filter only costs an IS NULL test per visited row, so `status=belum` stays
+ * cheap. Do not "optimise" this into an index on `tanggapan`: the rowid order is
+ * what keeps it sort-free.
+ */
+export function daftarUmpanBalik(
+  db: Db,
+  opsi: { limit?: number; offset?: number; status?: StatusUmpanBalik } = {},
+) {
+  const limit = opsi.limit ?? 100;
+  const offset = opsi.offset ?? 0;
+  const filter =
+    opsi.status === "belum"
+      ? sql`${schema.umpanBalik.tanggapan} IS NULL`
+      : opsi.status === "sudah"
+        ? sql`${schema.umpanBalik.tanggapan} IS NOT NULL`
+        : undefined;
+
   return db
-    .select({
-      idUmpanBalik: schema.umpanBalik.idUmpanBalik,
-      namaMahasiswa: schema.pengguna.nama,
-      isi: schema.umpanBalik.isi,
-      tanggapan: schema.umpanBalik.tanggapan,
-    })
+    .select(KOLOM_UMPAN_BALIK)
     .from(schema.umpanBalik)
     .innerJoin(schema.pengguna, eq(schema.pengguna.idPengguna, schema.umpanBalik.idMahasiswa))
+    .where(filter)
     .orderBy(desc(sql`${schema.umpanBalik}.rowid`))
     .limit(limit)
     .offset(offset);
+}
+
+/**
+ * Q-043 — one Mahasiswa's own feedback, newest first (I-11-06).
+ *
+ * The DPPL shows a student their past feedback *and the admin's response*, but
+ * Q-016 is administrator-shaped and `GET /api/feedback` is admin-only, so there
+ * was no way to fill that list. No join: the reader already knows who they are.
+ */
+export function umpanBalikMilik(db: Db, idMahasiswa: string) {
+  return db
+    .select({
+      idUmpanBalik: schema.umpanBalik.idUmpanBalik,
+      isi: schema.umpanBalik.isi,
+      tanggapan: schema.umpanBalik.tanggapan,
+      // Lets I-11-06 show when it was answered; null until then.
+      idAdministrator: schema.umpanBalik.idAdministrator,
+    })
+    .from(schema.umpanBalik)
+    .where(eq(schema.umpanBalik.idMahasiswa, idMahasiswa))
+    .orderBy(desc(sql`${schema.umpanBalik}.rowid`));
 }
 
 /** Q-039 — administrator response. */
@@ -641,7 +765,7 @@ export function tanggapiUmpanBalik(
 /* -------------------------------------------------------------------------- */
 
 /** Q-017 — latest check of one `jenis`. */
-export function statusTerakhir(db: Db, jenis: "website" | "server") {
+export function statusTerakhir(db: Db, jenis: "server" | "db") {
   return db
     .select({
       jenis: schema.statusServer.jenis,
@@ -654,10 +778,30 @@ export function statusTerakhir(db: Db, jenis: "website" | "server") {
     .limit(1);
 }
 
+/**
+ * Q-044 — the most recent checks across both services, newest first (I-15-05).
+ *
+ * `bersihkanDB` keeps `status_server` to 7 days, so this list is inherently
+ * bounded. It is served by `idx_status_waktu`: `ORDER BY waktu_cek DESC` cannot
+ * use `(jenis, waktu_cek)` because that index leads with `jenis`, and measured
+ * on ~4,000 rows the difference is 88 VM steps versus 48,000.
+ */
+export function riwayatStatus(db: Db, limit = 20) {
+  return db
+    .select({
+      jenis: schema.statusServer.jenis,
+      statusUptime: schema.statusServer.statusUptime,
+      waktuCek: schema.statusServer.waktuCek,
+    })
+    .from(schema.statusServer)
+    .orderBy(desc(schema.statusServer.waktuCek))
+    .limit(limit);
+}
+
 /** Q-018 — record one status check. */
 export function catatStatus(
   db: Db,
-  data: { jenis: "website" | "server"; statusUptime: boolean; waktuCek: string },
+  data: { jenis: "server" | "db"; statusUptime: boolean; waktuCek: string },
 ) {
   return db.insert(schema.statusServer).values(data);
 }

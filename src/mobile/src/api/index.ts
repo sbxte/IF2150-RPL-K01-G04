@@ -6,13 +6,37 @@ export { api, ApiError, aturSaatTidakTerautentikasi, aturToken, KODE_KLIEN } fro
 export {
   ambilStatus,
   ambilStatusLayanan,
+  ambilRiwayatStatus,
+  periksaStatusSekarang,
+  type RiwayatStatus,
   type CekStatus,
   type JenisStatus,
   type StatusLayanan,
 } from './status';
+export {
+  ajukanPertanyaan,
+  ambilFaq,
+  ambilPertanyaan,
+  hapusFaq,
+  hapusPertanyaan,
+  tambahFaq,
+  ubahFaq,
+  type Faq,
+  type Pertanyaan,
+  type UrutFaq,
+} from './faq';
 export { hapusSesi, keluar, pulihkanSesi, simpanSesi, type Pengguna, type Peran } from './sesi';
 export {
   ambilKalender,
   type EventKalender,
   type HasilKalender,
 } from './kalender';
+export {
+  ambilUmpanBalik,
+  ambilUmpanBalikSaya,
+  kirimUmpanBalik,
+  tanggapiUmpanBalik,
+  type StatusUmpanBalik,
+  type UmpanBalikAdmin,
+  type UmpanBalikSaya,
+} from './umpan-balik';

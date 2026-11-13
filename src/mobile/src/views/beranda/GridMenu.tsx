@@ -40,10 +40,11 @@ export function GridMenu({ judul, menu, kolom }: Props) {
               onPress={() => router.push(m.tujuan)}
             />
           ))}
-          {/* Keep tile widths equal on a short last row. */}
-          {Array.from({ length: kolom - isiBaris.length }, (_, j) => (
-            <View key={`kosong-${j}`} style={styles.pengisi} />
-          ))}
+          {/* Keep tile widths equal on a short row; a lone tile spans the row. */}
+          {isiBaris.length > 1 &&
+            Array.from({ length: kolom - isiBaris.length }, (_, j) => (
+              <View key={`kosong-${j}`} style={styles.pengisi} />
+            ))}
         </View>
       ))}
     </View>

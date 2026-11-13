@@ -14,45 +14,37 @@ export interface EventKalender {
   milikSaya?: boolean;
 }
 
-/** A slot from Q-013 with its consultant, as `gabungkanJadwal` needs it. */
-export interface JadwalKalender {
-  idJadwal: string;
-  namaKonsultan: string;
-  spesialisasi: string;
-  waktu: string;
-  waktuSelesai: string;
-  status: string;
-  idMahasiswa: string | null;
-}
-
+/** KalenderGabungan.gabungkanJadwal — Algo-011. */
 /**
- * Calendar day of a slot, `YYYY-MM-DD`. Deliberately the same rule as the
- * booking checks in `routes/consultation.ts` (`slice(0, 10)` / `substr(waktu, 1, 10)`),
- * so the calendar never offers a slot that `POST /api/slots/:id/book` rejects
- * as "already has a session that day".
- */
-export function tanggalSlot(waktu: string): string {
-  return waktu.slice(0, 10);
-}
-
-/**
- * KalenderGabungan.gabungkanJadwal — Algo-011, per student (issue #11).
+ * Chronological order for calendar entries.
  *
- *  - The student's own booked sessions are always shown, with the consultant's
- *    name and `milikSaya: true`.
- *  - Sessions booked by other students are never shown.
- *  - An open slot is shown with its consultant's name, unless it is already in
- *    the past, overlaps one of the student's own sessions, or falls on a day
- *    where the student already has a session (offering another is redundant,
- *    and booking it would be refused).
- *  - Google events are always shown and never hide a slot: Google Calendar is
- *    advisory and the student may still book over it after confirming.
+ * `Date.parse` alone misorders all-day events: an all-day value is `YYYY-MM-DD`
+ * and parses as UTC midnight, while a timed event carries its own offset. A
+ * 09:00 WIB event on the same date is 02:00 UTC, so it would sort *before* the
+ * all-day entry it shares a day with. A date-only value is therefore treated as
+ * the start of that day in local time, matching how the app renders it.
  */
+export function bandingkanMulai(a: string, b: string): number {
+  const selisih = wakilMulai(a) - wakilMulai(b);
+  // Two unparseable values both map to Infinity, and Infinity - Infinity is NaN,
+  // which would make the comparator inconsistent.
+  return Number.isFinite(selisih) ? selisih : 0;
+}
+
+/** Milliseconds for comparison; date-only values anchor to local midnight. */
+function wakilMulai(nilai: string): number {
+  const hanyaTanggal = /^\d{4}-\d{2}-\d{2}$/.test(nilai);
+  if (hanyaTanggal) {
+    const [t, b, h] = nilai.split("-").map(Number);
+    return new Date(t, b - 1, h).getTime();
+  }
+  const waktu = Date.parse(nilai);
+  return Number.isFinite(waktu) ? waktu : Number.POSITIVE_INFINITY;
+}
+
 export function gabungkanJadwal(
   google: EventGoogle[],
-  jadwal: JadwalKalender[],
-  idMahasiswa: string,
-  sekarang: Date = new Date(),
+  jadwal: { waktu: string; waktuSelesai: string; status: string; namaKonsultan?: string }[],
 ): EventKalender[] {
   const hasil: EventKalender[] = [];
   for (const event of google) {
@@ -91,16 +83,12 @@ export function gabungkanJadwal(
     if (tumpang) continue;
 
     hasil.push({
-      judul: "Slot konsultasi tersedia",
-      mulai: j.waktu,
-      selesai: j.waktuSelesai,
-      sumber: "tersedia",
-      idJadwal: j.idJadwal,
-      konsultan: j.namaKonsultan,
-      spesialisasi: j.spesialisasi,
-      milikSaya: false,
+      // Name the consultant so two sessions in one week are distinguishable.
+      judul: slot.namaKonsultan ? `Sesi konsultasi — ${slot.namaKonsultan}` : "Sesi konsultasi",
+      mulai: slot.waktu,
+      selesai: slot.waktuSelesai,
+      sumber: slot.status,
     });
   }
-
-  return hasil.sort((a, b) => Date.parse(a.mulai) - Date.parse(b.mulai));
+  return hasil.sort((a, b) => bandingkanMulai(a.mulai, b.mulai));
 }

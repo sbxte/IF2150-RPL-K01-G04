@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest';
-import { gabungkanJadwal, tanggalSlot, type JadwalKalender } from '../src/lib/kalender';
+import { bandingkanMulai, gabungkanJadwal } from '../src/lib/kalender';
 import { buatEventKalenderMock } from '../src/lib/google';
 
 const SEKARANG = new Date('2031-05-31T00:00:00Z');
@@ -199,5 +199,57 @@ describe('Google Calendar mock — rentang waktu', () => {
       '2031-06-01T12:00:00.000Z',
     );
     expect(events).toEqual([]);
+  });
+});
+
+describe('bandingkanMulai — urutan acara sepanjang hari', () => {
+  // Review on #27: sorting with Date.parse alone interleaves wrongly, because an
+  // all-day `YYYY-MM-DD` parses as UTC midnight while a timed event carries an
+  // offset. A 09:00 WIB event is 02:00 UTC, so it sorted before its own day.
+  test('acara sepanjang hari mendahului acara berjam pada hari yang sama', () => {
+    const sepanjangHari = '2031-06-01';
+    const berjam = '2031-06-01T09:00:00+07:00';
+    expect(bandingkanMulai(sepanjangHari, berjam)).toBeLessThan(0);
+  });
+
+  test('acara berjam tetap terurut menurut waktunya', () => {
+    expect(bandingkanMulai('2031-06-01T09:00:00+07:00', '2031-06-01T13:00:00+07:00')).toBeLessThan(0);
+  });
+
+  test('gabungkanJadwal menempatkan sepanjang hari sebelum sesi pagi di hari itu', () => {
+    const hasil = gabungkanJadwal(
+      [{ summary: 'Libur', start: { date: '2031-06-01' }, end: { date: '2031-06-02' } }],
+      [{ waktu: '2031-06-01T09:00:00+07:00', waktuSelesai: '2031-06-01T10:00:00+07:00', status: 'terpesan' }],
+    );
+    expect(hasil.map((e) => e.judul)).toEqual(['Libur', 'Sesi konsultasi']);
+  });
+
+  test('nilai waktu yang tidak valid tidak merusak urutan', () => {
+    expect(Number.isFinite(bandingkanMulai('bukan tanggal', '2031-06-01'))).toBe(true);
+  });
+});
+
+describe('label sesi konsultasi', () => {
+  // Review on #27: several sessions rendered as the same "Sesi konsultasi".
+  test('menyertakan nama konsultan bila ada', () => {
+    const hasil = gabungkanJadwal([], [
+      { waktu: '2031-06-01T09:00:00Z', waktuSelesai: '2031-06-01T10:00:00Z', status: 'terpesan', namaKonsultan: 'Dr. Raisa' },
+    ]);
+    expect(hasil[0]?.judul).toBe('Sesi konsultasi — Dr. Raisa');
+  });
+
+  test('jatuh kembali ke label lama tanpa nama konsultan', () => {
+    const hasil = gabungkanJadwal([], [
+      { waktu: '2031-06-01T09:00:00Z', waktuSelesai: '2031-06-01T10:00:00Z', status: 'tersedia' },
+    ]);
+    expect(hasil[0]?.judul).toBe('Sesi konsultasi');
+  });
+
+  test('dua konsultan berbeda menghasilkan dua label berbeda', () => {
+    const hasil = gabungkanJadwal([], [
+      { waktu: '2031-06-01T09:00:00Z', waktuSelesai: '2031-06-01T10:00:00Z', status: 'terpesan', namaKonsultan: 'Dr. Raisa' },
+      { waktu: '2031-06-02T09:00:00Z', waktuSelesai: '2031-06-02T10:00:00Z', status: 'terpesan', namaKonsultan: 'Bagas, M.Pd.' },
+    ]);
+    expect(new Set(hasil.map((e) => e.judul)).size).toBe(2);
   });
 });

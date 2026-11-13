@@ -72,16 +72,22 @@ WHERE id_jadwal = 'seed-jdw-1-1-4' AND status = 'tersedia';
 -- ---------------------------------------------------------------------------
 -- 5. Sample FAQ
 -- ---------------------------------------------------------------------------
-INSERT INTO faq (id_faq, pertanyaan, jawaban) VALUES
+INSERT INTO faq (id_faq, pertanyaan, jawaban, waktu_dibuat) VALUES
   ('seed-faq-1', 'Apa itu Sehati?',
-   'Sehati adalah aplikasi pendamping kesehatan mental mahasiswa: afirmasi harian, pengingat kesehatan, kalender terintegrasi, dan pemesanan sesi konsultasi.'),
+   'Sehati adalah aplikasi pendamping kesehatan mental mahasiswa: afirmasi harian, pengingat kesehatan, kalender terintegrasi, dan pemesanan sesi konsultasi.',
+   '2026-01-05T08:00:00.000Z'),
   ('seed-faq-2', 'Bagaimana cara memesan sesi konsultasi?',
-   'Buka menu Konsultasi, pilih konsultan, lalu pilih slot yang tersedia. Sesi yang sudah dipesan akan muncul di kalender dan beranda.'),
+   'Buka menu Konsultasi, pilih konsultan, lalu pilih slot yang tersedia. Sesi yang sudah dipesan akan muncul di kalender dan beranda.',
+   '2026-01-12T08:00:00.000Z'),
   ('seed-faq-3', 'Apakah data konsultasi saya terjaga kerahasiaannya?',
-   'Hanya kamu dan konsultan yang bersangkutan yang dapat melihat sesi yang kamu pesan. Token Google kamu disimpan terenkripsi.'),
+   'Hanya kamu dan konsultan yang bersangkutan yang dapat melihat sesi yang kamu pesan. Token Google kamu disimpan terenkripsi.',
+   '2026-01-19T08:00:00.000Z'),
   ('seed-faq-4', 'Bisakah saya mengubah atau membatalkan sesi yang sudah dipesan?',
-   'Perubahan jadwal dilakukan oleh administrator. Hubungi administrator melalui form umpan balik atau pengajuan pertanyaan.'),
+   'Perubahan jadwal dilakukan oleh administrator. Hubungi administrator melalui form umpan balik atau pengajuan pertanyaan.',
+   '2026-01-26T08:00:00.000Z'),
   ('seed-faq-5', 'Bagaimana cara mengubah waktu pengingat dan afirmasi harian?',
-   'Buka menu Afirmasi atau Pengingat, pilih waktu pengiriman yang kamu inginkan, lalu simpan. Notifikasi dikirim ke perangkat yang terdaftar.'),
+   'Buka menu Afirmasi atau Pengingat, pilih waktu pengiriman yang kamu inginkan, lalu simpan. Notifikasi dikirim ke perangkat yang terdaftar.',
+   '2026-02-02T08:00:00.000Z'),
   ('seed-faq-6', 'Saya sedang dalam keadaan darurat. Apa yang harus dilakukan?',
-   'Sehati bukan layanan darurat. Jika kamu atau orang di sekitarmu dalam bahaya, segera hubungi layanan darurat setempat atau orang terdekat yang dapat membantu.');
+   'Sehati bukan layanan darurat. Jika kamu atau orang di sekitarmu dalam bahaya, segera hubungi layanan darurat setempat atau orang terdekat yang dapat membantu.',
+   '2026-02-09T08:00:00.000Z');

@@ -148,20 +148,38 @@ export const jadwalKonsultasi = sqliteTable("jadwal_konsultasi", {
 ]);
 
 // FAQ (C-12)
-export const faq = sqliteTable("faq", {
-  idFaq: text("id_faq").primaryKey(),
-  pertanyaan: text("pertanyaan").notNull(),
-  jawaban: text("jawaban").notNull(),
-});
+export const faq = sqliteTable(
+  "faq",
+  {
+    idFaq: text("id_faq").primaryKey(),
+    pertanyaan: text("pertanyaan").notNull(),
+    jawaban: text("jawaban").notNull(),
+    // When the FAQ was added; NULL for rows created before this column existed.
+    waktuDibuat: text("waktu_dibuat"),
+  },
+  (t) => [
+    // M9 B.1 no. 12: the administrator list sorts by this column.
+    index("idx_faq_waktu").on(t.waktuDibuat),
+  ],
+);
 
 // PengajuanPertanyaan (C-13)
-export const pengajuanPertanyaan = sqliteTable("pengajuan_pertanyaan", {
-  idPertanyaan: text("id_pertanyaan").primaryKey(),
-  idMahasiswa: text("id_mahasiswa")
-    .notNull()
-    .references(() => mahasiswa.idPengguna, { onDelete: "cascade" }),
-  isiPertanyaan: text("isi_pertanyaan").notNull(),
-});
+export const pengajuanPertanyaan = sqliteTable(
+  "pengajuan_pertanyaan",
+  {
+    idPertanyaan: text("id_pertanyaan").primaryKey(),
+    idMahasiswa: text("id_mahasiswa")
+      .notNull()
+      .references(() => mahasiswa.idPengguna, { onDelete: "cascade" }),
+    isiPertanyaan: text("isi_pertanyaan").notNull(),
+    // When the student submitted it; NULL for rows created before this column existed.
+    waktuPengajuan: text("waktu_pengajuan"),
+  },
+  (t) => [
+    // M9 B.1 no. 11: the queue sorts and filters by this column.
+    index("idx_pertanyaan_waktu").on(t.waktuPengajuan),
+  ],
+);
 
 // UmpanBalik (C-14)
 export const umpanBalik = sqliteTable("umpan_balik", {
@@ -183,14 +201,17 @@ export const umpanBalik = sqliteTable("umpan_balik", {
 // StatusServer (C-15)
 export const statusServer = sqliteTable("status_server", {
   idStatus: integer("id_status").primaryKey({ autoIncrement: true }),
-  jenis: text("jenis", { enum: ["website", "server"] }).notNull(),
+  jenis: text("jenis", { enum: ["server", "db"] }).notNull(),
   statusUptime: integer("status_uptime", { mode: "boolean" }).notNull(),
   waktuCek: text("waktu_cek").notNull(),
 }, (t) => [
-  check("status_jenis_check", sql`${t.jenis} IN ('website', 'server')`),
+  check("status_jenis_check", sql`${t.jenis} IN ('server', 'db')`),
   check("status_uptime_check", sql`${t.statusUptime} IN (0, 1)`),
   // SQLite can scan this index backwards, so it also serves ORDER BY waktu_cek DESC.
   index("idx_status_jenis_waktu").on(t.jenis, t.waktuCek),
+  // Serves the newest-first history list (Q-044): the composite index above
+  // leads with `jenis`, so an unfiltered `ORDER BY waktu_cek DESC` cannot use it.
+  index("idx_status_waktu").on(t.waktuCek),
 ]);
 
 /* -------------------------------------------------------------------------- */
