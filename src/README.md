@@ -260,7 +260,19 @@ Layar pertama adalah I-01 Masuk. Untuk mencoba aplikasi tanpa akun Google, gunak
 
 #### Notifikasi push
 
-Setelah login (Google maupun demo), aplikasi meminta izin notifikasi, mengambil Expo push token, lalu mengirimkannya ke `POST /api/auth/device` (Algo-003, `src/mobile/src/lib/notifikasi.ts`). Backend menyimpan token pada sesi aktif dan mengakhiri sesi lain yang memakai perangkat yang sama, lalu tugas *cron* mengirim afirmasi dan pengingat ke token tersebut. Pendaftaran berjalan di latar belakang: bila izin ditolak atau terjadi galat, login tetap berhasil dan perangkat hanya tidak menerima notifikasi.
+Setelah login (Google maupun demo), aplikasi meminta izin notifikasi, mengambil Expo push token, lalu mengirimkannya ke `POST /api/auth/device` (Algo-003, `src/mobile/src/lib/notifikasi.ts`). Backend menyimpan token pada sesi aktif dan mengakhiri sesi lain yang memakai perangkat yang sama. Pendaftaran berjalan di latar belakang: bila izin ditolak atau terjadi galat, login tetap berhasil dan perangkat hanya tidak menerima notifikasi.
+
+Pengiriman dijadwalkan oleh tiga Cloudflare Cron Trigger di `src/backend/wrangler.jsonc` dan dipilih oleh `scheduled` pada `src/backend/src/jobs/scheduler.ts`:
+
+| Cron | Tugas |
+|---|---|
+| `* * * * *` | `jalankanAfirmasi` (Algo-005) dan `jalankanPengingat` (Algo-007): mencari jadwal yang jatuh tempo pada menit ini (jam WIB "HH:MM"), mencatat baris `notifikasi` dengan sumbernya (`id_affirmation` atau `id_reminder`), lalu mengirim *push*. |
+| `*/5 * * * *` | `jalankanCekStatus` (Algo-021): memeriksa status *website* dan server, lalu mencatat `status_server`. |
+| `0 */12 * * *` | Pembersihan data: `status_server` lebih dari 7 hari, `notifikasi` lebih dari 30 hari, dan sesi yang sudah berakhir atau melewati `BATAS_SESI_HARI`. |
+
+Judul *push* adalah "Afirmasi hari ini" atau "Pengingat kesehatan". Pengiriman memakai Expo Push API dalam batch maksimal 100 pesan, dan token yang ditolak dengan `DeviceNotRegistered` dikosongkan. Bila penerima belum punya token, notifikasi tetap tercatat dan hanya ditulis ke log. Untuk memeriksa hasilnya, lihat tabel `notifikasi` lewat `bun run db:studio:local`; baris dengan `id_affirmation` berasal dari afirmasi, sedangkan `id_reminder` dari pengingat.
+
+Dukungan *push notification* per lingkungan:
 
 | Lingkungan | Notifikasi push |
 |---|---|
