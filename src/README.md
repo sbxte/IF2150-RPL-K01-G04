@@ -267,7 +267,7 @@ Pengiriman dijadwalkan oleh tiga Cloudflare Cron Trigger di `src/backend/wrangle
 | Cron | Tugas |
 |---|---|
 | `* * * * *` | `jalankanAfirmasi` (Algo-005) dan `jalankanPengingat` (Algo-007): mencari jadwal yang jatuh tempo pada menit ini (jam WIB "HH:MM"), mencatat baris `notifikasi` dengan sumbernya (`id_affirmation` atau `id_reminder`), lalu mengirim *push*. |
-| `*/5 * * * *` | `jalankanCekStatus` (Algo-021): memeriksa status *website* dan server, lalu mencatat `status_server`. |
+| `*/5 * * * *` | `jalankanCekStatus` (Algo-021): memeriksa `server` (`/health`) dan `db` (`/health/db`), lalu mencatat `status_server`. |
 | `0 */12 * * *` | Pembersihan data: `status_server` lebih dari 7 hari, `notifikasi` lebih dari 30 hari, dan sesi yang sudah berakhir atau melewati `BATAS_SESI_HARI`. |
 
 Judul *push* adalah "Afirmasi hari ini" atau "Pengingat kesehatan". Pengiriman memakai Expo Push API dalam batch maksimal 100 pesan, dan token yang ditolak dengan `DeviceNotRegistered` dikosongkan. Bila penerima belum punya token, notifikasi tetap tercatat dan hanya ditulis ke log. Untuk memeriksa hasilnya, lihat tabel `notifikasi` lewat `bun run db:studio:local`; baris dengan `id_affirmation` berasal dari afirmasi, sedangkan `id_reminder` dari pengingat.
@@ -508,7 +508,7 @@ Status: `400` body tidak valid · `401` belum terautentikasi · `403` peran sala
 Satu *cron trigger* `* * * * *` menjalankan:
 
 - pengiriman afirmasi dan pengingat, mencatat notifikasi dan mengirim *push* Expo dalam batch maksimal 100 pesan, serta mengosongkan token yang dilaporkan `DeviceNotRegistered`
-- pemeriksaan *uptime* `website` (alamat publik, `<API_BASE_URL>/`) dan `server` (kesehatan Worker, `<API_BASE_URL>/health`), keduanya memerlukan `API_BASE_URL` dan dapat berbeda hasilnya
+- pemeriksaan *uptime* `server` (`<API_BASE_URL>/health`, Worker menjawab) dan `db` (`<API_BASE_URL>/health/db`, Worker dapat membaca D1), keduanya memerlukan `API_BASE_URL`. `db` *up* mengimplikasikan `server` *up*, sehingga `db` *down* adalah satu-satunya sinyal yang membawa informasi baru. Hanya status 2xx yang dihitung *up*.
 
 Semua ini ada di handler `scheduled()`, bukan rute HTTP.
 
