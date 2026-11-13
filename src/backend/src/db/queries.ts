@@ -1,4 +1,4 @@
-import { and, desc, eq, gt, gte, lt, ne, or, sql } from "drizzle-orm";
+import { and, desc, eq, gt, gte, lt, lte, ne, or, sql } from "drizzle-orm";
 import type { DrizzleD1Database } from "drizzle-orm/d1";
 import * as schema from "../db/schema";
 
@@ -514,39 +514,51 @@ export function ambilSesiBerikutnya(db: Db, idMahasiswa: string, sekarang: strin
 
 const escapePattern = (s: string) => s.replace(/[!%_]/g, (ch) => `!${ch}`);
 
-/** Q-015 — keyword search; blank keyword lists everything. */
-export async function daftarFaq(db: Db, kataKunci?: string) {
-  if (kataKunci && kataKunci.trim().length > 0) {
-    const pola = `%${escapePattern(kataKunci.trim())}%`;
-    return db
-      .select({
-        idFaq: schema.faq.idFaq,
-        pertanyaan: schema.faq.pertanyaan,
-        jawaban: schema.faq.jawaban,
-      })
-      .from(schema.faq)
-      .where(
-        or(
-          sql`${schema.faq.pertanyaan} LIKE ${pola} ESCAPE '!'`,
-          sql`${schema.faq.jawaban} LIKE ${pola} ESCAPE '!'`,
-        ),
-      )
-      .orderBy(schema.faq.pertanyaan);
-  }
-  return db
+/** Sort order for the administrator FAQ list (M9 B.1 no. 12). */
+export type UrutFaq = "az" | "za" | "baru";
+
+/**
+ * Q-015 — keyword search; blank keyword lists everything.
+ * `urut` is an addition from M9 B.1 no. 12: `az` (default), `za`, or `baru`
+ * (newest first). Rows without `waktu_dibuat` sort last in `baru`.
+ */
+export async function daftarFaq(
+  db: Db,
+  opsi: { q?: string; urut?: UrutFaq } = {},
+) {
+  const kunci = opsi.q?.trim();
+  const pola = kunci ? `%${escapePattern(kunci)}%` : null;
+  const dasar = db
     .select({
       idFaq: schema.faq.idFaq,
       pertanyaan: schema.faq.pertanyaan,
       jawaban: schema.faq.jawaban,
     })
     .from(schema.faq)
-    .orderBy(schema.faq.pertanyaan);
+    .where(
+      pola
+        ? or(
+            sql`${schema.faq.pertanyaan} LIKE ${pola} ESCAPE '!'`,
+            sql`${schema.faq.jawaban} LIKE ${pola} ESCAPE '!'`,
+          )
+        : undefined,
+    );
+
+  if (opsi.urut === "za") return dasar.orderBy(desc(schema.faq.pertanyaan));
+  if (opsi.urut === "baru") {
+    return dasar.orderBy(
+      sql`${schema.faq.waktuDibuat} IS NULL`,
+      desc(schema.faq.waktuDibuat),
+      schema.faq.pertanyaan,
+    );
+  }
+  return dasar.orderBy(schema.faq.pertanyaan);
 }
 
-/** Q-035 — add FAQ. */
+/** Q-035 — add FAQ. `waktuDibuat` is stamped by the route (M9 B.1 no. 12). */
 export function tambahFaq(
   db: Db,
-  data: { idFaq: string; pertanyaan: string; jawaban: string },
+  data: { idFaq: string; pertanyaan: string; jawaban: string; waktuDibuat: string },
 ) {
   return db.insert(schema.faq).values(data);
 }
@@ -570,9 +582,71 @@ export function hapusFaq(db: Db, idFaq: string) {
 /** Q-040 — submit a question outside the FAQ. */
 export function ajukanPertanyaan(
   db: Db,
-  data: { idPertanyaan: string; idMahasiswa: string; isiPertanyaan: string },
+  data: {
+    idPertanyaan: string;
+    idMahasiswa: string;
+    isiPertanyaan: string;
+    waktuPengajuan: string;
+  },
 ) {
   return db.insert(schema.pengajuanPertanyaan).values(data);
+}
+
+/**
+ * The Q-040 rows for the administrator (M9 B.1 no. 11), newest first with the
+ * student's name. The DPPL has no admin view of submissions, so this query is
+ * an addition; `rowid` breaks ties and keeps older NULL-dated rows in order.
+ *
+ * `q` matches the question text or the student's name; `sejak`/`sampai` bound
+ * `waktu_pengajuan` (rows without a date only appear when unbounded).
+ */
+export function daftarPertanyaan(
+  db: Db,
+  opsi: { q?: string; sejak?: string; sampai?: string } = {},
+) {
+  const kunci = opsi.q?.trim();
+  const pola = kunci ? `%${escapePattern(kunci)}%` : null;
+
+  return db
+    .select({
+      idPertanyaan: schema.pengajuanPertanyaan.idPertanyaan,
+      isiPertanyaan: schema.pengajuanPertanyaan.isiPertanyaan,
+      nama: schema.pengguna.nama,
+      waktuPengajuan: schema.pengajuanPertanyaan.waktuPengajuan,
+    })
+    .from(schema.pengajuanPertanyaan)
+    .innerJoin(
+      schema.mahasiswa,
+      eq(schema.pengajuanPertanyaan.idMahasiswa, schema.mahasiswa.idPengguna),
+    )
+    .innerJoin(schema.pengguna, eq(schema.mahasiswa.idPengguna, schema.pengguna.idPengguna))
+    .where(
+      and(
+        pola
+          ? or(
+              sql`${schema.pengajuanPertanyaan.isiPertanyaan} LIKE ${pola} ESCAPE '!'`,
+              sql`${schema.pengguna.nama} LIKE ${pola} ESCAPE '!'`,
+            )
+          : undefined,
+        opsi.sejak
+          ? gte(schema.pengajuanPertanyaan.waktuPengajuan, opsi.sejak)
+          : undefined,
+        opsi.sampai
+          ? lte(schema.pengajuanPertanyaan.waktuPengajuan, opsi.sampai)
+          : undefined,
+      ),
+    )
+    .orderBy(
+      desc(schema.pengajuanPertanyaan.waktuPengajuan),
+      sql`${schema.pengajuanPertanyaan}.rowid DESC`,
+    );
+}
+
+/** Delete a submitted question (M9 B.1 no. 11; administrator only). */
+export function hapusPertanyaan(db: Db, idPertanyaan: string) {
+  return db
+    .delete(schema.pengajuanPertanyaan)
+    .where(eq(schema.pengajuanPertanyaan.idPertanyaan, idPertanyaan));
 }
 
 /* -------------------------------------------------------------------------- */

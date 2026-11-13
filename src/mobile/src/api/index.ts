@@ -13,6 +13,18 @@ export {
   type JenisStatus,
   type StatusLayanan,
 } from './status';
+export {
+  ajukanPertanyaan,
+  ambilFaq,
+  ambilPertanyaan,
+  hapusFaq,
+  hapusPertanyaan,
+  tambahFaq,
+  ubahFaq,
+  type Faq,
+  type Pertanyaan,
+  type UrutFaq,
+} from './faq';
 export { hapusSesi, keluar, pulihkanSesi, simpanSesi, type Pengguna, type Peran } from './sesi';
 export {
   ambilKalender,

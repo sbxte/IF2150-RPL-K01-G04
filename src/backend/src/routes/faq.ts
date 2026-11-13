@@ -11,10 +11,15 @@ faqRoutes.use("*", auth);
 
 /**
  * C-30 `tampilkanFAQ()` / `cariFAQ(kataKunci)` — Algo-017 / Q-015.
- * `?q=` is optional; a blank keyword lists every FAQ.
+ * `?q=` is optional; a blank keyword lists every FAQ. `?urut=az|za|baru`
+ * orders the administrator list (M9 B.1 no. 12).
  */
 faqRoutes.get("/", async (c) => {
-  const daftar = await daftarFaq(c.get("db"), c.req.query("q"));
+  const urut = c.req.query("urut");
+  const daftar = await daftarFaq(c.get("db"), {
+    q: c.req.query("q"),
+    urut: urut === "za" || urut === "baru" ? urut : "az",
+  });
   return c.json({ faq: daftar });
 });
 
@@ -37,6 +42,8 @@ faqRoutes.post("/", requireRole("administrator"), async (c) => {
     idFaq, // Q-035
     pertanyaan: pertanyaan.trim(),
     jawaban: jawaban.trim(),
+    // M9 B.1 no. 12: lets the list sort newest first.
+    waktuDibuat: new Date().toISOString(),
   });
 
   return c.json({ ok: true, idFaq }, 201);
