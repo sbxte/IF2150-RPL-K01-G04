@@ -2,7 +2,15 @@ import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 
 // Imported from the module itself, not the `@/api` barrel: the barrel also exports
 // the session modules, which pull in Expo native modules that cannot load in Node.
-import { ajukanPertanyaan, ambilFaq, hapusFaq, tambahFaq, ubahFaq } from '@/api/faq';
+import {
+  ajukanPertanyaan,
+  ambilFaq,
+  ambilPertanyaan,
+  hapusFaq,
+  hapusPertanyaan,
+  tambahFaq,
+  ubahFaq,
+} from '@/api/faq';
 
 const URL_API = 'http://sehati.test';
 
@@ -94,6 +102,39 @@ describe('hapusFaq', () => {
 
     const { url, opsi } = panggilan(fetchTiruan);
     expect(url).toBe(`${URL_API}/api/faq/faq-1`);
+    expect(opsi.method).toBe('DELETE');
+    expect(opsi.body).toBeUndefined();
+  });
+});
+
+describe('ambilPertanyaan', () => {
+  test('mengirim GET /api/questions dan mengurai amplopnya (B.1 no. 9)', async () => {
+    const daftar = [
+      {
+        idPertanyaan: 'p-1',
+        isiPertanyaan: 'Kenapa?',
+        nama: 'Sari',
+        waktuPengajuan: '2026-11-12T08:00:00.000Z',
+      },
+    ];
+    const fetchTiruan = tiruFetch(200, { pertanyaan: daftar });
+
+    await expect(ambilPertanyaan()).resolves.toEqual(daftar);
+
+    const { url, opsi } = panggilan(fetchTiruan);
+    expect(url).toBe(`${URL_API}/api/questions`);
+    expect(opsi.method).toBe('GET');
+  });
+});
+
+describe('hapusPertanyaan', () => {
+  test('mengirim DELETE ke /api/questions/:id tanpa isi (B.1 no. 9)', async () => {
+    const fetchTiruan = tiruFetch(200, { ok: true, idPertanyaan: 'p 1' });
+
+    await expect(hapusPertanyaan('p 1')).resolves.toEqual({ ok: true, idPertanyaan: 'p 1' });
+
+    const { url, opsi } = panggilan(fetchTiruan);
+    expect(url).toBe(`${URL_API}/api/questions/p%201`);
     expect(opsi.method).toBe('DELETE');
     expect(opsi.body).toBeUndefined();
   });

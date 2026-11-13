@@ -1,12 +1,16 @@
 import { useFocusEffect, useRouter } from 'expo-router';
 import Pencil from 'lucide-react-native/icons/pencil';
+import Plus from 'lucide-react-native/icons/plus';
 import Trash from 'lucide-react-native/icons/trash';
 import { useCallback, useRef, useState } from 'react';
 import { ActivityIndicator, Alert, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 
-import { ambilFaq, hapusFaq, tambahFaq, ubahFaq, type Faq } from '@/api';
-import { AppBar, AreaTeks, Banner, IsianTeks, Teks, Tombol } from '@/components';
+import { ambilFaq, hapusFaq, type Faq } from '@/api';
+import { AppBar, Banner, IsianTeks, Teks, Tombol } from '@/components';
 import { jarak, sudut, ukuran, warna } from '@/theme';
+
+/** Jeda pencarian setelah pengguna berhenti mengetik. */
+const JEDA_CARI_MS = 300;
 
 /** Icon button on an FAQ card (I-13-03 ubah, I-13-04 hapus). */
 function TombolIkon({
@@ -34,35 +38,32 @@ function TombolIkon({
 /**
  * I-13 Kelola FAQ (`FAQView`), UC-07.
  *
- * The list reloads on focus and after every change; the form at the bottom adds
- * a new FAQ, or edits the one whose pencil icon was tapped (I-13-05).
+ * The list reloads on focus and after every change, and is filtered by the
+ * keyword above it (M9 B.1 no. 10). Adding and editing happen on their own view
+ * (M9 B.1 no. 11): the top button and the pencil icon open `faq-form`.
  */
 export default function KelolaFaq() {
   const router = useRouter();
   const [daftar, setDaftar] = useState<Faq[] | null>(null);
   const [memuat, setMemuat] = useState(true);
   const [galatMuat, setGalatMuat] = useState<string | null>(null);
-  // The FAQ being edited, or null when the form adds a new one.
-  const [diedit, setDiedit] = useState<Faq | null>(null);
-  const [pertanyaan, setPertanyaan] = useState('');
-  const [jawaban, setJawaban] = useState('');
-  const [menyimpan, setMenyimpan] = useState(false);
   const [menghapus, setMenghapus] = useState<string | null>(null);
-  // I-13-07: shown when add, edit, or delete fails (UC-07 alternative scenario 1).
-  const [galatSimpan, setGalatSimpan] = useState<string | null>(null);
+  // I-13-07: shown when delete fails (UC-07 alternative scenario 1).
+  const [galatHapus, setGalatHapus] = useState<string | null>(null);
+  const [kataKunci, setKataKunci] = useState('');
   const permintaanTerakhir = useRef(0);
 
-  // `FAQController.tampilkanFAQ()` -> GET /api/faq, again each time the screen
-  // gains focus. `tampilkanMemuat` is false for focus reloads (the state already
-  // shows the data, or the initial "memuat").
-  const muat = useCallback(async (tampilkanMemuat: boolean) => {
+  // `FAQController.tampilkanFAQ()` / `cariFAQ(kataKunci)` -> GET /api/faq,
+  // again each time the screen gains focus or the keyword changes.
+  // `tampilkanMemuat` is false for background reloads.
+  const muat = useCallback(async (tampilkanMemuat: boolean, kunci: string) => {
     const ke = ++permintaanTerakhir.current;
     if (tampilkanMemuat) {
       setMemuat(true);
       setGalatMuat(null);
     }
     try {
-      const hasil = await ambilFaq();
+      const hasil = await ambilFaq(kunci);
       if (ke === permintaanTerakhir.current) {
         setDaftar(hasil);
         setMemuat(false);
@@ -75,49 +76,34 @@ export default function KelolaFaq() {
     }
   }, []);
 
+  // Also re-runs when `kataKunci` changes (the callback identity changes while
+  // focused), which gives the search its 300 ms debounce.
   useFocusEffect(
     useCallback(() => {
-      void muat(false);
-      // Ignore a request still in flight when the screen loses focus or unmounts.
+      const timer = setTimeout(
+        () => void muat(true, kataKunci),
+        kataKunci.trim() ? JEDA_CARI_MS : 0,
+      );
       return () => {
+        clearTimeout(timer);
+        // Ignore a request still in flight when the keyword changes, the screen
+        // loses focus, or it unmounts.
         permintaanTerakhir.current++;
       };
-    }, [muat]),
+    }, [muat, kataKunci]),
   );
 
-  const kosongkanForm = () => {
-    setDiedit(null);
-    setPertanyaan('');
-    setJawaban('');
+  // M9 B.1 no. 11: adding and editing share one form view.
+  const tambahBaru = () => {
+    router.push('/admin/faq-form');
   };
 
-  // I-13-03: fills the form with the chosen FAQ.
+  // I-13-03: open the form with the chosen FAQ.
   const mulaiUbah = (faq: Faq) => {
-    setDiedit(faq);
-    setPertanyaan(faq.pertanyaan);
-    setJawaban(faq.jawaban);
-    setGalatSimpan(null);
-  };
-
-  // Algo-026 `validasiInput` for the two form fields.
-  const valid = pertanyaan.trim().length > 0 && jawaban.trim().length > 0;
-
-  // `FAQController.tambahFAQ` (Q-035) or `FAQController.ubahFAQ` (Q-036).
-  const simpan = async () => {
-    setGalatSimpan(null);
-    setMenyimpan(true);
-    try {
-      const data = { pertanyaan: pertanyaan.trim(), jawaban: jawaban.trim() };
-      if (diedit) await ubahFaq(diedit.idFaq, data);
-      else await tambahFaq(data);
-      kosongkanForm();
-      await muat(true);
-    } catch {
-      // UC-07 alternative scenario 1: not saved, try again.
-      setGalatSimpan('FAQ gagal disimpan. Silakan coba lagi.');
-    } finally {
-      setMenyimpan(false);
-    }
+    router.push({
+      pathname: '/admin/faq-form',
+      params: { idFaq: faq.idFaq, pertanyaan: faq.pertanyaan, jawaban: faq.jawaban },
+    });
   };
 
   // I-13-04: confirm, then `FAQController.hapusFAQ` (Q-037).
@@ -133,14 +119,13 @@ export default function KelolaFaq() {
   };
 
   const hapus = async (faq: Faq) => {
-    setGalatSimpan(null);
+    setGalatHapus(null);
     setMenghapus(faq.idFaq);
     try {
       await hapusFaq(faq.idFaq);
-      if (diedit?.idFaq === faq.idFaq) kosongkanForm();
-      await muat(true);
+      await muat(true, kataKunci);
     } catch {
-      setGalatSimpan('FAQ gagal disimpan. Silakan coba lagi.');
+      setGalatHapus('FAQ gagal dihapus. Silakan coba lagi.');
     } finally {
       setMenghapus(null);
     }
@@ -152,19 +137,40 @@ export default function KelolaFaq() {
 
       <ScrollView contentContainerStyle={styles.isi} keyboardShouldPersistTaps="handled">
         {/* I-13-07 */}
-        {galatSimpan && <Banner jenis="galat">{galatSimpan}</Banner>}
+        {galatHapus && <Banner jenis="galat">{galatHapus}</Banner>}
+
+        {/* M9 B.1 no. 10: keyword filter, reusing Q-015. */}
+        <IsianTeks
+          label="Cari FAQ"
+          placeholder="Ketik kata kunci…"
+          value={kataKunci}
+          onChangeText={setKataKunci}
+          autoCorrect={false}
+        />
 
         {/* I-13-02 */}
-        <Teks gaya="label">Daftar FAQ</Teks>
+        <View style={styles.barisDaftar}>
+          <Teks gaya="label">Daftar FAQ</Teks>
+          <Tombol judul="Tambah FAQ" varian="sekunder" ikon={Plus} onPress={tambahBaru} />
+        </View>
         {memuat && <ActivityIndicator size="large" color={warna.merah} style={styles.memuat} />}
         {galatMuat && (
           <View style={styles.tengah}>
             <Teks warna="teksSekunder">{galatMuat}</Teks>
-            <Tombol judul="Coba Lagi" varian="sekunder" onPress={() => void muat(true)} />
+            <Tombol judul="Coba Lagi" varian="sekunder" onPress={() => void muat(true, kataKunci)} />
           </View>
         )}
         {!memuat && !galatMuat && daftar !== null && daftar.length === 0 && (
-          <Teks warna="teksSekunder">Belum ada FAQ. Tambahkan yang pertama di bawah.</Teks>
+          <Teks warna="teksSekunder">
+            {kataKunci.trim()
+              ? `Tidak ada FAQ yang cocok dengan "${kataKunci.trim()}".`
+              : 'Belum ada FAQ. Tambahkan yang pertama lewat tombol Tambah FAQ di atas.'}
+          </Teks>
+        )}
+        {!memuat && !galatMuat && daftar !== null && daftar.length > 0 && kataKunci.trim() !== '' && (
+          <Teks gaya="keterangan" warna="teksSekunder">
+            {daftar.length} FAQ ditemukan
+          </Teks>
         )}
         {!memuat &&
           !galatMuat &&
@@ -179,7 +185,11 @@ export default function KelolaFaq() {
                 </View>
                 {menghapus !== faq.idFaq && (
                   <View style={styles.aksi}>
-                    <TombolIkon ikon={Pencil} label={`Ubah ${faq.pertanyaan}`} onPress={() => mulaiUbah(faq)} />
+                    <TombolIkon
+                      ikon={Pencil}
+                      label={`Ubah ${faq.pertanyaan}`}
+                      onPress={() => mulaiUbah(faq)}
+                    />
                     <TombolIkon
                       ikon={Trash}
                       label={`Hapus ${faq.pertanyaan}`}
@@ -193,42 +203,6 @@ export default function KelolaFaq() {
               </View>
             </View>
           ))}
-
-        {/* I-13-05 */}
-        <View style={styles.formulir}>
-          <Teks gaya="label">{diedit ? 'Ubah FAQ' : 'Tambah FAQ'}</Teks>
-          <IsianTeks
-            label="Pertanyaan"
-            placeholder="Tulis pertanyaan…"
-            value={pertanyaan}
-            onChangeText={(teks) => {
-              setGalatSimpan(null);
-              setPertanyaan(teks);
-            }}
-          />
-          <AreaTeks
-            label="Jawaban"
-            placeholder="Tulis jawaban…"
-            value={jawaban}
-            onChangeText={(teks) => {
-              setGalatSimpan(null);
-              setJawaban(teks);
-            }}
-          />
-          <View style={styles.barisTombol}>
-            {diedit && (
-              <Tombol judul="Batal" varian="teks" onPress={kosongkanForm} disabled={menyimpan} />
-            )}
-            {/* I-13-06 */}
-            <Tombol
-              judul="Simpan FAQ"
-              onPress={() => void simpan()}
-              disabled={!valid}
-              memuat={menyimpan}
-              style={styles.tombolSimpan}
-            />
-          </View>
-        </View>
       </ScrollView>
     </View>
   );
@@ -239,6 +213,12 @@ const styles = StyleSheet.create({
   isi: { paddingHorizontal: jarak.md, paddingVertical: jarak.md, gap: jarak.sm },
   memuat: { marginTop: jarak.xl },
   tengah: { alignItems: 'center', gap: jarak.sm },
+  barisDaftar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: jarak.sm,
+  },
   kartu: {
     backgroundColor: warna.kartu,
     borderColor: warna.garis,
@@ -251,18 +231,6 @@ const styles = StyleSheet.create({
   teksKartu: { flex: 1, gap: jarak.xxs },
   aksi: { flexDirection: 'row', gap: jarak.xs },
   aksiMemuat: { marginLeft: jarak.sm },
-  formulir: {
-    marginTop: jarak.md,
-    padding: jarak.md,
-    gap: jarak.sm,
-    backgroundColor: warna.kartu,
-    borderColor: warna.garis,
-    borderWidth: ukuran.garis,
-    borderRadius: sudut.lg,
-    borderCurve: 'continuous',
-  },
-  barisTombol: { flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center' },
-  tombolSimpan: { flex: 1 },
   ikon: {
     width: ukuran.tinggiKontrol / 2,
     height: ukuran.tinggiKontrol / 2,

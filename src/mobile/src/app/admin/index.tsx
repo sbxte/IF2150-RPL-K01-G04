@@ -1,6 +1,7 @@
 import { useRouter } from 'expo-router';
 import Calendar from 'lucide-react-native/icons/calendar';
 import CircleQuestionMark from 'lucide-react-native/icons/circle-question-mark';
+import Inbox from 'lucide-react-native/icons/inbox';
 import LogOut from 'lucide-react-native/icons/log-out';
 import MessageSquare from 'lucide-react-native/icons/message-square';
 import Server from 'lucide-react-native/icons/server';
@@ -19,6 +20,7 @@ import { KepalaBeranda } from '@/views/beranda/KepalaBeranda';
 const MENU: ItemMenu[] = [
   { ikon: Calendar, judul: 'Jadwal Konsultan', keterangan: 'Tambah dan ubah slot', tujuan: '/admin/jadwal' },
   { ikon: CircleQuestionMark, judul: 'Kelola FAQ', keterangan: 'Tambah, ubah, hapus', tujuan: '/admin/faq' },
+  { ikon: Inbox, judul: 'Pertanyaan Masuk', keterangan: 'Jawab atau hapus', tujuan: '/admin/pertanyaan' },
   { ikon: MessageSquare, judul: 'Umpan Balik', keterangan: 'Tanggapi masukan', tujuan: '/admin/umpan-balik' },
   { ikon: Server, judul: 'Status Server', keterangan: 'Pantau uptime', tujuan: '/admin/status' },
 ];

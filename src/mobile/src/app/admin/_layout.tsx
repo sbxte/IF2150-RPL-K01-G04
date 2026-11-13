@@ -2,7 +2,7 @@ import { Redirect, Stack } from 'expo-router';
 
 import { useSesi } from '@/lib/sesi';
 
-/** Administrator navigation: Beranda Administrator and the four management screens. */
+/** Administrator navigation: Beranda Administrator and the management screens. */
 export default function AdminLayout() {
   const { pengguna } = useSesi();
   // Signed out, or a Mahasiswa: I-01 sends them to the right place.
@@ -13,6 +13,8 @@ export default function AdminLayout() {
       <Stack.Screen name="index" />
       <Stack.Screen name="jadwal" />
       <Stack.Screen name="faq" />
+      <Stack.Screen name="faq-form" />
+      <Stack.Screen name="pertanyaan" />
       <Stack.Screen name="umpan-balik" />
       <Stack.Screen name="status" />
     </Stack>

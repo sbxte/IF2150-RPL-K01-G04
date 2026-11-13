@@ -3,7 +3,8 @@
  *
  * Mirrors `FAQController` (C-30) and `PengajuanPertanyaan` (C-13) on the
  * backend, which already implements Algo-017 (search), Algo-026 (input
- * validation) and Algo-030 with Q-015/Q-035/Q-036/Q-037/Q-040.
+ * validation) and Algo-030 with Q-015/Q-035/Q-036/Q-037/Q-040. The
+ * administrator view of submissions is an addition (M9 B.1 no. 9).
  */
 import { api } from './client';
 
@@ -43,4 +44,26 @@ export function hapusFaq(idFaq: string) {
 /** `FAQController.kirimPertanyaan(isi)` — Q-040. Mahasiswa only. */
 export function ajukanPertanyaan(isi: string) {
   return api.post<{ ok: true; idPertanyaan: string }>('/api/questions', { isi });
+}
+
+/** A `pengajuan_pertanyaan` row plus the student's name (C-13, admin view). */
+export type Pertanyaan = {
+  idPertanyaan: string;
+  isiPertanyaan: string;
+  nama: string;
+  /** NULL for rows stored before the column existed. */
+  waktuPengajuan: string | null;
+};
+
+/** Administrator — submitted questions, newest first (M9 B.1 no. 9). */
+export async function ambilPertanyaan(): Promise<Pertanyaan[]> {
+  const respons = await api.get<{ pertanyaan: Pertanyaan[] }>('/api/questions');
+  return respons.pertanyaan;
+}
+
+/** Administrator — delete a submitted question (M9 B.1 no. 9). */
+export function hapusPertanyaan(idPertanyaan: string) {
+  return api.delete<{ ok: true; idPertanyaan: string }>(
+    `/api/questions/${encodeURIComponent(idPertanyaan)}`,
+  );
 }

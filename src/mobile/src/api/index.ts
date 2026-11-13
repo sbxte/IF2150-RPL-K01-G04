@@ -13,9 +13,12 @@ export {
 export {
   ajukanPertanyaan,
   ambilFaq,
+  ambilPertanyaan,
   hapusFaq,
+  hapusPertanyaan,
   tambahFaq,
   ubahFaq,
   type Faq,
+  type Pertanyaan,
 } from './faq';
 export { hapusSesi, keluar, pulihkanSesi, simpanSesi, type Pengguna, type Peran } from './sesi';
