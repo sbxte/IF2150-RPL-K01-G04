@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest';
-import { gabungkanJadwal } from '../src/lib/kalender';
+import { bandingkanMulai, gabungkanJadwal } from '../src/lib/kalender';
 import { buatEventKalenderMock } from '../src/lib/google';
 
 describe('KalenderGabungan.gabungkanJadwal — Algo-011', () => {
@@ -99,5 +99,32 @@ describe('Google Calendar mock — rentang waktu', () => {
       '2031-06-01T12:00:00.000Z',
     );
     expect(events).toEqual([]);
+  });
+});
+
+describe('bandingkanMulai — urutan acara sepanjang hari', () => {
+  // Review on #27: sorting with Date.parse alone interleaves wrongly, because an
+  // all-day `YYYY-MM-DD` parses as UTC midnight while a timed event carries an
+  // offset. A 09:00 WIB event is 02:00 UTC, so it sorted before its own day.
+  test('acara sepanjang hari mendahului acara berjam pada hari yang sama', () => {
+    const sepanjangHari = '2031-06-01';
+    const berjam = '2031-06-01T09:00:00+07:00';
+    expect(bandingkanMulai(sepanjangHari, berjam)).toBeLessThan(0);
+  });
+
+  test('acara berjam tetap terurut menurut waktunya', () => {
+    expect(bandingkanMulai('2031-06-01T09:00:00+07:00', '2031-06-01T13:00:00+07:00')).toBeLessThan(0);
+  });
+
+  test('gabungkanJadwal menempatkan sepanjang hari sebelum sesi pagi di hari itu', () => {
+    const hasil = gabungkanJadwal(
+      [{ summary: 'Libur', start: { date: '2031-06-01' }, end: { date: '2031-06-02' } }],
+      [{ waktu: '2031-06-01T09:00:00+07:00', waktuSelesai: '2031-06-01T10:00:00+07:00', status: 'terpesan' }],
+    );
+    expect(hasil.map((e) => e.judul)).toEqual(['Libur', 'Sesi konsultasi']);
+  });
+
+  test('nilai waktu yang tidak valid tidak merusak urutan', () => {
+    expect(Number.isFinite(bandingkanMulai('bukan tanggal', '2031-06-01'))).toBe(true);
   });
 });

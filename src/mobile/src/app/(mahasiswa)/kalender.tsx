@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useFocusEffect } from 'expo-router';
+import { useCallback, useMemo, useState } from 'react';
 import { ScrollView, StyleSheet, View, Pressable } from 'react-native';
 import CalendarDays from 'lucide-react-native/icons/calendar-days';
 import RefreshCw from 'lucide-react-native/icons/refresh-cw';
@@ -58,11 +59,15 @@ export default function Kalender() {
     }
   }, [minggu]);
 
-  useEffect(() => {
-    // Deferred so the effect body itself never reaches a setState synchronously.
-    const timer = setTimeout(() => void muat(), 0);
-    return () => clearTimeout(timer);
-  }, [muat]);
+  // Reload whenever the screen regains focus, not just on mount: a session booked
+  // from I-07 must appear here without remounting. Deferred so the effect body
+  // never reaches a setState synchronously.
+  useFocusEffect(
+    useCallback(() => {
+      const timer = setTimeout(() => void muat(), 0);
+      return () => clearTimeout(timer);
+    }, [muat]),
+  );
 
   const eventsHariIni = useMemo(
     () => events.filter((event) => eventPadaTanggal(event, hariDipilih)),
