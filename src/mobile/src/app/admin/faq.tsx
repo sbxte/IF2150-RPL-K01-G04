@@ -1,13 +1,21 @@
-import { useFocusEffect, useRouter } from 'expo-router';
-import Pencil from 'lucide-react-native/icons/pencil';
-import Plus from 'lucide-react-native/icons/plus';
-import Trash from 'lucide-react-native/icons/trash';
-import { useCallback, useRef, useState } from 'react';
-import { ActivityIndicator, Alert, Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { useFocusEffect, useRouter } from "expo-router";
+import Inbox from "lucide-react-native/icons/inbox";
+import Pencil from "lucide-react-native/icons/pencil";
+import Plus from "lucide-react-native/icons/plus";
+import Trash from "lucide-react-native/icons/trash";
+import { useCallback, useRef, useState } from "react";
+import {
+  ActivityIndicator,
+  Alert,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  View,
+} from "react-native";
 
-import { ambilFaq, hapusFaq, type Faq } from '@/api';
-import { AppBar, Banner, IsianTeks, Teks, Tombol } from '@/components';
-import { jarak, sudut, ukuran, warna } from '@/theme';
+import { ambilFaq, hapusFaq, type Faq } from "@/api";
+import { AppBar, Banner, IsianTeks, Teks, Tombol } from "@/components";
+import { jarak, sudut, ukuran, warna } from "@/theme";
 
 /** Jeda pencarian setelah pengguna berhenti mengetik. */
 const JEDA_CARI_MS = 300;
@@ -50,7 +58,7 @@ export default function KelolaFaq() {
   const [menghapus, setMenghapus] = useState<string | null>(null);
   // I-13-07: shown when delete fails (UC-07 alternative scenario 1).
   const [galatHapus, setGalatHapus] = useState<string | null>(null);
-  const [kataKunci, setKataKunci] = useState('');
+  const [kataKunci, setKataKunci] = useState("");
   const permintaanTerakhir = useRef(0);
 
   // `FAQController.tampilkanFAQ()` / `cariFAQ(kataKunci)` -> GET /api/faq,
@@ -71,7 +79,9 @@ export default function KelolaFaq() {
     } catch {
       if (ke !== permintaanTerakhir.current) return;
       setDaftar(null);
-      setGalatMuat('FAQ gagal dimuat. Periksa koneksi internet, lalu coba lagi.');
+      setGalatMuat(
+        "FAQ gagal dimuat. Periksa koneksi internet, lalu coba lagi.",
+      );
       setMemuat(false);
     }
   }, []);
@@ -95,24 +105,28 @@ export default function KelolaFaq() {
 
   // M9 B.1 no. 11: adding and editing share one form view.
   const tambahBaru = () => {
-    router.push('/admin/faq-form');
+    router.push("/admin/faq-form");
   };
 
   // I-13-03: open the form with the chosen FAQ.
   const mulaiUbah = (faq: Faq) => {
     router.push({
-      pathname: '/admin/faq-form',
-      params: { idFaq: faq.idFaq, pertanyaan: faq.pertanyaan, jawaban: faq.jawaban },
+      pathname: "/admin/faq-form",
+      params: {
+        idFaq: faq.idFaq,
+        pertanyaan: faq.pertanyaan,
+        jawaban: faq.jawaban,
+      },
     });
   };
 
   // I-13-04: confirm, then `FAQController.hapusFAQ` (Q-037).
   const konfirmasiHapus = (faq: Faq) => {
-    Alert.alert('Hapus FAQ', `"${faq.pertanyaan}" akan dihapus permanen.`, [
-      { text: 'Batal', style: 'cancel' },
+    Alert.alert("Hapus FAQ", `"${faq.pertanyaan}" akan dihapus permanen.`, [
+      { text: "Batal", style: "cancel" },
       {
-        text: 'Hapus',
-        style: 'destructive',
+        text: "Hapus",
+        style: "destructive",
         onPress: () => void hapus(faq),
       },
     ]);
@@ -125,7 +139,7 @@ export default function KelolaFaq() {
       await hapusFaq(faq.idFaq);
       await muat(true, kataKunci);
     } catch {
-      setGalatHapus('FAQ gagal dihapus. Silakan coba lagi.');
+      setGalatHapus("FAQ gagal dihapus. Silakan coba lagi.");
     } finally {
       setMenghapus(null);
     }
@@ -133,45 +147,81 @@ export default function KelolaFaq() {
 
   return (
     <View style={styles.layar}>
-      <AppBar judul="Kelola FAQ" onKembali={() => router.back()} varian="gelap" />
+      <AppBar
+        judul="Kelola FAQ"
+        onKembali={() => router.back()}
+        varian="gelap"
+      />
 
-      <ScrollView contentContainerStyle={styles.isi} keyboardShouldPersistTaps="handled">
+      <ScrollView
+        contentContainerStyle={styles.isi}
+        keyboardShouldPersistTaps="handled"
+      >
         {/* I-13-07 */}
         {galatHapus && <Banner jenis="galat">{galatHapus}</Banner>}
 
+        {/* I-13-02 */}
+        <View style={styles.kepalaDaftar}>
+          <View style={styles.aksiDaftar}>
+            {/* M9 B.1 no. 9: the incoming-question queue lives here instead of a fifth I-03 tile. */}
+            <Tombol
+              judul="Pertanyaan Masuk"
+              varian="sekunder"
+              ikon={Inbox}
+              onPress={() => router.push("/admin/pertanyaan")}
+              style={styles.tombolAksi}
+            />
+            <Tombol
+              judul="Tambah FAQ"
+              varian="sekunder"
+              ikon={Plus}
+              onPress={tambahBaru}
+              style={styles.tombolAksi}
+            />
+          </View>
+        </View>
+
         {/* M9 B.1 no. 10: keyword filter, reusing Q-015. */}
         <IsianTeks
-          label="Cari FAQ"
-          placeholder="Ketik kata kunci…"
+          label="Daftar FAQ"
+          placeholder="Cari FAQ..."
           value={kataKunci}
           onChangeText={setKataKunci}
           autoCorrect={false}
         />
-
-        {/* I-13-02 */}
-        <View style={styles.barisDaftar}>
-          <Teks gaya="label">Daftar FAQ</Teks>
-          <Tombol judul="Tambah FAQ" varian="sekunder" ikon={Plus} onPress={tambahBaru} />
-        </View>
-        {memuat && <ActivityIndicator size="large" color={warna.merah} style={styles.memuat} />}
+        {memuat && (
+          <ActivityIndicator
+            size="large"
+            color={warna.merah}
+            style={styles.memuat}
+          />
+        )}
         {galatMuat && (
           <View style={styles.tengah}>
             <Teks warna="teksSekunder">{galatMuat}</Teks>
-            <Tombol judul="Coba Lagi" varian="sekunder" onPress={() => void muat(true, kataKunci)} />
+            <Tombol
+              judul="Coba Lagi"
+              varian="sekunder"
+              onPress={() => void muat(true, kataKunci)}
+            />
           </View>
         )}
         {!memuat && !galatMuat && daftar !== null && daftar.length === 0 && (
           <Teks warna="teksSekunder">
             {kataKunci.trim()
               ? `Tidak ada FAQ yang cocok dengan "${kataKunci.trim()}".`
-              : 'Belum ada FAQ. Tambahkan yang pertama lewat tombol Tambah FAQ di atas.'}
+              : "Belum ada FAQ. Tambahkan yang pertama lewat tombol Tambah FAQ di atas."}
           </Teks>
         )}
-        {!memuat && !galatMuat && daftar !== null && daftar.length > 0 && kataKunci.trim() !== '' && (
-          <Teks gaya="keterangan" warna="teksSekunder">
-            {daftar.length} FAQ ditemukan
-          </Teks>
-        )}
+        {!memuat &&
+          !galatMuat &&
+          daftar !== null &&
+          daftar.length > 0 &&
+          kataKunci.trim() !== "" && (
+            <Teks gaya="keterangan" warna="teksSekunder">
+              {daftar.length} FAQ ditemukan
+            </Teks>
+          )}
         {!memuat &&
           !galatMuat &&
           daftar?.map((faq) => (
@@ -198,7 +248,11 @@ export default function KelolaFaq() {
                   </View>
                 )}
                 {menghapus === faq.idFaq && (
-                  <ActivityIndicator size="small" color={warna.merah} style={styles.aksiMemuat} />
+                  <ActivityIndicator
+                    size="small"
+                    color={warna.merah}
+                    style={styles.aksiMemuat}
+                  />
                 )}
               </View>
             </View>
@@ -210,32 +264,33 @@ export default function KelolaFaq() {
 
 const styles = StyleSheet.create({
   layar: { flex: 1, backgroundColor: warna.latar },
-  isi: { paddingHorizontal: jarak.md, paddingVertical: jarak.md, gap: jarak.sm },
-  memuat: { marginTop: jarak.xl },
-  tengah: { alignItems: 'center', gap: jarak.sm },
-  barisDaftar: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+  isi: {
+    paddingHorizontal: jarak.md,
+    paddingVertical: jarak.md,
     gap: jarak.sm,
   },
+  memuat: { marginTop: jarak.xl },
+  tengah: { alignItems: "center", gap: jarak.sm },
+  kepalaDaftar: { gap: jarak.sm },
+  aksiDaftar: { flexDirection: "row", gap: jarak.sm },
+  tombolAksi: { flex: 1, paddingHorizontal: jarak.sm },
   kartu: {
     backgroundColor: warna.kartu,
     borderColor: warna.garis,
     borderWidth: ukuran.garis,
     borderRadius: sudut.lg,
-    borderCurve: 'continuous',
+    borderCurve: "continuous",
     padding: jarak.md,
   },
-  kepala: { flexDirection: 'row', alignItems: 'flex-start', gap: jarak.sm },
+  kepala: { flexDirection: "row", alignItems: "flex-start", gap: jarak.sm },
   teksKartu: { flex: 1, gap: jarak.xxs },
-  aksi: { flexDirection: 'row', gap: jarak.xs },
+  aksi: { flexDirection: "row", gap: jarak.xs },
   aksiMemuat: { marginLeft: jarak.sm },
   ikon: {
     width: ukuran.tinggiKontrol / 2,
     height: ukuran.tinggiKontrol / 2,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     borderRadius: sudut.sm,
   },
 });
