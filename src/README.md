@@ -505,10 +505,11 @@ Status: `400` body tidak valid · `401` belum terautentikasi · `403` peran sala
 
 ### Tugas terjadwal
 
-Satu *cron trigger* `* * * * *` menjalankan:
+Tiga *cron trigger* berjalan dengan jadwal berbeda:
 
-- pengiriman afirmasi dan pengingat, mencatat notifikasi dan mengirim *push* Expo dalam batch maksimal 100 pesan, serta mengosongkan token yang dilaporkan `DeviceNotRegistered`
-- pemeriksaan *uptime* `server` (`<API_BASE_URL>/health`, Worker menjawab) dan `db` (`<API_BASE_URL>/health/db`, Worker dapat membaca D1), keduanya memerlukan `API_BASE_URL`. `db` *up* mengimplikasikan `server` *up*, sehingga `db` *down* adalah satu-satunya sinyal yang membawa informasi baru. Hanya status 2xx yang dihitung *up*.
+- `* * * * *` — pengiriman afirmasi dan pengingat: mencatat notifikasi dan mengirim *push* Expo dalam batch maksimal 100 pesan, serta mengosongkan token yang dilaporkan `DeviceNotRegistered`. Dijalankan setiap menit karena `waktu_kirim` dicocokkan persis pada menit tersebut.
+- `*/5 * * * *` — pemeriksaan *uptime* `server` (`<API_BASE_URL>/health`, Worker menjawab) dan `db` (`<API_BASE_URL>/health/db`, Worker dapat membaca D1), keduanya memerlukan `API_BASE_URL`. `db` *up* mengimplikasikan `server` *up*, sehingga `db` *down* adalah satu-satunya sinyal yang membawa informasi baru. Hanya status 2xx yang dihitung *up*.
+- `0 */12 * * *` — pembersihan basis data: `status_server` lebih dari 7 hari, `notifikasi` lebih dari 30 hari, dan sesi yang sudah berakhir atau melewati `BATAS_SESI`.
 
 Semua ini ada di handler `scheduled()`, bukan rute HTTP.
 
