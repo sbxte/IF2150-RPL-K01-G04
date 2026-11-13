@@ -610,7 +610,7 @@ export function tanggapiUmpanBalik(
 /* -------------------------------------------------------------------------- */
 
 /** Q-017 — latest check of one `jenis`. */
-export function statusTerakhir(db: Db, jenis: "website" | "server") {
+export function statusTerakhir(db: Db, jenis: "server" | "db") {
   return db
     .select({
       jenis: schema.statusServer.jenis,
@@ -623,10 +623,30 @@ export function statusTerakhir(db: Db, jenis: "website" | "server") {
     .limit(1);
 }
 
+/**
+ * Q-044 — the most recent checks across both services, newest first (I-15-05).
+ *
+ * `bersihkanDB` keeps `status_server` to 7 days, so this list is inherently
+ * bounded. It is served by `idx_status_waktu`: `ORDER BY waktu_cek DESC` cannot
+ * use `(jenis, waktu_cek)` because that index leads with `jenis`, and measured
+ * on ~4,000 rows the difference is 88 VM steps versus 48,000.
+ */
+export function riwayatStatus(db: Db, limit = 20) {
+  return db
+    .select({
+      jenis: schema.statusServer.jenis,
+      statusUptime: schema.statusServer.statusUptime,
+      waktuCek: schema.statusServer.waktuCek,
+    })
+    .from(schema.statusServer)
+    .orderBy(desc(schema.statusServer.waktuCek))
+    .limit(limit);
+}
+
 /** Q-018 — record one status check. */
 export function catatStatus(
   db: Db,
-  data: { jenis: "website" | "server"; statusUptime: boolean; waktuCek: string },
+  data: { jenis: "server" | "db"; statusUptime: boolean; waktuCek: string },
 ) {
   return db.insert(schema.statusServer).values(data);
 }

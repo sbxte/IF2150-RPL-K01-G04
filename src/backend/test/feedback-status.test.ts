@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, expect, test } from "vitest";
+import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 import app from "../src/index";
 import { buatDbUji, buatSesiUji } from "./harness";
 import { json, minta } from "./util";
@@ -128,8 +128,8 @@ describe("ServerStatusController (C-32) / Algo-020", () => {
   beforeEach(() => {
     ctx = buatDbUji(`
       INSERT INTO status_server (jenis, status_uptime, waktu_cek) VALUES
-        ('website', 1, '2031-01-01T00:00:00Z'),
-        ('website', 0, '2031-01-02T00:00:00Z'),
+        ('db', 1, '2031-01-01T00:00:00Z'),
+        ('db', 0, '2031-01-02T00:00:00Z'),
         ('server',  1, '2031-01-03T00:00:00Z');
     `);
     mhs = buatSesiUji(ctx.raw, { idPengguna: "mhs", peran: "mahasiswa", token: "tm" });
@@ -137,8 +137,8 @@ describe("ServerStatusController (C-32) / Algo-020", () => {
   afterEach(() => ctx.tutup());
 
   test("mengembalikan pemeriksaan terakhir untuk jenis tertentu (Q-017)", async () => {
-    const body = await json(await minta(app, ctx.D1, { path: "/api/status/website", token: mhs }));
-    expect(body.status).toMatchObject({ jenis: "website", statusUptime: false });
+    const body = await json(await minta(app, ctx.D1, { path: "/api/status/db", token: mhs }));
+    expect(body.status).toMatchObject({ jenis: "db", statusUptime: false });
     expect(body.status.waktuCek).toBe("2031-01-02T00:00:00Z");
   });
 
@@ -148,8 +148,151 @@ describe("ServerStatusController (C-32) / Algo-020", () => {
   });
 
   test("jenis tidak dikenal -> 422", async () => {
-    const res = await minta(app, ctx.D1, { path: "/api/status/database", token: mhs });
+    const res = await minta(app, ctx.D1, { path: "/api/status/website", token: mhs });
     expect(res.status).toBe(422);
+  });
+});
+
+describe("GET /api/status/history (I-15-05, Q-044)", () => {
+  let ctx: ReturnType<typeof buatDbUji>;
+  let mhs: string;
+
+  beforeEach(() => {
+    ctx = buatDbUji(`
+      INSERT INTO status_server (jenis, status_uptime, waktu_cek) VALUES
+        ('server', 1, '2031-01-01T00:00:00Z'),
+        ('db',     0, '2031-01-02T00:00:00Z'),
+        ('server', 1, '2031-01-03T00:00:00Z');
+    `);
+    mhs = buatSesiUji(ctx.raw, { idPengguna: "mhs", peran: "mahasiswa", token: "tm" });
+  });
+  afterEach(() => ctx.tutup());
+
+  test("mengembalikan riwayat terbaru lebih dulu", async () => {
+    const body = await json(await minta(app, ctx.D1, { path: "/api/status/history", token: mhs }));
+
+    expect(body.riwayat.map((r: any) => r.waktuCek)).toEqual([
+      "2031-01-03T00:00:00Z",
+      "2031-01-02T00:00:00Z",
+      "2031-01-01T00:00:00Z",
+    ]);
+    expect(body.riwayat[0]).toMatchObject({ jenis: "server", statusUptime: true });
+  });
+
+  test("bukan ditelan rute /:jenis", async () => {
+    // `/history` is registered first; otherwise `/:jenis` would 422 here.
+    const res = await minta(app, ctx.D1, { path: "/api/status/history", token: mhs });
+    expect(res.status).toBe(200);
+  });
+
+  test("?limit menjepit jumlah baris dan tidak melebihi batas", async () => {
+    const dua = await json(await minta(app, ctx.D1, { path: "/api/status/history?limit=2", token: mhs }));
+    expect(dua.riwayat).toHaveLength(2);
+    expect(dua.limit).toBe(2);
+
+    const besar = await json(await minta(app, ctx.D1, { path: "/api/status/history?limit=9999", token: mhs }));
+    expect(besar.limit).toBe(100);
+  });
+
+  test("daftar kosong bila belum ada pemeriksaan", async () => {
+    const ctx2 = buatDbUji();
+    const t = buatSesiUji(ctx2.raw, { idPengguna: "x", peran: "mahasiswa", token: "tx" });
+    const body = await json(await minta(app, ctx2.D1, { path: "/api/status/history", token: t }));
+    expect(body.riwayat).toEqual([]);
+    ctx2.tutup();
+  });
+});
+
+describe("POST /api/status/refresh (I-15 Periksa Sekarang)", () => {
+  let ctx: ReturnType<typeof buatDbUji>;
+  let admin: string;
+  let mhs: string;
+  let fetchAsli: typeof fetch;
+
+  beforeEach(() => {
+    ctx = buatDbUji();
+    admin = buatSesiUji(ctx.raw, { idPengguna: "adm", peran: "administrator", token: "ta" });
+    mhs = buatSesiUji(ctx.raw, { idPengguna: "mhs", peran: "mahasiswa", token: "tm" });
+    fetchAsli = globalThis.fetch;
+  });
+  afterEach(() => {
+    globalThis.fetch = fetchAsli;
+    vi.restoreAllMocks();
+    ctx.tutup();
+  });
+
+  /** Records what the route spent so the cost guard is observable. */
+  function tiruProbe(status = 200) {
+    const dipanggil: string[] = [];
+    globalThis.fetch = vi.fn(async (input: any) => {
+      dipanggil.push(String(input?.url ?? input));
+      return new Response("ok", { status });
+    }) as any;
+    return dipanggil;
+  }
+
+  test("menjalankan probe dan mengembalikan hasil segar", async () => {
+    const dipanggil = tiruProbe(200);
+
+    const res = await minta(app, ctx.D1, { method: "POST", path: "/api/status/refresh", token: admin });
+    expect(res.status).toBe(200);
+
+    const body = await json(res);
+    expect(body.diperiksa).toBe(true);
+    expect(new Set(dipanggil).size).toBe(2); // one per jenis
+    // Both rows exist and are up, read back from the table.
+    expect(body.status.server).toMatchObject({ jenis: "server", statusUptime: true });
+    expect(body.status.db).toMatchObject({ jenis: "db", statusUptime: true });
+  });
+
+  test("menolak mahasiswa: probe itu biaya keluar, bukan bacaan biasa", async () => {
+    const dipanggil = tiruProbe(200);
+    const res = await minta(app, ctx.D1, { method: "POST", path: "/api/status/refresh", token: mhs });
+    expect(res.status).toBe(403);
+    expect(dipanggil).toHaveLength(0);
+  });
+
+  test("menolak tanpa sesi", async () => {
+    const res = await minta(app, ctx.D1, { method: "POST", path: "/api/status/refresh" });
+    expect(res.status).toBe(401);
+  });
+
+  test("tidak memprobe ulang bila hasilnya masih segar (anti-loop)", async () => {
+    const dipanggil = tiruProbe(200);
+
+    // Two presses in a row: the second must reuse the first result.
+    await minta(app, ctx.D1, { method: "POST", path: "/api/status/refresh", token: admin });
+    expect(dipanggil).toHaveLength(2);
+
+    const kedua = await json(
+      await minta(app, ctx.D1, { method: "POST", path: "/api/status/refresh", token: admin }),
+    );
+    expect(kedua.diperiksa).toBe(false);
+    expect(dipanggil).toHaveLength(2); // unchanged: no new outbound requests
+  });
+
+  test("memprobe lagi setelah hasil lama melewati batas segar", async () => {
+    const dipanggil = tiruProbe(200);
+    await minta(app, ctx.D1, { method: "POST", path: "/api/status/refresh", token: admin });
+    expect(dipanggil).toHaveLength(2);
+
+    // Age both rows past PROBE_SEGAR_MS.
+    ctx.raw.exec("UPDATE status_server SET waktu_cek = datetime('now', '-5 minutes')");
+
+    const lagi = await json(
+      await minta(app, ctx.D1, { method: "POST", path: "/api/status/refresh", token: admin }),
+    );
+    expect(lagi.diperiksa).toBe(true);
+    expect(dipanggil).toHaveLength(4);
+  });
+
+  test("mencatat down ketika probe gagal", async () => {
+    tiruProbe(500);
+    const body = await json(
+      await minta(app, ctx.D1, { method: "POST", path: "/api/status/refresh", token: admin }),
+    );
+    expect(body.status.server).toMatchObject({ statusUptime: false });
+    expect(body.status.db).toMatchObject({ statusUptime: false });
   });
 });
 
