@@ -3,15 +3,29 @@ import app from "./index";
 import { buatDbUji, envUji } from "../test/harness";
 
 describe("GET /health", () => {
-  test("mengembalikan ok dan pemeriksaan status terakhir", async () => {
+  test("mengembalikan ok", async () => {
+    const ctx = buatDbUji();
+    const res = await app.fetch(
+      new Request("http://sehati.test/health"),
+      envUji(ctx.D1),
+      {} as ExecutionContext,
+    );
+    const body = (await res.json()) as any;
+    expect(body).toMatchObject({ ok: true });
+    ctx.tutup();
+  });
+});
+
+describe("GET /health/db", () => {
+  test("mengembalikan ok dan pemeriksaan db terakhir", async () => {
     const ctx = buatDbUji(`
       INSERT INTO status_server (jenis, status_uptime, waktu_cek) VALUES
-        ('website', 1, '2031-01-01T00:00:00Z'),
+        ('db', 1, '2031-01-01T00:00:00Z'),
         ('server',  1, '2031-01-02T00:00:00Z');
     `);
 
     const res = await app.fetch(
-      new Request("http://sehati.test/health"),
+      new Request("http://sehati.test/health/db"),
       envUji(ctx.D1),
       {} as ExecutionContext,
     );
@@ -19,14 +33,16 @@ describe("GET /health", () => {
     expect(res.status).toBe(200);
     const body = (await res.json()) as any;
     expect(body.ok).toBe(true);
-    expect(body.latest).toMatchObject({ jenis: "server", statusUptime: true });
+    // Filtered to jenis = 'db' so the (jenis, waktu_cek) index applies; the newer
+    // 'server' row is deliberately not returned.
+    expect(body.latest).toMatchObject({ jenis: "db", statusUptime: true });
     ctx.tutup();
   });
 
   test("ok walau belum ada pemeriksaan (latest null)", async () => {
     const ctx = buatDbUji();
     const res = await app.fetch(
-      new Request("http://sehati.test/health"),
+      new Request("http://sehati.test/health/db"),
       envUji(ctx.D1),
       {} as ExecutionContext,
     );

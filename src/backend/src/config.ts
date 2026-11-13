@@ -5,7 +5,8 @@
  */
 
 /** App session lifetime in ms (Algo-002: `waktu sekarang - sesi.waktu_login > BATAS_SESI`). */
-export const BATAS_SESI_MS = 30 * 24 * 60 * 60 * 1000; // 30 days
+export const BATAS_SESI_HARI = 30;
+export const BATAS_SESI_MS = BATAS_SESI_HARI * 24 * 60 * 60 * 1000; // 30 days in ms
 
 /** Domains whose local-part becomes `mahasiswa.nim` (Algo-001). */
 export const DOMAIN_KAMPUS = ["std.stei.itb.ac.id", "mahasiswa.itb.ac.id"] as const;
@@ -15,7 +16,7 @@ export const KONTEN_BAWAAN =
   "Hari ini kamu sudah melakukan yang terbaik. Tarik napas, dan beri dirimu ruang untuk beristirahat.";
 
 export type JenisReminder = "makan" | "tidur" | "olahraga";
-export type JenisStatus = "website" | "server";
+export type JenisStatus = "server" | "db";
 export type Peran = "mahasiswa" | "administrator";
 
 /**
@@ -33,7 +34,7 @@ export function modeDemoAktif(env: Env): boolean {
 }
 
 export const JENIS_REMINDER: readonly JenisReminder[] = ["makan", "tidur", "olahraga"];
-export const JENIS_STATUS: readonly JenisStatus[] = ["website", "server"];
+export const JENIS_STATUS: readonly JenisStatus[] = ["server", "db"];
 
 /** Push copy per `jenis` (Algo-007 `teksPengingat(jenis)`). */
 export const TEKS_PENGINGAT: Record<JenisReminder, string> = {
