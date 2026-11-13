@@ -229,17 +229,19 @@ Tabel B.2. Bukti Best Practices
 
 ### B.2.1 Profiling dan Optimasi
 
-Fitur yang diprofil: kueri daftar umpan balik dan kueri pemeriksaan status `GET /health/db`, keduanya membaca tabel yang tumbuh terus dan keduanya dipanggil berkala oleh *cron*.
+Fitur yang diprofil: kueri daftar umpan balik (`Q-016`, `Q-043`), yang dipanggil setiap layar I-11/I-14 dibuka.
 
 | Informasi | Keterangan |
 | --------- | ---------- |
-| Fitur / proses yang diprofil | `GET /health/db` (Algo-021, Q-017) dan `daftarUmpanBalik`/`umpanBalikMilik` (Q-016, Q-043) |
-| Alat | SQLite `EXPLAIN QUERY PLAN` dan *progress handler* untuk menghitung baris yang benar-benar dikunjungi, pada basis data 5.760 baris `status_server` (setara satu hari penuh dengan *cron* 2 baris/menit) dan 2.000 baris `umpan_balik` |
-| Temuan (sebelum) | `GET /health/db` menjalankan `SELECT * FROM status_server ORDER BY waktu_cek DESC LIMIT 1` tanpa filter `jenis`. Hanya ada indeks `(jenis, waktu_cek)`, dan kolom `jenis` tidak difilter, sehingga indeks tidak dapat dipakai untuk pengurutan: rencananya `SCAN status_server` dan SQLite harus memindai serta mengurutkan seluruh tabel sebelum mengambil satu baris. Terukur **51.852 langkah VM untuk satu baris hasil**, dan 0,474 ms per kueri. Karena *cron* memanggilnya dua kali per menit, biaya ini berulang sepanjang hari dan ikut menyebabkan kuota baca D1 gratis (5 juta baris/hari) terlampaui. |
-| Perbaikan | Menambahkan `WHERE jenis = ?` pada `/health/db` sehingga indeks `idx_status_jenis_waktu` dipakai untuk mencari langsung baris terbaru jenis tersebut. |
-| Hasil (sesudah) | Rencana berubah dari `SCAN status_server` menjadi `SEARCH status_server USING INDEX idx_status_jenis_waktu (jenis=?)`. Terukur **19 langkah VM** (turun ~2.700×) dan **0,002 ms per kueri** (turun ~240×). |
+| Fitur / proses yang diprofil | `daftarUmpanBalik` (Q-016) dan `umpanBalikMilik` (Q-043) |
+| Alat | SQLite `EXPLAIN QUERY PLAN` dan *progress handler* untuk menghitung baris yang benar-benar dikunjungi, pada basis data 2.000 baris `umpan_balik` |
+| Temuan (sebelum) | `daftarUmpanBalik` (Q-016) menjalankan `SCAN umpan_balik`, terlihat seperti pemindaian penuh yang mahal. Setelah diperiksa, rencana itu ternyata **bukan** masalah: `ORDER BY rowid DESC` sama dengan urutan fisik tabel, sehingga SQLite berjalan mundur dan berhenti begitu `LIMIT` terpenuhi — tidak ada tahap pengurutan sama sekali. |
+| Perbaikan | Tidak ada perubahan kueri. Yang diperbaiki adalah cara memilih indeks: menambahkan indeks pada `tanggapan` (godaan yang wajar untuk filter `?status=`) akan membuat SQLite memakai indeks itu lalu **membayar pengurutan**, sehingga lebih lambat daripada pemindaian terurut saat ini. Keputusan ini dicatat sebagai komentar di `queries.ts` agar tidak "dioptimalkan" kemudian. |
+| Hasil (sesudah) | `umpanBalikMilik` (Q-043) memakai `SEARCH umpan_balik USING INDEX idx_umpan_balik_mhs (id_mahasiswa=?)` dan hanya menyentuh baris milik satu mahasiswa. `daftarUmpanBalik` (Q-016) tetap `SCAN umpan_balik` tanpa pengurutan. Keduanya dinilai sudah memadai pada ukuran data sekarang. |
 
-Kedua kueri umpan balik juga diperiksa. `daftarUmpanBalik` (Q-016) memang `SCAN umpan_balik`, tetapi itu **bukan** masalah: `ORDER BY rowid DESC` sudah sama dengan urutan fisik tabel, sehingga SQLite berjalan mundur dan berhenti saat `LIMIT` terpenuhi — tidak ada pengurutan sama sekali. Penambahan indeks pada kolom `tanggapan` justru akan merugikan karena dapat memaksa pengurutan. `umpanBalikMilik` (Q-043) memakai `SEARCH umpan_balik USING INDEX idx_umpan_balik_mhs (id_mahasiswa=?)` dan hanya menyentuh baris milik satu mahasiswa. Keduanya dinilai sudah memadai, dan alasannya dicatat sebagai komentar di `queries.ts` agar tidak ada yang "mengoptimalkan" kueri yang sudah benar.
+Pemeriksaan juga dilakukan pada `GET /health/db` (`Algo-021`, `Q-017`), yang membaca tabel `status_server`. Kueri lama `SELECT * FROM status_server ORDER BY waktu_cek DESC LIMIT 1` tidak memfilter `jenis`, sehingga indeks `(jenis, waktu_cek)` tidak dapat dipakai dan rencananya menjadi `SCAN status_server`. Pada 4.032 baris (batas atas tabel dengan *cron* `*/5` dan retensi 7 hari) kueri itu mengunjungi **36.300 langkah VM**, sedangkan versi berfilter `WHERE jenis = ?` mengunjungi **19 langkah** dengan rencana `SEARCH ... USING INDEX idx_status_jenis_waktu`. Perbaikan ini dikerjakan di PR #25 dan **belum ada di `main`** saat dokumen ini ditulis, sehingga pengukuran dilakukan terpisah terhadap SQL-nya, bukan terhadap hasil *deploy*.
+
+Belum diklaim: apakah biaya tersebut benar-benar menyebabkan kuota baca D1 gratis terlampaui. Angka pemakaian dari dasbor Cloudflare tidak tersedia saat penulisan, jadi hubungan sebab-akibatnya tidak dapat dibuktikan dan sengaja tidak dinyatakan.
 
 ## B.3 Kendala dan Catatan Penting
 
