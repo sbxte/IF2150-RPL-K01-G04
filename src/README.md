@@ -491,6 +491,7 @@ Rujukan lengkap: [`backend/README.md`](./backend/README.md).
 | `GET` | `/api/feedback` | administrator |
 | `PUT` | `/api/feedback/:id/response` | administrator |
 | `GET` | `/api/status/:jenis` | semua |
+| `POST` | `/api/status/refresh` | administrator |
 | `GET` | `/health` | publik |
 
 Selain `/api/auth/google*` dan `/health`, semua rute memerlukan `Authorization: Bearer <token>`. Galat memakai satu amplop:
@@ -512,6 +513,12 @@ Tiga *cron trigger* berjalan dengan jadwal berbeda:
 - `0 */12 * * *` — pembersihan basis data: `status_server` lebih dari 7 hari, `notifikasi` lebih dari 30 hari, dan sesi yang sudah berakhir atau melewati `BATAS_SESI`.
 
 Semua ini ada di handler `scheduled()`, bukan rute HTTP.
+
+Selain jadwal di atas, Administrator dapat memicu pemeriksaan dari layar I-15 lewat
+`POST /api/status/refresh`. Rute ini menjalankan pemeriksaan yang sama dengan *cron* dan mengembalikan
+hasil terbaru, tetapi hanya untuk peran Administrator (rute ini membuat Worker melakukan permintaan keluar).
+Bila hasil terakhir masih lebih baru dari 30 detik, pemeriksaan dilewati dan respons memuat
+`diperiksa: false`, sehingga tombol tidak dapat dijadikan perulangan permintaan.
 
 ### Menambah endpoint
 
