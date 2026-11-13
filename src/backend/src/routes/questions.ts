@@ -7,7 +7,7 @@ import { auth, requireRole, type AppEnv } from "../middleware/auth";
 
 /**
  * PengajuanPertanyaan routes (C-30 `kirimPertanyaan`, UC-12). The administrator
- * list and delete are additions from M9 B.1 no. 9: the DPPL has no screen for
+ * list and delete are additions from M9 B.1 no. 11: the DPPL has no screen for
  * submitted questions, so I-10's "dikirim ke Administrator" had nowhere to go.
  */
 export const questionRoutes = new Hono<AppEnv>();
@@ -34,13 +34,21 @@ questionRoutes.post("/", requireRole("mahasiswa"), async (c) => {
   return c.json({ ok: true, idPertanyaan }, 201);
 });
 
-/** Administrator — submitted questions, newest first (M9 B.1 no. 9). */
+/**
+ * Administrator — submitted questions, newest first (M9 B.1 no. 11).
+ * `?q=` matches the question text or the student's name; `?sejak=`/`?sampai=`
+ * bound the submission time.
+ */
 questionRoutes.get("/", requireRole("administrator"), async (c) => {
-  const pertanyaan = await daftarPertanyaan(c.get("db"));
+  const pertanyaan = await daftarPertanyaan(c.get("db"), {
+    q: c.req.query("q"),
+    sejak: c.req.query("sejak"),
+    sampai: c.req.query("sampai"),
+  });
   return c.json({ pertanyaan });
 });
 
-/** Administrator — delete one submitted question (M9 B.1 no. 9). */
+/** Administrator — delete one submitted question (M9 B.1 no. 11). */
 questionRoutes.delete("/:id", requireRole("administrator"), async (c) => {
   const idPertanyaan = c.req.param("id");
   const hasil = await hapusPertanyaan(c.get("db"), idPertanyaan);

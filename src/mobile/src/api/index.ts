@@ -20,5 +20,6 @@ export {
   ubahFaq,
   type Faq,
   type Pertanyaan,
+  type UrutFaq,
 } from './faq';
 export { hapusSesi, keluar, pulihkanSesi, simpanSesi, type Pengguna, type Peran } from './sesi';

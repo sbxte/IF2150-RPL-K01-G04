@@ -49,7 +49,7 @@ describe('ambilFaq', () => {
   test('kata kunci kosong diperlakukan seperti tanpa pencarian (Algo-017)', async () => {
     const fetchTiruan = tiruFetch(200, { faq: [] });
 
-    await ambilFaq('   ');
+    await ambilFaq({ q: '   ' });
 
     expect(panggilan(fetchTiruan).url).toBe(`${URL_API}/api/faq`);
   });
@@ -58,10 +58,26 @@ describe('ambilFaq', () => {
     const daftar = [{ idFaq: 'faq-1', pertanyaan: 'Apa itu?', jawaban: 'Ini.' }];
     const fetchTiruan = tiruFetch(200, { faq: daftar });
 
-    await expect(ambilFaq('cara 100%?')).resolves.toEqual(daftar);
+    await expect(ambilFaq({ q: 'cara 100%?' })).resolves.toEqual(daftar);
 
-    expect(panggilan(fetchTiruan).url).toBe(`${URL_API}/api/faq?q=cara%20100%25%3F`);
+    expect(panggilan(fetchTiruan).url).toBe(`${URL_API}/api/faq?q=cara+100%25%3F`);
     expect(panggilan(fetchTiruan).opsi.method).toBe('GET');
+  });
+
+  test('urutan selain A–Z dikirim sebagai ?urut= (B.1 no. 12)', async () => {
+    const fetchTiruan = tiruFetch(200, { faq: [] });
+
+    await ambilFaq({ q: 'sesi', urut: 'baru' });
+
+    expect(panggilan(fetchTiruan).url).toBe(`${URL_API}/api/faq?q=sesi&urut=baru`);
+  });
+
+  test('urutan A–Z (bawaan) tidak dikirim (B.1 no. 12)', async () => {
+    const fetchTiruan = tiruFetch(200, { faq: [] });
+
+    await ambilFaq({ urut: 'az' });
+
+    expect(panggilan(fetchTiruan).url).toBe(`${URL_API}/api/faq`);
   });
 });
 
@@ -108,7 +124,7 @@ describe('hapusFaq', () => {
 });
 
 describe('ambilPertanyaan', () => {
-  test('mengirim GET /api/questions dan mengurai amplopnya (B.1 no. 9)', async () => {
+  test('mengirim GET /api/questions dan mengurai amplopnya (B.1 no. 11)', async () => {
     const daftar = [
       {
         idPertanyaan: 'p-1',
@@ -125,10 +141,32 @@ describe('ambilPertanyaan', () => {
     expect(url).toBe(`${URL_API}/api/questions`);
     expect(opsi.method).toBe('GET');
   });
+
+  test('kata kunci dan batas waktu dikirim sebagai query (B.1 no. 11)', async () => {
+    const fetchTiruan = tiruFetch(200, { pertanyaan: [] });
+
+    await ambilPertanyaan({
+      q: 'sari',
+      sejak: '2026-11-01T00:00:00.000Z',
+      sampai: '2026-11-30T23:59:59.999Z',
+    });
+
+    expect(panggilan(fetchTiruan).url).toBe(
+      `${URL_API}/api/questions?q=sari&sejak=2026-11-01T00%3A00%3A00.000Z&sampai=2026-11-30T23%3A59%3A59.999Z`,
+    );
+  });
+
+  test('parameter kosong tidak dikirim', async () => {
+    const fetchTiruan = tiruFetch(200, { pertanyaan: [] });
+
+    await ambilPertanyaan({ q: '   ' });
+
+    expect(panggilan(fetchTiruan).url).toBe(`${URL_API}/api/questions`);
+  });
 });
 
 describe('hapusPertanyaan', () => {
-  test('mengirim DELETE ke /api/questions/:id tanpa isi (B.1 no. 9)', async () => {
+  test('mengirim DELETE ke /api/questions/:id tanpa isi (B.1 no. 11)', async () => {
     const fetchTiruan = tiruFetch(200, { ok: true, idPertanyaan: 'p 1' });
 
     await expect(hapusPertanyaan('p 1')).resolves.toEqual({ ok: true, idPertanyaan: 'p 1' });

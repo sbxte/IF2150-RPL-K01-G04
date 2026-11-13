@@ -4,9 +4,34 @@ import { useCallback, useRef, useState } from 'react';
 import { ActivityIndicator, Alert, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 
 import { ambilPertanyaan, hapusPertanyaan, tambahFaq, type Pertanyaan } from '@/api';
-import { AppBar, AreaTeks, Banner, Teks, Tombol } from '@/components';
+import { AppBar, AreaTeks, Banner, Chip, IsianTeks, Teks, Tombol } from '@/components';
 import { formatRelatif } from '@/lib/waktu';
 import { jarak, sudut, ukuran, warna } from '@/theme';
+
+/** Jeda pencarian setelah pengguna berhenti mengetik (same as I-13). */
+const JEDA_CARI_MS = 300;
+
+/** Time window chosen with the chips above the list (M9 B.1 no. 11). */
+type Rentang = 'semua' | 'hari' | 'minggu' | 'lama';
+
+const RENTANG: { nilai: Rentang; label: string }[] = [
+  { nilai: 'semua', label: 'Semua' },
+  { nilai: 'hari', label: 'Hari ini' },
+  { nilai: 'minggu', label: '7 hari terakhir' },
+  { nilai: 'lama', label: 'Lebih dari 7 hari' },
+];
+
+/** Maps a chip choice to the ISO bounds understood by `GET /api/questions`. */
+function batasWaktu(rentang: Rentang): { sejak?: string; sampai?: string } {
+  if (rentang === 'semua') return {};
+  if (rentang === 'hari') {
+    const awal = new Date();
+    awal.setHours(0, 0, 0, 0);
+    return { sejak: awal.toISOString() };
+  }
+  const semingguLalu = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
+  return rentang === 'minggu' ? { sejak: semingguLalu } : { sampai: semingguLalu };
+}
 
 /** Delete button on a question card. */
 function TombolHapus({ label, onPress }: { label: string; onPress: () => void }) {
@@ -24,7 +49,7 @@ function TombolHapus({ label, onPress }: { label: string; onPress: () => void })
 }
 
 /**
- * Questions submitted through I-10, for the administrator (M9 B.1 no. 9).
+ * Questions submitted through I-10, for the administrator (M9 B.1 no. 11).
  *
  * A separate screen outside I-01..I-15 so I-13 stays focused on FAQ management.
  * Answering happens inline: saving creates the FAQ (Q-035) and then deletes the
@@ -37,40 +62,51 @@ export default function PertanyaanMasuk() {
   const [galatMuat, setGalatMuat] = useState<string | null>(null);
   const [galatAksi, setGalatAksi] = useState<string | null>(null);
   const [menghapus, setMenghapus] = useState<string | null>(null);
+  const [kataKunci, setKataKunci] = useState('');
+  const [rentang, setRentang] = useState<Rentang>('semua');
   // Question whose answer form is open, and the answer being written.
   const [dijawab, setDijawab] = useState<Pertanyaan | null>(null);
   const [jawaban, setJawaban] = useState('');
   const [menyimpan, setMenyimpan] = useState(false);
   const permintaanTerakhir = useRef(0);
 
-  const muat = useCallback(async (tampilkanMemuat: boolean) => {
-    const ke = ++permintaanTerakhir.current;
-    if (tampilkanMemuat) {
-      setMemuat(true);
-      setGalatMuat(null);
-    }
-    try {
-      const hasil = await ambilPertanyaan();
-      if (ke === permintaanTerakhir.current) {
-        setDaftar(hasil);
+  const muat = useCallback(
+    async (tampilkanMemuat: boolean, kunci: string, rentangWaktu: Rentang) => {
+      const ke = ++permintaanTerakhir.current;
+      if (tampilkanMemuat) {
+        setMemuat(true);
+        setGalatMuat(null);
+      }
+      try {
+        const hasil = await ambilPertanyaan({ q: kunci, ...batasWaktu(rentangWaktu) });
+        if (ke === permintaanTerakhir.current) {
+          setDaftar(hasil);
+          setMemuat(false);
+        }
+      } catch {
+        if (ke !== permintaanTerakhir.current) return;
+        setDaftar(null);
+        setGalatMuat('Pertanyaan masuk gagal dimuat. Periksa koneksi internet, lalu coba lagi.');
         setMemuat(false);
       }
-    } catch {
-      if (ke !== permintaanTerakhir.current) return;
-      setDaftar(null);
-      setGalatMuat('Pertanyaan masuk gagal dimuat. Periksa koneksi internet, lalu coba lagi.');
-      setMemuat(false);
-    }
-  }, []);
+    },
+    [],
+  );
 
+  // Reloads on focus and after every change; the keyword debounces the request
+  // like I-13 does (M9 B.1 no. 11).
   useFocusEffect(
     useCallback(() => {
-      void muat(false);
-      // Ignore a request still in flight when the screen loses focus or unmounts.
+      const timer = setTimeout(
+        () => void muat(true, kataKunci, rentang),
+        kataKunci.trim() ? JEDA_CARI_MS : 0,
+      );
       return () => {
+        clearTimeout(timer);
+        // Ignore a request still in flight when the screen loses focus or unmounts.
         permintaanTerakhir.current++;
       };
-    }, [muat]),
+    }, [muat, kataKunci, rentang]),
   );
 
   const mulaiJawab = (p: Pertanyaan) => {
@@ -84,7 +120,7 @@ export default function PertanyaanMasuk() {
     setJawaban('');
   };
 
-  // B.1 no. 9: the answer becomes an FAQ, then the submission is consumed.
+  // B.1 no. 11: the answer becomes an FAQ, then the submission is consumed.
   const simpanJawaban = async () => {
     const sumber = dijawab;
     if (menyimpan || !sumber || jawaban.trim().length === 0) return;
@@ -102,7 +138,7 @@ export default function PertanyaanMasuk() {
         );
       }
       batalJawab();
-      await muat(false);
+      await muat(false, kataKunci, rentang);
     } catch {
       setGalatAksi('FAQ gagal disimpan. Silakan coba lagi.');
     } finally {
@@ -128,13 +164,15 @@ export default function PertanyaanMasuk() {
     try {
       await hapusPertanyaan(p.idPertanyaan);
       if (dijawab?.idPertanyaan === p.idPertanyaan) batalJawab();
-      await muat(false);
+      await muat(false, kataKunci, rentang);
     } catch {
       setGalatAksi('Pertanyaan gagal dihapus. Silakan coba lagi.');
     } finally {
       setMenghapus(null);
     }
   };
+
+  const adaFilter = kataKunci.trim() !== '' || rentang !== 'semua';
 
   return (
     <View style={styles.layar}>
@@ -146,15 +184,54 @@ export default function PertanyaanMasuk() {
           Pertanyaan yang dikirim Mahasiswa lewat formulir pengajuan akan muncul di sini.
         </Teks>
 
+        {/* M9 B.1 no. 11: keyword search over the question text and student name. */}
+        <IsianTeks
+          label="Cari pertanyaan"
+          placeholder="Ketik pertanyaan atau nama…"
+          value={kataKunci}
+          onChangeText={setKataKunci}
+          autoCorrect={false}
+        />
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.barisChip}
+          keyboardShouldPersistTaps="handled"
+        >
+          {RENTANG.map((r) => (
+            <Chip
+              key={r.nilai}
+              label={r.label}
+              selected={rentang === r.nilai}
+              onPress={() => setRentang(r.nilai)}
+            />
+          ))}
+        </ScrollView>
+
         {memuat && <ActivityIndicator size="large" color={warna.merah} style={styles.memuat} />}
         {galatMuat && (
           <View style={styles.tengah}>
             <Teks warna="teksSekunder">{galatMuat}</Teks>
-            <Tombol judul="Coba Lagi" varian="sekunder" onPress={() => void muat(true)} />
+            <Tombol
+              judul="Coba Lagi"
+              varian="sekunder"
+              onPress={() => void muat(true, kataKunci, rentang)}
+            />
           </View>
         )}
         {!memuat && !galatMuat && daftar !== null && daftar.length === 0 && (
-          <Teks warna="teksSekunder">Belum ada pertanyaan masuk.</Teks>
+          <Teks warna="teksSekunder">
+            {kataKunci.trim()
+              ? `Tidak ada pertanyaan yang cocok dengan "${kataKunci.trim()}".`
+              : rentang !== 'semua'
+                ? 'Tidak ada pertanyaan pada rentang waktu ini.'
+                : 'Belum ada pertanyaan masuk.'}
+          </Teks>
+        )}
+        {!memuat && !galatMuat && daftar !== null && daftar.length > 0 && adaFilter && (
+          <Teks gaya="keterangan" warna="teksSekunder">
+            {daftar.length} pertanyaan ditemukan
+          </Teks>
         )}
         {!memuat &&
           !galatMuat &&
@@ -222,6 +299,7 @@ export default function PertanyaanMasuk() {
 const styles = StyleSheet.create({
   layar: { flex: 1, backgroundColor: warna.latar },
   isi: { paddingHorizontal: jarak.md, paddingVertical: jarak.md, gap: jarak.sm },
+  barisChip: { gap: jarak.xs, paddingVertical: jarak.xxs },
   memuat: { marginTop: jarak.xl },
   tengah: { alignItems: 'center', gap: jarak.sm },
   kartu: {

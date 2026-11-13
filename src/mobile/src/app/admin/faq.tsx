@@ -13,12 +13,19 @@ import {
   View,
 } from "react-native";
 
-import { ambilFaq, hapusFaq, type Faq } from "@/api";
-import { AppBar, Banner, IsianTeks, Teks, Tombol } from "@/components";
+import { ambilFaq, hapusFaq, type Faq, type UrutFaq } from "@/api";
+import { AppBar, Banner, Chip, IsianTeks, Teks, Tombol } from "@/components";
 import { jarak, sudut, ukuran, warna } from "@/theme";
 
 /** Jeda pencarian setelah pengguna berhenti mengetik. */
 const JEDA_CARI_MS = 300;
+
+/** Sort choices above the list (M9 B.1 no. 12). */
+const URUTAN: { nilai: UrutFaq; label: string }[] = [
+  { nilai: "az", label: "A–Z" },
+  { nilai: "za", label: "Z–A" },
+  { nilai: "baru", label: "Terbaru" },
+];
 
 /** Icon button on an FAQ card (I-13-03 ubah, I-13-04 hapus). */
 function TombolIkon({
@@ -47,8 +54,9 @@ function TombolIkon({
  * I-13 Kelola FAQ (`FAQView`), UC-07.
  *
  * The list reloads on focus and after every change, and is filtered by the
- * keyword above it (M9 B.1 no. 10). Adding and editing happen on their own view
- * (M9 B.1 no. 11): the top button and the pencil icon open `faq-form`.
+ * keyword above it (M9 B.1 no. 12), with the sort chips right below it. Adding
+ * and editing happen on their own view (M9 B.1 no. 13): the top button and the
+ * pencil icon open `faq-form`.
  */
 export default function KelolaFaq() {
   const router = useRouter();
@@ -59,39 +67,44 @@ export default function KelolaFaq() {
   // I-13-07: shown when delete fails (UC-07 alternative scenario 1).
   const [galatHapus, setGalatHapus] = useState<string | null>(null);
   const [kataKunci, setKataKunci] = useState("");
+  const [urut, setUrut] = useState<UrutFaq>("az");
   const permintaanTerakhir = useRef(0);
 
   // `FAQController.tampilkanFAQ()` / `cariFAQ(kataKunci)` -> GET /api/faq,
-  // again each time the screen gains focus or the keyword changes.
+  // again each time the screen gains focus, the keyword changes, or the sort
+  // chip changes (M9 B.1 no. 12).
   // `tampilkanMemuat` is false for background reloads.
-  const muat = useCallback(async (tampilkanMemuat: boolean, kunci: string) => {
-    const ke = ++permintaanTerakhir.current;
-    if (tampilkanMemuat) {
-      setMemuat(true);
-      setGalatMuat(null);
-    }
-    try {
-      const hasil = await ambilFaq(kunci);
-      if (ke === permintaanTerakhir.current) {
-        setDaftar(hasil);
+  const muat = useCallback(
+    async (tampilkanMemuat: boolean, kunci: string, urutan: UrutFaq) => {
+      const ke = ++permintaanTerakhir.current;
+      if (tampilkanMemuat) {
+        setMemuat(true);
+        setGalatMuat(null);
+      }
+      try {
+        const hasil = await ambilFaq({ q: kunci, urut: urutan });
+        if (ke === permintaanTerakhir.current) {
+          setDaftar(hasil);
+          setMemuat(false);
+        }
+      } catch {
+        if (ke !== permintaanTerakhir.current) return;
+        setDaftar(null);
+        setGalatMuat(
+          "FAQ gagal dimuat. Periksa koneksi internet, lalu coba lagi.",
+        );
         setMemuat(false);
       }
-    } catch {
-      if (ke !== permintaanTerakhir.current) return;
-      setDaftar(null);
-      setGalatMuat(
-        "FAQ gagal dimuat. Periksa koneksi internet, lalu coba lagi.",
-      );
-      setMemuat(false);
-    }
-  }, []);
+    },
+    [],
+  );
 
-  // Also re-runs when `kataKunci` changes (the callback identity changes while
-  // focused), which gives the search its 300 ms debounce.
+  // Also re-runs when `kataKunci`/`urut` change (the callback identity changes
+  // while focused), which gives the search its 300 ms debounce.
   useFocusEffect(
     useCallback(() => {
       const timer = setTimeout(
-        () => void muat(true, kataKunci),
+        () => void muat(true, kataKunci, urut),
         kataKunci.trim() ? JEDA_CARI_MS : 0,
       );
       return () => {
@@ -100,10 +113,10 @@ export default function KelolaFaq() {
         // loses focus, or it unmounts.
         permintaanTerakhir.current++;
       };
-    }, [muat, kataKunci]),
+    }, [muat, kataKunci, urut]),
   );
 
-  // M9 B.1 no. 11: adding and editing share one form view.
+  // M9 B.1 no. 13: adding and editing share one form view.
   const tambahBaru = () => {
     router.push("/admin/faq-form");
   };
@@ -137,13 +150,15 @@ export default function KelolaFaq() {
     setMenghapus(faq.idFaq);
     try {
       await hapusFaq(faq.idFaq);
-      await muat(true, kataKunci);
+      await muat(true, kataKunci, urut);
     } catch {
       setGalatHapus("FAQ gagal dihapus. Silakan coba lagi.");
     } finally {
       setMenghapus(null);
     }
   };
+
+  const adaFilter = kataKunci.trim() !== "" || urut !== "az";
 
   return (
     <View style={styles.layar}>
@@ -163,7 +178,7 @@ export default function KelolaFaq() {
         {/* I-13-02 */}
         <View style={styles.kepalaDaftar}>
           <View style={styles.aksiDaftar}>
-            {/* M9 B.1 no. 9: the incoming-question queue lives here instead of a fifth I-03 tile. */}
+            {/* M9 B.1 no. 11: the incoming-question queue lives here instead of a fifth I-03 tile. */}
             <Tombol
               judul="Pertanyaan Masuk"
               varian="sekunder"
@@ -181,7 +196,7 @@ export default function KelolaFaq() {
           </View>
         </View>
 
-        {/* M9 B.1 no. 10: keyword filter, reusing Q-015. */}
+        {/* M9 B.1 no. 12: keyword filter, reusing Q-015, plus the sort chips. */}
         <IsianTeks
           label="Daftar FAQ"
           placeholder="Cari FAQ..."
@@ -189,6 +204,21 @@ export default function KelolaFaq() {
           onChangeText={setKataKunci}
           autoCorrect={false}
         />
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.barisChip}
+          keyboardShouldPersistTaps="handled"
+        >
+          {URUTAN.map((u) => (
+            <Chip
+              key={u.nilai}
+              label={u.label}
+              selected={urut === u.nilai}
+              onPress={() => setUrut(u.nilai)}
+            />
+          ))}
+        </ScrollView>
         {memuat && (
           <ActivityIndicator
             size="large"
@@ -202,7 +232,7 @@ export default function KelolaFaq() {
             <Tombol
               judul="Coba Lagi"
               varian="sekunder"
-              onPress={() => void muat(true, kataKunci)}
+              onPress={() => void muat(true, kataKunci, urut)}
             />
           </View>
         )}
@@ -217,7 +247,7 @@ export default function KelolaFaq() {
           !galatMuat &&
           daftar !== null &&
           daftar.length > 0 &&
-          kataKunci.trim() !== "" && (
+          adaFilter && (
             <Teks gaya="keterangan" warna="teksSekunder">
               {daftar.length} FAQ ditemukan
             </Teks>
@@ -270,6 +300,7 @@ const styles = StyleSheet.create({
     gap: jarak.sm,
   },
   memuat: { marginTop: jarak.xl },
+  barisChip: { gap: jarak.xs, paddingVertical: jarak.xxs },
   tengah: { alignItems: "center", gap: jarak.sm },
   kepalaDaftar: { gap: jarak.sm },
   aksiDaftar: { flexDirection: "row", gap: jarak.sm },

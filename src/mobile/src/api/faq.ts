@@ -4,7 +4,7 @@
  * Mirrors `FAQController` (C-30) and `PengajuanPertanyaan` (C-13) on the
  * backend, which already implements Algo-017 (search), Algo-026 (input
  * validation) and Algo-030 with Q-015/Q-035/Q-036/Q-037/Q-040. The
- * administrator view of submissions is an addition (M9 B.1 no. 9).
+ * administrator view of submissions is an addition (M9 B.1 no. 11).
  */
 import { api } from './client';
 
@@ -15,14 +15,21 @@ export type Faq = {
   jawaban: string;
 };
 
+/** Sort order for the administrator FAQ list (M9 B.1 no. 12). */
+export type UrutFaq = 'az' | 'za' | 'baru';
+
 /**
  * `FAQController.tampilkanFAQ()` / `cariFAQ(kataKunci)` — Algo-017.
  * A blank keyword lists every FAQ (the route treats it the same as no `?q=`).
+ * `urut` is an addition from M9 B.1 no. 12; the default A–Z is left implicit.
  */
-export async function ambilFaq(kataKunci?: string): Promise<Faq[]> {
-  const kunci = kataKunci?.trim();
-  const jalur = kunci ? `/api/faq?q=${encodeURIComponent(kunci)}` : '/api/faq';
-  const respons = await api.get<{ faq: Faq[] }>(jalur);
+export async function ambilFaq(opsi: { q?: string; urut?: UrutFaq } = {}): Promise<Faq[]> {
+  const parameter = new URLSearchParams();
+  const kunci = opsi.q?.trim();
+  if (kunci) parameter.set('q', kunci);
+  if (opsi.urut && opsi.urut !== 'az') parameter.set('urut', opsi.urut);
+  const kueri = parameter.toString();
+  const respons = await api.get<{ faq: Faq[] }>(kueri ? `/api/faq?${kueri}` : '/api/faq');
   return respons.faq;
 }
 
@@ -55,13 +62,27 @@ export type Pertanyaan = {
   waktuPengajuan: string | null;
 };
 
-/** Administrator — submitted questions, newest first (M9 B.1 no. 9). */
-export async function ambilPertanyaan(): Promise<Pertanyaan[]> {
-  const respons = await api.get<{ pertanyaan: Pertanyaan[] }>('/api/questions');
+/**
+ * Administrator — submitted questions, newest first (M9 B.1 no. 11).
+ * `q` matches the question text or the student's name; `sejak`/`sampai` are
+ * ISO timestamps bounding `waktu_pengajuan`.
+ */
+export async function ambilPertanyaan(
+  opsi: { q?: string; sejak?: string; sampai?: string } = {},
+): Promise<Pertanyaan[]> {
+  const parameter = new URLSearchParams();
+  const kunci = opsi.q?.trim();
+  if (kunci) parameter.set('q', kunci);
+  if (opsi.sejak) parameter.set('sejak', opsi.sejak);
+  if (opsi.sampai) parameter.set('sampai', opsi.sampai);
+  const kueri = parameter.toString();
+  const respons = await api.get<{ pertanyaan: Pertanyaan[] }>(
+    kueri ? `/api/questions?${kueri}` : '/api/questions',
+  );
   return respons.pertanyaan;
 }
 
-/** Administrator — delete a submitted question (M9 B.1 no. 9). */
+/** Administrator — delete a submitted question (M9 B.1 no. 11). */
 export function hapusPertanyaan(idPertanyaan: string) {
   return api.delete<{ ok: true; idPertanyaan: string }>(
     `/api/questions/${encodeURIComponent(idPertanyaan)}`,

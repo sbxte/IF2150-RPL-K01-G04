@@ -60,7 +60,7 @@ export default function Faq() {
     setMemuat(true);
     setGalat(null);
     try {
-      const hasil = await ambilFaq(kunci);
+      const hasil = await ambilFaq({ q: kunci });
       if (ke === permintaanTerakhir.current) {
         setDaftar(hasil);
         setMemuat(false);

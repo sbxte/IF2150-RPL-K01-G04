@@ -152,6 +152,8 @@ export const faq = sqliteTable("faq", {
   idFaq: text("id_faq").primaryKey(),
   pertanyaan: text("pertanyaan").notNull(),
   jawaban: text("jawaban").notNull(),
+  // When the FAQ was added; NULL for rows created before this column existed.
+  waktuDibuat: text("waktu_dibuat"),
 });
 
 // PengajuanPertanyaan (C-13)

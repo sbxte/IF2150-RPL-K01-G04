@@ -8,7 +8,7 @@ import { AppBar, AreaTeks, Banner, IsianTeks, Tombol } from '@/components';
 import { jarak, warna } from '@/theme';
 
 /**
- * I-13-05 Formulir FAQ (`FAQView`), UC-07, as its own view (M9 B.1 no. 11).
+ * I-13-05 Formulir FAQ (`FAQView`), UC-07, as its own view (M9 B.1 no. 13).
  *
  * "Tambah FAQ" opens it blank; the pencil icon on I-13 opens it with `idFaq`
  * and the current text. Saving returns to the list, which reloads on focus.

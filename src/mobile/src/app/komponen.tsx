@@ -7,7 +7,7 @@ import { useState, type ReactNode } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaInsetsContext, useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { AppBar, AreaTeks, Banner, IsianTeks, Lencana, MenuTile, Teks, Tombol } from '@/components';
+import { AppBar, AreaTeks, Banner, Chip, IsianTeks, Lencana, MenuTile, Teks, Tombol } from '@/components';
 import { jarak, teks, warna, type GayaTeks } from '@/theme';
 
 /**
@@ -70,6 +70,14 @@ export default function Komponen() {
           </Banner>
           <Banner jenis="sukses">Sesi konsultasi berhasil dipesan.</Banner>
           <Banner jenis="info">Afirmasi harian dikirim setiap pukul 07.00.</Banner>
+        </Bagian>
+
+        <Bagian judul="Chip">
+          <View style={styles.baris}>
+            <Chip label="A–Z" selected />
+            <Chip label="Z–A" />
+            <Chip label="Terbaru" />
+          </View>
         </Bagian>
 
         <Bagian judul="Lencana">
