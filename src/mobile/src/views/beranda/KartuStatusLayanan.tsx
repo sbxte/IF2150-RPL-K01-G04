@@ -23,7 +23,7 @@ const BARIS: { kunci: keyof StatusLayanan; label: string; ikon: LucideIcon }[] =
   { kunci: 'db', label: 'Basis data', ikon: Database },
 ];
 
-/** I-03-03: Website and Server with an Up/Down badge each. */
+/** I-03-03: Server and Basis data with an Up/Down badge each. */
 export function KartuStatusLayanan({ status, onBuka, onCobaLagi }: Props) {
   if (status.status === 'memuat') {
     return (

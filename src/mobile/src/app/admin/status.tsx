@@ -50,10 +50,10 @@ export default function StatusServer() {
             <Teks gaya="keterangan" style={styles.ringkasan}>
               {(() => {
                 const terakhir = waktuCekTerakhir(status.data);
-                // The cron probes every minute; an empty table is normal right after a deploy.
+                // The cron probes every 5 minutes; an empty table is normal right after a deploy.
                 return terakhir
-                  ? `Pemeriksaan terakhir ${formatRelatif(terakhir)}. Diperiksa otomatis setiap menit.`
-                  : 'Belum ada pemeriksaan. Pemeriksaan berjalan otomatis setiap menit setelah Worker aktif.';
+                  ? `Pemeriksaan terakhir ${formatRelatif(terakhir)}. Diperiksa otomatis setiap 5 menit.`
+                  : 'Belum ada pemeriksaan. Pemeriksaan berjalan otomatis setiap 5 menit setelah Worker aktif.';
               })()}
             </Teks>
 

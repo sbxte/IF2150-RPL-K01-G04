@@ -38,7 +38,7 @@ const META: Record<JenisStatus, { judul: string; keterangan: string }> = {
  * Maps one service's latest check to display values.
  *
  * A `null` check means "never probed yet", not "down": the cron writes a row
- * every minute, so an empty table is expected on a fresh deployment and must
+ * every 5 minutes, so an empty table is expected on a fresh deployment and must
  * not be presented as an outage.
  */
 export function barisStatus(jenis: JenisStatus, cek: CekStatus): BarisStatus {
