@@ -267,7 +267,7 @@ Pengiriman dijadwalkan oleh tiga Cloudflare Cron Trigger di `src/backend/wrangle
 | Cron | Tugas |
 |---|---|
 | `* * * * *` | `jalankanAfirmasi` (Algo-005) dan `jalankanPengingat` (Algo-007): mencari jadwal yang jatuh tempo pada menit ini (jam WIB "HH:MM"), mencatat baris `notifikasi` dengan sumbernya (`id_affirmation` atau `id_reminder`), lalu mengirim *push*. |
-| `*/5 * * * *` | `jalankanCekStatus` (Algo-021): memeriksa status *website* dan server, lalu mencatat `status_server`. |
+| `*/5 * * * *` | `jalankanCekStatus` (Algo-021): memeriksa `server` (`/health`) dan `db` (`/health/db`), lalu mencatat `status_server`. |
 | `0 */12 * * *` | Pembersihan data: `status_server` lebih dari 7 hari, `notifikasi` lebih dari 30 hari, dan sesi yang sudah berakhir atau melewati `BATAS_SESI_HARI`. |
 
 Judul *push* adalah "Afirmasi hari ini" atau "Pengingat kesehatan". Pengiriman memakai Expo Push API dalam batch maksimal 100 pesan, dan token yang ditolak dengan `DeviceNotRegistered` dikosongkan. Bila penerima belum punya token, notifikasi tetap tercatat dan hanya ditulis ke log. Untuk memeriksa hasilnya, lihat tabel `notifikasi` lewat `bun run db:studio:local`; baris dengan `id_affirmation` berasal dari afirmasi, sedangkan `id_reminder` dari pengingat.
@@ -365,6 +365,8 @@ Catatan:
 - Isi Beranda dari data *seed*: Mahasiswa Uji belum punya afirmasi (kartu afirmasi berisi ajakan mengatur waktu di I-04) dan sudah punya satu sesi terpesan besok pukul 11.00 WIB. Di Beranda Administrator, kartu status layanan menampilkan "Belum dicek" sampai *cron* pertama berjalan. `wrangler dev` tidak menjalankan *cron* sendiri; jalankan `bun run dev -- --test-scheduled`, lalu picu pemeriksaan dengan `curl "http://localhost:8787/__scheduled?cron=*+*+*+*+*"` (dengan `API_BASE_URL` terisi agar hasilnya Up).
 - FAQ, pencarian, dan pengajuan pertanyaan (I-09/I-10/I-13): tab FAQ memuat enam entri *seed*; kolom pencarian memicu pencarian 300 ms setelah berhenti mengetik (`GET /api/faq?q=`), dan kartu "Tidak menemukan jawaban?" disorot saat tidak ada hasil, dengan tombol yang membuka formulir pengajuan pertanyaan (maks. 500 karakter, `POST /api/questions`). Untuk kelola FAQ, masuk sebagai Administrator lalu buka Administrator → FAQ: tombol "Tambah FAQ" di atas daftar membuka layar formulir tersendiri, kolom "Cari FAQ" menyaring daftar lewat `GET /api/faq?q=` (jeda 300 ms), chip urutan A–Z (bawaan), Z–A, dan Terbaru mengirim `?urut=` (`waktu_dibuat`), ikon pensil membuka formulir yang sama dengan isi FAQ terpilih, dan hapus lewat ikon tong sampah dengan konfirmasi (`POST`/`PUT`/`DELETE /api/faq`). Tombol "Pertanyaan Masuk" di layar Kelola FAQ membuka antrean pertanyaan yang dikirim Mahasiswa lewat I-10, terbaru lebih dulu beserta nama dan waktu pengajuan (`GET /api/questions`); kolom "Cari pertanyaan" mencari isi pertanyaan atau nama Mahasiswa lewat `?q=` (jeda 300 ms) dan chip waktu (Semua, Hari ini, 7 hari terakhir, Lebih dari 7 hari) mengirim `?sejak=`/`?sampai=`. "Jawab" membuka formulir jawaban di bawah kartu, dan menyimpannya membuat FAQ (`POST /api/faq`) sekaligus menghapus pertanyaannya (`DELETE /api/questions/:id`), sedangkan "Hapus" menghapus tanpa menjawab.
 - Afirmasi harian (I-04): dari Beranda, ketuk kartu "Afirmasi hari ini" untuk membuka pengaturannya. Waktu dipilih lewat chip cepat atau pemilih waktu bawaan, lalu "Simpan Setelan" (`PUT /api/affirmation/time`). Toggle "Kirim afirmasi harian" yang dimatikan menghapus jadwal (`DELETE /api/affirmation`) sehingga kartu Beranda kembali menampilkan ajakan mengatur afirmasi; menyalakannya kembali membuat jadwal pada waktu yang sedang dipilih.
+- Umpan balik (I-11, **khusus Mahasiswa**): dari Beranda Mahasiswa buka menu **Umpan Balik**, tulis masukan lalu **Kirim Umpan Balik**. Administrator tidak dapat mengirim umpan balik (`POST /api/feedback` dijaga `requireRole("mahasiswa")`, sehingga membalas 403); peran Administrator memakai I-14 untuk menanggapi. Masukan yang sudah dikirim muncul di daftar "Umpan balik sebelumnya" dengan lencana **Belum ditanggapi**. Rute `GET /api/feedback/mine` hanya mengembalikan milik pemanggil, sehingga tiap mahasiswa hanya melihat masukannya sendiri.
+- Menanggapi umpan balik (I-14): login sebagai Administrator, buka **Umpan Balik** dari Beranda Administrator, lalu pakai chip **Semua / Belum ditanggapi / Ditanggapi**. Penyaringan dilakukan di server lewat `?status=belum|sudah`, jadi jumlah per chip tetap benar meski daftar dipotong `limit`. Isi kolom **Tanggapan** pada kartu lalu **Kirim Tanggapan**; lencana berubah menjadi **Ditanggapi** dan balasan itu langsung tampil pada daftar I-11 milik mahasiswa.
 - Login Google sungguhan memerlukan `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, dan `GOOGLE_REDIRECT_URI` (bagian 4). Google tidak menerima alamat IP LAN sebagai *redirect URI*, sehingga login Google dari ponsel memerlukan backend yang sudah di-*deploy* atau *tunnel* ber-HTTPS.
 
 ## 7. Modul dan Pembagian Tugas
@@ -492,9 +494,12 @@ Rujukan lengkap: [`backend/README.md`](./backend/README.md).
 | `GET` | `/api/questions?q=&sejak=&sampai=` | administrator |
 | `DELETE` | `/api/questions/:id` | administrator |
 | `POST` | `/api/feedback` | mahasiswa |
-| `GET` | `/api/feedback` | administrator |
+| `GET` | `/api/feedback/mine` | mahasiswa |
+| `GET` | `/api/feedback?status=belum\|sudah` | administrator |
 | `PUT` | `/api/feedback/:id/response` | administrator |
 | `GET` | `/api/status/:jenis` | semua |
+| `GET` | `/api/status/history?limit=` | semua |
+| `POST` | `/api/status/refresh` | administrator |
 | `GET` | `/health` | publik |
 
 Selain `/api/auth/google*` dan `/health`, semua rute memerlukan `Authorization: Bearer <token>`. Galat memakai satu amplop:
@@ -509,12 +514,18 @@ Status: `400` body tidak valid · `401` belum terautentikasi · `403` peran sala
 
 ### Tugas terjadwal
 
-Satu *cron trigger* `* * * * *` menjalankan:
+Tiga *cron trigger* berjalan dengan jadwal berbeda:
 
-- pengiriman afirmasi dan pengingat, mencatat notifikasi dan mengirim *push* Expo dalam batch maksimal 100 pesan, serta mengosongkan token yang dilaporkan `DeviceNotRegistered`
-- pemeriksaan *uptime* `website` dan `server` (memerlukan `API_BASE_URL`)
+- `* * * * *` — pengiriman afirmasi dan pengingat: mencatat notifikasi dan mengirim *push* Expo dalam batch maksimal 100 pesan, serta mengosongkan token yang dilaporkan `DeviceNotRegistered`. Dijalankan setiap menit karena `waktu_kirim` dicocokkan persis pada menit tersebut.
+- `*/5 * * * *` — pemeriksaan *uptime* `server` (`<API_BASE_URL>/health`, Worker menjawab) dan `db` (`<API_BASE_URL>/health/db`, Worker dapat membaca D1), keduanya memerlukan `API_BASE_URL`. `db` *up* mengimplikasikan `server` *up*, sehingga `db` *down* adalah satu-satunya sinyal yang membawa informasi baru. Hanya status 2xx yang dihitung *up*.
+- `0 */12 * * *` — pembersihan basis data: `status_server` lebih dari 7 hari, `notifikasi` lebih dari 30 hari, dan sesi yang sudah berakhir atau melewati `BATAS_SESI`.
 
 Semua ini ada di handler `scheduled()`, bukan rute HTTP.
+
+Selain jadwal di atas, Administrator dapat memicu pemeriksaan dari layar I-15 lewat `POST /api/status/refresh`.
+Rute ini menjalankan pemeriksaan yang sama dengan *cron* dan mengembalikan hasil terbaru, tetapi hanya untuk peran
+Administrator karena rute ini membuat Worker melakukan permintaan keluar. Bila hasil terakhir masih lebih baru dari
+30 detik, pemeriksaan dilewati dan respons memuat `diperiksa: false`, sehingga tombol tidak dapat dijadikan perulangan.
 
 ### Menambah endpoint
 

@@ -6,6 +6,9 @@ export { api, ApiError, aturSaatTidakTerautentikasi, aturToken, KODE_KLIEN } fro
 export {
   ambilStatus,
   ambilStatusLayanan,
+  ambilRiwayatStatus,
+  periksaStatusSekarang,
+  type RiwayatStatus,
   type CekStatus,
   type JenisStatus,
   type StatusLayanan,
@@ -23,3 +26,12 @@ export {
   type UrutFaq,
 } from './faq';
 export { hapusSesi, keluar, pulihkanSesi, simpanSesi, type Pengguna, type Peran } from './sesi';
+export {
+  ambilUmpanBalik,
+  ambilUmpanBalikSaya,
+  kirimUmpanBalik,
+  tanggapiUmpanBalik,
+  type StatusUmpanBalik,
+  type UmpanBalikAdmin,
+  type UmpanBalikSaya,
+} from './umpan-balik';
