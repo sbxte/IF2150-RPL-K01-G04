@@ -55,3 +55,22 @@ export async function periksaStatusSekarang(): Promise<{
 
   return { status: { server: ke(status.server), db: ke(status.db) }, diperiksa };
 }
+
+/** One past check (I-15-05). */
+export type RiwayatStatus = {
+  jenis: JenisStatus;
+  statusUptime: boolean;
+  /** ISO 8601 */
+  waktuCek: string;
+};
+
+/**
+ * I-15-05: recent checks across both services, newest first (`Q-044`).
+ * Bounded by the backend's 7-day retention; `limit` is clamped there too.
+ */
+export async function ambilRiwayatStatus(limit = 20): Promise<RiwayatStatus[]> {
+  const { riwayat } = await api.get<{ riwayat: RiwayatStatus[] }>(
+    `/api/status/history?limit=${limit}`,
+  );
+  return riwayat;
+}

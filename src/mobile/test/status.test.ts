@@ -2,7 +2,7 @@ import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 
 // Imported from the module, not the `@/api` barrel (see client.test.ts).
 import { ApiError } from '@/api/client';
-import { ambilStatus, ambilStatusLayanan, periksaStatusSekarang } from '@/api/status';
+import { ambilRiwayatStatus, ambilStatus, ambilStatusLayanan, periksaStatusSekarang } from '@/api/status';
 
 beforeEach(() => {
   vi.stubEnv('EXPO_PUBLIC_API_URL', 'http://sehati.test');
@@ -109,5 +109,36 @@ describe('periksaStatusSekarang', () => {
     });
     const hasil = await periksaStatusSekarang();
     expect(hasil.status.db).toBeNull();
+  });
+});
+
+describe('ambilRiwayatStatus', () => {
+  test('meminta /api/status/history dengan limit dan mengurai amplopnya', async () => {
+    const baris = [
+      { jenis: 'server', statusUptime: true, waktuCek: '2026-11-13T03:00:00Z' },
+      { jenis: 'db', statusUptime: false, waktuCek: '2026-11-13T02:55:00Z' },
+    ];
+    const f = vi.fn(async () => new Response(JSON.stringify({ riwayat: baris, limit: 20 }), { status: 200 }));
+    vi.stubGlobal('fetch', f);
+
+    await expect(ambilRiwayatStatus()).resolves.toEqual(baris);
+
+    const [url] = f.mock.calls[0] as unknown as [string];
+    expect(url).toBe('http://sehati.test/api/status/history?limit=20');
+  });
+
+  test('meneruskan limit lain', async () => {
+    const f = vi.fn(async () => new Response(JSON.stringify({ riwayat: [], limit: 5 }), { status: 200 }));
+    vi.stubGlobal('fetch', f);
+
+    await ambilRiwayatStatus(5);
+
+    const [url] = f.mock.calls[0] as unknown as [string];
+    expect(url).toBe('http://sehati.test/api/status/history?limit=5');
+  });
+
+  test('daftar kosong bukan galat', async () => {
+    vi.stubGlobal('fetch', vi.fn(async () => new Response(JSON.stringify({ riwayat: [], limit: 20 }), { status: 200 })));
+    await expect(ambilRiwayatStatus()).resolves.toEqual([]);
   });
 });

@@ -3,17 +3,18 @@ import Server from 'lucide-react-native/icons/server';
 import { useState } from 'react';
 import { ActivityIndicator, ScrollView, StyleSheet, View } from 'react-native';
 
-import { ambilStatusLayanan, periksaStatusSekarang } from '@/api';
-import { AppBar, Lencana, Teks, Tombol } from '@/components';
+import { ambilRiwayatStatus, ambilStatusLayanan, periksaStatusSekarang } from '@/api';
+import { AppBar, Banner, Lencana, Teks, Tombol } from '@/components';
 import { useMuatan } from '@/lib/muatan';
 import { semuaBarisStatus, waktuCekTerakhir } from '@/lib/status';
-import { formatRelatif } from '@/lib/waktu';
+import { formatJam, formatRelatif } from '@/lib/waktu';
 import { jarak, sudut, warna } from '@/theme';
 
 /** I-15 Status Server (`ServerStatusController.tampilkanStatusServer`, Algo-020). */
 export default function StatusServer() {
   const router = useRouter();
   const [status, muatUlang] = useMuatan(ambilStatusLayanan);
+  const [riwayat] = useMuatan(ambilRiwayatStatus);
   const [memeriksa, setMemeriksa] = useState(false);
   // `true` when the backend reused a check newer than its freshness window.
   const [dilewati, setDilewati] = useState(false);
@@ -77,6 +78,34 @@ export default function StatusServer() {
               })()}
             </Teks>
 
+            {/* I-15-04: the availability target from KNF-01, for context only. */}
+            <Banner jenis="info">Target ketersediaan minimal 90% (KNF-01).</Banner>
+
+            {/* I-15-05: recent checks, newest first (Q-044). */}
+            <Teks gaya="isiTebal">Riwayat pemeriksaan</Teks>
+            {riwayat.status === 'memuat' && (
+              <ActivityIndicator color={warna.merah} accessibilityLabel="Memuat riwayat" />
+            )}
+            {riwayat.status === 'galat' && <Teks warna="teksSekunder">{riwayat.pesan}</Teks>}
+            {riwayat.status === 'siap' && riwayat.data.length === 0 && (
+              <Teks warna="teksSekunder">Belum ada riwayat pemeriksaan.</Teks>
+            )}
+            {riwayat.status === 'siap' &&
+              riwayat.data.map((baris, i) => (
+                <View key={`${baris.waktuCek}-${baris.jenis}-${i}`} style={styles.barisRiwayat}>
+                  <Teks gaya="keterangan" style={styles.judul}>
+                    {formatJam(baris.waktuCek)}
+                  </Teks>
+                  <Teks gaya="keterangan" style={styles.judul}>
+                    {baris.jenis === 'db' ? 'Basis data' : 'Server'}
+                  </Teks>
+                  <Lencana
+                    label={baris.statusUptime ? 'Up' : 'Down'}
+                    jenis={baris.statusUptime ? 'sukses' : 'merah'}
+                  />
+                </View>
+              ))}
+
             {/* I-15 "Periksa Sekarang": asks the backend to probe now (Algo-021). */}
             <Tombol
               judul="Periksa Sekarang"
@@ -111,4 +140,5 @@ const styles = StyleSheet.create({
   judul: { flex: 1 },
   ringkasan: { textAlign: 'center' },
   tombolKiri: { alignSelf: 'flex-start', paddingHorizontal: 0 },
+  barisRiwayat: { flexDirection: 'row', alignItems: 'center', gap: jarak.xs },
 });
