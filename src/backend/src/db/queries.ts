@@ -216,6 +216,11 @@ export function buatAfirmasi(
     waktuKirim: data.waktu,
   });
 }
+export function hapusAfirmasi(db: Db, idMahasiswa: string) {
+  return db
+    .delete(schema.dailyAffirmation)
+    .where(eq(schema.dailyAffirmation.idMahasiswa, idMahasiswa));
+}
 
 /** Q-041 — the student's affirmation (beranda card). */
 export function ambilAfirmasi(db: Db, idMahasiswa: string) {
@@ -228,13 +233,6 @@ export function ambilAfirmasi(db: Db, idMahasiswa: string) {
     .from(schema.dailyAffirmation)
     .where(eq(schema.dailyAffirmation.idMahasiswa, idMahasiswa))
     .limit(1);
-}
-
-/** Deletes the student's affirmation (I-04-03 toggle off). Not in the DPPL. */
-export function hapusAfirmasi(db: Db, idMahasiswa: string) {
-  return db
-    .delete(schema.dailyAffirmation)
-    .where(eq(schema.dailyAffirmation.idMahasiswa, idMahasiswa));
 }
 
 /** Q-024 — find the student's reminder of one `jenis`. */
@@ -348,8 +346,8 @@ export function konsultanAda(db: Db, idKonsultan: string) {
     .limit(1);
 }
 
-/** Q-013 — every slot (for the merged calendar). */
-export function semuaJadwal(db: Db) {
+/** Q-013 — slots that overlap the requested calendar window. */
+export function semuaJadwal(db: Db, dari: string, sampai: string) {
   return db
     .select({
       idJadwal: schema.jadwalKonsultasi.idJadwal,
@@ -357,8 +355,19 @@ export function semuaJadwal(db: Db) {
       waktu: schema.jadwalKonsultasi.waktu,
       waktuSelesai: schema.jadwalKonsultasi.waktuSelesai,
       status: schema.jadwalKonsultasi.status,
+      // The consultant distinguishes otherwise identical "Sesi konsultasi" rows
+      // in the agenda (I-06).
+      namaKonsultan: schema.konsultan.nama,
     })
     .from(schema.jadwalKonsultasi)
+    .innerJoin(schema.konsultan, eq(schema.konsultan.idKonsultan, schema.jadwalKonsultasi.idKonsultan))
+    // Include events that start before the window but end inside it.
+    .where(
+      and(
+        lt(schema.jadwalKonsultasi.waktu, sampai),
+        gt(schema.jadwalKonsultasi.waktuSelesai, dari),
+      ),
+    )
     .orderBy(schema.jadwalKonsultasi.waktu);
 }
 

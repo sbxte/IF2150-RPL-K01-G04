@@ -15,6 +15,11 @@ export {
 } from './status';
 export { hapusSesi, keluar, pulihkanSesi, simpanSesi, type Pengguna, type Peran } from './sesi';
 export {
+  ambilKalender,
+  type EventKalender,
+  type HasilKalender,
+} from './kalender';
+export {
   ambilUmpanBalik,
   ambilUmpanBalikSaya,
   kirimUmpanBalik,
