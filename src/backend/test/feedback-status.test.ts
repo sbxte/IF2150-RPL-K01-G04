@@ -128,8 +128,8 @@ describe("ServerStatusController (C-32) / Algo-020", () => {
   beforeEach(() => {
     ctx = buatDbUji(`
       INSERT INTO status_server (jenis, status_uptime, waktu_cek) VALUES
-        ('website', 1, '2031-01-01T00:00:00Z'),
-        ('website', 0, '2031-01-02T00:00:00Z'),
+        ('db', 1, '2031-01-01T00:00:00Z'),
+        ('db', 0, '2031-01-02T00:00:00Z'),
         ('server',  1, '2031-01-03T00:00:00Z');
     `);
     mhs = buatSesiUji(ctx.raw, { idPengguna: "mhs", peran: "mahasiswa", token: "tm" });
@@ -137,8 +137,8 @@ describe("ServerStatusController (C-32) / Algo-020", () => {
   afterEach(() => ctx.tutup());
 
   test("mengembalikan pemeriksaan terakhir untuk jenis tertentu (Q-017)", async () => {
-    const body = await json(await minta(app, ctx.D1, { path: "/api/status/website", token: mhs }));
-    expect(body.status).toMatchObject({ jenis: "website", statusUptime: false });
+    const body = await json(await minta(app, ctx.D1, { path: "/api/status/db", token: mhs }));
+    expect(body.status).toMatchObject({ jenis: "db", statusUptime: false });
     expect(body.status.waktuCek).toBe("2031-01-02T00:00:00Z");
   });
 
@@ -148,7 +148,7 @@ describe("ServerStatusController (C-32) / Algo-020", () => {
   });
 
   test("jenis tidak dikenal -> 422", async () => {
-    const res = await minta(app, ctx.D1, { path: "/api/status/database", token: mhs });
+    const res = await minta(app, ctx.D1, { path: "/api/status/website", token: mhs });
     expect(res.status).toBe(422);
   });
 });

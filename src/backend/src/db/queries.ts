@@ -610,7 +610,7 @@ export function tanggapiUmpanBalik(
 /* -------------------------------------------------------------------------- */
 
 /** Q-017 — latest check of one `jenis`. */
-export function statusTerakhir(db: Db, jenis: "website" | "server") {
+export function statusTerakhir(db: Db, jenis: "server" | "db") {
   return db
     .select({
       jenis: schema.statusServer.jenis,
@@ -626,7 +626,7 @@ export function statusTerakhir(db: Db, jenis: "website" | "server") {
 /** Q-018 — record one status check. */
 export function catatStatus(
   db: Db,
-  data: { jenis: "website" | "server"; statusUptime: boolean; waktuCek: string },
+  data: { jenis: "server" | "db"; statusUptime: boolean; waktuCek: string },
 ) {
   return db.insert(schema.statusServer).values(data);
 }

@@ -227,7 +227,7 @@ describe("Algo-021 cekStatusServer (cron)", () => {
     vi.restoreAllMocks();
   });
 
-  test("mencatat status website dan server (Q-018)", async () => {
+  test("mencatat status server dan db (Q-018)", async () => {
     const ctx = buatDbUji();
     globalThis.fetch = vi.fn(async () => new Response("ok", { status: 200 })) as any;
 
@@ -242,9 +242,10 @@ describe("Algo-021 cekStatusServer (cron)", () => {
     const rows = ctx.raw
       .prepare("SELECT jenis, status_uptime FROM status_server ORDER BY jenis")
       .all() as { jenis: string; status_uptime: number }[];
+    // ORDER BY jenis is alphabetical, so 'db' precedes 'server'.
     expect(rows).toEqual([
+      { jenis: "db", status_uptime: 1 },
       { jenis: "server", status_uptime: 1 },
-      { jenis: "website", status_uptime: 1 },
     ]);
     ctx.tutup();
   });
@@ -268,9 +269,9 @@ describe("Algo-021 cekStatusServer (cron)", () => {
     ctx.tutup();
   });
 
-  test("website dan server memeriksa alamat berbeda", async () => {
+  test("server dan db memeriksa alamat berbeda", async () => {
     // Regression: both used to probe `${API_BASE_URL}/health`, so I-15 showed the
-    // same number twice. website -> origin root, server -> /health.
+    // same number twice. server -> /health, db -> /health/db.
     const ctx = buatDbUji();
     const dipanggil: string[] = [];
     globalThis.fetch = vi.fn(async (input: any) => {
@@ -278,33 +279,35 @@ describe("Algo-021 cekStatusServer (cron)", () => {
       return new Response("ok", { status: 200 });
     }) as any;
 
-    const { ctx: ectx, tunggu } = konteks();
+    const { event, ctx: ectx, tunggu } = konteks(CRON_STATUS);
     await scheduled(
-      {} as any,
+      event,
       { D1: ctx.D1, API_BASE_URL: "https://sehati.test/" } as any,
       ectx,
     );
     await tunggu();
 
-    expect(dipanggil).toContain("https://sehati.test/");
     expect(dipanggil).toContain("https://sehati.test/health");
+    expect(dipanggil).toContain("https://sehati.test/health/db");
     expect(new Set(dipanggil).size).toBe(2);
+    // The origin root is not a route, so it must never be probed.
+    expect(dipanggil).not.toContain("https://sehati.test/");
     ctx.tutup();
   });
 
-  test("website dan server dapat berbeda hasilnya", async () => {
+  test("server up sementara db down bila /health/db gagal", async () => {
+    // The interesting operational signal: the Worker answers but cannot reach D1.
     const ctx = buatDbUji();
     globalThis.fetch = vi.fn(async (input: any) => {
       const url = String(input?.url ?? input);
-      // Origin is up, but the Worker's own health check fails (D1 down).
-      return url.endsWith("/health")
+      return url.endsWith("/health/db")
         ? new Response("gagal", { status: 500 })
         : new Response("ok", { status: 200 });
     }) as any;
 
-    const { ctx: ectx, tunggu } = konteks();
+    const { event, ctx: ectx, tunggu } = konteks(CRON_STATUS);
     await scheduled(
-      {} as any,
+      event,
       { D1: ctx.D1, API_BASE_URL: "https://sehati.test" } as any,
       ectx,
     );
@@ -314,9 +317,30 @@ describe("Algo-021 cekStatusServer (cron)", () => {
       .prepare("SELECT jenis, status_uptime FROM status_server ORDER BY jenis")
       .all() as { jenis: string; status_uptime: number }[];
     expect(rows).toEqual([
-      { jenis: "server", status_uptime: 0 },
-      { jenis: "website", status_uptime: 1 },
+      { jenis: "db", status_uptime: 0 },
+      { jenis: "server", status_uptime: 1 },
     ]);
+    ctx.tutup();
+  });
+
+  test("3xx dihitung down, bukan up", async () => {
+    // The doc comment used to claim 2xx/3xx; only 2xx is accepted, because these
+    // endpoints never redirect and a 3xx means something is misrouted.
+    const ctx = buatDbUji();
+    globalThis.fetch = vi.fn(async () => new Response(null, { status: 302 })) as any;
+
+    const { event, ctx: ectx, tunggu } = konteks(CRON_STATUS);
+    await scheduled(
+      event,
+      { D1: ctx.D1, API_BASE_URL: "https://sehati.test" } as any,
+      ectx,
+    );
+    await tunggu();
+
+    const rows = ctx.raw
+      .prepare("SELECT status_uptime FROM status_server")
+      .all() as { status_uptime: number }[];
+    expect(rows.every((r) => r.status_uptime === 0)).toBe(true);
     ctx.tutup();
   });
 
@@ -350,8 +374,8 @@ describe("pembersihan basis data (cron harian)", () => {
     buatSesiUji(ctx.raw, { idPengguna: "mhs", peran: "mahasiswa", token: "tm" });
     ctx.raw.exec(`
       INSERT INTO status_server (jenis, status_uptime, waktu_cek) VALUES
-        ('website', 1, datetime('now', '-10 days')),
-        ('website', 1, datetime('now', '-1 days'));
+        ('server', 1, datetime('now', '-10 days')),
+        ('db', 1, datetime('now', '-1 days'));
       INSERT INTO daily_affirmation (id_affirmation, id_mahasiswa, konten, waktu_kirim)
         VALUES ('a-lama', 'mhs', 'lama', '23:59');
       INSERT INTO notifikasi (id_notifikasi, id_mahasiswa, id_affirmation, id_reminder, isi, waktu_kirim)
@@ -385,7 +409,7 @@ describe("pembersihan basis data (cron harian)", () => {
   test("cron lain tidak menjalankan pembersihan", async () => {
     const ctx = buatDbUji();
     ctx.raw.exec(
-      "INSERT INTO status_server (jenis, status_uptime, waktu_cek) VALUES ('website', 1, datetime('now', '-10 days'))",
+      "INSERT INTO status_server (jenis, status_uptime, waktu_cek) VALUES ('server', 1, datetime('now', '-10 days'))",
     );
 
     globalThis.fetch = vi.fn(async () => new Response("ok", { status: 200 })) as any;

@@ -1,4 +1,4 @@
-import { desc } from "drizzle-orm";
+import { desc, eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/d1";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
@@ -42,11 +42,19 @@ app.notFound((c) =>
 /** Smoke test; not part of the DPPL, mirrors the existing `/health` contract. */
 app.get("/health", (c) => c.json({ ok: true }));
 
+/**
+ * Deep health check: proves the Worker can query D1.
+ *
+ * Filtering by `jenis` matters. `idx_status_jenis_waktu` is on (jenis, waktu_cek),
+ * so an unfiltered `ORDER BY waktu_cek DESC` cannot use it and degrades to a full
+ * scan plus sort — billed per row read by D1. With the filter it is an index seek.
+ */
 app.get("/health/db", async (c) => {
   const db = drizzle(c.env.D1, { schema });
   const [latest] = await db
     .select()
     .from(schema.statusServer)
+    .where(eq(schema.statusServer.jenis, "db"))
     .orderBy(desc(schema.statusServer.waktuCek))
     .limit(1);
   return c.json({ ok: true, latest: latest ?? null });

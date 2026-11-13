@@ -108,7 +108,7 @@ async function jalankanPengingat(env: Env, db: ReturnType<typeof drizzle<typeof 
 }
 
 /**
- * Algo-021 `cekStatusServer` — probes the website and server endpoints
+ * Algo-021 `cekStatusServer` — probes the `server` and `db` endpoints
  * (5 s timeout) and records a `status_server` row (Q-018).
  */
 async function jalankanCekStatus(env: Env, db: ReturnType<typeof drizzle<typeof schema>>) {
@@ -116,13 +116,14 @@ async function jalankanCekStatus(env: Env, db: ReturnType<typeof drizzle<typeof 
     /\/+$/,
     "",
   );
-  // `website` and `server` must probe different things, otherwise I-15 shows the
-  // same number twice. Website = is the public origin reachable at all (any 2xx/3xx);
-  // server = is the Worker healthy, which is what `/health` reports (status 500 when
-  // the D1 query behind it fails).
+  // Two probes, in dependency order, because they answer different questions:
+  //   server -> the public domain reaches the Worker (no database involved)
+  //   db     -> the Worker can query D1 (the route issues a SELECT)
+  // Probing the origin `/` would be wrong: the Worker has no route there, so it
+  // answers 404 and the row would always read Down.
   const target: Record<JenisStatus, string> = {
-    website: origin ? `${origin}/` : "",
     server: origin ? `${origin}/health` : "",
+    db: origin ? `${origin}/health/db` : "",
   };
 
   for (const jenis of Object.keys(target) as JenisStatus[]) {
@@ -134,6 +135,8 @@ async function jalankanCekStatus(env: Env, db: ReturnType<typeof drizzle<typeof 
           method: "GET",
           signal: AbortSignal.timeout(5000),
         });
+        // Only 2xx counts. These endpoints never redirect, so a 3xx means
+        // something is misrouted and is treated as down.
         up = respons.status >= 200 && respons.status <= 299;
       } catch {
         up = false;
