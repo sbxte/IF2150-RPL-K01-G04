@@ -491,6 +491,7 @@ Rujukan lengkap: [`backend/README.md`](./backend/README.md).
 | `GET` | `/api/feedback` | administrator |
 | `PUT` | `/api/feedback/:id/response` | administrator |
 | `GET` | `/api/status/:jenis` | semua |
+| `GET` | `/api/status/history?limit=` | semua |
 | `POST` | `/api/status/refresh` | administrator |
 | `GET` | `/health` | publik |
 
