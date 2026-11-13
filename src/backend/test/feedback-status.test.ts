@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, expect, test } from "vitest";
+import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 import app from "../src/index";
 import { buatDbUji, buatSesiUji } from "./harness";
 import { json, minta } from "./util";
@@ -150,6 +150,99 @@ describe("ServerStatusController (C-32) / Algo-020", () => {
   test("jenis tidak dikenal -> 422", async () => {
     const res = await minta(app, ctx.D1, { path: "/api/status/website", token: mhs });
     expect(res.status).toBe(422);
+  });
+});
+
+describe("POST /api/status/refresh (I-15 Periksa Sekarang)", () => {
+  let ctx: ReturnType<typeof buatDbUji>;
+  let admin: string;
+  let mhs: string;
+  let fetchAsli: typeof fetch;
+
+  beforeEach(() => {
+    ctx = buatDbUji();
+    admin = buatSesiUji(ctx.raw, { idPengguna: "adm", peran: "administrator", token: "ta" });
+    mhs = buatSesiUji(ctx.raw, { idPengguna: "mhs", peran: "mahasiswa", token: "tm" });
+    fetchAsli = globalThis.fetch;
+  });
+  afterEach(() => {
+    globalThis.fetch = fetchAsli;
+    vi.restoreAllMocks();
+    ctx.tutup();
+  });
+
+  /** Records what the route spent so the cost guard is observable. */
+  function tiruProbe(status = 200) {
+    const dipanggil: string[] = [];
+    globalThis.fetch = vi.fn(async (input: any) => {
+      dipanggil.push(String(input?.url ?? input));
+      return new Response("ok", { status });
+    }) as any;
+    return dipanggil;
+  }
+
+  test("menjalankan probe dan mengembalikan hasil segar", async () => {
+    const dipanggil = tiruProbe(200);
+
+    const res = await minta(app, ctx.D1, { method: "POST", path: "/api/status/refresh", token: admin });
+    expect(res.status).toBe(200);
+
+    const body = await json(res);
+    expect(body.diperiksa).toBe(true);
+    expect(new Set(dipanggil).size).toBe(2); // one per jenis
+    // Both rows exist and are up, read back from the table.
+    expect(body.status.server).toMatchObject({ jenis: "server", statusUptime: true });
+    expect(body.status.db).toMatchObject({ jenis: "db", statusUptime: true });
+  });
+
+  test("menolak mahasiswa: probe itu biaya keluar, bukan bacaan biasa", async () => {
+    const dipanggil = tiruProbe(200);
+    const res = await minta(app, ctx.D1, { method: "POST", path: "/api/status/refresh", token: mhs });
+    expect(res.status).toBe(403);
+    expect(dipanggil).toHaveLength(0);
+  });
+
+  test("menolak tanpa sesi", async () => {
+    const res = await minta(app, ctx.D1, { method: "POST", path: "/api/status/refresh" });
+    expect(res.status).toBe(401);
+  });
+
+  test("tidak memprobe ulang bila hasilnya masih segar (anti-loop)", async () => {
+    const dipanggil = tiruProbe(200);
+
+    // Two presses in a row: the second must reuse the first result.
+    await minta(app, ctx.D1, { method: "POST", path: "/api/status/refresh", token: admin });
+    expect(dipanggil).toHaveLength(2);
+
+    const kedua = await json(
+      await minta(app, ctx.D1, { method: "POST", path: "/api/status/refresh", token: admin }),
+    );
+    expect(kedua.diperiksa).toBe(false);
+    expect(dipanggil).toHaveLength(2); // unchanged: no new outbound requests
+  });
+
+  test("memprobe lagi setelah hasil lama melewati batas segar", async () => {
+    const dipanggil = tiruProbe(200);
+    await minta(app, ctx.D1, { method: "POST", path: "/api/status/refresh", token: admin });
+    expect(dipanggil).toHaveLength(2);
+
+    // Age both rows past PROBE_SEGAR_MS.
+    ctx.raw.exec("UPDATE status_server SET waktu_cek = datetime('now', '-5 minutes')");
+
+    const lagi = await json(
+      await minta(app, ctx.D1, { method: "POST", path: "/api/status/refresh", token: admin }),
+    );
+    expect(lagi.diperiksa).toBe(true);
+    expect(dipanggil).toHaveLength(4);
+  });
+
+  test("mencatat down ketika probe gagal", async () => {
+    tiruProbe(500);
+    const body = await json(
+      await minta(app, ctx.D1, { method: "POST", path: "/api/status/refresh", token: admin }),
+    );
+    expect(body.status.server).toMatchObject({ statusUptime: false });
+    expect(body.status.db).toMatchObject({ statusUptime: false });
   });
 });
 

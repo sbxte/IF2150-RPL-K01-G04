@@ -5,11 +5,11 @@ import {
   afirmasiJatuhTempo,
   ambilTokenPush,
   catatNotifikasi,
-  catatStatus,
   hapusTokenPush,
   reminderJatuhTempo,
 } from "../db/queries";
-import { BATAS_SESI_HARI, TEKS_PENGINGAT, type JenisStatus } from "../config";
+import { BATAS_SESI_HARI, TEKS_PENGINGAT } from "../config";
+import { jalankanCekStatus } from "../lib/status-probe";
 import { and, eq, lt, or, sql } from "drizzle-orm";
 
 const EXPO_PUSH_URL = "https://exp.host/--/api/v2/push/send";
@@ -107,48 +107,6 @@ async function jalankanPengingat(env: Env, db: ReturnType<typeof drizzle<typeof 
   console.log(`[cron] pengingat ${jamMenit}: ${daftar.length} pengingat`);
 }
 
-/**
- * Algo-021 `cekStatusServer` — probes the `server` and `db` endpoints
- * (5 s timeout) and records a `status_server` row (Q-018).
- */
-async function jalankanCekStatus(env: Env, db: ReturnType<typeof drizzle<typeof schema>>) {
-  const origin = ((env as unknown as Record<string, string | undefined>).API_BASE_URL ?? "").replace(
-    /\/+$/,
-    "",
-  );
-  // Two probes, in dependency order, because they answer different questions:
-  //   server -> the public domain reaches the Worker (no database involved)
-  //   db     -> the Worker can query D1 (the route issues a SELECT)
-  // Probing the origin `/` would be wrong: the Worker has no route there, so it
-  // answers 404 and the row would always read Down.
-  const target: Record<JenisStatus, string> = {
-    server: origin ? `${origin}/health` : "",
-    db: origin ? `${origin}/health/db` : "",
-  };
-
-  for (const jenis of Object.keys(target) as JenisStatus[]) {
-    const alamat = target[jenis];
-    let up = false;
-    if (alamat) {
-      try {
-        const respons = await fetch(alamat, {
-          method: "GET",
-          signal: AbortSignal.timeout(5000),
-        });
-        // Only 2xx counts. These endpoints never redirect, so a 3xx means
-        // something is misrouted and is treated as down.
-        up = respons.status >= 200 && respons.status <= 299;
-      } catch {
-        up = false;
-      }
-    }
-    await catatStatus(db, {
-      jenis,
-      statusUptime: up,
-      waktuCek: new Date().toISOString(), // Q-018
-    });
-  }
-}
 
 /** 
  * Cleans up outdated, no longer needed data from the database
