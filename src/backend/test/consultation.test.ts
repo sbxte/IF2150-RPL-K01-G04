@@ -351,8 +351,13 @@ describe("CalendarController — Algo-011 gabungkanJadwal", () => {
       return new Response("{}", { status: 200 });
     }) as any;
 
+    // The route now filters by range; the fixtures are dated 2031, so the
+    // default (now .. now+30d) would exclude them.
     const body = await json(
-      await minta(app, ctx.D1, { path: "/api/calendar", token: mhs }),
+      await minta(app, ctx.D1, {
+        path: "/api/calendar?dari=2031-05-31T00:00:00Z&sampai=2031-06-03T00:00:00Z",
+        token: mhs,
+      }),
     );
 
     expect(body.peringatan).toBeUndefined();

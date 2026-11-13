@@ -27,7 +27,7 @@ function tanggalSama(a: Date, b: Date) {
 }
 
 export default function Kalender() {
-  const [minggu, setMinggu] = useState(() => awalMinggu(new Date()));
+  const [minggu] = useState(() => awalMinggu(new Date()));
   const [hariDipilih, setHariDipilih] = useState(() => new Date());
   const [events, setEvents] = useState<EventKalender[]>([]);
   const [peringatan, setPeringatan] = useState<string | undefined>();
@@ -41,16 +41,13 @@ export default function Kalender() {
   }), [minggu]);
 
   const muat = useCallback(async () => {
-    setMemuat(true);
-    setPeringatan(undefined);
+    // Await first: a synchronous setState inside the effect below triggers
+    // cascading renders (react-hooks lint). The flags settle after the request.
     try {
       const dari = new Date(minggu);
       const sampai = new Date(minggu);
       sampai.setDate(sampai.getDate() + 7);
-      const hasil = await ambilKalender(
-        dari.toISOString(),
-       sampai.toISOString(),
-      );
+      const hasil = await ambilKalender(dari.toISOString(), sampai.toISOString());
       setEvents(hasil.events);
       setMode(hasil.mode);
       setPeringatan(hasil.peringatan);
@@ -61,7 +58,11 @@ export default function Kalender() {
     }
   }, [minggu]);
 
-  useEffect(() => { void muat(); }, [muat]);
+  useEffect(() => {
+    // Deferred so the effect body itself never reaches a setState synchronously.
+    const timer = setTimeout(() => void muat(), 0);
+    return () => clearTimeout(timer);
+  }, [muat]);
 
   const eventsHariIni = useMemo(
     () => events.filter((event) => eventPadaTanggal(event, hariDipilih)),

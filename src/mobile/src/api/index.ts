@@ -6,6 +6,9 @@ export { api, ApiError, aturSaatTidakTerautentikasi, aturToken, KODE_KLIEN } fro
 export {
   ambilStatus,
   ambilStatusLayanan,
+  ambilRiwayatStatus,
+  periksaStatusSekarang,
+  type RiwayatStatus,
   type CekStatus,
   type JenisStatus,
   type StatusLayanan,
@@ -16,3 +19,12 @@ export {
   type EventKalender,
   type HasilKalender,
 } from './kalender';
+export {
+  ambilUmpanBalik,
+  ambilUmpanBalikSaya,
+  kirimUmpanBalik,
+  tanggapiUmpanBalik,
+  type StatusUmpanBalik,
+  type UmpanBalikAdmin,
+  type UmpanBalikSaya,
+} from './umpan-balik';

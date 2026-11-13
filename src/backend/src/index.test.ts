@@ -17,10 +17,10 @@ describe("GET /health", () => {
 });
 
 describe("GET /health/db", () => {
-  test("mengembalikan ok dan pemeriksaan status terakhir", async () => {
+  test("mengembalikan ok dan pemeriksaan db terakhir", async () => {
     const ctx = buatDbUji(`
       INSERT INTO status_server (jenis, status_uptime, waktu_cek) VALUES
-        ('website', 1, '2031-01-01T00:00:00Z'),
+        ('db', 1, '2031-01-01T00:00:00Z'),
         ('server',  1, '2031-01-02T00:00:00Z');
     `);
 
@@ -33,7 +33,9 @@ describe("GET /health/db", () => {
     expect(res.status).toBe(200);
     const body = (await res.json()) as any;
     expect(body.ok).toBe(true);
-    expect(body.latest).toMatchObject({ jenis: "server", statusUptime: true });
+    // Filtered to jenis = 'db' so the (jenis, waktu_cek) index applies; the newer
+    // 'server' row is deliberately not returned.
+    expect(body.latest).toMatchObject({ jenis: "db", statusUptime: true });
     ctx.tutup();
   });
 

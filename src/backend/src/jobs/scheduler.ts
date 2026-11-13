@@ -5,11 +5,11 @@ import {
   afirmasiJatuhTempo,
   ambilTokenPush,
   catatNotifikasi,
-  catatStatus,
   hapusTokenPush,
   reminderJatuhTempo,
 } from "../db/queries";
-import { BATAS_SESI_HARI, TEKS_PENGINGAT, type JenisStatus } from "../config";
+import { BATAS_SESI_HARI, TEKS_PENGINGAT } from "../config";
+import { jalankanCekStatus } from "../lib/status-probe";
 import { and, eq, lt, or, sql } from "drizzle-orm";
 
 const EXPO_PUSH_URL = "https://exp.host/--/api/v2/push/send";
@@ -107,38 +107,6 @@ async function jalankanPengingat(env: Env, db: ReturnType<typeof drizzle<typeof 
   console.log(`[cron] pengingat ${jamMenit}: ${daftar.length} pengingat`);
 }
 
-/**
- * Algo-021 `cekStatusServer` — probes the website and server endpoints
- * (5 s timeout) and records a `status_server` row (Q-018).
- */
-async function jalankanCekStatus(env: Env, db: ReturnType<typeof drizzle<typeof schema>>) {
-  const origin = (env as unknown as Record<string, string | undefined>).API_BASE_URL ?? "";
-  const target: Record<JenisStatus, string> = {
-    website: origin ? `${origin}/health` : "",
-    server: origin ? `${origin}/health` : "",
-  };
-
-  for (const jenis of Object.keys(target) as JenisStatus[]) {
-    const alamat = target[jenis];
-    let up = false;
-    if (alamat) {
-      try {
-        const respons = await fetch(alamat, {
-          method: "GET",
-          signal: AbortSignal.timeout(5000),
-        });
-        up = respons.status >= 200 && respons.status <= 299;
-      } catch {
-        up = false;
-      }
-    }
-    await catatStatus(db, {
-      jenis,
-      statusUptime: up,
-      waktuCek: new Date().toISOString(), // Q-018
-    });
-  }
-}
 
 /** 
  * Cleans up outdated, no longer needed data from the database

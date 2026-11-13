@@ -16,7 +16,7 @@ export const KONTEN_BAWAAN =
   "Hari ini kamu sudah melakukan yang terbaik. Tarik napas, dan beri dirimu ruang untuk beristirahat.";
 
 export type JenisReminder = "makan" | "tidur" | "olahraga";
-export type JenisStatus = "website" | "server";
+export type JenisStatus = "server" | "db";
 export type Peran = "mahasiswa" | "administrator";
 
 /**
@@ -34,7 +34,7 @@ export function modeDemoAktif(env: Env): boolean {
 }
 
 export const JENIS_REMINDER: readonly JenisReminder[] = ["makan", "tidur", "olahraga"];
-export const JENIS_STATUS: readonly JenisStatus[] = ["website", "server"];
+export const JENIS_STATUS: readonly JenisStatus[] = ["server", "db"];
 
 /** Push copy per `jenis` (Algo-007 `teksPengingat(jenis)`). */
 export const TEKS_PENGINGAT: Record<JenisReminder, string> = {
