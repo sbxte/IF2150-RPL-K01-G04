@@ -260,7 +260,19 @@ Layar pertama adalah I-01 Masuk. Untuk mencoba aplikasi tanpa akun Google, gunak
 
 #### Notifikasi push
 
-Setelah login (Google maupun demo), aplikasi meminta izin notifikasi, mengambil Expo push token, lalu mengirimkannya ke `POST /api/auth/device` (Algo-003, `src/mobile/src/lib/notifikasi.ts`). Backend menyimpan token pada sesi aktif dan mengakhiri sesi lain yang memakai perangkat yang sama, lalu tugas *cron* mengirim afirmasi dan pengingat ke token tersebut. Pendaftaran berjalan di latar belakang: bila izin ditolak atau terjadi galat, login tetap berhasil dan perangkat hanya tidak menerima notifikasi.
+Setelah login (Google maupun demo), aplikasi meminta izin notifikasi, mengambil Expo push token, lalu mengirimkannya ke `POST /api/auth/device` (Algo-003, `src/mobile/src/lib/notifikasi.ts`). Backend menyimpan token pada sesi aktif dan mengakhiri sesi lain yang memakai perangkat yang sama. Pendaftaran berjalan di latar belakang: bila izin ditolak atau terjadi galat, login tetap berhasil dan perangkat hanya tidak menerima notifikasi.
+
+Pengiriman dijadwalkan oleh tiga Cloudflare Cron Trigger di `src/backend/wrangler.jsonc` dan dipilih oleh `scheduled` pada `src/backend/src/jobs/scheduler.ts`:
+
+| Cron | Tugas |
+|---|---|
+| `* * * * *` | `jalankanAfirmasi` (Algo-005) dan `jalankanPengingat` (Algo-007): mencari jadwal yang jatuh tempo pada menit ini (jam WIB "HH:MM"), mencatat baris `notifikasi` dengan sumbernya (`id_affirmation` atau `id_reminder`), lalu mengirim *push*. |
+| `*/5 * * * *` | `jalankanCekStatus` (Algo-021): memeriksa `server` (`/health`) dan `db` (`/health/db`), lalu mencatat `status_server`. |
+| `0 */12 * * *` | Pembersihan data: `status_server` lebih dari 7 hari, `notifikasi` lebih dari 30 hari, dan sesi yang sudah berakhir atau melewati `BATAS_SESI_HARI`. |
+
+Judul *push* adalah "Afirmasi hari ini" atau "Pengingat kesehatan". Pengiriman memakai Expo Push API dalam batch maksimal 100 pesan, dan token yang ditolak dengan `DeviceNotRegistered` dikosongkan. Bila penerima belum punya token, notifikasi tetap tercatat dan hanya ditulis ke log. Untuk memeriksa hasilnya, lihat tabel `notifikasi` lewat `bun run db:studio:local`; baris dengan `id_affirmation` berasal dari afirmasi, sedangkan `id_reminder` dari pengingat.
+
+Dukungan *push notification* per lingkungan:
 
 | Lingkungan | Notifikasi push |
 |---|---|
@@ -353,6 +365,8 @@ Catatan:
 - Isi Beranda dari data *seed*: Mahasiswa Uji belum punya afirmasi (kartu afirmasi berisi ajakan mengatur waktu di I-04) dan sudah punya satu sesi terpesan besok pukul 11.00 WIB. Di Beranda Administrator, kartu status layanan menampilkan "Belum dicek" sampai *cron* pertama berjalan. `wrangler dev` tidak menjalankan *cron* sendiri; jalankan `bun run dev -- --test-scheduled`, lalu picu pemeriksaan dengan `curl "http://localhost:8787/__scheduled?cron=*+*+*+*+*"` (dengan `API_BASE_URL` terisi agar hasilnya Up).
 - Afirmasi harian (I-04): dari Beranda, ketuk kartu "Afirmasi hari ini" untuk membuka pengaturannya. Waktu dipilih lewat chip cepat atau pemilih waktu bawaan, lalu "Simpan Setelan" (`PUT /api/affirmation/time`). Toggle "Kirim afirmasi harian" yang dimatikan menghapus jadwal (`DELETE /api/affirmation`) sehingga kartu Beranda kembali menampilkan ajakan mengatur afirmasi; menyalakannya kembali membuat jadwal pada waktu yang sedang dipilih.
 - Pengingat kesehatan (I-05): tab Pengingat berisi tiga kartu (Makan, Tidur, Olahraga) dengan waktu bawaan 12.00, 22.00, dan 17.00. Ketuk waktu untuk membuka pemilih waktu, lalu "Simpan Setelan" menyimpan setiap jenis yang aktif (`PUT /api/reminders/:jenis`, Algo-006). Sakelar per kartu langsung menyimpan: mematikan menghapus pengingat jenis itu (`DELETE /api/reminders/:jenis`), menyalakan kembali menyimpannya pada waktu yang sedang dipilih. Pengingat dikirim *cron* setiap menit; di Expo Go (tanpa *push*) hasilnya hanya tercatat sebagai baris `notifikasi` dan log `[cron] pengingat HH:MM`, yang bisa dipicu dengan `curl "http://localhost:8787/__scheduled?cron=*+*+*+*+*"` setelah mengatur waktunya ke menit berikutnya.
+- Umpan balik (I-11, **khusus Mahasiswa**): dari Beranda Mahasiswa buka menu **Umpan Balik**, tulis masukan lalu **Kirim Umpan Balik**. Administrator tidak dapat mengirim umpan balik (`POST /api/feedback` dijaga `requireRole("mahasiswa")`, sehingga membalas 403); peran Administrator memakai I-14 untuk menanggapi. Masukan yang sudah dikirim muncul di daftar "Umpan balik sebelumnya" dengan lencana **Belum ditanggapi**. Rute `GET /api/feedback/mine` hanya mengembalikan milik pemanggil, sehingga tiap mahasiswa hanya melihat masukannya sendiri.
+- Menanggapi umpan balik (I-14): login sebagai Administrator, buka **Umpan Balik** dari Beranda Administrator, lalu pakai chip **Semua / Belum ditanggapi / Ditanggapi**. Penyaringan dilakukan di server lewat `?status=belum|sudah`, jadi jumlah per chip tetap benar meski daftar dipotong `limit`. Isi kolom **Tanggapan** pada kartu lalu **Kirim Tanggapan**; lencana berubah menjadi **Ditanggapi** dan balasan itu langsung tampil pada daftar I-11 milik mahasiswa.
 - Login Google sungguhan memerlukan `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, dan `GOOGLE_REDIRECT_URI` (bagian 4). Google tidak menerima alamat IP LAN sebagai *redirect URI*, sehingga login Google dari ponsel memerlukan backend yang sudah di-*deploy* atau *tunnel* ber-HTTPS.
 
 ## 7. Modul dan Pembagian Tugas
@@ -477,9 +491,12 @@ Rujukan lengkap: [`backend/README.md`](./backend/README.md).
 | `DELETE` | `/api/faq/:id` | administrator |
 | `POST` | `/api/questions` | mahasiswa |
 | `POST` | `/api/feedback` | mahasiswa |
-| `GET` | `/api/feedback` | administrator |
+| `GET` | `/api/feedback/mine` | mahasiswa |
+| `GET` | `/api/feedback?status=belum\|sudah` | administrator |
 | `PUT` | `/api/feedback/:id/response` | administrator |
 | `GET` | `/api/status/:jenis` | semua |
+| `GET` | `/api/status/history?limit=` | semua |
+| `POST` | `/api/status/refresh` | administrator |
 | `GET` | `/health` | publik |
 
 Selain `/api/auth/google*` dan `/health`, semua rute memerlukan `Authorization: Bearer <token>`. Galat memakai satu amplop:
@@ -494,12 +511,18 @@ Status: `400` body tidak valid · `401` belum terautentikasi · `403` peran sala
 
 ### Tugas terjadwal
 
-Satu *cron trigger* `* * * * *` menjalankan:
+Tiga *cron trigger* berjalan dengan jadwal berbeda:
 
-- pengiriman afirmasi dan pengingat, mencatat notifikasi dan mengirim *push* Expo dalam batch maksimal 100 pesan, serta mengosongkan token yang dilaporkan `DeviceNotRegistered`
-- pemeriksaan *uptime* `website` dan `server` (memerlukan `API_BASE_URL`)
+- `* * * * *` — pengiriman afirmasi dan pengingat: mencatat notifikasi dan mengirim *push* Expo dalam batch maksimal 100 pesan, serta mengosongkan token yang dilaporkan `DeviceNotRegistered`. Dijalankan setiap menit karena `waktu_kirim` dicocokkan persis pada menit tersebut.
+- `*/5 * * * *` — pemeriksaan *uptime* `server` (`<API_BASE_URL>/health`, Worker menjawab) dan `db` (`<API_BASE_URL>/health/db`, Worker dapat membaca D1), keduanya memerlukan `API_BASE_URL`. `db` *up* mengimplikasikan `server` *up*, sehingga `db` *down* adalah satu-satunya sinyal yang membawa informasi baru. Hanya status 2xx yang dihitung *up*.
+- `0 */12 * * *` — pembersihan basis data: `status_server` lebih dari 7 hari, `notifikasi` lebih dari 30 hari, dan sesi yang sudah berakhir atau melewati `BATAS_SESI`.
 
 Semua ini ada di handler `scheduled()`, bukan rute HTTP.
+
+Selain jadwal di atas, Administrator dapat memicu pemeriksaan dari layar I-15 lewat `POST /api/status/refresh`.
+Rute ini menjalankan pemeriksaan yang sama dengan *cron* dan mengembalikan hasil terbaru, tetapi hanya untuk peran
+Administrator karena rute ini membuat Worker melakukan permintaan keluar. Bila hasil terakhir masih lebih baru dari
+30 detik, pemeriksaan dilewati dan respons memuat `diperiksa: false`, sehingga tombol tidak dapat dijadikan perulangan.
 
 ### Menambah endpoint
 
