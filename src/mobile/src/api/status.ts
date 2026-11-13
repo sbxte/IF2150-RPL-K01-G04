@@ -27,3 +27,31 @@ export async function ambilStatusLayanan(): Promise<StatusLayanan> {
   const [server, db] = await Promise.all([ambilStatus('server'), ambilStatus('db')]);
   return { server, db };
 }
+
+/** A row as the refresh route returns it: the check plus its `jenis`. */
+type CekBerjenis = NonNullable<CekStatus> & { jenis: JenisStatus };
+
+/**
+ * I-15's "Periksa Sekarang": asks the backend to probe both services now and
+ * returns the fresh results (`POST /api/status/refresh`, Algo-021).
+ *
+ * Unlike `ambilStatusLayanan`, this is not a plain read: it makes the Worker
+ * perform two outbound requests. The backend skips the probe when a check landed
+ * within 30 seconds and reports that through `diperiksa`, so a double tap reuses
+ * the previous result instead of hammering the endpoints.
+ */
+export async function periksaStatusSekarang(): Promise<{
+  status: StatusLayanan;
+  /** `false` when the backend reused a check newer than its freshness window. */
+  diperiksa: boolean;
+}> {
+  const { status, diperiksa } = await api.post<{
+    status: { server: CekBerjenis | null; db: CekBerjenis | null };
+    diperiksa: boolean;
+  }>('/api/status/refresh');
+
+  const ke = (c: CekBerjenis | null): CekStatus =>
+    c ? { statusUptime: c.statusUptime, waktuCek: c.waktuCek } : null;
+
+  return { status: { server: ke(status.server), db: ke(status.db) }, diperiksa };
+}

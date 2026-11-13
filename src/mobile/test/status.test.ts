@@ -1,8 +1,8 @@
-import { afterEach, beforeEach, expect, test, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 
 // Imported from the module, not the `@/api` barrel (see client.test.ts).
 import { ApiError } from '@/api/client';
-import { ambilStatus, ambilStatusLayanan } from '@/api/status';
+import { ambilStatus, ambilStatusLayanan, periksaStatusSekarang } from '@/api/status';
 
 beforeEach(() => {
   vi.stubEnv('EXPO_PUBLIC_API_URL', 'http://sehati.test');
@@ -61,4 +61,53 @@ test('ambilStatusLayanan gagal jika salah satu permintaan gagal', async () => {
   const e = await ambilStatusLayanan().catch((galat: unknown) => galat);
   expect(e).toBeInstanceOf(ApiError);
   expect((e as ApiError).kode).toBe('GALAT_SERVER');
+});
+
+describe('periksaStatusSekarang', () => {
+  /** Mocks the single POST the refresh route makes. */
+  function tiruRefresh(status: number, isi: unknown) {
+    const f = vi.fn(async () => new Response(JSON.stringify(isi), { status }));
+    vi.stubGlobal('fetch', f);
+    return f;
+  }
+
+  test('POST /api/status/refresh dan mengurai kedua baris', async () => {
+    const f = tiruRefresh(200, {
+      diperiksa: true,
+      status: {
+        server: { jenis: 'server', statusUptime: true, waktuCek: '2026-11-13T03:00:00Z' },
+        db: { jenis: 'db', statusUptime: false, waktuCek: '2026-11-13T03:00:01Z' },
+      },
+    });
+
+    const hasil = await periksaStatusSekarang();
+
+    expect(hasil).toEqual({
+      diperiksa: true,
+      status: {
+        server: { statusUptime: true, waktuCek: '2026-11-13T03:00:00Z' },
+        db: { statusUptime: false, waktuCek: '2026-11-13T03:00:01Z' },
+      },
+    });
+    const [url, opsi] = f.mock.calls[0] as unknown as [string, RequestInit];
+    expect(url).toBe('http://sehati.test/api/status/refresh');
+    expect(opsi.method).toBe('POST');
+  });
+
+  test('meneruskan diperiksa:false saat backend memakai hasil lama', async () => {
+    tiruRefresh(200, { diperiksa: false, status: { server: null, db: null } });
+    await expect(periksaStatusSekarang()).resolves.toEqual({
+      diperiksa: false,
+      status: { server: null, db: null },
+    });
+  });
+
+  test('baris yang belum pernah dicek menjadi null, bukan galat', async () => {
+    tiruRefresh(200, {
+      diperiksa: true,
+      status: { server: { jenis: 'server', statusUptime: true, waktuCek: 'x' }, db: null },
+    });
+    const hasil = await periksaStatusSekarang();
+    expect(hasil.status.db).toBeNull();
+  });
 });
