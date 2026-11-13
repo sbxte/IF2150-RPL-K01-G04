@@ -2,9 +2,12 @@ export { ambilAfirmasi, hapusAfirmasi, simpanWaktuAfirmasi, type Afirmasi } from
 export { masukDemo, masukDenganGoogle } from './auth';
 export {
   ambilDaftarKonsultan,
-  ambilSlotKonsultan,
   ambilSesiBerikutnya,
+  ambilSlotKonsultan,
+  perbaruiJadwal,
   pesanSesi,
+  simpanJadwal,
+  type JadwalBaru,
   type Konsultan,
   type SesiBerikutnya,
   type SlotKonsultasi,

@@ -51,3 +51,8 @@ export const gagalUpstream = (pesan: string) =>
 /** Issue #11 — Google Calendar conflict is confirmable by an explicit override. */
 export const bentrokGoogleCalendar = (pesan = "Ada jadwal Google Calendar pada hari yang sama") =>
   new AppError(409, "GOOGLE_CALENDAR_CONFLICT", pesan);
+
+/** UC-05 alternatif 2 — D1 menolak atau gagal menyimpan perubahan jadwal. */
+export const gagalSimpanJadwal = (
+  pesan = "Perubahan jadwal gagal disimpan. Tekan Simpan sekali lagi.",
+) => new AppError(500, "GAGAL_MENYIMPAN_JADWAL", pesan);

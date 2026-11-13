@@ -1,9 +1,7 @@
-import { randomUUID } from "node:crypto";
 import { Hono } from "hono";
 import {
   ambilSlot,
   ambilSesiBerikutnya,
-  buatJadwal,
   daftarKonsultan,
   jadwalKonsultan,
   konsultanAda,
@@ -11,19 +9,19 @@ import {
   semuaJadwal,
   sesiTumpangTindih,
   sesiMahasiswaPadaHari,
-  slotKonsultanTumpang,
-  ubahJadwal,
 } from "../db/queries";
 import { bacaConfig } from "../config";
 import {
   bentrokJadwal,
   bentrokGoogleCalendar,
+  gagalSimpanJadwal,
   gagalValidasi,
   slotSudahDipesan,
   tidakDitemukan,
 } from "../lib/errors";
 import { bacaBody } from "../lib/http";
-import { validasiRentangJadwal } from "../lib/validasi";
+import { perbaruiJadwal, simpanJadwal } from "../lib/jadwal-konsultasi";
+import { periksaJadwal, validasiRentangJadwal } from "../lib/validasi";
 import {
   ambilKalender,
   cekBentrokJadwal,
@@ -91,13 +89,32 @@ consultantRoutes.get("/", auth, async (c) => {
   return c.json({ consultants: daftar });
 });
 
-/** C-29 `submitKonsultan(konsultan)` — Algo-024 then Algo-015 (Q-019, Q-014). */
+/**
+ * Midnight (WIB) of today as an ISO instant. The administrator's list starts here, so a
+ * slot that began earlier today can still be seen and corrected.
+ */
+function awalHariWib(sekarang = new Date()): string {
+  const WIB_MS = 7 * 3_600_000;
+  const hari = 86_400_000;
+  return new Date(Math.floor((sekarang.getTime() + WIB_MS) / hari) * hari - WIB_MS).toISOString();
+}
+
+/**
+ * C-29 `submitKonsultan(konsultan)` — Algo-024 then Algo-015 (Q-019, Q-014).
+ *  - Mahasiswa: only open slots, minus days they already have a session (UC-04).
+ *  - Administrator: every slot from today on, open and booked, for I-12 (UC-05).
+ */
 consultantRoutes.get("/:id/slots", auth, async (c) => {
   const db = c.get("db");
   const idKonsultan = c.req.param("id");
 
   const [ada] = await konsultanAda(db, idKonsultan); // Q-019
   if (!ada) throw tidakDitemukan("Konsultan tidak ditemukan");
+
+  if (c.get("peran") === "administrator") {
+    const slots = await jadwalKonsultan(db, idKonsultan, awalHariWib()); // Q-014
+    return c.json({ slots });
+  }
 
   const sekarang = new Date().toISOString();
   const slots = await jadwalKonsultan(db, idKonsultan, sekarang); // Q-014
@@ -170,9 +187,18 @@ slotRoutes.post("/:id/book", auth, requireRole("mahasiswa"), async (c) => {
   return c.json({ ok: true, idJadwal, status: "terpesan" });
 });
 
+/** UC-05 — turns a rejected `validasiJadwal` (Algo-025) into the HTTP error the screen shows. */
+function tolakJadwal(alasan: string, pesan: string) {
+  return alasan === "TUMPANG_TINDIH" ? bentrokJadwal(pesan) : gagalValidasi(pesan);
+}
+
 /**
- * UC-05 — administrator creates a slot.
- * Algo-024 + Algo-025 `validasiJadwal` (Q-019, Q-020), then insert.
+ * UC-05 — administrator adds a slot (I-12-09 "Tambah Slot").
+ * Algo-025 `validasiJadwal` (Q-019, Q-020), then `JadwalKonsultasi.simpanJadwal()`.
+ *
+ *  - 422 time not ISO 8601, end not after start, or consultant not registered
+ *  - 409 overlaps another slot of the consultant
+ *  - 500 `GAGAL_MENYIMPAN_JADWAL` the database could not store it (UC-05 alternative 2)
  */
 slotRoutes.post("/", auth, requireRole("administrator"), async (c) => {
   const body = await bacaBody(c);
@@ -180,40 +206,36 @@ slotRoutes.post("/", auth, requireRole("administrator"), async (c) => {
   if (typeof idKonsultan !== "string" || idKonsultan.trim().length === 0) {
     throw gagalValidasi("idKonsultan wajib diisi");
   }
-
-  const rentang = validasiRentangJadwal(body.waktu, body.waktuSelesai);
-  if (!rentang) {
-    throw gagalValidasi("waktu dan waktuSelesai harus ISO-8601 valid dengan selesai > mulai");
-  }
-
   const db = c.get("db");
 
-  const [ada] = await konsultanAda(db, idKonsultan); // Q-019
-  if (!ada) throw gagalValidasi("Konsultan tidak terdaftar");
-
-  const idJadwal = randomUUID();
-  const [tumpang] = await slotKonsultanTumpang(db, {
-    idKonsultan, // Q-020
-    idJadwal,
-    waktu: rentang.mulai.toISOString(),
-    waktuSelesai: rentang.selesai.toISOString(),
-  });
-  if (tumpang) throw bentrokJadwal("Slot bertumpang tindih dengan jadwal konsultan lain");
-
-  await buatJadwal(db, {
-    idJadwal,
+  const hasil = await periksaJadwal(db, {
     idKonsultan,
-    waktu: rentang.mulai.toISOString(),
-    waktuSelesai: rentang.selesai.toISOString(),
-    status: "tersedia",
+    waktu: body.waktu,
+    waktuSelesai: body.waktuSelesai,
   });
+  if (!hasil.valid) throw tolakJadwal(hasil.alasan, hasil.pesan);
+
+  let idJadwal: string | null;
+  try {
+    idJadwal = await simpanJadwal(db, {
+      idKonsultan,
+      waktu: hasil.mulai.toISOString(),
+      waktuSelesai: hasil.selesai.toISOString(),
+    });
+  } catch (error) {
+    console.error("[simpanJadwal]", error);
+    throw gagalSimpanJadwal();
+  }
+  // Lost a race with another administrator: the slot now overlaps one that was just saved.
+  if (idJadwal === null) throw bentrokJadwal("Slot bertumpang tindih dengan jadwal konsultan lain");
 
   return c.json({ ok: true, idJadwal }, 201);
 });
 
 /**
- * UC-05 — Algo-022 administrator branch: Algo-025 `validasiJadwal`
- * then Algo-029 Q-027.
+ * UC-05 — Algo-022 administrator branch: Algo-025 `validasiJadwal`, then
+ * `KalenderGabungan.ubahKalender` -> Algo-029 Q-027 (`JadwalKonsultasi.perbaruiJadwal()`).
+ * Same status codes as POST; an unknown slot is 404.
  */
 slotRoutes.patch("/:id", auth, requireRole("administrator"), async (c) => {
   const idJadwal = c.req.param("id");
@@ -223,27 +245,26 @@ slotRoutes.patch("/:id", auth, requireRole("administrator"), async (c) => {
   const [slot] = await ambilSlot(db, idJadwal);
   if (!slot) throw tidakDitemukan("Slot jadwal tidak ditemukan");
 
-  const rentang = validasiRentangJadwal(
-    body.waktu ?? slot.waktu,
-    body.waktuSelesai ?? slot.waktuSelesai,
-  );
-  if (!rentang) {
-    throw gagalValidasi("waktu dan waktuSelesai harus ISO-8601 valid dengan selesai > mulai");
-  }
-
-  const [tumpang] = await slotKonsultanTumpang(db, {
-    idKonsultan: slot.idKonsultan, // Q-020
+  const hasil = await periksaJadwal(db, {
     idJadwal,
-    waktu: rentang.mulai.toISOString(),
-    waktuSelesai: rentang.selesai.toISOString(),
+    idKonsultan: slot.idKonsultan,
+    waktu: body.waktu ?? slot.waktu,
+    waktuSelesai: body.waktuSelesai ?? slot.waktuSelesai,
   });
-  if (tumpang) throw bentrokJadwal("Slot bertumpang tindih dengan jadwal konsultan lain");
+  if (!hasil.valid) throw tolakJadwal(hasil.alasan, hasil.pesan);
 
-  await ubahJadwal(db, {
-    idJadwal, // Q-027
-    waktu: rentang.mulai.toISOString(),
-    waktuSelesai: rentang.selesai.toISOString(),
-  });
+  let tersimpan: boolean;
+  try {
+    tersimpan = await perbaruiJadwal(db, {
+      idJadwal, // Q-027
+      waktu: hasil.mulai.toISOString(),
+      waktuSelesai: hasil.selesai.toISOString(),
+    });
+  } catch (error) {
+    console.error("[perbaruiJadwal]", error);
+    throw gagalSimpanJadwal();
+  }
+  if (!tersimpan) throw bentrokJadwal("Slot bertumpang tindih dengan jadwal konsultan lain");
 
   return c.json({ ok: true, idJadwal });
 });

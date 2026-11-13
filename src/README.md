@@ -531,7 +531,7 @@ Rujukan lengkap: [`backend/README.md`](./backend/README.md).
 | `PUT` | `/api/reminders/:jenis` | mahasiswa |
 | `GET` | `/api/calendar` | mahasiswa |
 | `GET` | `/api/consultants` | semua |
-| `GET` | `/api/consultants/:id/slots` | semua |
+| `GET` | `/api/consultants/:id/slots` | semua (Mahasiswa: hanya slot tersedia; Administrator: semua slot mulai hari ini) |
 | `GET` | `/api/sessions/next` | mahasiswa |
 | `POST` | `/api/slots/:id/book` | mahasiswa |
 | `POST` | `/api/slots` | administrator |
@@ -558,7 +558,7 @@ Selain `/api/auth/google*` dan `/health`, semua rute memerlukan `Authorization: 
 { "error": { "kode": "VALIDASI_GAGAL", "pesan": "...", "detail": null } }
 ```
 
-Status: `400` body tidak valid · `401` belum terautentikasi · `403` peran salah · `404` tidak ditemukan · `409` konflik (slot terambil / jadwal bentrok) · `422` validasi gagal · `502` kegagalan layanan eksternal.
+Status: `400` body tidak valid · `401` belum terautentikasi · `403` peran salah · `404` tidak ditemukan · `409` konflik (slot terambil / jadwal bentrok) · `422` validasi gagal · `500` kesalahan server, termasuk `GAGAL_MENYIMPAN_JADWAL` (jadwal tidak tersimpan) · `502` kegagalan layanan eksternal.
 
 **Deep link login wajib berhost.** `kembali` pada `/api/auth/google/mulai` dan `state` pada `/api/auth/google/callback` harus berupa deep link aplikasi yang memiliki host — `sehati://masuk` untuk biner produksi, `exp://<host>:8081/--/` untuk Expo Go. Tanpa host (`sehati://`, `sehati:///`) rute membalas **400**, karena Android merutekan intent berdasarkan `scheme://host` sehingga tautan tanpa host tidak membuka aplikasi apa pun dan login tampak menggantung tanpa pesan galat. Alur lengkapnya ada di [`backend/README.md`](./backend/README.md#google-login-flow).
 
@@ -594,3 +594,17 @@ Repositori memakai [Conventional Commits](https://www.conventionalcommits.org/),
 Alur Mahasiswa: tab **Konsultasi** membuka I-07 (`src/mobile/src/app/(mahasiswa)/konsultasi.tsx`) dan mengambil daftar konsultan melalui `ambilDaftarKonsultan()` (`GET /api/consultants`). Memilih konsultan mengambil slot melalui `ambilSlotKonsultan()` (`GET /api/consultants/:id/slots`) lalu membuka I-08 (`sesi.tsx`). I-08 menampilkan slot per tanggal, menandai slot yang sudah dipesan atau bertabrakan dengan event Google Calendar, dan mengirim konfirmasi melalui `pesanSesi()` (`POST /api/slots/:id/book`).
 
 Backend berada di `src/backend/src/routes/consultation.ts`. Sebelum menyimpan, server memeriksa bentrok Google Calendar dan sesi lain milik Mahasiswa. `pesanSlot()` di `src/backend/src/db/queries.ts` menggunakan kondisi `status = 'tersedia'` dalam `UPDATE`; jika tidak tepat satu baris berubah, API mengembalikan `409 SLOT_SUDAH_DIPESAN`. Ini mencegah dua Mahasiswa memesan slot yang sama. `ambilSesiBerikutnya()` (Q-042) menyediakan sesi terdekat untuk kartu Beranda. Pengujian alur dan konflik ada di `src/backend/test/consultation.test.ts`.
+
+## 12. Kelola Jadwal Konsultan (Issue #13)
+
+Alur Administrator (UC-05): menu **Jadwal Konsultan** di I-03 membuka I-12 (`src/mobile/src/app/admin/jadwal.tsx`). Layar mengambil daftar konsultan (`ambilDaftarKonsultan()`, `GET /api/consultants`), lalu slot konsultan terpilih (`ambilSlotKonsultan()`, `GET /api/consultants/:id/slots`). Untuk Administrator rute ini mengembalikan **semua** slot mulai awal hari ini (WIB), tersedia maupun terpesan; untuk Mahasiswa perilakunya tidak berubah. Tanggal ditampilkan sebagai tiga chip mulai hari ini (`JUMLAH_HARI` di `src/mobile/src/lib/jadwal.ts`), dan semua jam dibaca serta ditampilkan dalam WIB.
+
+- **Tambah Slot** membuka panel kosong dan menyimpan lewat `simpanJadwal()` (`POST /api/slots`).
+- **Ubah** pada kartu slot membuka panel berisi jam slot itu dan menyimpan lewat `perbaruiJadwal()` (`PATCH /api/slots/:id`, Q-027). Slot yang sudah dipesan boleh digeser; statusnya dan pemesannya tidak berubah, dan panel menampilkan pemberitahuan bahwa jam sesi mahasiswa ikut berubah.
+- Banner galat **I-12-08** (UC-05 alternatif 1) tampil bila daftar konsultan atau slot gagal diambil, bersama tombol **Muat ulang**. Banner **I-12-07** (alternatif 2) tampil di panel bila perubahan gagal disimpan (HTTP 500 `GAGAL_MENYIMPAN_JADWAL`, atau tidak ada respons). Penolakan karena masukan, yaitu `400`, `404`, `409`, atau `422`, bukan kegagalan simpan dan ditampilkan sebagai pesan di panel, bukan sebagai banner.
+
+Validasi (`Validasi.validasiJadwal`, Algo-025) ada di `src/backend/src/lib/validasi.ts`. `periksaJadwal(db, jadwal)` mengembalikan alasan penolakan (`FORMAT_WAKTU`, `URUTAN_WAKTU`, `KONSULTAN_TIDAK_TERDAFTAR`, `TUMPANG_TINDIH`) agar rute bisa menjawab `422` atau `409`; `validasiJadwal(db, jadwal)` membungkusnya menjadi `Boolean` sesuai DPPL. Pemeriksaan berurutan: kedua waktu berupa ISO 8601, waktu selesai setelah waktu mulai, konsultan terdaftar (Q-019), lalu tidak ada slot lain milik konsultan yang tumpang tindih (Q-020). Penulisan ada di `src/backend/src/lib/jadwal-konsultasi.ts` (`simpanJadwal`, `perbaruiJadwal`); keduanya mengulang pemeriksaan tumpang tindih di dalam pernyataan SQL-nya (`WHERE NOT EXISTS`), sehingga dua Administrator yang menyimpan bersamaan tidak bisa sama-sama lolos.
+
+Waktu pada Q-020 dibandingkan lewat `strftime('%Y-%m-%dT%H:%M:%fZ', ...)`, bukan sebagai teks. Seed menulis `...:00Z`, sedangkan API menulis `...:00.000Z`; dibandingkan sebagai teks, slot yang berurutan (selesai 04.00, berikutnya mulai 04.00) salah terbaca bertumpang tindih.
+
+Pengujian: `src/backend/test/jadwal-konsultan.test.ts` (validasi, penulisan, rute, kegagalan database, dan dua penyimpanan bersamaan) dan `src/mobile/test/jadwal.test.ts` serta tambahan di `src/mobile/test/konsultasi.test.ts` (helper jadwal, klasifikasi galat, klien API).
