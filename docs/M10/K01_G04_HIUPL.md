@@ -69,7 +69,7 @@ Dipersiapkan oleh:
 
 ## 1.1 Tujuan Penulisan Dokumen
 
-Dokumen Hasil Implementasi dan Uji Perangkat Lunak (HIUPL) ini melaporkan hasil implementasi perangkat lunak Sehati beserta hasil pengujiannya, sebagai lanjutan dari dokumen Spesifikasi Kebutuhan Perangkat Lunak (SKPL), Arsitektur Perangkat Lunak (APL), Deskripsi Perancangan Perangkat Lunak (DPPL), dan dokumen Implementasi (Tugas 9). Dokumen ini memetakan setiap kelas dan antarmuka rancangan DPPL ke berkas kode pada repositori, lalu melaporkan pengujian pada level unit, integrasi, _use case_, dan kebutuhan nonfungsional terhadap _tag release_ terakhir Tugas 9.
+Dokumen Hasil Implementasi dan Uji Perangkat Lunak (HIUPL) ini melaporkan hasil implementasi perangkat lunak Sehati beserta hasil pengujiannya, sebagai lanjutan dari dokumen Spesifikasi Kebutuhan Perangkat Lunak (SKPL), Arsitektur Perangkat Lunak (APL), Deskripsi Perancangan Perangkat Lunak (DPPL), dan dokumen Implementasi. Dokumen ini memetakan setiap kelas dan antarmuka rancangan DPPL ke berkas kode pada repositori, lalu melaporkan pengujian pada level unit, integrasi, _use case_, dan kebutuhan nonfungsional. Rujukan versi untuk seluruh dokumen ini adalah _tag release_ `v10.0`, yang dibuat setelah dokumen ini dan hasil pengujiannya final.
 
 Dokumen ini ditujukan kepada tim pengembang sebagai catatan kondisi P/L yang telah dibangun dan diuji, kepada asisten dan penguji sebagai bukti bahwa implementasi memenuhi kebutuhan dan rancangan, serta kepada pemangku kepentingan yang perlu menilai kesiapan Sehati untuk digunakan.
 
