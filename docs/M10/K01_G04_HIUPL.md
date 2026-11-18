@@ -59,12 +59,9 @@ Dipersiapkan oleh:
 
 ## Daftar Perubahan
 
-| Revisi | Deskripsi                                                                                                                               |
-| ------ | --------------------------------------------------------------------------------------------------------------------------------------- |
-| _A_    | _Deskripsikan perubahan yang dilakukan dari dokumen sebelumnya pada dokumen ini. Jika tidak terdapat perubahan, harap kosongkan tabel._ |
-| _B_    |                                                                                                                                         |
-| _C_    |                                                                                                                                         |
-| ...    |                                                                                                                                         |
+| Revisi | Deskripsi |
+| ------ | --------- |
+| REV-M10-01 | Menambahkan layar **Pertanyaan Masuk** untuk Administrator (`src/mobile/src/app/admin/pertanyaan.tsx`) yang tidak terdapat pada rancangan antarmuka DPPL. Pada DPPL, pertanyaan yang dikirim Mahasiswa lewat I-10 (UC-12) hanya disimpan ke `PengajuanPertanyaan` (C-13) tanpa layar untuk membacanya, dan I-13 hanya mengelola FAQ. Layar ini menampilkan pertanyaan masuk beserta nama pengirim dan waktu pengajuan, dengan pencarian dan penyaring rentang waktu, serta memungkinkan Administrator menjawab pertanyaan sehingga menjadi FAQ baru atau menghapusnya. Layar ini dilayani rute tambahan `GET /api/questions` dan `DELETE /api/questions/:id` khusus Administrator pada `FAQController` (C-30), dan termasuk kelas `FAQView` (C-22). Perubahan ini tercatat pada Tabel B.1 no. 15 dokumen Implementasi (Tugas 9) dan tampak pada Tabel 3.2 dan Tabel 3.3 (BAB 3). |
 
 ---
 
@@ -261,58 +258,123 @@ Gambar 2.2 menunjukkan bahwa UC-11 (Masuk Melalui Akun Google) terhubung dengan 
 
 # BAB 3: Implementasi
 
-Bagian ini diisi dengan informasi tentang elemen P/L yang dikembangkan (_executable files_, _configuration files_, _data files_, dan sebagainya) serta perubahannya terhadap rancangan pada DPPL (jika ada).
+Bab ini menjabarkan elemen P/L Sehati yang telah dikembangkan pada _tag release_ `v9.1`, yaitu lingkungan implementasi, pemetaan kelas dan antarmuka DPPL ke berkas kode, serta berkas pendukung lainnya. Kode sumber berada pada folder `src/` repositori, terbagi menjadi `src/backend/` (_server_) dan `src/mobile/` (aplikasi _mobile_). Hasil eksekusinya ada dua: Worker `sehati-backend` yang di-_deploy_ ke Cloudflare pada `https://sehati.sbxte.net`, dan berkas `sehati-v9.1.apk` yang dilampirkan pada rilis `v9.1`. Perubahan implementasi terhadap rancangan DPPL tercatat pada Tabel B.1 dokumen Implementasi (Tugas 9).
 
 ## 3.1 Lingkungan Implementasi
 
-Tuliskan _hardware_ dan _software_ yang digunakan untuk implementasi, mencakup _operating system_, bahasa pemrograman beserta versinya, _framework_/_library_, DBMS, _development tools_, dan _version control_. Lingkungan ini harus konsisten dengan **Subbab 2.1 DPPL**; jelaskan jika ada perubahan. Cantumkan juga _framework_ dan alat pengujian yang dipakai.
+Lingkungan implementasi mengikuti Subbab 2.1 DPPL, yaitu _server_ Hono di Cloudflare Workers dengan basis data Cloudflare D1 dan aplikasi React Native (Expo) untuk Android dan iOS. Terdapat beberapa tambahan dibanding DPPL. Drizzle ORM dipakai untuk mendefinisikan skema dan kueri D1. Bun dipakai sebagai _package manager_. EAS Build dipakai untuk membuat APK. Expo Push Service menjadi sistem eksternal untuk mengirim _push notification_. Vitest dipakai sebagai alat pengujian. Versi Android dan iOS pada Tabel 3.1 adalah versi terbaru yang menjadi sasaran aplikasi.
 
 Tabel 3.1. Lingkungan Implementasi
 
-| Aspek                | Keterangan                                                 |
-| -------------------- | ---------------------------------------------------------- |
-| _Hardware_           | _[Spesifikasi perangkat keras]_                            |
-| _Operating System_   | _[Nama dan versi OS]_                                      |
-| _Bahasa Pemrograman_ | _[Bahasa dan versi]_                                       |
-| _Framework/Library_  | _[Daftar framework/library beserta versi]_                 |
-| _DBMS_               | _[Nama dan versi DBMS]_                                    |
-| _Development Tools_  | _[IDE, version control, tools lain]_                       |
-| _Testing Tools_      | _[Framework unit test, alat ukur performa, alat coverage]_ |
+| Aspek | Keterangan |
+| --- | --- |
+| _Hardware_ | _Client_: ponsel pintar Android dan iPhone. _Server_: jaringan _edge_ Cloudflare (Cloudflare Workers dan Cloudflare D1), tanpa _server_ fisik yang dikelola sendiri. |
+| _Operating System_ | _Client_: Android 17 dan iOS 27.2.1. _Server_: Cloudflare Workers (V8 _isolates_), tanpa OS tradisional. |
+| _Bahasa Pemrograman_ | TypeScript 7 (_server_) dan TypeScript 6 (_client_) |
+| _Framework/Library_ | _Server_: Hono 4.13, Drizzle ORM 0.45. _Client_: Expo SDK 58, React Native 0.88.1, React 19.3, Expo Router 58, expo-notifications 58.1, expo-secure-store 58, expo-web-browser 58, @react-native-community/datetimepicker 9.2, lucide-react-native 1.69 |
+| _DBMS_ | Cloudflare D1 (SQLite terkelola); migrasi dibuat dengan drizzle-kit 0.31 |
+| _Development Tools_ | Git dan GitHub, Bun 1.4.4, Wrangler 4.160 (Cloudflare Workers), Expo CLI, EAS CLI dan EAS Build, ESLint 9 |
+| _Testing Tools_ | Vitest 5.1 (unit dan integrasi, _server_ dan _client_), better-sqlite3 13 (D1 tiruan di memori untuk pengujian _server_), `tsc --noEmit` (pemeriksaan tipe), `expo lint`, Expo Go dan APK pada perangkat fisik untuk pengujian _use case_ |
 
 ## 3.2 Implementasi Modul
 
-Daftar modul/kelas yang **TELAH** diimplementasikan. Gunakan nama dan ID kelas yang sama dengan DPPL, dan konsisten dengan Tabel B.5 pada dokumen Implementasi (Tugas 9).
+Tabel 3.2 memetakan seluruh 36 kelas perancangan DPPL ke berkas kode, konsisten dengan Tabel B.5 dokumen Implementasi (Tugas 9). Kelas _model_ dan _controller_ dijalankan sebagai bagian Worker `sehati-backend`, sedangkan kelas _view_ dijalankan dalam aplikasi `sehati-v9.1.apk`. Satu kelas dapat terwujud dalam beberapa berkas, misalnya tabel basis data di `schema.ts` dan kuerinya di `queries.ts`.
 
 Tabel 3.2. Implementasi Modul
 
-| No  | ID Kelas | Nama Modul/Kelas     | Nama File Fisik  | Nama File Executable                            |
-| --- | -------- | -------------------- | ---------------- | ----------------------------------------------- |
-| 1   | _[C01]_  | _[Nama modul/kelas]_ | _[path/ke/file]_ | _[Nama file executable, atau - jika tidak ada]_ |
-| 2   | _[C02]_  | _[Nama modul/kelas]_ | _[path/ke/file]_ | _[...]_                                         |
-| ... | _..._    | _..._                | _..._            | _..._                                           |
+| No | ID Kelas | Nama Modul/Kelas | Nama File Fisik | Nama File Executable |
+| --- | --- | --- | --- | --- |
+| 1 | C-01 | `Pengguna` | `src/backend/src/db/schema.ts` (`pengguna`) | Worker `sehati-backend` |
+| 2 | C-02 | `Mahasiswa` | `src/backend/src/db/schema.ts` (`mahasiswa`) | Worker `sehati-backend` |
+| 3 | C-03 | `Administrator` | `src/backend/src/db/schema.ts` (`pengguna.peran`), `src/backend/src/middleware/auth.ts` (`requireRole`) | Worker `sehati-backend` |
+| 4 | C-04 | `SesiAutentikasi` | `src/backend/src/db/schema.ts`, `src/backend/src/middleware/auth.ts`, `src/backend/src/routes/auth.ts`; `src/mobile/src/api/sesi.ts`, `src/mobile/src/lib/sesi.tsx` | Worker `sehati-backend`; `sehati-v9.1.apk` |
+| 5 | C-05 | `DailyAffirmation` | `src/backend/src/db/schema.ts`, `src/backend/src/db/queries.ts`, `src/backend/src/jobs/scheduler.ts` | Worker `sehati-backend` |
+| 6 | C-06 | `Reminder` | `src/backend/src/db/schema.ts`, `src/backend/src/db/queries.ts`, `src/backend/src/jobs/scheduler.ts` | Worker `sehati-backend` |
+| 7 | C-07 | `Notifikasi` | `src/backend/src/db/schema.ts`, `src/backend/src/db/queries.ts`, `src/backend/src/jobs/scheduler.ts`; `src/mobile/src/lib/notifikasi.ts` | Worker `sehati-backend`; `sehati-v9.1.apk` |
+| 8 | C-08 | `GoogleCalendarService` | `src/backend/src/lib/google.ts` | Worker `sehati-backend` |
+| 9 | C-09 | `KalenderGabungan` | `src/backend/src/lib/kalender.ts` | Worker `sehati-backend` |
+| 10 | C-10 | `Konsultan` | `src/backend/src/db/schema.ts`, `src/backend/src/db/queries.ts` | Worker `sehati-backend` |
+| 11 | C-11 | `JadwalKonsultasi` | `src/backend/src/db/schema.ts`, `src/backend/src/db/queries.ts`, `src/backend/src/lib/jadwal-konsultasi.ts` | Worker `sehati-backend` |
+| 12 | C-12 | `FAQ` | `src/backend/src/db/schema.ts`, `src/backend/src/db/queries.ts` | Worker `sehati-backend` |
+| 13 | C-13 | `PengajuanPertanyaan` | `src/backend/src/db/schema.ts`, `src/backend/src/db/queries.ts` | Worker `sehati-backend` |
+| 14 | C-14 | `UmpanBalik` | `src/backend/src/db/schema.ts`, `src/backend/src/db/queries.ts` | Worker `sehati-backend` |
+| 15 | C-15 | `StatusServer` | `src/backend/src/db/schema.ts`, `src/backend/src/db/queries.ts` | Worker `sehati-backend` |
+| 16 | C-16 | `LoginView` | `src/mobile/src/app/index.tsx`, `src/mobile/src/api/auth.ts` | `sehati-v9.1.apk` |
+| 17 | C-17 | `AffirmationView` | `src/mobile/src/app/(mahasiswa)/afirmasi.tsx`, `src/mobile/src/api/afirmasi.ts` | `sehati-v9.1.apk` |
+| 18 | C-18 | `ReminderView` | `src/mobile/src/app/(mahasiswa)/pengingat.tsx`, `src/mobile/src/api/pengingat.ts` | `sehati-v9.1.apk` |
+| 19 | C-19 | `CalendarView` | `src/mobile/src/app/(mahasiswa)/kalender.tsx`, `src/mobile/src/api/kalender.ts`, `src/mobile/src/lib/kalender.ts` | `sehati-v9.1.apk` |
+| 20 | C-20 | `ConsultationBookingView` | `src/mobile/src/app/(mahasiswa)/konsultasi.tsx`, `src/mobile/src/app/(mahasiswa)/sesi.tsx`, `src/mobile/src/api/konsultasi.ts` | `sehati-v9.1.apk` |
+| 21 | C-21 | `ConsultationManagementView` | `src/mobile/src/app/admin/jadwal.tsx`, `src/mobile/src/lib/jadwal.ts` | `sehati-v9.1.apk` |
+| 22 | C-22 | `FAQView` | `src/mobile/src/app/(mahasiswa)/faq.tsx`, `src/mobile/src/app/(mahasiswa)/pertanyaan.tsx`, `src/mobile/src/app/admin/faq.tsx`, `src/mobile/src/app/admin/faq-form.tsx`, `src/mobile/src/app/admin/pertanyaan.tsx`, `src/mobile/src/api/faq.ts` | `sehati-v9.1.apk` |
+| 23 | C-23 | `FeedbackView` | `src/mobile/src/app/(mahasiswa)/umpan-balik.tsx`, `src/mobile/src/app/admin/umpan-balik.tsx`, `src/mobile/src/api/umpan-balik.ts` | `sehati-v9.1.apk` |
+| 24 | C-24 | `ServerStatusView` | `src/mobile/src/app/admin/status.tsx`, `src/mobile/src/lib/status.ts`, `src/mobile/src/api/status.ts` | `sehati-v9.1.apk` |
+| 25 | C-25 | `AuthController` | `src/backend/src/routes/auth.ts` | Worker `sehati-backend` |
+| 26 | C-26 | `AffirmationController` | `src/backend/src/routes/affirmation.ts` (`affirmationRoutes`) | Worker `sehati-backend` |
+| 27 | C-27 | `ReminderController` | `src/backend/src/routes/affirmation.ts` (`reminderRoutes`) | Worker `sehati-backend` |
+| 28 | C-28 | `CalendarController` | `src/backend/src/routes/consultation.ts` (`calendarRoutes`) | Worker `sehati-backend` |
+| 29 | C-29 | `ConsultationController` | `src/backend/src/routes/consultation.ts` (`consultantRoutes`, `slotRoutes`, `sessionRoutes`) | Worker `sehati-backend` |
+| 30 | C-30 | `FAQController` | `src/backend/src/routes/faq.ts`, `src/backend/src/routes/questions.ts` | Worker `sehati-backend` |
+| 31 | C-31 | `FeedbackController` | `src/backend/src/routes/feedback.ts` | Worker `sehati-backend` |
+| 32 | C-32 | `ServerStatusController` | `src/backend/src/routes/status.ts`, `src/backend/src/lib/status-probe.ts`, `src/backend/src/jobs/scheduler.ts` | Worker `sehati-backend` |
+| 33 | C-33 | `Validasi` | `src/backend/src/lib/validasi.ts` | Worker `sehati-backend` |
+| 34 | C-34 | `GoogleAuthService` | `src/backend/src/lib/google.ts`, `src/backend/src/lib/crypto.ts` | Worker `sehati-backend` |
+| 35 | C-35 | `CloudflareD1Database` | `src/backend/wrangler.jsonc` (_binding_ `D1`), `src/backend/src/index.ts` | Worker `sehati-backend` |
+| 36 | C-36 | `HomeView` | `src/mobile/src/app/(mahasiswa)/beranda.tsx`, `src/mobile/src/app/admin/index.tsx`, `src/mobile/src/views/beranda/`, `src/mobile/src/lib/muatan.ts` | `sehati-v9.1.apk` |
 
 ## 3.3 Implementasi Antarmuka
 
-Daftar antarmuka yang telah diimplementasikan. Gunakan ID dan nama layar yang sama dengan ID dan nama layar pada tugas DPPL.
+Seluruh 15 antarmuka DPPL telah diimplementasikan sebagai layar Expo Router di `src/mobile/src/app/`. Satu berkas `.tsx` pada folder tersebut adalah satu layar (_route_). Layar Mahasiswa berada pada grup `(mahasiswa)` dengan _tab bar_, sedangkan layar Administrator berada pada _stack_ `admin`. Selain itu terdapat satu layar tambahan di luar DPPL, yaitu Pertanyaan Masuk untuk Administrator (lihat Daftar Perubahan REV-M10-01).
 
 Tabel 3.3. Implementasi Antarmuka
 
-| No  | ID Antarmuka | Nama Antarmuka | Nama File Fisik  | Nama File Executable                            |
-| --- | ------------ | -------------- | ---------------- | ----------------------------------------------- |
-| 1   | _[I-01]_     | _[Nama layar]_ | _[path/ke/file]_ | _[Nama file executable, atau - jika tidak ada]_ |
-| 2   | _[I-02]_     | _[Nama layar]_ | _[path/ke/file]_ | _[...]_                                         |
-| ... | _..._        | _..._          | _..._            | _..._                                           |
+| No | ID Antarmuka | Nama Antarmuka | Nama File Fisik | Nama File Executable |
+| --- | --- | --- | --- | --- |
+| 1 | I-01 | Masuk | `src/mobile/src/app/index.tsx` | `sehati-v9.1.apk` |
+| 2 | I-02 | Beranda Mahasiswa | `src/mobile/src/app/(mahasiswa)/beranda.tsx` | `sehati-v9.1.apk` |
+| 3 | I-03 | Beranda Administrator | `src/mobile/src/app/admin/index.tsx` | `sehati-v9.1.apk` |
+| 4 | I-04 | Daily Affirmations | `src/mobile/src/app/(mahasiswa)/afirmasi.tsx` | `sehati-v9.1.apk` |
+| 5 | I-05 | Pengingat Kesehatan | `src/mobile/src/app/(mahasiswa)/pengingat.tsx` | `sehati-v9.1.apk` |
+| 6 | I-06 | Kalender Terintegrasi | `src/mobile/src/app/(mahasiswa)/kalender.tsx` | `sehati-v9.1.apk` |
+| 7 | I-07 | Pilih Konsultan | `src/mobile/src/app/(mahasiswa)/konsultasi.tsx` | `sehati-v9.1.apk` |
+| 8 | I-08 | Pilih Sesi dan Konfirmasi | `src/mobile/src/app/(mahasiswa)/sesi.tsx` | `sehati-v9.1.apk` |
+| 9 | I-09 | FAQ dan Pencarian | `src/mobile/src/app/(mahasiswa)/faq.tsx` | `sehati-v9.1.apk` |
+| 10 | I-10 | Form Pengajuan Pertanyaan | `src/mobile/src/app/(mahasiswa)/pertanyaan.tsx` | `sehati-v9.1.apk` |
+| 11 | I-11 | Umpan Balik | `src/mobile/src/app/(mahasiswa)/umpan-balik.tsx` | `sehati-v9.1.apk` |
+| 12 | I-12 | Kelola Jadwal Konsultan | `src/mobile/src/app/admin/jadwal.tsx` | `sehati-v9.1.apk` |
+| 13 | I-13 | Kelola FAQ | `src/mobile/src/app/admin/faq.tsx`, `src/mobile/src/app/admin/faq-form.tsx` (formulir I-13-05) | `sehati-v9.1.apk` |
+| 14 | I-14 | Tanggapi Umpan Balik | `src/mobile/src/app/admin/umpan-balik.tsx` | `sehati-v9.1.apk` |
+| 15 | I-15 | Status Server | `src/mobile/src/app/admin/status.tsx` | `sehati-v9.1.apk` |
+| 16 | - | Pertanyaan Masuk (tambahan, Administrator) | `src/mobile/src/app/admin/pertanyaan.tsx` | `sehati-v9.1.apk` |
+
+Komponen antarmuka bersama yang dipakai lintas layar (`AppBar`, `Tombol`, `Banner`, `Lencana`, `TabBar`, dan lain-lain) berada di `src/mobile/src/components/`, dengan token warna, jarak, dan tipografi dari rancangan Figma di `src/mobile/src/theme/`.
 
 ## 3.4 File Lain
 
-Daftar file lain yang dibuat selain file kelas dan antarmuka, misalnya file _utility_, _configuration_, _database schema/seed_, _file test_, atau _data_.
-
 Tabel 3.4. File Lain
 
-| No  | Nama File     | Keterangan      |
-| --- | ------------- | --------------- |
-| 1   | _[Nama file]_ | _[Fungsi file]_ |
-| ... | _..._         | _..._           |
+| No | Nama File | Keterangan |
+| --- | --- | --- |
+| 1 | `src/backend/src/index.ts` | Titik masuk Worker: _middleware_ CORS dan basis data, pemasangan seluruh rute `/api/*`, rute `/health` dan `/health/db`, serta _handler_ `scheduled` untuk _cron_. |
+| 2 | `src/backend/src/config.ts` | Konstanta aplikasi (`BATAS_SESI_HARI`, `KONTEN_BAWAAN`, jenis pengingat dan status) dan pembacaan variabel lingkungan. |
+| 3 | `src/backend/src/lib/errors.ts`, `src/backend/src/lib/http.ts` | Format galat API yang seragam (kode status dan pesan) serta pembacaan _body_ dan _query_ permintaan. |
+| 4 | `src/backend/src/lib/crypto.ts` | Enkripsi dan dekripsi AES-256-GCM untuk token Google yang disimpan. |
+| 5 | `src/backend/wrangler.jsonc` | Konfigurasi Worker: nama, _binding_ D1, tiga Cron Trigger, dan variabel `API_BASE_URL`, `GOOGLE_REDIRECT_URI`, `MODE_DEMO`. |
+| 6 | `src/backend/.env.example` | Contoh variabel rahasia (`KUNCI_TOKEN`, kredensial Google) tanpa nilai asli. |
+| 7 | `src/backend/migrations/0000_*.sql` s.d. `0004_*.sql`, `migrations/meta/` | Migrasi skema D1 yang dihasilkan drizzle-kit dari `schema.ts`. |
+| 8 | `src/backend/seed/seed.sql` | Data uji: akun Mahasiswa dan Administrator demo, konsultan, slot jadwal, dan contoh FAQ. |
+| 9 | `src/backend/test/*.test.ts`, `src/backend/test/harness.ts`, `src/backend/src/index.test.ts` | Pengujian _server_ dengan Vitest; _harness_ membuat D1 tiruan di memori dari berkas migrasi. |
+| 10 | `src/backend/package.json`, `bun.lock`, `tsconfig.json` | Dependensi, skrip (`dev`, `test`, `typecheck`, `db:*`), dan konfigurasi TypeScript _server_. |
+| 11 | `src/mobile/app.json`, `src/mobile/app.config.ts` | Konfigurasi aplikasi Expo: nama, _scheme_ `sehati`, _package_ Android `com.k01g04.sehati`, _plugin_, dan pembacaan `google-services.json` dari _secret_ EAS. |
+| 12 | `src/mobile/eas.json` | Profil EAS Build `development` dan `production` (APK, alamat _backend_, mode demo). |
+| 13 | `src/mobile/.env.example` | Contoh variabel `EXPO_PUBLIC_API_URL` dan `EXPO_PUBLIC_MODE_DEMO`. |
+| 14 | `src/mobile/src/app/_layout.tsx`, `(mahasiswa)/_layout.tsx`, `admin/_layout.tsx`, `+native-intent.tsx` | Navigasi: pemuatan font dan sesi, _handler_ notifikasi, grup _tab_ Mahasiswa, _stack_ Administrator, dan penanganan _deep link_ login. |
+| 15 | `src/mobile/src/api/client.ts` | Klien HTTP ke REST API: alamat dasar, token sesi, dan penerjemahan galat. |
+| 16 | `src/mobile/src/api/perangkat.ts`, `src/mobile/src/lib/waktu.ts` | Pendaftaran token _push_ ke _server_ dan format tanggal/jam WIB. |
+| 17 | `src/mobile/src/components/`, `src/mobile/src/theme/`, `src/mobile/src/views/beranda/` | Komponen antarmuka bersama, token desain, dan kartu-kartu Beranda. |
+| 18 | `src/mobile/assets/` | Logo, ikon aplikasi, dan _splash screen_. |
+| 19 | `src/mobile/test/*.test.ts`, `src/mobile/vitest.config.mts` | Pengujian _client_ dengan Vitest (klien API dan logika tampilan, tanpa _render_ komponen). |
+| 20 | `src/mobile/package.json`, `bun.lock`, `tsconfig.json`, `eslint.config.js` | Dependensi, skrip (`go`, `test`, `lint`, `typecheck`), dan konfigurasi TypeScript serta ESLint _client_. |
+| 21 | `src/README.md`, `src/backend/README.md` | Panduan instalasi, konfigurasi, menjalankan, menguji, dan merilis aplikasi. |
 
 <br>
 
