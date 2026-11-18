@@ -390,13 +390,46 @@ Setiap kelas perancangan pada Tabel 4.1 DPPL diklasifikasikan ke dalam tiga ting
 
 Tabel 4.1.1. Identifikasi Tingkat Pengujian Kelas
 
-| ID Kelas | Nama Kelas     | Tingkat                         | Alasan                                                  | Test Case Terkait                  |
-| -------- | -------------- | ------------------------------- | ------------------------------------------------------- | ---------------------------------- |
-| _C02_    | _Pesanan_      | _Mendalam_                      | _Memuat `hitungTotal()` dan transisi status pembayaran_ | _C02-UT01 s.d. C02-UT08_           |
-| _C03_    | _Keranjang_    | _Sedang_                        | _Delegasi sederhana ke Produk dan Pesanan_              | _C03-UT01 s.d. C03-UT03, INT-TC02_ |
-| _C01_    | _Pelanggan_    | _Tidak perlu_                   | _Hanya menyimpan data akun, tanpa logika_               | _-_                                |
-| _[CXX]_  | _[Nama kelas]_ | _[Mendalam/Sedang/Tidak perlu]_ | _[Alasan penentuan tingkat pengujian]_                  | _[ID test case atau -]_            |
-| _..._    | _..._          | _..._                           | _..._                                                   | _..._                              |
+| ID Kelas | Nama Kelas | Tingkat | Alasan | Test Case Terkait |
+| -------- | ---------- | ------- | ------ | ----------------- |
+| C-01 | `Pengguna` | Tidak perlu | Entitas data akun (nama, email, peran) tanpa logika; dibuat dan dibaca oleh `AuthController`. | - (teruji lewat UC-11-TC01) |
+| C-02 | `Mahasiswa` | Tidak perlu | Entitas data Mahasiswa (NIM) tanpa logika. | - (teruji lewat UC-11-TC01) |
+| C-03 | `Administrator` | Tidak perlu | Peran pada data pengguna tanpa logika; pembatasan aksesnya diuji pada kelas _controller_ dan _middleware_. | - (teruji lewat UC-11-TC01) |
+| C-04 | `SesiAutentikasi` | Mendalam | Memuat aturan keamanan: verifikasi token dan batas umur sesi 30 hari (`verifikasiToken`), _logout_, serta validasi dan penyimpanan token _push_ (`daftarkanPerangkat`). | C-04-UT01 dst. |
+| C-05 | `DailyAffirmation` | Mendalam | Memuat `aturWaktuKirim` (Algo-004, buat atau perbarui dengan konten bawaan) dan pencarian afirmasi jatuh tempo per menit WIB (Algo-005, Q-004). | C-05-UT01 dst. |
+| C-06 | `Reminder` | Mendalam | Memuat `aturWaktuKirim` per jenis (Algo-006), penghapusan per jenis, dan pencarian pengingat jatuh tempo (Algo-007, Q-005). | C-06-UT01 dst. |
+| C-07 | `Notifikasi` | Mendalam | Memuat `kirimNotifikasi` (Algo-008): pencatatan dengan tepat satu sumber, pembagian _batch_ maksimal 100 pesan, dan pengosongan token yang ditolak `DeviceNotRegistered`. | C-07-UT01 dst. |
+| C-08 | `GoogleCalendarService` | Mendalam | Integrasi eksternal: mengambil _event_ Google Calendar (Algo-009), memperbarui token, dan mendeteksi bentrok terhadap kalender pengguna. | C-08-UT01 dst. |
+| C-09 | `KalenderGabungan` | Mendalam | Memuat algoritma penggabungan _event_ Google dengan jadwal konsultasi (Algo-011) dan aturan bentrok jadwal. | C-09-UT01 dst. |
+| C-10 | `Konsultan` | Tidak perlu | Entitas data konsultan tanpa logika; daftarnya hanya dibaca. | - (teruji lewat UC-04-TC01, UC-05-TC01) |
+| C-11 | `JadwalKonsultasi` | Mendalam | Memuat aturan status slot (tersedia/terpesan), pemesanan, serta penyimpanan dan pengubahan slot yang menolak tumpang tindih di dalam _statement_ agar aman terhadap _race condition_ (Algo-029, Q-027). | C-11-UT01 dst. |
+| C-12 | `FAQ` | Sedang | Kueri daftar, pencarian kata kunci, dan pengurutan (Q-015) tanpa aturan bisnis; _escaping_ pola pencarian berada di `Validasi`. | C-12-UT01 dst. |
+| C-13 | `PengajuanPertanyaan` | Tidak perlu | Entitas pertanyaan dengan kueri simpan, daftar, dan hapus sederhana; perilakunya diuji melalui `FAQController`. | - (teruji lewat UC-12-TC01) |
+| C-14 | `UmpanBalik` | Sedang | Kueri simpan, daftar dengan penyaring status, dan tanggapan; penyaring status dan pembatasan milik pengguna perlu dipastikan. | C-14-UT01 dst. |
+| C-15 | `StatusServer` | Tidak perlu | Entitas hasil pemeriksaan (`jenis`, `statusUptime`, `waktuCek`) tanpa logika; logika pemeriksaan berada di `ServerStatusController`. | - (teruji lewat UC-10-TC01) |
+| C-16 | `LoginView` | Sedang | Mengoordinasikan alur login Google di peramban aplikasi: menunggu _redirect_ atau _deep link_ dan menangani pembatalan. | C-16-UT01 dst. |
+| C-17 | `AffirmationView` | Tidak perlu | Layar I-04 yang hanya menampilkan data dan meneruskan aksi ke klien API. | - (teruji lewat UC-01-TC01, UC-01-TC02) |
+| C-18 | `ReminderView` | Tidak perlu | Layar I-05 yang hanya menampilkan data dan meneruskan aksi ke klien API. | - (teruji lewat UC-02-TC01, UC-02-TC02) |
+| C-19 | `CalendarView` | Sedang | Memuat logika tampilan kalender, yaitu penyaringan _event_ per hari, label waktu, dan penanda sumber _event_. | C-19-UT01 dst. |
+| C-20 | `ConsultationBookingView` | Tidak perlu | Layar I-07 dan I-08 yang hanya menampilkan slot dan meneruskan pemesanan ke klien API. | - (teruji lewat UC-04-TC01 s.d. UC-04-TC03) |
+| C-21 | `ConsultationManagementView` | Sedang | Memuat logika tampilan I-12: daftar tanggal dan jam dalam WIB, pembacaan masukan jam, serta validasi slot di sisi _client_. | C-21-UT01 dst. |
+| C-22 | `FAQView` | Tidak perlu | Layar I-09, I-10, dan I-13 yang hanya menampilkan data dan meneruskan aksi ke klien API. | - (teruji lewat UC-06, UC-07, UC-12) |
+| C-23 | `FeedbackView` | Tidak perlu | Layar I-11 dan I-14 yang hanya menampilkan data dan meneruskan aksi ke klien API. | - (teruji lewat UC-08, UC-09) |
+| C-24 | `ServerStatusView` | Sedang | Memuat logika tampilan status: lencana Up/Down, status "Belum dicek", dan waktu pemeriksaan terakhir. | C-24-UT01 dst. |
+| C-25 | `AuthController` | Sedang | Mengoordinasikan login Google, login demo, _logout_, dan pendaftaran perangkat dengan mendelegasikan ke `GoogleAuthService` dan `SesiAutentikasi`. | C-25-UT01 dst. |
+| C-26 | `AffirmationController` | Sedang | Mendelegasikan validasi waktu ke `Validasi` lalu penyimpanan ke `DailyAffirmation`. | C-26-UT01 dst. |
+| C-27 | `ReminderController` | Sedang | Mendelegasikan validasi jenis dan waktu ke `Validasi` lalu penyimpanan ke `Reminder`. | C-27-UT01 dst. |
+| C-28 | `CalendarController` | Sedang | Mengoordinasikan pengambilan _event_ Google dan jadwal konsultasi lalu penggabungannya, termasuk penurunan ke jadwal saja bila Google gagal. | C-28-UT01 dst. |
+| C-29 | `ConsultationController` | Mendalam | Memuat aturan pemesanan: hanya slot tersedia yang dapat dipesan, satu sesi per hari, konfirmasi bentrok Google Calendar, serta perbedaan daftar slot per peran. | C-29-UT01 dst. |
+| C-30 | `FAQController` | Sedang | Mendelegasikan validasi masukan ke `Validasi` lalu operasi FAQ dan pengajuan pertanyaan ke kelas _model_, dengan pembatasan peran. | C-30-UT01 dst. |
+| C-31 | `FeedbackController` | Sedang | Mendelegasikan validasi masukan ke `Validasi` lalu operasi umpan balik ke `UmpanBalik`, dengan pembatasan peran. | C-31-UT01 dst. |
+| C-32 | `ServerStatusController` | Mendalam | Memuat logika pemeriksaan status (Algo-021): dua alamat pemeriksaan, batas waktu 5 detik, hanya 2xx dihitung _up_, dan batas kesegaran 30 detik untuk "Periksa Sekarang". | C-32-UT01 dst. |
+| C-33 | `Validasi` | Mendalam | Memuat seluruh aturan validasi masukan (Algo-023, Algo-025, Algo-026): format waktu, rentang jadwal, isian kosong, format token _push_, ISO 8601, dan _escaping_ pola pencarian. | C-33-UT01 dst. |
+| C-34 | `GoogleAuthService` | Mendalam | Integrasi eksternal dan keamanan: penukaran kode otorisasi (Algo-027), pembacaan identitas dari `id_token`, serta enkripsi AES-256-GCM token Google. | C-34-UT01 dst. |
+| C-35 | `CloudflareD1Database` | Tidak perlu | Kelas infrastruktur (_binding_ D1 dan Drizzle) tanpa logika aplikasi; teruji secara tidak langsung oleh seluruh pengujian integrasi. | - (teruji lewat INT-TC) |
+| C-36 | `HomeView` | Tidak perlu | Layar I-02 dan I-03 yang hanya menampilkan ringkasan data dari _controller_ lain. | - (teruji lewat UC-11-TC01) |
+
+Ringkasan: 11 kelas Mendalam, 12 kelas Sedang, dan 13 kelas Tidak perlu.
 
 ## 4.2 Pengujian Unit Kelas
 
