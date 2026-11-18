@@ -72,11 +72,13 @@ Dipersiapkan oleh:
 
 ## 1.1 Tujuan Penulisan Dokumen
 
-Tuliskan uraian ringkas mengenai isi dokumen, tujuan pembuatan dokumen HIUPL ini, dan siapa saja target pembacanya.
+Dokumen Hasil Implementasi dan Uji Perangkat Lunak (HIUPL) ini melaporkan hasil implementasi perangkat lunak Sehati beserta hasil pengujiannya, sebagai lanjutan dari dokumen Spesifikasi Kebutuhan Perangkat Lunak (SKPL), Arsitektur Perangkat Lunak (APL), Deskripsi Perancangan Perangkat Lunak (DPPL), dan dokumen Implementasi (Tugas 9). Dokumen ini memetakan setiap kelas dan antarmuka rancangan DPPL ke berkas kode pada repositori, lalu melaporkan pengujian pada level unit, integrasi, _use case_, dan kebutuhan nonfungsional terhadap _tag release_ terakhir Tugas 9.
+
+Dokumen ini ditujukan kepada tim pengembang sebagai catatan kondisi P/L yang telah dibangun dan diuji, kepada asisten dan penguji sebagai bukti bahwa implementasi memenuhi kebutuhan dan rancangan, serta kepada pemangku kepentingan yang perlu menilai kesiapan Sehati untuk digunakan.
 
 ## 1.2 Lingkup Masalah
 
-Tuliskan lingkup masalah, yaitu membangun perangkat lunak _[nama perangkat lunak]_. Jelaskan dengan singkat dan jelas deskripsi aplikasi serta keterkaitannya dengan perangkat lunak atau sistem lain (jika ada). Bagian ini maksimal berisi satu paragraf, dapat diambil dari SKPL/DPPL.
+Sehati adalah aplikasi _mobile_ (Android dan iOS) yang mempromosikan kesejahteraan mahasiswa, sejalan dengan SDG 3. Mahasiswa masuk melalui akun Google, lalu dapat mengatur dan menerima _daily affirmations_, mengatur pengingat makan, tidur, dan olahraga, melihat kalender harian yang terintegrasi dengan Google Calendar, memesan sesi konsultasi, membaca FAQ, mengajukan pertanyaan, dan memberi umpan balik. Administrator mengelola jadwal konsultan, FAQ, dan umpan balik, serta memantau status _server_. Sehati terdiri atas aplikasi _client_ React Native (Expo) dan _server_ Hono di Cloudflare Workers dengan basis data Cloudflare D1, serta berinteraksi dengan Google OAuth 2.0, Google Calendar API, dan Expo Push Service sebagai sistem eksternal. Dokumen ini membatasi pembahasannya pada hasil implementasi dan pengujian P/L tersebut, dan tidak membahas ulang analisis kebutuhan maupun perancangannya.
 
 ## 1.3 Definisi, Istilah, dan Singkatan
 
@@ -84,48 +86,87 @@ Semua definisi dan singkatan yang digunakan dalam dokumen ini beserta penjelasan
 
 Tabel 1.3. Definisi Istilah dan Singkatan
 
-| Singkatan, Akronim, atau Istilah | Penjelasan                                                                                                                                                            |
-| -------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| _P/L_                            | _Singkatan dari Perangkat Lunak, yaitu aplikasi yang memberikan perintah kepada komputer untuk menjalankan tugas tertentu._                                           |
-| _SKPL_                           | _Singkatan dari Spesifikasi Kebutuhan Perangkat Lunak, yaitu dokumen yang merangkum kriteria-kriteria yang diperlukan untuk membangun aplikasi menjalankan tugasnya._ |
-| _DPPL_                           | _Singkatan dari Deskripsi Perancangan Perangkat Lunak, yaitu dokumen yang menjelaskan rancangan arsitektur, kelas, dan antarmuka P/L._                                |
-| _HIUPL_                          | _Singkatan dari Hasil Implementasi dan Uji Perangkat Lunak, yaitu dokumen yang melaporkan hasil implementasi dan pengujian P/L._                                      |
-| _KF_                             | _Singkatan dari Kebutuhan Fungsional._                                                                                                                                |
-| _KNF_                            | _Singkatan dari Kebutuhan Non-Fungsional._                                                                                                                            |
-| _UC_                             | _Singkatan dari Use Case._                                                                                                                                            |
-| _TC_                             | _Singkatan dari Test Case, yaitu satu kasus uji untuk skenario tertentu._                                                                                             |
-| _UT_                             | _Singkatan dari Unit Test, yaitu test case tingkat kelas/operasi._                                                                                                    |
-| _INT_                            | _Singkatan dari Integration Test, yaitu test case yang menguji interaksi antarkomponen._                                                                              |
-| _Boundary_                       | _Kasus uji pada nilai batas masukan, misalnya nilai minimum, maksimum, atau tepat di ambang aturan._                                                                  |
-| _Coverage_                       | _Persentase baris/cabang kode yang dieksekusi oleh pengujian._                                                                                                        |
-| _..._                            | _..._                                                                                                                                                                 |
+| Singkatan, Akronim, atau Istilah | Penjelasan |
+| -------------------------------- | ---------- |
+| P/L | Singkatan dari **Perangkat Lunak**, yaitu aplikasi yang memberikan perintah kepada komputer untuk menjalankan tugas tertentu. |
+| SKPL | Singkatan dari **Spesifikasi Kebutuhan Perangkat Lunak**, yaitu dokumen yang merangkum kriteria-kriteria yang diperlukan untuk membangun aplikasi menjalankan tugasnya. |
+| APL | Singkatan dari **Arsitektur Perangkat Lunak**, yaitu dokumen yang menjabarkan arsitektur dan komponen P/L. |
+| DPPL | Singkatan dari **Deskripsi Perancangan Perangkat Lunak**, yaitu dokumen yang menjabarkan rancangan arsitektur, komponen, kelas, dan antarmuka P/L. |
+| HIUPL | Singkatan dari **Hasil Implementasi dan Uji Perangkat Lunak**, yaitu dokumen yang melaporkan hasil implementasi dan pengujian P/L. |
+| KF | Singkatan dari **Kebutuhan Fungsional**, yaitu kebutuhan yang menjelaskan apa yang harus dapat dilakukan oleh sistem. |
+| KNF | Singkatan dari **Kebutuhan Nonfungsional**, yaitu kebutuhan yang menjelaskan kualitas sistem, seperti ketersediaan, keamanan, dan kemudahan penggunaan. |
+| UC | Singkatan dari **_Use Case_**, yaitu gambaran interaksi antara aktor dan sistem untuk mencapai suatu tujuan. |
+| TC | Singkatan dari **_Test Case_**, yaitu satu kasus uji untuk skenario tertentu, lengkap dengan masukan, hasil yang diharapkan, dan hasil aktual. |
+| UT | Singkatan dari **_Unit Test_**, yaitu _test case_ pada tingkat kelas atau operasi. |
+| INT | Singkatan dari **_Integration Test_**, yaitu _test case_ yang menguji interaksi antarkomponen, misalnya rute Hono bersama basis data. |
+| _Boundary_ | Kasus uji pada nilai batas masukan, misalnya nilai minimum, maksimum, atau tepat di ambang aturan. |
+| _Coverage_ | Persentase baris atau cabang kode yang dieksekusi oleh pengujian. |
+| _Tag release_ | Penanda versi pada repositori Git (misalnya `v9.1`) yang menunjuk satu _commit_ tertentu sebagai versi rilis. |
+| APK | Singkatan dari **_Android Package Kit_**, yaitu berkas paket instalasi aplikasi Android. |
+| Sehati | **Nama perangkat lunak yang dikembangkan** untuk mendukung kesehatan mental dan kesejahteraan mahasiswa. |
+| Mahasiswa | **Aktor pengguna utama** Sehati yang menggunakan pengingat, _daily affirmations_, kalender, dan pemesanan sesi konsultasi. |
+| Administrator | **Aktor yang mengelola** Sehati, termasuk jadwal konsultan, FAQ, dan umpan balik, serta memantau status _server_. |
+| Konsultan | Tenaga profesional yang menyediakan sesi konsultasi. Konsultan bukan aktor sistem; data dan jadwalnya dikelola oleh Administrator. |
+| _Daily Affirmations_ | Pesan positif yang dikirimkan kepada pengguna pada waktu yang diatur pengguna untuk menjaga suasana hati dan kepercayaan diri. |
+| Pengingat | Notifikasi dengan waktu yang diatur pengguna untuk makan, tidur, dan berolahraga. |
+| _Push notification_ | Notifikasi yang dikirim _server_ ke perangkat pengguna melalui Expo Push Service, walaupun aplikasi sedang tidak dibuka. |
+| Google Calendar | Layanan kalender milik Google yang datanya diintegrasikan ke Sehati untuk menampilkan jadwal pengguna. |
+| API | Singkatan dari **_Application Programming Interface_**, yaitu antarmuka yang memungkinkan satu perangkat lunak berkomunikasi dengan perangkat lunak lain. |
+| REST API | Gaya API berbasis HTTP yang dipakai _server_ Sehati untuk melayani permintaan aplikasi _client_ dalam format JSON. |
+| OAuth | Protokol otorisasi yang memungkinkan aplikasi mendapat akses terbatas ke akun pengguna di layanan lain (misalnya Google) tanpa mengetahui kata sandi pengguna. |
+| Bentrok jadwal | Kondisi ketika waktu sesi konsultasi yang dipilih tumpang tindih dengan acara lain di kalender pengguna. |
+| _Uptime_ | Persentase waktu sistem dapat diakses dan beroperasi dalam suatu periode. |
+| _Cron_ | Penjadwal tugas berkala; pada Sehati diwujudkan oleh Cloudflare Cron Trigger untuk mengirim notifikasi, memeriksa status _server_, dan membersihkan data lama. |
+| FAQ | Singkatan dari **_Frequently Asked Questions_**, yaitu daftar pertanyaan yang sering diajukan beserta jawabannya. |
+| Umpan balik | Masukan dari pengguna terhadap aplikasi, yang dapat ditanggapi oleh Administrator. |
+| MVC | Singkatan dari **_Model-View-Controller_**, yaitu pattern arsitektur yang memisahkan penyimpanan data (_model_), tampilan (_view_), dan pemrosesan permintaan (_controller_). |
+| Expo | _Framework_ dan perangkat pengembangan untuk aplikasi React Native, termasuk Expo Router (navigasi) dan EAS Build (pembuatan APK). |
+| Hono | _Framework web_ TypeScript yang dipakai untuk membangun REST API Sehati di Cloudflare Workers. |
+| Cloudflare D1 | Basis data SQLite terkelola milik Cloudflare yang dipakai sebagai DBMS Sehati. |
+| Vitest | _Framework_ pengujian unit dan integrasi untuk TypeScript yang dipakai pada _server_ dan _client_ Sehati. |
+| _Traceability_ | Keterlacakan hubungan antara kebutuhan, _use case_, kelas, implementasi, dan _test case_. |
 
 ## 1.4 Aturan Penomoran
 
-Tuliskan aturan penomoran (ID) yang digunakan dalam dokumen ini. Gunakan pola ID yang **sama** dengan yang sudah dipakai pada dokumen-dokumen sebelumnya (SKPL, APL, DPPL), kecuali untuk ID pengujian yang baru diperkenalkan pada dokumen ini.
+Dokumen ini memakai pola penomoran ID yang sama dengan dokumen SKPL, APL, dan DPPL, sehingga setiap rujukan kebutuhan, _use case_, kelas, dan antarmuka tetap konsisten antardokumen. ID _test case_ diperkenalkan pada dokumen ini dan mengikuti pola bertanda hubung yang sama.
 
 Tabel 1.4. Aturan Penomoran
 
-| Hal/Bagian                 | Penomoran    | Keterangan                                                                        |
-| -------------------------- | ------------ | --------------------------------------------------------------------------------- |
-| _Kebutuhan Fungsional_     | _KFXX_       | _Sesuai SKPL_                                                                     |
-| _Kebutuhan Non-Fungsional_ | _KNFXX_      | _Sesuai SKPL_                                                                     |
-| _Use Case_                 | _UCXX_       | _Sesuai SKPL_                                                                     |
-| _Kelas_                    | _CXX_        | _Sesuai DPPL_                                                                     |
-| _Antarmuka_                | _I-XX_       | _Sesuai DPPL_                                                                     |
-| _Test Case Unit_           | _CXX-UTYY_   | _XX adalah nomor kelas, YY adalah nomor urut test case unit pada kelas tersebut_  |
-| _Test Case Integrasi_      | _INT-TCYY_   | _YY adalah nomor urut test case integrasi_                                        |
-| _Test Case Use Case_       | _UCXX-TCYY_  | _XX adalah nomor use case, YY adalah nomor urut test case pada use case tersebut_ |
-| _Test Case KNF_            | _KNFXX-TCYY_ | _XX adalah nomor KNF, YY adalah nomor urut test case pada KNF tersebut_           |
-| _..._                      | _..._        | _..._                                                                             |
+| Hal/Bagian | Penomoran | Keterangan |
+| ---------- | --------- | ---------- |
+| Kebutuhan Fungsional | KF-XX | Sesuai SKPL. Nomor urut dua digit mulai dari 01 (contoh: KF-01). |
+| Kebutuhan Non-Fungsional | KNF-XX | Sesuai SKPL. Nomor urut dua digit mulai dari 01 (contoh: KNF-01). |
+| _Use Case_ | UC-XX | Sesuai SKPL. Nomor urut dua digit mulai dari 01 (contoh: UC-01). |
+| Kelas | C-XX | Sesuai DPPL. Nomor urut dua digit mulai dari 01 (contoh: C-01). |
+| Algoritma | Algo-XXX | Sesuai DPPL. Nomor urut tiga digit mulai dari 001 (contoh: Algo-001). |
+| _Query_ | Q-XXX | Sesuai DPPL. Nomor urut tiga digit mulai dari 001 (contoh: Q-001). |
+| Antarmuka | I-XX | Sesuai DPPL. Nomor urut dua digit mulai dari 01 (contoh: I-01). |
+| Objek antarmuka | I-XX-YY | Sesuai DPPL. ID antarmuka diikuti nomor urut objek dua digit (contoh: I-04-07). |
+| _Test Case_ Unit | C-XX-UTYY | XX adalah nomor kelas, YY adalah nomor urut _test case_ unit pada kelas tersebut (contoh: C-05-UT01). |
+| _Test Case_ Integrasi | INT-TCYY | YY adalah nomor urut _test case_ integrasi (contoh: INT-TC01). |
+| _Test Case_ _Use Case_ | UC-XX-TCYY | XX adalah nomor _use case_, YY adalah nomor urut _test case_ pada _use case_ tersebut (contoh: UC-04-TC02). |
+| _Test Case_ KNF | KNF-XX-TCYY | XX adalah nomor KNF, YY adalah nomor urut _test case_ pada KNF tersebut (contoh: KNF-01-TC01). |
 
 ## 1.5 Referensi
 
-Cantumkan daftar buku, panduan, atau dokumentasi lain yang dirujuk dalam pembuatan dokumen dan pengembangan P/L, **minimal dokumen SKPL, APL, DPPL, dan Implementasi (Tugas 9)**. Tambahkan dokumentasi _framework_/_library_/_testing tool_ atau referensi lain apabila digunakan.
+Dokumen ini merujuk pada sumber-sumber berikut.
+
+1. Kelompok G04 K01, dokumen _Spesifikasi Kebutuhan Perangkat Lunak (SKPL)_ untuk Sehati, IF2150 Rekayasa Perangkat Lunak.
+2. Kelompok G04 K01, dokumen _Arsitektur Perangkat Lunak (APL)_ untuk Sehati, IF2150 Rekayasa Perangkat Lunak.
+3. Kelompok G04 K01, dokumen _Deskripsi Perancangan Perangkat Lunak (DPPL)_ untuk Sehati, IF2150 Rekayasa Perangkat Lunak.
+4. Kelompok G04 K01, dokumen _Implementasi_ (Tugas 9) untuk Sehati, IF2150 Rekayasa Perangkat Lunak.
+5. Kelompok G04 K01, repositori kode Sehati beserta panduan menjalankan aplikasi pada `src/README.md`. https://github.com/sbxte/IF2150-RPL-K01-G04
+6. Google, _Google Calendar API Documentation_. https://developers.google.com/calendar
+7. Google, _Google Identity: OAuth 2.0_. https://developers.google.com/identity/protocols/oauth2
+8. Cloudflare, _Cloudflare Workers Documentation_. https://developers.cloudflare.com/workers/
+9. Cloudflare, _Cloudflare D1 Documentation_. https://developers.cloudflare.com/d1/
+10. Hono, _Hono Documentation_. https://hono.dev/
+11. Expo, _Expo Documentation_ (Expo Router, Notifications, EAS Build). https://docs.expo.dev/
+12. Vitest, _Vitest Documentation_. https://vitest.dev/
 
 ## 1.6 Deskripsi Umum Dokumen (Ikhtisar)
 
-Tuliskan sistematika pembahasan dokumen ini secara ringkas dan runut bab demi bab, dengan maksimal 1 paragraf.
+Dokumen ini disusun dalam lima bab. BAB 1 memuat pendahuluan yang mencakup tujuan, lingkup masalah, definisi istilah, aturan penomoran, referensi, dan ikhtisar dokumen. BAB 2 memberikan gambaran umum Sehati, batasannya terhadap sistem eksternal, serta _use case diagram_-nya. BAB 3 menjabarkan hasil implementasi, yaitu lingkungan implementasi, pemetaan kelas dan antarmuka DPPL ke berkas kode, serta berkas pendukung lainnya. BAB 4 melaporkan hasil pengujian, mulai dari strategi pengujian, pengujian unit kelas, pengujian integrasi, pengujian _use case_, pengujian kebutuhan nonfungsional, hingga tangkapan layar sebagai bukti. BAB 5 menutup dokumen dengan matriks _traceability_ yang menghubungkan kebutuhan, _use case_, kelas, dan _test case_.
 
 <br>
 
@@ -133,16 +174,86 @@ Tuliskan sistematika pembahasan dokumen ini secara ringkas dan runut bab demi ba
 
 # BAB 2: Deskripsi Umum Perangkat Lunak
 
-Bagian ini diisi dengan _System Overview_, dalam bentuk gambar dan narasi yang memberikan gambaran tentang aplikasi dan konteksnya. **Batasan dan keterkaitan** antara sistem yang dibangun dengan sistem lain di luarnya harus jelas. Deskripsi umum sistem perlu dilengkapi dengan pemodelan kasus yang dihadapi, seperti _use case diagram_. Berikan narasi yang jelas untuk setiap gambar yang ditampilkan.
+Sehati adalah aplikasi _mobile_ (Android dan iOS) yang mendukung kesehatan mental dan kesejahteraan mahasiswa, sejalan dengan SDG 3 (_ensure healthy lives and promote well-being for all at all ages_). Aplikasi ini digunakan oleh dua aktor. Mahasiswa memakai Sehati untuk menerima _daily affirmations_, mengatur pengingat makan, tidur, dan olahraga, melihat kalender gabungan, memesan sesi konsultasi, membaca FAQ, mengajukan pertanyaan, dan memberi umpan balik. Administrator memakai aplikasi yang sama untuk mengelola jadwal konsultan, FAQ, dan umpan balik, serta memantau status _server_. Kedua aktor masuk melalui akun Google.
 
-Bagian ini dapat menyalin atau meringkas dari dokumen SKPL atau DPPL.
+Sesuai DPPL, Sehati dibangun dengan gabungan pattern _Client-Server_ dan MVC. Seluruh _View_ berjalan di aplikasi React Native (Expo) pada perangkat pengguna, sedangkan _Controller_, _Model_, dan integrasi eksternal berjalan di _server_ Hono pada Cloudflare Workers dengan data tersimpan di Cloudflare D1. Gambar 2.1 menunjukkan batas sistem Sehati beserta keterkaitannya dengan sistem di luarnya.
+
+```mermaid
+---
+config:
+  layout: elk
+---
+flowchart LR
+    MHS(["Mahasiswa"])
+    ADM(["Administrator"])
+
+    subgraph SEHATI["Sistem Sehati"]
+        direction TB
+        APP["Aplikasi Mobile<br/>React Native (Expo), Android dan iOS<br/>(View)"]
+        API["Server REST API<br/>Hono di Cloudflare Workers<br/>(Controller dan Model)"]
+        CRON["Cloudflare Cron Trigger<br/>afirmasi, pengingat, status, pembersihan"]
+        DB[("Cloudflare D1")]
+        APP -->|"HTTP request / JSON response"| API
+        CRON -->|"menjalankan tugas terjadwal"| API
+        API -->|"baca/tulis"| DB
+    end
+
+    GAUTH["Google OAuth 2.0<br/>(sistem eksternal)"]
+    GCAL["Google Calendar API<br/>(sistem eksternal)"]
+    PUSH["Expo Push Service<br/>(sistem eksternal)"]
+
+    MHS --> APP
+    ADM --> APP
+    APP -.->|"halaman login Google"| GAUTH
+    API -.->|"tukar kode otorisasi"| GAUTH
+    API -.->|"ambil event kalender"| GCAL
+    API -.->|"kirim push notification"| PUSH
+    PUSH -.->|"notifikasi ke perangkat"| APP
+
+    style GAUTH stroke-dasharray: 5 5
+    style GCAL stroke-dasharray: 5 5
+    style PUSH stroke-dasharray: 5 5
+```
 
 <p align="center">
-<img alt="System Overview / Use Case Diagram" src="./assets/contoh-uc-diagram.webp" width="90%">
+<i>Gambar 2.1. System Overview P/L Sehati</i>
+</p>
+
+Batas sistem pada Gambar 2.1 adalah sebagai berikut.
+
+- **Di dalam sistem** terdapat aplikasi _mobile_, _server_ REST API, tugas terjadwal (_cron_), dan basis data D1. Seluruh data Sehati, seperti jadwal konsultasi, afirmasi, pengingat, FAQ, umpan balik, dan status _server_, disimpan di D1 dan hanya diakses melalui _server_. Aplikasi _mobile_ tidak pernah mengakses basis data secara langsung.
+- **Google OAuth 2.0** dipakai untuk autentikasi (UC-11). Aplikasi membuka halaman login Google, lalu _server_ menukar kode otorisasi dengan token dan menyimpan token Google pengguna dalam bentuk terenkripsi. Sehati tidak pernah mengetahui kata sandi pengguna.
+- **Google Calendar API** dipakai dengan akses baca untuk menampilkan kalender gabungan (UC-03) dan mendeteksi bentrok jadwal saat pemesanan sesi (UC-04). Bila layanan ini tidak tersedia, kalender tetap menampilkan jadwal konsultasi dari D1.
+- **Expo Push Service** meneruskan _push notification_ afirmasi (UC-01) dan pengingat (UC-02) dari _server_ ke perangkat pengguna yang sudah terdaftar setelah login.
+- Sesuai batasan SKPL, Sehati **tidak** mencakup layanan konseling darurat, rekam medis, sistem pembayaran, versi web atau desktop, maupun forum antarpengguna.
+
+Interaksi kedua aktor dengan Sehati dimodelkan dalam dua belas _use case_ pada Tabel 2.1 dan Gambar 2.2.
+
+Tabel 2.1. Daftar _Use Case_
+
+| ID UC | Nama _Use Case_ | Deskripsi Singkat | Aktor Terlibat |
+| ----- | --------------- | ----------------- | -------------- |
+| UC-01 | Menyetel _Daily Affirmations_ | Mahasiswa mengatur waktu penerimaan _daily affirmations_ dan menerima notifikasinya. | Mahasiswa |
+| UC-02 | Menyetel Pengingat Kesehatan | Mahasiswa mengatur waktu pengingat makan, tidur, dan olahraga, serta menerima notifikasinya. | Mahasiswa |
+| UC-03 | Melihat Kalender Terintegrasi | Mahasiswa melihat jadwal gabungan antara Google Calendar dan jadwal sesi konsultasi dalam satu tampilan. | Mahasiswa |
+| UC-04 | Memesan Sesi Konsultasi | Mahasiswa memilih dan memesan sesi konsultasi pada jadwal yang tersedia. | Mahasiswa |
+| UC-05 | Mengelola Jadwal Konsultan | Administrator memasukkan dan memperbarui jadwal sesi konsultasi tanpa mengubah _source code_. | Administrator |
+| UC-06 | Melihat FAQ | Mahasiswa membuka dan mencari daftar pertanyaan yang sering diajukan. | Mahasiswa |
+| UC-07 | Mengelola FAQ | Administrator menambah, mengubah, atau menghapus daftar FAQ. | Administrator |
+| UC-08 | Memberikan Umpan Balik | Mahasiswa mengirimkan umpan balik terhadap aplikasi. | Mahasiswa |
+| UC-09 | Menanggapi Umpan Balik | Administrator melihat dan memberikan tanggapan atas umpan balik yang masuk. | Administrator |
+| UC-10 | Memantau Status _Server_ | Administrator memeriksa status _up/down_ _server_ secara berkala. | Administrator |
+| UC-11 | Masuk Melalui Akun Google | Pengguna _log in_ ke aplikasi menggunakan akun Google sebelum mengakses fitur lainnya. | Mahasiswa, Administrator |
+| UC-12 | Form Pengajuan Pertanyaan | Mahasiswa mengajukan pertanyaan di luar yang ada di FAQ. | Mahasiswa |
+
+<p align="center">
+<img alt="Use Case Diagram Sehati" src="./assets/UCD.png" width="90%">
 </p>
 <p align="center">
-<i>Gambar 2.1. Use Case Diagram [Nama P/L]</i>
+<i>Gambar 2.2. Use Case Diagram Sehati</i>
 </p>
+
+Gambar 2.2 menunjukkan bahwa UC-11 (Masuk Melalui Akun Google) terhubung dengan kedua aktor dan menjadi pintu masuk sebelum fitur lain dapat diakses. Mahasiswa terhubung langsung dengan _use case_ kesejahteraan pribadi dan layanan konsultasi (UC-01 sampai UC-04, UC-06, dan UC-08). UC-04 (Memesan Sesi Konsultasi) meng-_include_ UC-03 (Melihat Kalender Terintegrasi) karena pemesanan memeriksa bentrok terhadap kalender pengguna, sedangkan UC-12 (Form Pengajuan Pertanyaan) meng-_extend_ UC-06 (Melihat FAQ) karena formulir hanya dibuka bila jawaban tidak ditemukan di FAQ. Administrator terhubung dengan _use case_ pengelolaan (UC-05, UC-07, UC-09, dan UC-10). Pengujian _use case_ pada BAB 4 mengikuti daftar ini.
 
 <br>
 

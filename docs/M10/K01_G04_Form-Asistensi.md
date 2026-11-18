@@ -4,8 +4,8 @@
 
 | Informasi                | Keterangan       |
 | ------------------------ | ---------------- |
-| **Hari**                 | ...              |
-| **Tanggal**              | .../.../2026     |
+| **Hari**                 | Senin            |
+| **Tanggal**              | 15/11/2026       |
 | **Kelas**                | K01              |
 | **Nomor Kelompok**       | G04              |
 | **Nama Kelompok**        | LompatMulai      |
