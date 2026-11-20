@@ -442,6 +442,8 @@ Pengujian unit dilakukan pada 23 kelas bertingkat Mendalam dan Sedang pada Tabel
 
 Cara menjalankan unit test: `cd src/backend && bun run test` untuk pengujian _server_, dan `cd src/mobile && bun run test` untuk pengujian _client_. Pemeriksaan tipe dijalankan dengan `bun run typecheck` pada masing-masing direktori.
 
+Hasil pada subbab ini diperoleh dari menjalankan kedua perintah tersebut pada _commit_ `103a26f` di `main` (20 November 2026): _server_ 273 dari 273 kasus uji lulus pada 11 berkas, dan _client_ 167 dari 167 kasus uji lulus pada 14 berkas. Kolom Hasil Pengujian merangkum kasus uji yang menjalankan prosedur pada setiap baris.
+
 Lokasi file test: `src/backend/test/` dan `src/backend/src/index.test.ts` untuk _server_, serta `src/mobile/test/` untuk _client_. Konfigurasi Vitest berada pada `src/backend/vitest.config.ts` dan `src/mobile/vitest.config.mts`.
 
 Cakupan yang dilaporkan adalah cakupan operasi public sebagaimana tercantum pada DPPL, bukan persentase baris kode. Kedua proyek tidak memasang penyedia _coverage_ Vitest, sehingga angka _coverage_ otomatis tidak tersedia. Untuk setiap kelas Mendalam, tabel ringkasan bernomor `4.2.xb` (misalnya Tabel 4.2.1b untuk C-04) merangkum operasi yang diuji dan algoritma yang tercakup; bukti keluaran _test runner_ dicantumkan pada Subbab 4.6.
@@ -454,10 +456,10 @@ Tabel 4.2.1. Hasil Pengujian Unit Kelas C-04
 
 | ID Pengujian | Operasi yang Diuji | Jenis Kasus | Prosedur/Masukan | Hasil yang Diharapkan | Hasil Pengujian | Kesimpulan |
 | ------------ | ------------------ | ----------- | ---------------- | --------------------- | --------------- | ---------- |
-| C-04-UT01 | `verifikasiToken()` | Normal | Kirim permintaan dengan token `Bearer` aktif. | Identitas pengguna dikembalikan. | _[Hasil aktual]_ | _Pass/Fail_ |
-| C-04-UT02 | `verifikasiToken()` | Batas | Gunakan sesi yang belum melewati `BATAS_SESI_HARI`. | Sesi masih diterima. | _[Hasil aktual]_ | _Pass/Fail_ |
-| C-04-UT03 | `verifikasiToken()`, `logout()` | Negatif | Gunakan token tidak dikenal, skema bukan `Bearer`, sesi berakhir, atau sesi kedaluwarsa; lalu logout. | Permintaan ditolak, sesi kedaluwarsa diakhiri, dan token setelah logout tidak dapat dipakai. | _[Hasil aktual]_ | _Pass/Fail_ |
-| C-04-UT04 | `daftarkanPerangkat()` | Normal | Daftarkan token push sah pada dua sesi berurutan, lalu coba token tidak sah. | Token tersimpan pada sesi aktif, sesi lain pada perangkat sama diakhiri, dan token tidak sah ditolak. | _[Hasil aktual]_ | _Pass/Fail_ |
+| C-04-UT01 | `verifikasiToken()` | Normal | Kirim permintaan dengan token `Bearer` aktif. | Identitas pengguna dikembalikan. | `verifikasiToken` menerima sesi aktif dan mengembalikan identitas pengguna. | Pass |
+| C-04-UT02 | `verifikasiToken()` | Batas | Gunakan sesi yang belum melewati `BATAS_SESI_HARI`. | Sesi masih diterima. | Sesi yang belum melewati `BATAS_SESI` masih diterima. | Pass |
+| C-04-UT03 | `verifikasiToken()`, `logout()` | Negatif | Gunakan token tidak dikenal, skema bukan `Bearer`, sesi berakhir, atau sesi kedaluwarsa; lalu logout. | Permintaan ditolak, sesi kedaluwarsa diakhiri, dan token setelah logout tidak dapat dipakai. | Permintaan tanpa header, skema selain `Bearer`, token tak dikenal, dan sesi berakhir ditolak 401; sesi kedaluwarsa ditolak dan diakhiri; token setelah `logout` tidak dapat dipakai lagi. | Pass |
+| C-04-UT04 | `daftarkanPerangkat()` | Normal | Daftarkan token push sah pada dua sesi berurutan, lalu coba token tidak sah. | Token tersimpan pada sesi aktif, sesi lain pada perangkat sama diakhiri, dan token tidak sah ditolak. | Token tersimpan pada sesi aktif (Q-034), sesi lain pada perangkat yang sama diakhiri (Q-033), dan token yang tidak berpola Expo ditolak. | Pass |
 
 Tabel 4.2.1b. Ringkasan Cakupan Kelas C-04
 
@@ -476,10 +478,10 @@ Tabel 4.2.2. Hasil Pengujian Unit Kelas C-05
 
 | ID Pengujian | Operasi yang Diuji | Jenis Kasus | Prosedur/Masukan | Hasil yang Diharapkan | Hasil Pengujian | Kesimpulan |
 | ------------ | ------------------ | ----------- | ---------------- | --------------------- | --------------- | ---------- |
-| C-05-UT01 | `aturWaktuKirim()` | Normal | Simpan afirmasi untuk pertama kalinya melalui `PUT /api/affirmation/time`. | Baris baru dibuat dengan konten bawaan `KONTEN_BAWAAN`. | _[Hasil aktual]_ | _Pass/Fail_ |
-| C-05-UT02 | `aturWaktuKirim()` | Batas | Simpan waktu kedua kali, lalu hapus afirmasi dua kali. | Baris yang sama diperbarui; penghapusan pertama menghapus baris dan penghapusan kedua tetap 200. | _[Hasil aktual]_ | _Pass/Fail_ |
-| C-05-UT03 | `kirimAfirmasi()` | Normal | Jalankan tugas dengan afirmasi jatuh tempo dan jam sesuai WIB. | Notifikasi dicatat dan push dikirim ke sesi dengan token perangkat. | _[Hasil aktual]_ | _Pass/Fail_ |
-| C-05-UT04 | `kirimAfirmasi()` | Negatif | Jalankan tugas pada jam yang tidak cocok dan kirim format waktu salah. | Tidak ada pengiriman; format waktu ditolak. | _[Hasil aktual]_ | _Pass/Fail_ |
+| C-05-UT01 | `aturWaktuKirim()` | Normal | Simpan afirmasi untuk pertama kalinya melalui `PUT /api/affirmation/time`. | Baris baru dibuat dengan konten bawaan `KONTEN_BAWAAN`. | `PUT` pertama membuat baris baru berisi `KONTEN_BAWAAN` (Q-023). | Pass |
+| C-05-UT02 | `aturWaktuKirim()` | Batas | Simpan waktu kedua kali, lalu hapus afirmasi dua kali. | Baris yang sama diperbarui; penghapusan pertama menghapus baris dan penghapusan kedua tetap 200. | `PUT` kedua mengubah baris yang sama tanpa menambah baris (Q-022); `DELETE` menghapus afirmasi lalu `GET` kembali null, dan `DELETE` kedua tetap 200. | Pass |
+| C-05-UT03 | `kirimAfirmasi()` | Normal | Jalankan tugas dengan afirmasi jatuh tempo dan jam sesuai WIB. | Notifikasi dicatat dan push dikirim ke sesi dengan token perangkat. | Notifikasi untuk afirmasi jatuh tempo tercatat (Q-004/Q-006) dan satu _push_ dikirim ke token sesi aktif (Q-007). | Pass |
+| C-05-UT04 | `kirimAfirmasi()` | Negatif | Jalankan tugas pada jam yang tidak cocok dan kirim format waktu salah. | Tidak ada pengiriman; format waktu ditolak. | Tidak ada pencatatan maupun pengiriman saat jam tidak cocok; format waktu salah ditolak (Algo-023). | Pass |
 
 Tabel 4.2.2b. Ringkasan Cakupan Kelas C-05
 
@@ -498,10 +500,10 @@ Tabel 4.2.3. Hasil Pengujian Unit Kelas C-06
 
 | ID Pengujian | Operasi yang Diuji | Jenis Kasus | Prosedur/Masukan | Hasil yang Diharapkan | Hasil Pengujian | Kesimpulan |
 | ------------ | ------------------ | ----------- | ---------------- | --------------------- | --------------- | ---------- |
-| C-06-UT01 | `aturWaktuKirim()` | Normal | Simpan dan perbarui pengingat untuk setiap jenis. | Tiga jenis selalu dikembalikan; tiap jenis tersimpan dan dapat diperbarui. | _[Hasil aktual]_ | _Pass/Fail_ |
-| C-06-UT02 | `kirimPengingat()` | Normal | Jalankan tugas dengan pengingat jatuh tempo. | Notifikasi dicatat dengan teks sesuai jenis. | _[Hasil aktual]_ | _Pass/Fail_ |
-| C-06-UT03 | `aturWaktuKirim()` | Batas | Hapus satu jenis pengingat, lalu ulangi penghapusan. | Jenis tersebut menjadi null dan penghapusan kedua tetap 200. | _[Hasil aktual]_ | _Pass/Fail_ |
-| C-06-UT04 | `aturWaktuKirim()` | Negatif | Kirim jenis di luar enum atau waktu tidak valid. | Permintaan ditolak. | _[Hasil aktual]_ | _Pass/Fail_ |
+| C-06-UT01 | `aturWaktuKirim()` | Normal | Simpan dan perbarui pengingat untuk setiap jenis. | Tiga jenis selalu dikembalikan; tiap jenis tersimpan dan dapat diperbarui. | `GET` selalu mengembalikan tiga jenis; `PUT` per jenis membuat lalu mengubah baris (Q-024/Q-025/Q-026). | Pass |
+| C-06-UT02 | `kirimPengingat()` | Normal | Jalankan tugas dengan pengingat jatuh tempo. | Notifikasi dicatat dengan teks sesuai jenis. | Notifikasi pengingat tercatat dengan teks sesuai jenis (Q-005). | Pass |
+| C-06-UT03 | `aturWaktuKirim()` | Batas | Hapus satu jenis pengingat, lalu ulangi penghapusan. | Jenis tersebut menjadi null dan penghapusan kedua tetap 200. | `DELETE` menghapus satu jenis sehingga waktunya null, jenis lain tetap; `DELETE` kedua tetap 200. | Pass |
+| C-06-UT04 | `aturWaktuKirim()` | Negatif | Kirim jenis di luar enum atau waktu tidak valid. | Permintaan ditolak. | Jenis di luar enum dan waktu tidak valid ditolak, baik pada `PUT` maupun `DELETE`. | Pass |
 
 Tabel 4.2.3b. Ringkasan Cakupan Kelas C-06
 
@@ -520,9 +522,9 @@ Tabel 4.2.4. Hasil Pengujian Unit Kelas C-07
 
 | ID Pengujian | Operasi yang Diuji | Jenis Kasus | Prosedur/Masukan | Hasil yang Diharapkan | Hasil Pengujian | Kesimpulan |
 | ------------ | ------------------ | ----------- | ---------------- | --------------------- | --------------- | ---------- |
-| C-07-UT01 | `kirimNotifikasi()` | Normal | Catat notifikasi afirmasi dan pengingat. | Tepat satu dari `id_affirmation` atau `id_reminder` terisi. | _[Hasil aktual]_ | _Pass/Fail_ |
-| C-07-UT02 | `kirimNotifikasi()` | Batas | Kirim notifikasi kepada lebih dari 100 penerima. | Pengiriman dibagi menjadi _batch_ maksimal 100 pesan. | _[Hasil aktual]_ | _Pass/Fail_ |
-| C-07-UT03 | `kirimNotifikasi()` | Negatif | Token ditolak `DeviceNotRegistered` atau perangkat tidak mendukung push. | Token dikosongkan; notifikasi tetap tercatat dan tidak melempar galat ke pengguna. | _[Hasil aktual]_ | _Pass/Fail_ |
+| C-07-UT01 | `kirimNotifikasi()` | Normal | Catat notifikasi afirmasi dan pengingat. | Tepat satu dari `id_affirmation` atau `id_reminder` terisi. | Notifikasi afirmasi dan pengingat tercatat dengan tepat satu sumber terisi. | Pass |
+| C-07-UT02 | `kirimNotifikasi()` | Batas | Kirim notifikasi kepada lebih dari 100 penerima. | Pengiriman dibagi menjadi _batch_ maksimal 100 pesan. | Lebih dari 100 penerima dikirim dalam beberapa _batch_ berisi maksimal 100 pesan. | Pass |
+| C-07-UT03 | `kirimNotifikasi()` | Negatif | Token ditolak `DeviceNotRegistered` atau perangkat tidak mendukung push. | Token dikosongkan; notifikasi tetap tercatat dan tidak melempar galat ke pengguna. | Token yang ditolak `DeviceNotRegistered` dikosongkan (Q-008); perangkat tanpa dukungan _push_ dilewati dan galat pengambilan token atau _backend_ tidak dilempar. | Pass |
 
 Tabel 4.2.4b. Ringkasan Cakupan Kelas C-07
 
@@ -541,9 +543,9 @@ Tabel 4.2.5. Hasil Pengujian Unit Kelas C-08
 
 | ID Pengujian | Operasi yang Diuji | Jenis Kasus | Prosedur/Masukan | Hasil yang Diharapkan | Hasil Pengujian | Kesimpulan |
 | ------------ | ------------------ | ----------- | ---------------- | --------------------- | --------------- | ---------- |
-| C-08-UT01 | `ambilKalender()` | Normal | Ambil _event_ dengan rentang tanggal tertentu. | Hanya _event_ dalam rentang yang dikembalikan; hasil digabung pada kalender. | _[Hasil aktual]_ | _Pass/Fail_ |
-| C-08-UT02 | `ambilKalender()` | Batas | Gunakan rentang sempit yang tidak memuat _event_ contoh. | Tidak ada _event_ di luar rentang yang dikembalikan. | _[Hasil aktual]_ | _Pass/Fail_ |
-| C-08-UT03 | `cekBentrokJadwal()` | Negatif | `freeBusy` melaporkan sibuk; lalu simulasikan layanan gagal. | Bentrok menghasilkan 409 `GOOGLE_CALENDAR_CONFLICT`; kegagalan layanan mengembalikan jadwal lokal disertai peringatan. | _[Hasil aktual]_ | _Pass/Fail_ |
+| C-08-UT01 | `ambilKalender()` | Normal | Ambil _event_ dengan rentang tanggal tertentu. | Hanya _event_ dalam rentang yang dikembalikan; hasil digabung pada kalender. | Hanya _event_ dalam rentang yang diminta yang dihasilkan, lalu digabung dengan jadwal konsultasi. | Pass |
+| C-08-UT02 | `ambilKalender()` | Batas | Gunakan rentang sempit yang tidak memuat _event_ contoh. | Tidak ada _event_ di luar rentang yang dikembalikan. | Rentang sempit tidak mengembalikan _event_ di luar rentang. | Pass |
+| C-08-UT03 | `cekBentrokJadwal()` | Negatif | `freeBusy` melaporkan sibuk; lalu simulasikan layanan gagal. | Bentrok menghasilkan 409 `GOOGLE_CALENDAR_CONFLICT`; kegagalan layanan mengembalikan jadwal lokal disertai peringatan. | `freeBusy` sibuk menghasilkan 409; saat Google gagal, kalender tetap mengembalikan slot lokal disertai peringatan. | Pass |
 
 Tabel 4.2.5b. Ringkasan Cakupan Kelas C-08
 
@@ -562,9 +564,9 @@ Tabel 4.2.6. Hasil Pengujian Unit Kelas C-09
 
 | ID Pengujian | Operasi yang Diuji | Jenis Kasus | Prosedur/Masukan | Hasil yang Diharapkan | Hasil Pengujian | Kesimpulan |
 | ------------ | ------------------ | ----------- | ---------------- | --------------------- | --------------- | ---------- |
-| C-09-UT01 | `gabungkanJadwal()` | Normal | Gabungkan _event_ Google dan slot konsultasi. | Hasil terurut menurut waktu mulai, bukan urutan sumber. | _[Hasil aktual]_ | _Pass/Fail_ |
-| C-09-UT02 | `gabungkanJadwal()`, `tanggalSlot()` | Batas | Sertakan _event_ seharian, _event_ multi-hari, dan sesi milik pengguna. | Tanggal lokal tetap benar, _event_ tampil pada setiap hari yang beririsan, dan penanda `milikSaya` serta nama konsultan sesuai. | _[Hasil aktual]_ | _Pass/Fail_ |
-| C-09-UT03 | `gabungkanJadwal()` | Negatif | Sertakan _event_ tanpa waktu, judul kosong, dan slot yang sudah lewat. | _Event_ tanpa waktu diabaikan, judul pengganti dipakai, dan slot lewat tidak ditampilkan. | _[Hasil aktual]_ | _Pass/Fail_ |
+| C-09-UT01 | `gabungkanJadwal()` | Normal | Gabungkan _event_ Google dan slot konsultasi. | Hasil terurut menurut waktu mulai, bukan urutan sumber. | Hasil penggabungan terurut menurut waktu mulai, bukan urutan sumber. | Pass |
+| C-09-UT02 | `gabungkanJadwal()`, `tanggalSlot()` | Batas | Sertakan _event_ seharian, _event_ multi-hari, dan sesi milik pengguna. | Tanggal lokal tetap benar, _event_ tampil pada setiap hari yang beririsan, dan penanda `milikSaya` serta nama konsultan sesuai. | _Event_ seharian dan tanggal _date-only_ dipertahankan; sesi sendiri ditandai `milikSaya` dengan nama konsultan; slot lain pada hari yang sudah ada sesi disembunyikan; `tanggalSlot` memakai tanggal ISO yang sama dengan pemeriksaan pemesanan. | Pass |
+| C-09-UT03 | `gabungkanJadwal()` | Negatif | Sertakan _event_ tanpa waktu, judul kosong, dan slot yang sudah lewat. | _Event_ tanpa waktu diabaikan, judul pengganti dipakai, dan slot lewat tidak ditampilkan. | _Event_ tanpa waktu diabaikan, judul pengganti dipakai saat `summary` kosong, slot yang sudah lewat dan sesi mahasiswa lain tidak ditampilkan. | Pass |
 
 Tabel 4.2.6b. Ringkasan Cakupan Kelas C-09
 
@@ -583,10 +585,10 @@ Tabel 4.2.7. Hasil Pengujian Unit Kelas C-11
 
 | ID Pengujian | Operasi yang Diuji | Jenis Kasus | Prosedur/Masukan | Hasil yang Diharapkan | Hasil Pengujian | Kesimpulan |
 | ------------ | ------------------ | ----------- | ---------------- | --------------------- | --------------- | ---------- |
-| C-11-UT01 | `simpanJadwal()`, `perbaruiJadwal()` | Normal | Simpan slot baru lalu ubah jendela waktunya. | Slot tersimpan berstatus tersedia dan perubahan hanya menyentuh waktu mulai/selesai. | _[Hasil aktual]_ | _Pass/Fail_ |
-| C-11-UT02 | `validasiJadwal()` via C-33 | Batas | Simpan slot yang menempel pada slot lain, bandingkan waktu sebagai waktu, dan edit slot itu sendiri. | Slot yang menempel diterima, perbandingan tidak berbasis teks, dan edit tidak menganggap dirinya bentrok. | _[Hasil aktual]_ | _Pass/Fail_ |
-| C-11-UT03 | `pesanSesi()` | Negatif | Pesan slot terpesan, slot tak dikenal, atau dua sesi pada hari yang sama; jalankan dua pemesanan bersamaan. | Hanya satu pemesanan bersamaan yang berhasil; sisanya ditolak dengan 409 atau 404. | _[Hasil aktual]_ | _Pass/Fail_ |
-| C-11-UT04 | `ambilSesiBerikutnya()` | Normal | Pesan satu sesi lalu minta sesi berikutnya. | Sesi terpesan dikembalikan; tanpa sesi hasilnya null. | _[Hasil aktual]_ | _Pass/Fail_ |
+| C-11-UT01 | `simpanJadwal()`, `perbaruiJadwal()` | Normal | Simpan slot baru lalu ubah jendela waktunya. | Slot tersimpan berstatus tersedia dan perubahan hanya menyentuh waktu mulai/selesai. | `simpanJadwal` menyimpan slot berstatus tersedia; `perbaruiJadwal` hanya mengubah waktu mulai dan selesai (Q-027). | Pass |
+| C-11-UT02 | `validasiJadwal()` via C-33 | Batas | Simpan slot yang menempel pada slot lain, bandingkan waktu sebagai waktu, dan edit slot itu sendiri. | Slot yang menempel diterima, perbandingan tidak berbasis teks, dan edit tidak menganggap dirinya bentrok. | Slot yang menempel diterima, perbandingan dilakukan sebagai waktu, dan slot yang sedang diedit tidak dihitung sebagai bentrok. | Pass |
+| C-11-UT03 | `pesanSesi()` | Negatif | Pesan slot terpesan, slot tak dikenal, atau dua sesi pada hari yang sama; jalankan dua pemesanan bersamaan. | Hanya satu pemesanan bersamaan yang berhasil; sisanya ditolak dengan 409 atau 404. | Slot terpesan dan pemesanan kedua ditolak 409, slot tak dikenal 404, sesi kedua pada hari yang sama 409; dari dua pemesanan bersamaan hanya satu yang berhasil. | Pass |
+| C-11-UT04 | `ambilSesiBerikutnya()` | Normal | Pesan satu sesi lalu minta sesi berikutnya. | Sesi terpesan dikembalikan; tanpa sesi hasilnya null. | Sesi yang dipesan muncul pada `/api/sessions/next`; tanpa pesanan hasilnya null (Q-042). | Pass |
 
 Tabel 4.2.7b. Ringkasan Cakupan Kelas C-11
 
@@ -605,9 +607,9 @@ Tabel 4.2.8. Hasil Pengujian Unit Kelas C-12
 
 | ID Pengujian | Operasi yang Diuji | Jenis Kasus | Prosedur/Masukan | Hasil yang Diharapkan | Hasil Pengujian | Kesimpulan |
 | ------------ | ------------------ | ----------- | ---------------- | --------------------- | --------------- | ---------- |
-| C-12-UT01 | `cariFAQ()`, `ambilDaftarPertanyaan()` | Normal | Cari FAQ berdasarkan kata kunci dan ubah urutan daftar. | FAQ yang cocok dikembalikan dan urutan A–Z, Z–A, serta Terbaru sesuai parameter. | _[Hasil aktual]_ | _Pass/Fail_ |
-| C-12-UT02 | `cariFAQ()` | Batas | Kirim kata kunci kosong dan urutan tidak dikenal. | Semua FAQ ditampilkan dan urutan kembali ke A–Z. | _[Hasil aktual]_ | _Pass/Fail_ |
-| C-12-UT03 | `cariFAQ()` | Negatif | Gunakan pola LIKE `%`, `_`, dan `!` dalam pencarian. | Pola di-_escape_ sehingga tidak mengubah hasil pencarian. | _[Hasil aktual]_ | _Pass/Fail_ |
+| C-12-UT01 | `cariFAQ()`, `ambilDaftarPertanyaan()` | Normal | Cari FAQ berdasarkan kata kunci dan ubah urutan daftar. | FAQ yang cocok dikembalikan dan urutan A–Z, Z–A, serta Terbaru sesuai parameter. | Pencarian mencocokkan pertanyaan maupun jawaban (Algo-017); `urut=za` membalik urutan dan `urut=baru` memakai `waktu_dibuat` dengan baris lama di akhir. | Pass |
+| C-12-UT02 | `cariFAQ()` | Batas | Kirim kata kunci kosong dan urutan tidak dikenal. | Semua FAQ ditampilkan dan urutan kembali ke A–Z. | Kata kunci kosong menampilkan semua FAQ dan urutan tak dikenal kembali ke A–Z. | Pass |
+| C-12-UT03 | `cariFAQ()` | Negatif | Gunakan pola LIKE `%`, `_`, dan `!` dalam pencarian. | Pola di-_escape_ sehingga tidak mengubah hasil pencarian. | Karakter `%`, `_`, dan `!` di-_escape_ sehingga dicocokkan secara harfiah. | Pass |
 
 ### 4.2.9 Kelas C-14 `UmpanBalik`
 
@@ -617,9 +619,9 @@ Tabel 4.2.9. Hasil Pengujian Unit Kelas C-14
 
 | ID Pengujian | Operasi yang Diuji | Jenis Kasus | Prosedur/Masukan | Hasil yang Diharapkan | Hasil Pengujian | Kesimpulan |
 | ------------ | ------------------ | ----------- | ---------------- | --------------------- | --------------- | ---------- |
-| C-14-UT01 | `kirimUmpanBalik()`, `berikanTanggapan()` | Normal | Kirim umpan balik, lalu berikan tanggapan. | Baris tersimpan dan tanggapan tercatat dengan `id_administrator`. | _[Hasil aktual]_ | _Pass/Fail_ |
-| C-14-UT02 | `ambilListUmpanBalik()` | Batas | Minta daftar milik sendiri saat kosong, gunakan `?status` tidak dikenal, dan batasi `limit`. | Daftar kosong dikembalikan, status tidak dikenal diabaikan, dan `limit` dijepit pada batas maksimum. | _[Hasil aktual]_ | _Pass/Fail_ |
-| C-14-UT03 | `ambilListUmpanBalik()` | Negatif | Mahasiswa meminta `GET /api/feedback` dan Administrator meminta `/mine`. | Keduanya ditolak dengan 403. | _[Hasil aktual]_ | _Pass/Fail_ |
+| C-14-UT01 | `kirimUmpanBalik()`, `berikanTanggapan()` | Normal | Kirim umpan balik, lalu berikan tanggapan. | Baris tersimpan dan tanggapan tercatat dengan `id_administrator`. | Umpan balik tersimpan (Q-038) dan tanggapan tersimpan bersama `id_administrator` (Q-039). | Pass |
+| C-14-UT02 | `ambilListUmpanBalik()` | Batas | Minta daftar milik sendiri saat kosong, gunakan `?status` tidak dikenal, dan batasi `limit`. | Daftar kosong dikembalikan, status tidak dikenal diabaikan, dan `limit` dijepit pada batas maksimum. | `/mine` mengembalikan daftar kosong, `?status` tak dikenal diabaikan, dan `limit` dijepit pada maksimum. | Pass |
+| C-14-UT03 | `ambilListUmpanBalik()` | Negatif | Mahasiswa meminta `GET /api/feedback` dan Administrator meminta `/mine`. | Keduanya ditolak dengan 403. | Mahasiswa pada `GET /api/feedback` dan Administrator pada `/mine` sama-sama ditolak 403. | Pass |
 
 ### 4.2.10 Kelas C-16 `LoginView`
 
@@ -629,9 +631,9 @@ Tabel 4.2.10. Hasil Pengujian Unit Kelas C-16
 
 | ID Pengujian | Operasi yang Diuji | Jenis Kasus | Prosedur/Masukan | Hasil yang Diharapkan | Hasil Pengujian | Kesimpulan |
 | ------------ | ------------------ | ----------- | ---------------- | --------------------- | --------------- | ---------- |
-| C-16-UT01 | `masukLamanLogin()`, `isiLoginPage()` | Normal | Buka URL otorisasi dari Expo Go dan dari APK produksi. | _Deep link_ memakai `exp://<host>/--/` pada Expo Go dan `sehati://masuk` pada APK. | _[Hasil aktual]_ | _Pass/Fail_ |
-| C-16-UT02 | `tampilkanLoginPage()`, `redirectSystemPath()` | Batas | Berikan `hostUri` tanpa `executionEnvironment`, dan tautan kembali login ke _handler_ native intent. | `hostUri` yang menentukan skema; tautan login tidak diteruskan sebagai rute aplikasi. | _[Hasil aktual]_ | _Pass/Fail_ |
-| C-16-UT03 | `loadPageUtama()`, `showError()` | Negatif | Tutup peramban, balas `access_denied`, dan kirim respons tanpa `code` maupun `error`. | Dua kasus pertama mengembalikan pembatalan; kasus ketiga melempar `ApiError`. | _[Hasil aktual]_ | _Pass/Fail_ |
+| C-16-UT01 | `masukLamanLogin()`, `isiLoginPage()` | Normal | Buka URL otorisasi dari Expo Go dan dari APK produksi. | _Deep link_ memakai `exp://<host>/--/` pada Expo Go dan `sehati://masuk` pada APK. | Expo Go menghasilkan `exp://<host>/--/` dan _binary_ produksi tanpa `hostUri` menghasilkan `sehati://masuk`. | Pass |
+| C-16-UT02 | `tampilkanLoginPage()`, `redirectSystemPath()` | Batas | Berikan `hostUri` tanpa `executionEnvironment`, dan tautan kembali login ke _handler_ native intent. | `hostUri` yang menentukan skema; tautan login tidak diteruskan sebagai rute aplikasi. | `hostUri` yang menentukan skema meski `executionEnvironment` berbeda; `redirectSystemPath` mengabaikan tautan kembali login dan meneruskan tautan lain apa adanya. | Pass |
+| C-16-UT03 | `loadPageUtama()`, `showError()` | Negatif | Tutup peramban, balas `access_denied`, dan kirim respons tanpa `code` maupun `error`. | Dua kasus pertama mengembalikan pembatalan; kasus ketiga melempar `ApiError`. | Peramban ditutup dan `access_denied` menghasilkan null (batal); respons tanpa `code` maupun `error` melempar `ApiError`. | Pass |
 
 ### 4.2.11 Kelas C-19 `CalendarView`
 
@@ -641,9 +643,9 @@ Tabel 4.2.11. Hasil Pengujian Unit Kelas C-19
 
 | ID Pengujian | Operasi yang Diuji | Jenis Kasus | Prosedur/Masukan | Hasil yang Diharapkan | Hasil Pengujian | Kesimpulan |
 | ------------ | ------------------ | ----------- | ---------------- | --------------------- | --------------- | ---------- |
-| C-19-UT01 | `bukaPageCalendar()`, `tampilkanKalender()` | Normal | Tampilkan _event_ seharian dengan tanggal lokal. | _Event_ muncul pada tanggal yang benar dan berlabel "Seharian". | _[Hasil aktual]_ | _Pass/Fail_ |
-| C-19-UT02 | `tampilkanKalender()` | Batas | Tampilkan _event_ multi-hari dan tiga sumber _event_. | _Event_ muncul pada setiap hari yang beririsan; penanda membedakan Google, sesi saya, dan slot tersedia. | _[Hasil aktual]_ | _Pass/Fail_ |
-| C-19-UT03 | `showErrorMessage()` | Negatif | Berikan tanggal _event_ tidak valid. | Tanggal ditolak dan tidak merusak tampilan kalender. | _[Hasil aktual]_ | _Pass/Fail_ |
+| C-19-UT01 | `bukaPageCalendar()`, `tampilkanKalender()` | Normal | Tampilkan _event_ seharian dengan tanggal lokal. | _Event_ muncul pada tanggal yang benar dan berlabel "Seharian". | _Event_ seharian dibaca sebagai tanggal lokal, tampil pada hari yang benar, dan berlabel "Seharian". | Pass |
+| C-19-UT02 | `tampilkanKalender()` | Batas | Tampilkan _event_ multi-hari dan tiga sumber _event_. | _Event_ muncul pada setiap hari yang beririsan; penanda membedakan Google, sesi saya, dan slot tersedia. | _Event_ multi-hari tampil pada setiap hari yang beririsan; `penandaEvent` membedakan Google, sesi saya, dan slot tersedia. | Pass |
+| C-19-UT03 | `showErrorMessage()` | Negatif | Berikan tanggal _event_ tidak valid. | Tanggal ditolak dan tidak merusak tampilan kalender. | Tanggal _event_ tidak valid ditolak tanpa merusak urutan tampilan. | Pass |
 
 ### 4.2.12 Kelas C-21 `ConsultationManagementView`
 
@@ -653,9 +655,9 @@ Tabel 4.2.12. Hasil Pengujian Unit Kelas C-21
 
 | ID Pengujian | Operasi yang Diuji | Jenis Kasus | Prosedur/Masukan | Hasil yang Diharapkan | Hasil Pengujian | Kesimpulan |
 | ------------ | ------------------ | ----------- | ---------------- | --------------------- | --------------- | ---------- |
-| C-21-UT01 | `bukaPageKonsultasi()`, `tampilkanSetelanTersimpan()` | Normal | Format tanggal dan jam dalam WIB serta parse jam yang valid. | Tanggal tiga hari berturut-turut dan label jam sesuai WIB. | _[Hasil aktual]_ | _Pass/Fail_ |
-| C-21-UT02 | `perbaruiJadwal()`, `tampilkanKalender()` | Batas | Simpan slot yang menempel pada slot lain dan bandingkan `"9.00"` dengan `"10.00"`. | Perbandingan dilakukan sebagai waktu, bukan teks, dan slot yang menempel diterima. | _[Hasil aktual]_ | _Pass/Fail_ |
-| C-21-UT03 | `showError()` | Negatif | Kirim jam salah, jam selesai sebelum mulai, dan balasan 500 saat menyimpan. | Masukan ditolak per kolom dan banner galat I-12-07 ditampilkan. | _[Hasil aktual]_ | _Pass/Fail_ |
+| C-21-UT01 | `bukaPageKonsultasi()`, `tampilkanSetelanTersimpan()` | Normal | Format tanggal dan jam dalam WIB serta parse jam yang valid. | Tanggal tiga hari berturut-turut dan label jam sesuai WIB. | Tanggal dan jam dihitung dalam WIB; `daftarTanggal` memberi tiga hari berturut-turut termasuk pergantian bulan dan tahun; `parseJam` menerima format `09.00`, `9.00`, dan `09:00`. | Pass |
+| C-21-UT02 | `perbaruiJadwal()`, `tampilkanKalender()` | Batas | Simpan slot yang menempel pada slot lain dan bandingkan `"9.00"` dengan `"10.00"`. | Perbandingan dilakukan sebagai waktu, bukan teks, dan slot yang menempel diterima. | Slot yang menempel tidak dianggap tumpang tindih dan `"9.00"` dibandingkan dengan `"10.00"` sebagai waktu. | Pass |
+| C-21-UT03 | `showError()` | Negatif | Kirim jam salah, jam selesai sebelum mulai, dan balasan 500 saat menyimpan. | Masukan ditolak per kolom dan banner galat I-12-07 ditampilkan. | Jam kosong atau salah format ditolak per kolom, jam selesai tidak setelah jam mulai ditolak, dan galat 500, 502, serta jaringan menampilkan banner I-12-07. | Pass |
 
 ### 4.2.13 Kelas C-24 `ServerStatusView`
 
@@ -665,9 +667,9 @@ Tabel 4.2.13. Hasil Pengujian Unit Kelas C-24
 
 | ID Pengujian | Operasi yang Diuji | Jenis Kasus | Prosedur/Masukan | Hasil yang Diharapkan | Hasil Pengujian | Kesimpulan |
 | ------------ | ------------------ | ----------- | ---------------- | --------------------- | --------------- | ---------- |
-| C-24-UT01 | `tampilkanStatusServer()` | Normal | Tampilkan status Up dan Down. | Lencana dan keterangan sesuai status serta membedakan server dari basis data. | _[Hasil aktual]_ | _Pass/Fail_ |
-| C-24-UT02 | `cekStatusServer()` | Batas | Tampilkan status yang belum pernah dicek dan minta dua baris sekaligus. | Status ditandai "Belum dicek", bukan Down; dua baris dikembalikan dengan `server` lebih dulu dan waktu dalam WIB. | _[Hasil aktual]_ | _Pass/Fail_ |
-| C-24-UT03 | `cekStatusServer()` | Negatif | Salah satu permintaan status gagal. | Galat diteruskan, bukan dianggap sebagai status Down. | _[Hasil aktual]_ | _Pass/Fail_ |
+| C-24-UT01 | `tampilkanStatusServer()` | Normal | Tampilkan status Up dan Down. | Lencana dan keterangan sesuai status serta membedakan server dari basis data. | Lencana Up dan Down sesuai status, serta judul dan keterangan membedakan server dari basis data. | Pass |
+| C-24-UT02 | `cekStatusServer()` | Batas | Tampilkan status yang belum pernah dicek dan minta dua baris sekaligus. | Status ditandai "Belum dicek", bukan Down; dua baris dikembalikan dengan `server` lebih dulu dan waktu dalam WIB. | Status yang belum pernah dicek ditandai "Belum dicek", bukan Down; dua baris dikembalikan dengan `server` lebih dulu dan waktu dalam WIB. | Pass |
+| C-24-UT03 | `cekStatusServer()` | Negatif | Salah satu permintaan status gagal. | Galat diteruskan, bukan dianggap sebagai status Down. | `ambilStatusLayanan` meneruskan galat bila salah satu permintaan gagal. | Pass |
 
 ### 4.2.14 Kelas C-25 `AuthController`
 
@@ -677,9 +679,9 @@ Tabel 4.2.14. Hasil Pengujian Unit Kelas C-25
 
 | ID Pengujian | Operasi yang Diuji | Jenis Kasus | Prosedur/Masukan | Hasil yang Diharapkan | Hasil Pengujian | Kesimpulan |
 | ------------ | ------------------ | ----------- | ---------------- | --------------------- | --------------- | ---------- |
-| C-25-UT01 | `kirimData()` | Normal | Kirim kode otorisasi untuk pengguna baru dan pengguna yang sudah ada. | Pengguna baru dibuat beserta sesi dan token terenkripsi; pengguna lama tidak duplikat. | _[Hasil aktual]_ | _Pass/Fail_ |
-| C-25-UT02 | `tampilkanLoginPage()` | Batas | Kirim parameter `kembali` dan `state` dengan skema selain aplikasi, tanpa host, dan dengan host. | Hanya _deep link_ aplikasi ber-_host_ yang diterima. | _[Hasil aktual]_ | _Pass/Fail_ |
-| C-25-UT03 | `kirimData()` | Negatif | Kode gagal ditukar, body tidak ada, peran demo tidak dikenal, atau `MODE_DEMO` nonaktif. | Permintaan ditolak dan rute demo tidak tersedia. | _[Hasil aktual]_ | _Pass/Fail_ |
+| C-25-UT01 | `kirimData()` | Normal | Kirim kode otorisasi untuk pengguna baru dan pengguna yang sudah ada. | Pengguna baru dibuat beserta sesi dan token terenkripsi; pengguna lama tidak duplikat. | Pengguna baru didaftarkan beserta sesi dan token terenkripsi; login kedua memakai akun yang sama tanpa duplikasi. | Pass |
+| C-25-UT02 | `tampilkanLoginPage()` | Batas | Kirim parameter `kembali` dan `state` dengan skema selain aplikasi, tanpa host, dan dengan host. | Hanya _deep link_ aplikasi ber-_host_ yang diterima. | `kembali`/`state` dengan skema lain, `javascript:`, string kosong, dan _deep link_ tanpa _host_ ditolak 400; `sehati://masuk` dan `exp://<host>/--/masuk` diterima. | Pass |
+| C-25-UT03 | `kirimData()` | Negatif | Kode gagal ditukar, body tidak ada, peran demo tidak dikenal, atau `MODE_DEMO` nonaktif. | Permintaan ditolak dan rute demo tidak tersedia. | Kode yang gagal ditukar, _body_ tanpa `kodeOtorisasi`, dan _body_ bukan JSON ditolak; peran demo tak dikenal ditolak dan rute demo tidak tersedia saat `MODE_DEMO` bukan `1`. | Pass |
 
 ### 4.2.15 Kelas C-26 `AffirmationController`
 
@@ -689,9 +691,9 @@ Tabel 4.2.15. Hasil Pengujian Unit Kelas C-26
 
 | ID Pengujian | Operasi yang Diuji | Jenis Kasus | Prosedur/Masukan | Hasil yang Diharapkan | Hasil Pengujian | Kesimpulan |
 | ------------ | ------------------ | ----------- | ---------------- | --------------------- | --------------- | ---------- |
-| C-26-UT01 | `submitWaktuPengiriman()` | Normal | Simpan waktu afirmasi pertama dan kedua kalinya. | Pertama membuat baris dengan konten bawaan; kedua memperbarui baris yang sama. | _[Hasil aktual]_ | _Pass/Fail_ |
-| C-26-UT02 | `submitWaktuPengiriman()` | Batas | Hapus afirmasi saat belum ada preferensi. | Permintaan tetap 200 dan preferensi tetap kosong. | _[Hasil aktual]_ | _Pass/Fail_ |
-| C-26-UT03 | `submitWaktuPengiriman()`, `ambilAfirmasiHariIni()` | Negatif | Kirim format waktu salah atau minta sebagai Administrator. | Format ditolak dan akses Administrator ditolak dengan 403. | _[Hasil aktual]_ | _Pass/Fail_ |
+| C-26-UT01 | `submitWaktuPengiriman()` | Normal | Simpan waktu afirmasi pertama dan kedua kalinya. | Pertama membuat baris dengan konten bawaan; kedua memperbarui baris yang sama. | `PUT` pertama membuat baris berisi konten bawaan dan `PUT` kedua mengubah baris yang sama. | Pass |
+| C-26-UT02 | `submitWaktuPengiriman()` | Batas | Hapus afirmasi saat belum ada preferensi. | Permintaan tetap 200 dan preferensi tetap kosong. | `DELETE` tanpa afirmasi tetap 200 dan `GET` tetap null. | Pass |
+| C-26-UT03 | `submitWaktuPengiriman()`, `ambilAfirmasiHariIni()` | Negatif | Kirim format waktu salah atau minta sebagai Administrator. | Format ditolak dan akses Administrator ditolak dengan 403. | Format waktu salah ditolak (Algo-023); Administrator ditolak 403 pada `GET`, `PUT`, dan `DELETE`. | Pass |
 
 ### 4.2.16 Kelas C-27 `ReminderController`
 
@@ -701,9 +703,9 @@ Tabel 4.2.16. Hasil Pengujian Unit Kelas C-27
 
 | ID Pengujian | Operasi yang Diuji | Jenis Kasus | Prosedur/Masukan | Hasil yang Diharapkan | Hasil Pengujian | Kesimpulan |
 | ------------ | ------------------ | ----------- | ---------------- | --------------------- | --------------- | ---------- |
-| C-27-UT01 | `submitWaktuPengiriman()` | Normal | Atur pengingat untuk masing-masing jenis. | Waktu tersimpan per jenis dan daftar selalu memuat tiga jenis. | _[Hasil aktual]_ | _Pass/Fail_ |
-| C-27-UT02 | `submitWaktuPengiriman()` | Batas | Hapus pengingat tanpa preferensi dan baca daftar awal. | Penghapusan tetap 200; waktu ketiga jenis bernilai null. | _[Hasil aktual]_ | _Pass/Fail_ |
-| C-27-UT03 | `submitWaktuPengiriman()` | Negatif | Kirim jenis di luar enum, waktu tidak valid, atau permintaan Administrator. | Permintaan ditolak. | _[Hasil aktual]_ | _Pass/Fail_ |
+| C-27-UT01 | `submitWaktuPengiriman()` | Normal | Atur pengingat untuk masing-masing jenis. | Waktu tersimpan per jenis dan daftar selalu memuat tiga jenis. | Waktu tersimpan per jenis dan daftar selalu memuat tiga jenis. | Pass |
+| C-27-UT02 | `submitWaktuPengiriman()` | Batas | Hapus pengingat tanpa preferensi dan baca daftar awal. | Penghapusan tetap 200; waktu ketiga jenis bernilai null. | Daftar awal berisi tiga jenis dengan waktu null; `DELETE` tanpa pengingat tetap 200. | Pass |
+| C-27-UT03 | `submitWaktuPengiriman()` | Negatif | Kirim jenis di luar enum, waktu tidak valid, atau permintaan Administrator. | Permintaan ditolak. | Jenis di luar enum, waktu tidak valid, dan permintaan Administrator (403) ditolak. | Pass |
 
 ### 4.2.17 Kelas C-28 `CalendarController`
 
@@ -713,9 +715,9 @@ Tabel 4.2.17. Hasil Pengujian Unit Kelas C-28
 
 | ID Pengujian | Operasi yang Diuji | Jenis Kasus | Prosedur/Masukan | Hasil yang Diharapkan | Hasil Pengujian | Kesimpulan |
 | ------------ | ------------------ | ----------- | ---------------- | --------------------- | --------------- | ---------- |
-| C-28-UT01 | `tampilkanCalendar()` | Normal | Minta kalender dengan rentang `?dari=` dan `?sampai=`. | _Event_ Google dan jadwal konsultasi digabung dan terurut. | _[Hasil aktual]_ | _Pass/Fail_ |
-| C-28-UT02 | `tampilkanCalendar()` | Batas | Minta kalender setelah pengguna memesan sesi. | Hanya sesi milik sendiri yang tampil dan slot pada hari yang sama disembunyikan. | _[Hasil aktual]_ | _Pass/Fail_ |
-| C-28-UT03 | `tampilkanCalendar()` | Negatif | Simulasikan kegagalan Google Calendar. | Jadwal lokal tetap dikembalikan disertai peringatan. | _[Hasil aktual]_ | _Pass/Fail_ |
+| C-28-UT01 | `tampilkanCalendar()` | Normal | Minta kalender dengan rentang `?dari=` dan `?sampai=`. | _Event_ Google dan jadwal konsultasi digabung dan terurut. | _Event_ Google dan slot konsultasi digabung dan terurut. | Pass |
+| C-28-UT02 | `tampilkanCalendar()` | Batas | Minta kalender setelah pengguna memesan sesi. | Hanya sesi milik sendiri yang tampil dan slot pada hari yang sama disembunyikan. | Hanya sesi milik sendiri yang tampil dan slot pada hari yang sama disembunyikan. | Pass |
+| C-28-UT03 | `tampilkanCalendar()` | Negatif | Simulasikan kegagalan Google Calendar. | Jadwal lokal tetap dikembalikan disertai peringatan. | Saat Google gagal, slot lokal tetap dikembalikan disertai peringatan. | Pass |
 
 ### 4.2.18 Kelas C-29 `ConsultationController`
 
@@ -725,10 +727,10 @@ Tabel 4.2.18. Hasil Pengujian Unit Kelas C-29
 
 | ID Pengujian | Operasi yang Diuji | Jenis Kasus | Prosedur/Masukan | Hasil yang Diharapkan | Hasil Pengujian | Kesimpulan |
 | ------------ | ------------------ | ----------- | ---------------- | --------------------- | --------------- | ---------- |
-| C-29-UT01 | `tampilkanOpsiKonsultasi()`, `submitKonsultan()` | Normal | Ambil daftar konsultan dan slot untuk peran Mahasiswa serta Administrator. | Daftar terurut; Mahasiswa melihat slot tersedia, Administrator melihat pula slot terpesan. | _[Hasil aktual]_ | _Pass/Fail_ |
-| C-29-UT02 | `updateStatusKonsultasi()` | Normal | Pesan slot tersedia lalu minta sesi berikutnya. | Slot menjadi terpesan dan sesi muncul pada `/api/sessions/next`. | _[Hasil aktual]_ | _Pass/Fail_ |
-| C-29-UT03 | `updateStatusKonsultasi()` | Batas | Pesan slot yang sama secara bersamaan dan coba `overrideGoogle` saat pengguna sudah punya sesi sehari. | Tepat satu pemesanan berhasil; `overrideGoogle` tidak menembus aturan satu sesi per hari. | _[Hasil aktual]_ | _Pass/Fail_ |
-| C-29-UT04 | `updateStatusKonsultasi()` | Negatif | Pesan slot terpesan, slot tak dikenal, atau slot yang bentrok dengan Google. | Permintaan ditolak dengan 404/409; Administrator tidak dapat memesan. | _[Hasil aktual]_ | _Pass/Fail_ |
+| C-29-UT01 | `tampilkanOpsiKonsultasi()`, `submitKonsultan()` | Normal | Ambil daftar konsultan dan slot untuk peran Mahasiswa serta Administrator. | Daftar terurut; Mahasiswa melihat slot tersedia, Administrator melihat pula slot terpesan. | Konsultan terurut menurut nama (Q-012); Mahasiswa hanya melihat slot tersedia, Administrator melihat slot tersedia dan terpesan mulai awal hari ini (WIB). | Pass |
+| C-29-UT02 | `updateStatusKonsultasi()` | Normal | Pesan slot tersedia lalu minta sesi berikutnya. | Slot menjadi terpesan dan sesi muncul pada `/api/sessions/next`. | Slot tersedia berubah menjadi terpesan (Q-028) dan pesanan muncul pada `/api/sessions/next`. | Pass |
+| C-29-UT03 | `updateStatusKonsultasi()` | Batas | Pesan slot yang sama secara bersamaan dan coba `overrideGoogle` saat pengguna sudah punya sesi sehari. | Tepat satu pemesanan berhasil; `overrideGoogle` tidak menembus aturan satu sesi per hari. | Dari dua pemesanan bersamaan hanya satu yang berhasil; `overrideGoogle` tidak menembus larangan sesi kedua pada hari yang sama. | Pass |
+| C-29-UT04 | `updateStatusKonsultasi()` | Negatif | Pesan slot terpesan, slot tak dikenal, atau slot yang bentrok dengan Google. | Permintaan ditolak dengan 404/409; Administrator tidak dapat memesan. | Slot terpesan ditolak 409, slot tak dikenal 404, bentrok Google 409, dan Administrator yang memesan ditolak 403. | Pass |
 
 Tabel 4.2.18b. Ringkasan Cakupan Kelas C-29
 
@@ -747,9 +749,9 @@ Tabel 4.2.19. Hasil Pengujian Unit Kelas C-30
 
 | ID Pengujian | Operasi yang Diuji | Jenis Kasus | Prosedur/Masukan | Hasil yang Diharapkan | Hasil Pengujian | Kesimpulan |
 | ------------ | ------------------ | ----------- | ---------------- | --------------------- | --------------- | ---------- |
-| C-30-UT01 | `tambahFAQ()`, `ubahFAQ()`, `hapusFAQ()` | Normal | Tambah, ubah, dan hapus FAQ melalui rute `/api/faq`. | Perubahan tersimpan dan langsung tampil pada daftar. | _[Hasil aktual]_ | _Pass/Fail_ |
-| C-30-UT02 | `cariFAQ()` | Batas | Kirim kata kunci kosong dan urutan tidak dikenal. | Semua FAQ ditampilkan dengan urutan A–Z; parameter kosong tidak dikirim dari klien. | _[Hasil aktual]_ | _Pass/Fail_ |
-| C-30-UT03 | `kirimPertanyaan()` | Negatif | Kirim pertanyaan kosong, ajukan sebagai Administrator, dan gunakan batas waktu tidak valid. | Permintaan ditolak. | _[Hasil aktual]_ | _Pass/Fail_ |
+| C-30-UT01 | `tambahFAQ()`, `ubahFAQ()`, `hapusFAQ()` | Normal | Tambah, ubah, dan hapus FAQ melalui rute `/api/faq`. | Perubahan tersimpan dan langsung tampil pada daftar. | `POST`, `PUT`, dan `DELETE /api/faq` mengubah data (Q-035–Q-037); ID tak dikenal mengembalikan 404. | Pass |
+| C-30-UT02 | `cariFAQ()` | Batas | Kirim kata kunci kosong dan urutan tidak dikenal. | Semua FAQ ditampilkan dengan urutan A–Z; parameter kosong tidak dikirim dari klien. | Kata kunci kosong menampilkan semua FAQ dan urutan tak dikenal kembali ke A–Z; klien tidak mengirim `?q=` kosong maupun `?urut=az`. | Pass |
+| C-30-UT03 | `kirimPertanyaan()` | Negatif | Kirim pertanyaan kosong, ajukan sebagai Administrator, dan gunakan batas waktu tidak valid. | Permintaan ditolak. | Pertanyaan kosong dan pengajuan oleh Administrator ditolak; batas waktu tidak valid pada `GET /api/questions` ditolak. | Pass |
 
 ### 4.2.20 Kelas C-31 `FeedbackController`
 
@@ -759,9 +761,9 @@ Tabel 4.2.20. Hasil Pengujian Unit Kelas C-31
 
 | ID Pengujian | Operasi yang Diuji | Jenis Kasus | Prosedur/Masukan | Hasil yang Diharapkan | Hasil Pengujian | Kesimpulan |
 | ------------ | ------------------ | ----------- | ---------------- | --------------------- | --------------- | ---------- |
-| C-31-UT01 | `kirimFeedback()`, `kirimTanggapan()` | Normal | Kirim umpan balik lalu tanggapi sebagai Administrator. | Baris tersimpan dan tanggapan tampil pada daftar milik Mahasiswa. | _[Hasil aktual]_ | _Pass/Fail_ |
-| C-31-UT02 | `tampilkanListFeedback()` | Batas | Minta `/mine` saat kosong, gunakan `?status` tidak dikenal, dan batasi `limit`. | Daftar kosong dikembalikan, status diabaikan, dan limit dijepit. | _[Hasil aktual]_ | _Pass/Fail_ |
-| C-31-UT03 | `kirimTanggapan()` | Negatif | Kirim isi kosong dan tanggapi ID tidak dikenal. | Permintaan ditolak dengan galat validasi atau 404. | _[Hasil aktual]_ | _Pass/Fail_ |
+| C-31-UT01 | `kirimFeedback()`, `kirimTanggapan()` | Normal | Kirim umpan balik lalu tanggapi sebagai Administrator. | Baris tersimpan dan tanggapan tampil pada daftar milik Mahasiswa. | Umpan balik tersimpan dan tanggapan Administrator tampil pada `/mine` milik Mahasiswa. | Pass |
+| C-31-UT02 | `tampilkanListFeedback()` | Batas | Minta `/mine` saat kosong, gunakan `?status` tidak dikenal, dan batasi `limit`. | Daftar kosong dikembalikan, status diabaikan, dan limit dijepit. | `/mine` kosong mengembalikan daftar kosong, `?status` tak dikenal diabaikan, dan `limit` dijepit pada maksimum. | Pass |
+| C-31-UT03 | `kirimTanggapan()` | Negatif | Kirim isi kosong dan tanggapi ID tidak dikenal. | Permintaan ditolak dengan galat validasi atau 404. | Isi dan tanggapan kosong ditolak galat validasi; tanggapan untuk ID tak dikenal mengembalikan 404. | Pass |
 
 ### 4.2.21 Kelas C-32 `ServerStatusController`
 
@@ -771,9 +773,9 @@ Tabel 4.2.21. Hasil Pengujian Unit Kelas C-32
 
 | ID Pengujian | Operasi yang Diuji | Jenis Kasus | Prosedur/Masukan | Hasil yang Diharapkan | Hasil Pengujian | Kesimpulan |
 | ------------ | ------------------ | ----------- | ---------------- | --------------------- | --------------- | ---------- |
-| C-32-UT01 | `tampilkanStatusServer(jenis)` | Normal | Minta status `server` dan `db`, lalu baca riwayatnya. | Kedua jenis memeriksa alamat berbeda; hasil terakhir dan riwayat dikembalikan terurut terbaru. | _[Hasil aktual]_ | _Pass/Fail_ |
-| C-32-UT02 | `tampilkanStatusServer(jenis)` | Batas | Panggil "Periksa Sekarang" sebelum dan sesudah lewat 30 detik, serta minta riwayat dengan `limit`. | Hasil segar dipakai ulang selama 30 detik, probe baru setelahnya, dan `limit` dijepit. | _[Hasil aktual]_ | _Pass/Fail_ |
-| C-32-UT03 | `tampilkanStatusServer(jenis)` | Negatif | Probe gagal, status 3xx, jenis tidak dikenal, atau permintaan refresh dari Mahasiswa. | Status dicatat sebagai down, jenis ditolak dengan 422, dan refresh ditolak dengan 403. | _[Hasil aktual]_ | _Pass/Fail_ |
+| C-32-UT01 | `tampilkanStatusServer(jenis)` | Normal | Minta status `server` dan `db`, lalu baca riwayatnya. | Kedua jenis memeriksa alamat berbeda; hasil terakhir dan riwayat dikembalikan terurut terbaru. | `server` dan `db` memeriksa alamat berbeda dan dicatat (Q-018); status terakhir per jenis (Q-017) dan riwayat terbaru lebih dulu (Q-044) dikembalikan. | Pass |
+| C-32-UT02 | `tampilkanStatusServer(jenis)` | Batas | Panggil "Periksa Sekarang" sebelum dan sesudah lewat 30 detik, serta minta riwayat dengan `limit`. | Hasil segar dipakai ulang selama 30 detik, probe baru setelahnya, dan `limit` dijepit. | "Periksa Sekarang" memakai ulang hasil yang lebih muda dari 30 detik dan menjalankan probe baru setelahnya; `limit` riwayat dijepit. | Pass |
+| C-32-UT03 | `tampilkanStatusServer(jenis)` | Negatif | Probe gagal, status 3xx, jenis tidak dikenal, atau permintaan refresh dari Mahasiswa. | Status dicatat sebagai down, jenis ditolak dengan 422, dan refresh ditolak dengan 403. | Probe gagal, non-2xx, dan 3xx dicatat down; jenis tak dikenal ditolak 422; refresh dari Mahasiswa ditolak 403 dan tanpa sesi 401. | Pass |
 
 Tabel 4.2.21b. Ringkasan Cakupan Kelas C-32
 
@@ -792,9 +794,9 @@ Tabel 4.2.22. Hasil Pengujian Unit Kelas C-33
 
 | ID Pengujian | Operasi yang Diuji | Jenis Kasus | Prosedur/Masukan | Hasil yang Diharapkan | Hasil Pengujian | Kesimpulan |
 | ------------ | ------------------ | ----------- | ---------------- | --------------------- | --------------- | ---------- |
-| C-33-UT01 | `validasiWaktu()` | Normal | Masukkan format waktu yang valid. | Format diterima dan dikonversi sesuai aturan WIB. | _[Hasil aktual]_ | _Pass/Fail_ |
-| C-33-UT02 | `validasiJadwal()` | Batas | Masukkan rentang ISO 8601 yang wajar, slot yang menempel, dan penyuntingan slot itu sendiri. | Rentang diterima, slot menempel tidak dianggap bentrok, dan edit tidak bentrok dengan dirinya sendiri. | _[Hasil aktual]_ | _Pass/Fail_ |
-| C-33-UT03 | `validasiInput()`, `validasiKonsultan()` | Negatif | Masukkan isian kosong, konsultan tidak terdaftar, token push tidak sah, dan pola LIKE. | Isian ditolak, ID konsultan ditolak, token ditolak, dan pola LIKE di-_escape_. | _[Hasil aktual]_ | _Pass/Fail_ |
+| C-33-UT01 | `validasiWaktu()` | Normal | Masukkan format waktu yang valid. | Format diterima dan dikonversi sesuai aturan WIB. | `validasiWaktu` menerima `HH:MM` 00:00–23:59 dan menolak bentuk lain; jam-menit WIB dihitung dengan _offset_ +7 dan selalu dua digit. | Pass |
+| C-33-UT02 | `validasiJadwal()` | Batas | Masukkan rentang ISO 8601 yang wajar, slot yang menempel, dan penyuntingan slot itu sendiri. | Rentang diterima, slot menempel tidak dianggap bentrok, dan edit tidak bentrok dengan dirinya sendiri. | Rentang ISO 8601 yang wajar diterima, slot menempel tidak dianggap bentrok, dan slot yang diedit tidak bentrok dengan dirinya sendiri. | Pass |
+| C-33-UT03 | `validasiInput()`, `validasiKonsultan()` | Negatif | Masukkan isian kosong, konsultan tidak terdaftar, token push tidak sah, dan pola LIKE. | Isian ditolak, ID konsultan ditolak, token ditolak, dan pola LIKE di-_escape_. | Isian kosong atau hanya spasi ditolak, konsultan tidak terdaftar atau ID tidak sah ditolak, token _push_ tidak berpola Expo ditolak, dan pola LIKE di-_escape_. | Pass |
 
 Tabel 4.2.22b. Ringkasan Cakupan Kelas C-33
 
@@ -813,9 +815,9 @@ Tabel 4.2.23. Hasil Pengujian Unit Kelas C-34
 
 | ID Pengujian | Operasi yang Diuji | Jenis Kasus | Prosedur/Masukan | Hasil yang Diharapkan | Hasil Pengujian | Kesimpulan |
 | ------------ | ------------------ | ----------- | ---------------- | --------------------- | --------------- | ---------- |
-| C-34-UT01 | `validasi(kodeOtorisasi)` | Normal | Tukar kode otorisasi yang sah. | Identitas pengguna diperoleh dan token disimpan terenkripsi. | _[Hasil aktual]_ | _Pass/Fail_ |
-| C-34-UT02 | enkripsi AES-256-GCM | Batas | Enkripsi plaintext yang sama dua kali dan gunakan email kampus serta email non-kampus. | _Ciphertext_ berbeda karena IV acak; NIM diambil hanya untuk domain kampus. | _[Hasil aktual]_ | _Pass/Fail_ |
-| C-34-UT03 | `validasi(kodeOtorisasi)`, dekripsi | Negatif | Ubah _ciphertext_, gunakan kunci salah panjang, kirim payload terlalu pendek, dan gagalkan penukaran kode. | Semua ditolak dan login tidak dibuat. | _[Hasil aktual]_ | _Pass/Fail_ |
+| C-34-UT01 | `validasi(kodeOtorisasi)` | Normal | Tukar kode otorisasi yang sah. | Identitas pengguna diperoleh dan token disimpan terenkripsi. | Kode yang sah ditukar menjadi identitas pengguna dan token Google tersimpan terenkripsi. | Pass |
+| C-34-UT02 | enkripsi AES-256-GCM | Batas | Enkripsi plaintext yang sama dua kali dan gunakan email kampus serta email non-kampus. | _Ciphertext_ berbeda karena IV acak; NIM diambil hanya untuk domain kampus. | _Ciphertext_ berbeda tiap enkripsi karena IV acak dan _roundtrip_ kembali ke _plaintext_; NIM hanya diambil dari domain kampus (_case-insensitive_), domain lain menghasilkan NIM null. | Pass |
+| C-34-UT03 | `validasi(kodeOtorisasi)`, dekripsi | Negatif | Ubah _ciphertext_, gunakan kunci salah panjang, kirim payload terlalu pendek, dan gagalkan penukaran kode. | Semua ditolak dan login tidak dibuat. | _Ciphertext_ yang diubah, kunci dengan panjang salah, dan _payload_ terlalu pendek ditolak; kode yang gagal ditukar tidak membuat login. | Pass |
 
 Tabel 4.2.23b. Ringkasan Cakupan Kelas C-34
 
@@ -849,22 +851,24 @@ Tabel 4.3.1. Daftar Antarmuka Antarkomponen
 | INT-K | Cloudflare Cron Trigger 5 menit | `/health` dan `/health/db` pada Worker sendiri | _Cron_ - API | INT-TC11 |
 | INT-L | Cloudflare Cron Trigger 1 menit dan 12 jam | `Notifikasi`, `StatusServer`, `SesiAutentikasi`, dan Expo Push | _Cron_ - _Model_ dan sistem eksternal | INT-TC12 |
 
+Pengujian integrasi dijalankan bersama pengujian _server_ dengan `cd src/backend && bun run test` pada _commit_ `103a26f` (20 November 2026), dan seluruh kasus uji yang menjalankan prosedur pada Tabel 4.3.2 lulus.
+
 Tabel 4.3.2. Hasil Pengujian Integrasi
 
 | ID Pengujian | ID Batas | Skenario | Prosedur/Masukan | Hasil yang Diharapkan | Hasil Pengujian | Kesimpulan |
 | ------------ | -------- | -------- | ---------------- | --------------------- | --------------- | ---------- |
-| INT-TC01 | INT-A | Login Google pertama dan kedua kali | Kirim `POST /api/auth/google` untuk pengguna baru, lalu ulangi untuk pengguna yang sama. | Login pertama membuat pengguna, sesi, dan token terenkripsi; login kedua memakai pengguna yang ada dan tidak menduplikasi baris. | _[Hasil aktual]_ | _Pass/Fail_ |
-| INT-TC02 | INT-B | Simpan, perbarui, dan nonaktifkan afirmasi | Panggil `PUT /api/affirmation/time` dua kali, lalu `DELETE /api/affirmation`. | Penyimpanan pertama mengisi `KONTEN_BAWAAN`, pembaruan berikutnya mengubah baris yang sama, dan penghapusan menghapus preferensi. | _[Hasil aktual]_ | _Pass/Fail_ |
-| INT-TC03 | INT-C | Tambah FAQ lalu baca kembali | `POST /api/faq`, lalu `GET /api/faq`; coba ubah dan hapus dengan ID tidak dikenal. | FAQ baru langsung tampil pada daftar; permintaan dengan ID tidak dikenal balas 404. | _[Hasil aktual]_ | _Pass/Fail_ |
-| INT-TC04 | INT-D | Gabungkan kalender saat layanan Google gagal | Panggil `GET /api/calendar?dari=...&sampai=...` dengan respons Google tersedia, lalu dengan respons gagal. | Jadwal lokal digabung dengan _event_ Google; saat Google gagal, jadwal lokal tetap tampil disertai peringatan. | _[Hasil aktual]_ | _Pass/Fail_ |
-| INT-TC05 | INT-E | Kesehatan basis data dan pembacaan status | Panggil `GET /health/db` dan `GET /api/status/:jenis` setelah satu siklus pemeriksaan. | `GET /health/db` menjalankan SELECT berhasil; status `server` dan `db` dibaca dari baris terakhir di D1. | _[Hasil aktual]_ | _Pass/Fail_ |
-| INT-TC06 | INT-F | Pemesanan bersamaan pada satu slot | Kirim dua permintaan `POST /api/slots/:id/book` secara bersamaan untuk slot yang sama. | Tepat satu permintaan berhasil; slot menjadi terpesan dan permintaan kedua ditolak. | _[Hasil aktual]_ | _Pass/Fail_ |
-| INT-TC07 | INT-G | Alur kode otorisasi Google | Panggil `/api/auth/google/mulai`, tirakan `/callback`, lalu `POST /api/auth/google`; coba pula _deep link_ tanpa _host_. | Kode diteruskan ke aplikasi dan ditukar di _server_; _deep link_ tanpa _host_ ditolak dengan status 400. | _[Hasil aktual]_ | _Pass/Fail_ |
-| INT-TC08 | INT-H | Bentrok jadwal Google | Buat `freeBusy` melaporkan sibuk, lalu pesan dengan dan tanpa `overrideGoogle`. | Bentrok balas 409 `GOOGLE_CALENDAR_CONFLICT`; dengan `overrideGoogle` pemesanan tetap tersimpan tanpa mengubah kalender Google. | _[Hasil aktual]_ | _Pass/Fail_ |
-| INT-TC09 | INT-I | Pendaftaran token perangkat | Daftarkan satu token pada dua sesi berurutan. | Token tersimpan pada sesi aktif dan sesi lama tidak lagi digunakan untuk perangkat tersebut. | _[Hasil aktual]_ | _Pass/Fail_ |
-| INT-TC10 | INT-J | Pengiriman notifikasi terjadwal | Jalankan penjadwal dengan affirmasi jatuh tempo, token ditolak `DeviceNotRegistered`, dan lebih dari 100 penerima. | Notifikasi tercatat dengan judul "Afirmasi hari ini", dikirim per _batch_ maksimal 100, dan token yang ditolak dikosongkan. | _[Hasil aktual]_ | _Pass/Fail_ |
-| INT-TC11 | INT-K | Pemeriksaan status berkala dan sesuai permintaan | Jalankan tugas 5 menit, lalu `POST /api/status/refresh` sebelum dan setelah lewat 30 detik. | Probe menulis status `server` dan `db`; penyegaran memakai ulang hasil yang lebih muda dari 30 detik dan menjalankan probe baru setelahnya. | _[Hasil aktual]_ | _Pass/Fail_ |
-| INT-TC12 | INT-L | Tugas harian dan pembersihan data | Jalankan tugas 1 menit dengan affirmasi/pengingat jatuh tempo, lalu tugas 12 jam dengan baris lama. | Notifikasi dikirim dan dicatat; baris lama pada `status_server`, `notifikasi`, dan sesi dibersihkan. | _[Hasil aktual]_ | _Pass/Fail_ |
+| INT-TC01 | INT-A | Login Google pertama dan kedua kali | Kirim `POST /api/auth/google` untuk pengguna baru, lalu ulangi untuk pengguna yang sama. | Login pertama membuat pengguna, sesi, dan token terenkripsi; login kedua memakai pengguna yang ada dan tidak menduplikasi baris. | Login pertama membuat pengguna, sesi, dan token terenkripsi; login kedua memakai pengguna yang sama tanpa baris ganda. | Pass |
+| INT-TC02 | INT-B | Simpan, perbarui, dan nonaktifkan afirmasi | Panggil `PUT /api/affirmation/time` dua kali, lalu `DELETE /api/affirmation`. | Penyimpanan pertama mengisi `KONTEN_BAWAAN`, pembaruan berikutnya mengubah baris yang sama, dan penghapusan menghapus preferensi. | Penyimpanan pertama berisi `KONTEN_BAWAAN`, penyimpanan kedua mengubah baris yang sama, dan `DELETE` menghapus preferensi. | Pass |
+| INT-TC03 | INT-C | Tambah FAQ lalu baca kembali | `POST /api/faq`, lalu `GET /api/faq`; coba ubah dan hapus dengan ID tidak dikenal. | FAQ baru langsung tampil pada daftar; permintaan dengan ID tidak dikenal balas 404. | FAQ baru tersimpan pada D1 dan dibaca kembali dari tabel yang sama dengan `GET /api/faq`; ubah dan hapus dengan ID tak dikenal mengembalikan 404. | Pass |
+| INT-TC04 | INT-D | Gabungkan kalender saat layanan Google gagal | Panggil `GET /api/calendar?dari=...&sampai=...` dengan respons Google tersedia, lalu dengan respons gagal. | Jadwal lokal digabung dengan _event_ Google; saat Google gagal, jadwal lokal tetap tampil disertai peringatan. | Jadwal lokal digabung dengan _event_ Google; saat Google gagal, slot lokal tetap tampil disertai peringatan. | Pass |
+| INT-TC05 | INT-E | Kesehatan basis data dan pembacaan status | Panggil `GET /health/db` dan `GET /api/status/:jenis` setelah satu siklus pemeriksaan. | `GET /health/db` menjalankan SELECT berhasil; status `server` dan `db` dibaca dari baris terakhir di D1. | `GET /health/db` menjalankan SELECT dan mengembalikan pemeriksaan `db` terakhir (null bila belum ada); `GET /api/status/:jenis` membaca baris terakhir per jenis. | Pass |
+| INT-TC06 | INT-F | Pemesanan bersamaan pada satu slot | Kirim dua permintaan `POST /api/slots/:id/book` secara bersamaan untuk slot yang sama. | Tepat satu permintaan berhasil; slot menjadi terpesan dan permintaan kedua ditolak. | Dari dua pemesanan bersamaan, tepat satu berhasil dan slot menjadi terpesan; permintaan lain ditolak 409. | Pass |
+| INT-TC07 | INT-G | Alur kode otorisasi Google | Panggil `/api/auth/google/mulai`, tirakan `/callback`, lalu `POST /api/auth/google`; coba pula _deep link_ tanpa _host_. | Kode diteruskan ke aplikasi dan ditukar di _server_; _deep link_ tanpa _host_ ditolak dengan status 400. | `/mulai` mengalihkan ke Google dengan _deep link_ pada `state`, `/callback` meneruskan `code` ke aplikasi, dan `POST /api/auth/google` membuat sesi; _deep link_ tanpa _host_ ditolak 400. | Pass |
+| INT-TC08 | INT-H | Bentrok jadwal Google | Buat `freeBusy` melaporkan sibuk, lalu pesan dengan dan tanpa `overrideGoogle`. | Bentrok balas 409 `GOOGLE_CALENDAR_CONFLICT`; dengan `overrideGoogle` pemesanan tetap tersimpan tanpa mengubah kalender Google. | Bentrok membalas 409; dengan `overrideGoogle` sesi Sehati tetap tersimpan. | Pass |
+| INT-TC09 | INT-I | Pendaftaran token perangkat | Daftarkan satu token pada dua sesi berurutan. | Token tersimpan pada sesi aktif dan sesi lama tidak lagi digunakan untuk perangkat tersebut. | Token tersimpan pada sesi aktif dan sesi lama pada perangkat yang sama diakhiri. | Pass |
+| INT-TC10 | INT-J | Pengiriman notifikasi terjadwal | Jalankan penjadwal dengan affirmasi jatuh tempo, token ditolak `DeviceNotRegistered`, dan lebih dari 100 penerima. | Notifikasi tercatat dengan judul "Afirmasi hari ini", dikirim per _batch_ maksimal 100, dan token yang ditolak dikosongkan. | Notifikasi tercatat, _push_ dikirim per _batch_ maksimal 100, dan token `DeviceNotRegistered` dikosongkan. Tes otomatis memeriksa penerima dan isi pesan; judul "Afirmasi hari ini" teramati pada notifikasi yang diterima iPhone (UC-01). | Pass |
+| INT-TC11 | INT-K | Pemeriksaan status berkala dan sesuai permintaan | Jalankan tugas 5 menit, lalu `POST /api/status/refresh` sebelum dan setelah lewat 30 detik. | Probe menulis status `server` dan `db`; penyegaran memakai ulang hasil yang lebih muda dari 30 detik dan menjalankan probe baru setelahnya. | Tugas 5 menit mencatat status `server` dan `db`; refresh memakai ulang hasil yang lebih muda dari 30 detik dan menjalankan probe baru setelahnya. | Pass |
+| INT-TC12 | INT-L | Tugas harian dan pembersihan data | Jalankan tugas 1 menit dengan affirmasi/pengingat jatuh tempo, lalu tugas 12 jam dengan baris lama. | Notifikasi dikirim dan dicatat; baris lama pada `status_server`, `notifikasi`, dan sesi dibersihkan. | Tugas 1 menit mengirim dan mencatat notifikasi afirmasi serta pengingat; tugas 12 jam menghapus baris lama dan menyisakan yang masih berlaku; _cron_ lain tidak menjalankan pembersihan. | Pass |
 
 <br>
 
