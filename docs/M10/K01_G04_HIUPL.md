@@ -882,8 +882,8 @@ Tabel 4.4.1. Hasil Pengujian UC-01
 
 | ID Pengujian | ID KF        | Skenario                      | Prosedur/Masukan                                                       | Hasil yang Diharapkan                                                              | Hasil Pengujian  | Kesimpulan  |
 | ------------ | ------------ | ----------------------------- | ---------------------------------------------------------------------- | ---------------------------------------------------------------------------------- | ---------------- | ----------- |
-| UC-01-TC01   | KF-01, KF-04 | Normal                        | Buka I-04, masukkan waktu misalnya 07.00, lalu tekan "Simpan Setelan". | Waktu tampil pada kolom, preferensi tersimpan, dan afirmasi dikirim sesuai jadwal. | _[Hasil aktual]_ | _Pass/Fail_ |
-| UC-01-TC02   | KF-01, KF-04 | Alternatif 1: gagal menyimpan | Ulangi pengaturan dengan permintaan gagal atau jaringan terputus.      | Preferensi tidak tersimpan dan pesan galat ditampilkan.                            | _[Hasil aktual]_ | _Pass/Fail_ |
+| UC-01-TC01 | KF-01, KF-04 | Normal | Buka I-04, masukkan waktu misalnya 07.00, lalu tekan "Simpan Setelan". | Waktu tampil pada kolom, preferensi tersimpan, dan afirmasi dikirim sesuai jadwal. | <img alt="Bukti UC-01-TC01" src="./assets/tests/UC-01-TC01.Sehati.png" width="260"> | _Pass/Fail_ |
+| UC-01-TC02 | KF-01, KF-04 | Alternatif 1: gagal menyimpan | Ulangi pengaturan dengan permintaan gagal atau jaringan terputus. | Preferensi tidak tersimpan dan pesan galat ditampilkan. | <img alt="Bukti UC-01-TC02" src="./assets/tests/UC-01-TC02.Sehati.png" width="260"> | _Pass/Fail_ |
 
 ### 4.4.2 UC-02 — Menyetel Pengingat Kesehatan
 
@@ -891,8 +891,8 @@ Tabel 4.4.2. Hasil Pengujian UC-02
 
 | ID Pengujian | ID KF        | Skenario                      | Prosedur/Masukan                                               | Hasil yang Diharapkan                                   | Hasil Pengujian  | Kesimpulan  |
 | ------------ | ------------ | ----------------------------- | -------------------------------------------------------------- | ------------------------------------------------------- | ---------------- | ----------- |
-| UC-02-TC01   | KF-03, KF-04 | Normal                        | Buka I-05, atur waktu makan, tidur, dan olahraga, lalu simpan. | Waktu tampil per jenis dan preferensi tersimpan.        | _[Hasil aktual]_ | _Pass/Fail_ |
-| UC-02-TC02   | KF-03, KF-04 | Alternatif 1: gagal menyimpan | Ulangi pengaturan dengan permintaan gagal.                     | Preferensi tidak tersimpan dan pesan galat ditampilkan. | _[Hasil aktual]_ | _Pass/Fail_ |
+| UC-02-TC01 | KF-03, KF-04 | Normal | Buka I-05, atur waktu makan, tidur, dan olahraga, lalu simpan. | Waktu tampil per jenis dan preferensi tersimpan. | <img alt="Bukti UC-02-TC01" src="./assets/tests/UC-02-TC01.Sehati.png" width="260"> | _Pass/Fail_ |
+| UC-02-TC02 | KF-03, KF-04 | Alternatif 1: gagal menyimpan | Ulangi pengaturan dengan permintaan gagal. | Preferensi tidak tersimpan dan pesan galat ditampilkan. | <img alt="Bukti UC-02-TC02" src="./assets/tests/UC-02-TC02.Sehati.png" width="260"> | _Pass/Fail_ |
 
 ### 4.4.3 UC-03 — Melihat Kalender Terintegrasi
 
@@ -900,8 +900,8 @@ Tabel 4.4.3. Hasil Pengujian UC-03
 
 | ID Pengujian | ID KF               | Skenario                              | Prosedur/Masukan                                          | Hasil yang Diharapkan                                                                                                                     | Hasil Pengujian  | Kesimpulan  |
 | ------------ | ------------------- | ------------------------------------- | --------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- | ---------------- | ----------- |
-| UC-03-TC01   | KF-02, KF-05, KF-06 | Normal                                | Buka I-06 dari Beranda dan pilih tanggal.                 | Kalender menampilkan _event_ pengguna dan jadwal konsultasi dalam satu tampilan.                                                          | _[Hasil aktual]_ | _Pass/Fail_ |
-| UC-03-TC02   | KF-02, KF-05, KF-06 | Alternatif 1: gagal mengambil _event_ | Buat pengambilan kalender gagal, lalu tekan "Muat ulang". | Kalender tidak tampil atau kosong, pesan galat dan tombol retry muncul; retry gagal mengulang galat, retry berhasil menampilkan kalender. | _[Hasil aktual]_ | _Pass/Fail_ |
+| UC-03-TC01 | KF-02, KF-05, KF-06 | Normal | Buka I-06 dari Beranda dan pilih tanggal. | Kalender menampilkan _event_ pengguna dan jadwal konsultasi dalam satu tampilan. | <img alt="Bukti UC-03-TC01" src="./assets/tests/UC-03-TC01.Sehati.png" width="260"> | _Pass/Fail_ |
+| UC-03-TC02 | KF-02, KF-05, KF-06 | Alternatif 1: gagal mengambil _event_ | Buat pengambilan kalender gagal, lalu tekan "Muat ulang". | Kalender tidak tampil atau kosong, pesan galat dan tombol retry muncul; retry gagal mengulang galat, retry berhasil menampilkan kalender. | <img alt="Bukti UC-03-TC02" src="./assets/tests/UC-03-TC02.Sehati.png" width="260"> | _Pass/Fail_ |
 
 ### 4.4.4 UC-04 — Memesan Sesi Konsultasi
 
@@ -947,8 +947,8 @@ Tabel 4.4.8. Hasil Pengujian UC-08
 
 | ID Pengujian | ID KF | Skenario                      | Prosedur/Masukan                             | Hasil yang Diharapkan                           | Hasil Pengujian  | Kesimpulan  |
 | ------------ | ----- | ----------------------------- | -------------------------------------------- | ----------------------------------------------- | ---------------- | ----------- |
-| UC-08-TC01   | KF-09 | Normal                        | Mahasiswa mengirim umpan balik melalui I-11. | Umpan balik diterima dan tersimpan.             | _[Hasil aktual]_ | _Pass/Fail_ |
-| UC-08-TC02   | KF-09 | Alternatif 1: gagal menyimpan | Kirim umpan balik saat permintaan gagal.     | Umpan balik tidak diterima dan tidak tersimpan. | _[Hasil aktual]_ | _Pass/Fail_ |
+| UC-08-TC01 | KF-09 | Normal | Mahasiswa mengirim umpan balik melalui I-11. | Umpan balik diterima dan tersimpan. | <img alt="Bukti UC-08-TC01" src="./assets/tests/UC-08-TC01.Sehati.png" width="260"> | _Pass/Fail_ |
+| UC-08-TC02 | KF-09 | Alternatif 1: gagal menyimpan | Kirim umpan balik saat permintaan gagal. | Umpan balik tidak diterima dan tidak tersimpan. | <img alt="Bukti UC-08-TC02" src="./assets/tests/UC-08-TC02.Sehati.png" width="260"> | _Pass/Fail_ |
 
 ### 4.4.9 UC-09 — Menanggapi Umpan Balik
 
@@ -956,8 +956,8 @@ Tabel 4.4.9. Hasil Pengujian UC-09
 
 | ID Pengujian | ID KF | Skenario                           | Prosedur/Masukan                                                           | Hasil yang Diharapkan                                              | Hasil Pengujian  | Kesimpulan  |
 | ------------ | ----- | ---------------------------------- | -------------------------------------------------------------------------- | ------------------------------------------------------------------ | ---------------- | ----------- |
-| UC-09-TC01   | KF-11 | Normal                             | Administrator membalas umpan balik pada I-14, lalu Mahasiswa membuka I-11. | Jawaban Administrator tampil pada tampilan Mahasiswa.              | _[Hasil aktual]_ | _Pass/Fail_ |
-| UC-09-TC02   | KF-11 | Alternatif 1: jawaban tidak tampil | Simulasikan respons yang tidak dapat ditampilkan.                          | Tidak ada konten jawaban yang ditampilkan pada tampilan Mahasiswa. | _[Hasil aktual]_ | _Pass/Fail_ |
+| UC-09-TC01 | KF-11 | Normal | Administrator membalas umpan balik pada I-14, lalu Mahasiswa membuka I-11. | Jawaban Administrator tampil pada tampilan Mahasiswa. | <img alt="Bukti UC-09-TC01" src="./assets/tests/UC-09-TC01.Sehati.png" width="260"> | _Pass/Fail_ |
+| UC-09-TC02 | KF-11 | Alternatif 1: jawaban tidak tampil | Simulasikan respons yang tidak dapat ditampilkan. | Tidak ada konten jawaban yang ditampilkan pada tampilan Mahasiswa. | <img alt="Bukti UC-09-TC02" src="./assets/tests/UC-09-TC02.Sehati.png" width="260"> | _Pass/Fail_ |
 
 ### 4.4.10 UC-10 — Memantau Status _Server_
 
@@ -965,7 +965,7 @@ Tabel 4.4.10. Hasil Pengujian UC-10
 
 | ID Pengujian | ID KF | Skenario         | Prosedur/Masukan                                                                               | Hasil yang Diharapkan                                                                                                                                                     | Hasil Pengujian  | Kesimpulan  |
 | ------------ | ----- | ---------------- | ---------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------- | ----------- |
-| UC-10-TC01   | KF-10 | Normal (tunggal) | Administrator membuka I-15, membaca status `server` lalu `db`, dan menekan "Periksa Sekarang". | Dua status ditampilkan terpisah dengan `server` lebih dulu; keduanya berasal dari probe `/health` dan `/health/db`. Hasil probe ini juga menjadi bahan pengukuran KNF-01. | _[Hasil aktual]_ | _Pass/Fail_ |
+| UC-10-TC01 | KF-10 | Normal (tunggal) | Administrator membuka I-15, membaca status `server` lalu `db`, dan menekan "Periksa Sekarang". | Dua status ditampilkan terpisah dengan `server` lebih dulu; keduanya berasal dari probe `/health` dan `/health/db`. Hasil probe ini juga menjadi bahan pengukuran KNF-01. | <img alt="Bukti UC-10-TC01" src="./assets/tests/UC-10-TC01.Sehati.png" width="260"> | _Pass/Fail_ |
 
 ### 4.4.11 UC-11 — Masuk Melalui Akun Google
 
@@ -973,8 +973,8 @@ Tabel 4.4.11. Hasil Pengujian UC-11
 
 | ID Pengujian | ID KF | Skenario                  | Prosedur/Masukan                                                | Hasil yang Diharapkan                           | Hasil Pengujian  | Kesimpulan  |
 | ------------ | ----- | ------------------------- | --------------------------------------------------------------- | ----------------------------------------------- | ---------------- | ----------- |
-| UC-11-TC01   | KF-12 | Normal                    | Tekan tombol masuk Google pada I-01 dan selesaikan autentikasi. | Login berhasil dan beranda sesuai peran tampil. | _[Hasil aktual]_ | _Pass/Fail_ |
-| UC-11-TC02   | KF-12 | Alternatif 1: OAuth gagal | Batalkan atau buat autentikasi Google gagal.                    | Pengguna tidak masuk dan kembali ke I-01.       | _[Hasil aktual]_ | _Pass/Fail_ |
+| UC-11-TC01 | KF-12 | Normal | Tekan tombol masuk Google pada I-01 dan selesaikan autentikasi. | Login berhasil dan beranda sesuai peran tampil. | <img alt="Bukti UC-11-TC01 mahasiswa" src="./assets/tests/UC-11-TC01-mhss.Sehati.png" width="240"><br><img alt="Bukti UC-11-TC01 administrator" src="./assets/tests/UC-11-TC01-admin.Sehati.png" width="240"><br><i>Mahasiswa (atas) dan Administrator (bawah)</i> | _Pass/Fail_ |
+| UC-11-TC02 | KF-12 | Alternatif 1: OAuth gagal | Batalkan atau buat autentikasi Google gagal. | Pengguna tidak masuk dan kembali ke I-01. | <img alt="Bukti UC-11-TC02" src="./assets/tests/UC-11-TC02.Sehati.png" width="260"> | _Pass/Fail_ |
 
 ### 4.4.12 UC-12 — Form Pengajuan Pertanyaan
 
@@ -1042,7 +1042,7 @@ Tabel 4.6. Bukti Hasil Pengujian
 | UC-12-TC02 | <img src="./assets/Iphone-Tests/IMG_1847.PNG" alt="UC-12-TC02" width="140"> <img src="./assets/Iphone-Tests/IMG_1848.PNG" alt="UC-12-TC02" width="140"> |
 | KNF-04-TC01 | <img src="./assets/Iphone-Tests/IMG_1849.PNG" alt="KNF-04-TC01" width="140"> <img src="./assets/Iphone-Tests/IMG_1852.PNG" alt="KNF-04-TC01" width="140"> <img src="./assets/Iphone-Tests/IMG_1854.PNG" alt="KNF-04-TC01" width="140"> |
 | KNF-01-TC01 s.d. KNF-03-TC01 | _[Sisipkan bukti pengukuran *uptime*, inspeksi keamanan, dan kuesioner SUS]_ |
-| Seluruh bukti | Tangkapan layar UC dan KNF-04 diambil pada iPhone dan disimpan di `docs/M10/assets/Iphone-Tests/`. _[Tautkan berkas bukti lain yang digunakan pada tabel ini]_ |
+| Seluruh bukti | Tangkapan layar UC dan KNF-04 diambil pada **dua perangkat**. Bukti iPhone ada di `docs/M10/assets/Iphone-Tests/` dan menjadi sumber utama tabel di atas. Bukti **Android** ada di `docs/M10/assets/tests/` dan disematkan langsung pada kolom "Hasil Pengujian" di Subbab 4.4 untuk 13 test case: UC-01-TC01/TC02, UC-02-TC01/TC02, UC-03-TC01/TC02, UC-08-TC01/TC02, UC-09-TC01/TC02, UC-10-TC01, dan UC-11-TC01/TC02. Kedua himpunan dihasilkan dari skenario yang sama, sehingga hasil Android berfungsi sebagai pengujian tambahan yang memperkuat hasil iPhone, bukan menggantikannya. _[Tautkan berkas bukti lain yang digunakan pada tabel ini]_ |
 
 <br>
 
