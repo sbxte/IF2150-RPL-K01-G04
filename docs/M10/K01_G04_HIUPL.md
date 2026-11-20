@@ -62,6 +62,11 @@ Dipersiapkan oleh:
 | Revisi     | Deskripsi                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
 | ---------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | REV-M10-01 | Menambahkan layar **Pertanyaan Masuk** untuk Administrator (`src/mobile/src/app/admin/pertanyaan.tsx`) yang tidak terdapat pada rancangan antarmuka DPPL. Pada DPPL, pertanyaan yang dikirim Mahasiswa lewat I-10 (UC-12) hanya disimpan ke `PengajuanPertanyaan` (C-13) tanpa layar untuk membacanya, dan I-13 hanya mengelola FAQ. Layar ini menampilkan pertanyaan masuk beserta nama pengirim dan waktu pengajuan, dengan pencarian dan penyaring rentang waktu, serta memungkinkan Administrator menjawab pertanyaan sehingga menjadi FAQ baru atau menghapusnya. Layar ini dilayani rute tambahan `GET /api/questions` dan `DELETE /api/questions/:id` khusus Administrator pada `FAQController` (C-30), dan termasuk kelas `FAQView` (C-22). Perubahan ini tercatat pada Tabel B.1 no. 15 dokumen Implementasi (Tugas 9) dan tampak pada Tabel 3.2 dan Tabel 3.3 (BAB 3). |
+| REV-M10-02 | Menyesuaikan alur autentikasi dan sesi terhadap Tabel B.1 no. 1, 2, 4, dan 5: kode otorisasi Google dikembalikan ke aplikasi lewat _deep link_ melalui rute `/api/auth/google/mulai` dan `/api/auth/google/callback`; login demo untuk kedua peran ditambahkan pada I-01 (aktif bila `MODE_DEMO=1` dan `EXPO_PUBLIC_MODE_DEMO=1`); pendaftaran token _push_ berjalan di latar belakang dan tidak menggagalkan login; serta tombol keluar ditambahkan pada I-02. |
+| REV-M10-03 | Menyesuaikan notifikasi dan pemantauan status terhadap Tabel B.1 no. 3, 7, 10, dan 11: tombol lonceng belum membuka daftar notifikasi karena tidak dirancang pada I-01–I-15; UC-10 memeriksa dua alamat (`server` dan `db`) dengan rute `/api/status/:jenis`, `/api/status/refresh`, dan `/api/status/history`; _backend_ mendaftarkan tiga Cron Trigger; serta notifikasi dicatat dengan sumber afirmasi/pengingat, judul khusus, pengiriman per _batch_ 100 pesan, dan pembersihan token `DeviceNotRegistered`. |
+| REV-M10-04 | Menyesuaikan afirmasi, pengingat, dan kalender terhadap Tabel B.1 no. 6, 8, dan 9: penonaktifan afirmasi dan pengingat menghapus baris masing-masing lewat `DELETE /api/affirmation` dan `DELETE /api/reminders/:jenis`; I-06 memakai rentang tanggal eksplisit, penggabungan jadwal di _server_, serta hasil contoh bila kredensial Google tidak tersedia. |
+| REV-M10-05 | Menyesuaikan umpan balik terhadap Tabel B.1 no. 12 dan 13: Mahasiswa membaca umpan baliknya sendiri lewat `GET /api/feedback/mine`, dan penyaringan status pada I-14 dilakukan di _server_ lewat `?status=belum` atau `?status=sudah`. |
+| REV-M10-06 | Menyesuaikan navigasi dan pengelolaan FAQ terhadap Tabel B.1 no. 14, 16, dan 17: layar yang dibuka lewat navigasi memakai rute tersembunyi agar TabBar tetap tampil; I-13 diberi pencarian dan pengurutan FAQ; serta formulir I-13-05 dipindahkan ke `src/mobile/src/app/admin/faq-form.tsx`. |
 
 ---
 
@@ -258,18 +263,18 @@ Gambar 2.2 menunjukkan bahwa UC-11 (Masuk Melalui Akun Google) terhubung dengan 
 
 # BAB 3: Implementasi
 
-Bab ini menjabarkan elemen P/L Sehati yang telah dikembangkan pada _tag release_ `v9.1`, yaitu lingkungan implementasi, pemetaan kelas dan antarmuka DPPL ke berkas kode, serta berkas pendukung lainnya. Kode sumber berada pada folder `src/` repositori, terbagi menjadi `src/backend/` (_server_) dan `src/mobile/` (aplikasi _mobile_). Hasil eksekusinya ada dua: Worker `sehati-backend` yang di-_deploy_ ke Cloudflare pada `https://sehati.sbxte.net`, dan berkas `sehati-v9.1.apk` yang dilampirkan pada rilis `v9.1`. Perubahan implementasi terhadap rancangan DPPL tercatat pada Tabel B.1 dokumen Implementasi (Tugas 9).
+Bab ini menjabarkan elemen P/L Sehati pada _tag release_ rujukan `v10.0`, yaitu lingkungan implementasi, pemetaan kelas dan antarmuka DPPL ke berkas kode, serta berkas pendukung lainnya. Kode sumber berada pada folder `src/` repositori, terbagi menjadi `src/backend/` (_server_) dan `src/mobile/` (aplikasi _mobile_). Hasil eksekusinya ada dua: Worker `sehati-backend` yang di-_deploy_ ke Cloudflare pada `https://sehati.sbxte.net`, dan berkas `sehati-v10.0.apk` yang dilampirkan pada rilis `v10.0`. _Tag_ tersebut dibuat setelah dokumen ini dan hasil pengujiannya final. Perubahan implementasi terhadap rancangan DPPL tercatat pada Tabel B.1 dokumen Implementasi (Tugas 9).
 
 ## 3.1 Lingkungan Implementasi
 
-Lingkungan implementasi mengikuti Subbab 2.1 DPPL, yaitu _server_ Hono di Cloudflare Workers dengan basis data Cloudflare D1 dan aplikasi React Native (Expo) untuk Android dan iOS. Terdapat beberapa tambahan dibanding DPPL. Drizzle ORM dipakai untuk mendefinisikan skema dan kueri D1. Bun dipakai sebagai _package manager_. EAS Build dipakai untuk membuat APK. Expo Push Service menjadi sistem eksternal untuk mengirim _push notification_. Vitest dipakai sebagai alat pengujian. Versi Android dan iOS pada Tabel 3.1 adalah versi terbaru yang menjadi sasaran aplikasi.
+Lingkungan implementasi mengikuti Subbab 2.1 DPPL, yaitu _server_ Hono di Cloudflare Workers dengan basis data Cloudflare D1 dan aplikasi React Native (Expo) untuk Android dan iOS. Terdapat beberapa tambahan dibanding DPPL. Drizzle ORM dipakai untuk mendefinisikan skema dan kueri D1. Bun dipakai sebagai _package manager_. EAS Build dipakai untuk membuat APK. Expo Push Service menjadi sistem eksternal untuk mengirim _push notification_. Vitest dipakai sebagai alat pengujian. Versi Android dan iOS pada Tabel 3.1 mengikuti sasaran platform yang ditetapkan pada Tabel 2.1 DPPL, bukan spesifikasi perangkat pengembang.
 
 Tabel 3.1. Lingkungan Implementasi
 
 | Aspek                | Keterangan                                                                                                                                                                                                                                              |
 | -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | _Hardware_           | _Client_: ponsel pintar Android dan iPhone. _Server_: jaringan _edge_ Cloudflare (Cloudflare Workers dan Cloudflare D1), tanpa _server_ fisik yang dikelola sendiri.                                                                                    |
-| _Operating System_   | _Client_: Android 17 dan iOS 27.2.1. _Server_: Cloudflare Workers (V8 _isolates_), tanpa OS tradisional.                                                                                                                                                |
+| _Operating System_   | _Client_: Android 10+ dan iOS 15+ (sasaran platform). _Server_: Cloudflare Workers (V8 _isolates_), tanpa OS tradisional.                                                                                                                                                |
 | _Bahasa Pemrograman_ | TypeScript 7 (_server_) dan TypeScript 6 (_client_)                                                                                                                                                                                                     |
 | _Framework/Library_  | _Server_: Hono 4.13, Drizzle ORM 0.45. _Client_: Expo SDK 58, React Native 0.88.1, React 19.3, Expo Router 58, expo-notifications 58.1, expo-secure-store 58, expo-web-browser 58, @react-native-community/datetimepicker 9.2, lucide-react-native 1.69 |
 | _DBMS_               | Cloudflare D1 (SQLite terkelola); migrasi dibuat dengan drizzle-kit 0.31                                                                                                                                                                                |
@@ -278,7 +283,7 @@ Tabel 3.1. Lingkungan Implementasi
 
 ## 3.2 Implementasi Modul
 
-Tabel 3.2 memetakan seluruh 36 kelas perancangan DPPL ke berkas kode, konsisten dengan Tabel B.5 dokumen Implementasi (Tugas 9). Kelas _model_ dan _controller_ dijalankan sebagai bagian Worker `sehati-backend`, sedangkan kelas _view_ dijalankan dalam aplikasi `sehati-v9.1.apk`. Satu kelas dapat terwujud dalam beberapa berkas, misalnya tabel basis data di `schema.ts` dan kuerinya di `queries.ts`.
+Tabel 3.2 memetakan seluruh 36 kelas perancangan DPPL ke berkas kode, konsisten dengan Tabel B.5 dokumen Implementasi (Tugas 9). Kelas _model_ dan _controller_ dijalankan sebagai bagian Worker `sehati-backend`, sedangkan kelas _view_ dijalankan dalam aplikasi `sehati-v10.0.apk`. Satu kelas dapat terwujud dalam beberapa berkas, misalnya tabel basis data di `schema.ts` dan kuerinya di `queries.ts`.
 
 Tabel 3.2. Implementasi Modul
 
@@ -287,10 +292,10 @@ Tabel 3.2. Implementasi Modul
 | 1   | C-01     | `Pengguna`                   | `src/backend/src/db/schema.ts` (`pengguna`)                                                                                                                                                                                                    | Worker `sehati-backend`                    |
 | 2   | C-02     | `Mahasiswa`                  | `src/backend/src/db/schema.ts` (`mahasiswa`)                                                                                                                                                                                                   | Worker `sehati-backend`                    |
 | 3   | C-03     | `Administrator`              | `src/backend/src/db/schema.ts` (`pengguna.peran`), `src/backend/src/middleware/auth.ts` (`requireRole`)                                                                                                                                        | Worker `sehati-backend`                    |
-| 4   | C-04     | `SesiAutentikasi`            | `src/backend/src/db/schema.ts`, `src/backend/src/middleware/auth.ts`, `src/backend/src/routes/auth.ts`; `src/mobile/src/api/sesi.ts`, `src/mobile/src/lib/sesi.tsx`                                                                            | Worker `sehati-backend`; `sehati-v9.1.apk` |
+| 4   | C-04     | `SesiAutentikasi`            | `src/backend/src/db/schema.ts`, `src/backend/src/middleware/auth.ts`, `src/backend/src/routes/auth.ts`; `src/mobile/src/api/sesi.ts`, `src/mobile/src/lib/sesi.tsx`                                                                            | Worker `sehati-backend`; `sehati-v10.0.apk` |
 | 5   | C-05     | `DailyAffirmation`           | `src/backend/src/db/schema.ts`, `src/backend/src/db/queries.ts`, `src/backend/src/jobs/scheduler.ts`                                                                                                                                           | Worker `sehati-backend`                    |
 | 6   | C-06     | `Reminder`                   | `src/backend/src/db/schema.ts`, `src/backend/src/db/queries.ts`, `src/backend/src/jobs/scheduler.ts`                                                                                                                                           | Worker `sehati-backend`                    |
-| 7   | C-07     | `Notifikasi`                 | `src/backend/src/db/schema.ts`, `src/backend/src/db/queries.ts`, `src/backend/src/jobs/scheduler.ts`; `src/mobile/src/lib/notifikasi.ts`                                                                                                       | Worker `sehati-backend`; `sehati-v9.1.apk` |
+| 7   | C-07     | `Notifikasi`                 | `src/backend/src/db/schema.ts`, `src/backend/src/db/queries.ts`, `src/backend/src/jobs/scheduler.ts`; `src/mobile/src/lib/notifikasi.ts`                                                                                                       | Worker `sehati-backend`; `sehati-v10.0.apk` |
 | 8   | C-08     | `GoogleCalendarService`      | `src/backend/src/lib/google.ts`                                                                                                                                                                                                                | Worker `sehati-backend`                    |
 | 9   | C-09     | `KalenderGabungan`           | `src/backend/src/lib/kalender.ts`                                                                                                                                                                                                              | Worker `sehati-backend`                    |
 | 10  | C-10     | `Konsultan`                  | `src/backend/src/db/schema.ts`, `src/backend/src/db/queries.ts`                                                                                                                                                                                | Worker `sehati-backend`                    |
@@ -299,15 +304,15 @@ Tabel 3.2. Implementasi Modul
 | 13  | C-13     | `PengajuanPertanyaan`        | `src/backend/src/db/schema.ts`, `src/backend/src/db/queries.ts`                                                                                                                                                                                | Worker `sehati-backend`                    |
 | 14  | C-14     | `UmpanBalik`                 | `src/backend/src/db/schema.ts`, `src/backend/src/db/queries.ts`                                                                                                                                                                                | Worker `sehati-backend`                    |
 | 15  | C-15     | `StatusServer`               | `src/backend/src/db/schema.ts`, `src/backend/src/db/queries.ts`                                                                                                                                                                                | Worker `sehati-backend`                    |
-| 16  | C-16     | `LoginView`                  | `src/mobile/src/app/index.tsx`, `src/mobile/src/api/auth.ts`                                                                                                                                                                                   | `sehati-v9.1.apk`                          |
-| 17  | C-17     | `AffirmationView`            | `src/mobile/src/app/(mahasiswa)/afirmasi.tsx`, `src/mobile/src/api/afirmasi.ts`                                                                                                                                                                | `sehati-v9.1.apk`                          |
-| 18  | C-18     | `ReminderView`               | `src/mobile/src/app/(mahasiswa)/pengingat.tsx`, `src/mobile/src/api/pengingat.ts`                                                                                                                                                              | `sehati-v9.1.apk`                          |
-| 19  | C-19     | `CalendarView`               | `src/mobile/src/app/(mahasiswa)/kalender.tsx`, `src/mobile/src/api/kalender.ts`, `src/mobile/src/lib/kalender.ts`                                                                                                                              | `sehati-v9.1.apk`                          |
-| 20  | C-20     | `ConsultationBookingView`    | `src/mobile/src/app/(mahasiswa)/konsultasi.tsx`, `src/mobile/src/app/(mahasiswa)/sesi.tsx`, `src/mobile/src/api/konsultasi.ts`                                                                                                                 | `sehati-v9.1.apk`                          |
-| 21  | C-21     | `ConsultationManagementView` | `src/mobile/src/app/admin/jadwal.tsx`, `src/mobile/src/lib/jadwal.ts`                                                                                                                                                                          | `sehati-v9.1.apk`                          |
-| 22  | C-22     | `FAQView`                    | `src/mobile/src/app/(mahasiswa)/faq.tsx`, `src/mobile/src/app/(mahasiswa)/pertanyaan.tsx`, `src/mobile/src/app/admin/faq.tsx`, `src/mobile/src/app/admin/faq-form.tsx`, `src/mobile/src/app/admin/pertanyaan.tsx`, `src/mobile/src/api/faq.ts` | `sehati-v9.1.apk`                          |
-| 23  | C-23     | `FeedbackView`               | `src/mobile/src/app/(mahasiswa)/umpan-balik.tsx`, `src/mobile/src/app/admin/umpan-balik.tsx`, `src/mobile/src/api/umpan-balik.ts`                                                                                                              | `sehati-v9.1.apk`                          |
-| 24  | C-24     | `ServerStatusView`           | `src/mobile/src/app/admin/status.tsx`, `src/mobile/src/lib/status.ts`, `src/mobile/src/api/status.ts`                                                                                                                                          | `sehati-v9.1.apk`                          |
+| 16  | C-16     | `LoginView`                  | `src/mobile/src/app/index.tsx`, `src/mobile/src/api/auth.ts`                                                                                                                                                                                   | `sehati-v10.0.apk`                          |
+| 17  | C-17     | `AffirmationView`            | `src/mobile/src/app/(mahasiswa)/afirmasi.tsx`, `src/mobile/src/api/afirmasi.ts`                                                                                                                                                                | `sehati-v10.0.apk`                          |
+| 18  | C-18     | `ReminderView`               | `src/mobile/src/app/(mahasiswa)/pengingat.tsx`, `src/mobile/src/api/pengingat.ts`                                                                                                                                                              | `sehati-v10.0.apk`                          |
+| 19  | C-19     | `CalendarView`               | `src/mobile/src/app/(mahasiswa)/kalender.tsx`, `src/mobile/src/api/kalender.ts`, `src/mobile/src/lib/kalender.ts`                                                                                                                              | `sehati-v10.0.apk`                          |
+| 20  | C-20     | `ConsultationBookingView`    | `src/mobile/src/app/(mahasiswa)/konsultasi.tsx`, `src/mobile/src/app/(mahasiswa)/sesi.tsx`, `src/mobile/src/api/konsultasi.ts`                                                                                                                 | `sehati-v10.0.apk`                          |
+| 21  | C-21     | `ConsultationManagementView` | `src/mobile/src/app/admin/jadwal.tsx`, `src/mobile/src/lib/jadwal.ts`                                                                                                                                                                          | `sehati-v10.0.apk`                          |
+| 22  | C-22     | `FAQView`                    | `src/mobile/src/app/(mahasiswa)/faq.tsx`, `src/mobile/src/app/(mahasiswa)/pertanyaan.tsx`, `src/mobile/src/app/admin/faq.tsx`, `src/mobile/src/app/admin/faq-form.tsx`, `src/mobile/src/app/admin/pertanyaan.tsx`, `src/mobile/src/api/faq.ts` | `sehati-v10.0.apk`                          |
+| 23  | C-23     | `FeedbackView`               | `src/mobile/src/app/(mahasiswa)/umpan-balik.tsx`, `src/mobile/src/app/admin/umpan-balik.tsx`, `src/mobile/src/api/umpan-balik.ts`                                                                                                              | `sehati-v10.0.apk`                          |
+| 24  | C-24     | `ServerStatusView`           | `src/mobile/src/app/admin/status.tsx`, `src/mobile/src/lib/status.ts`, `src/mobile/src/api/status.ts`                                                                                                                                          | `sehati-v10.0.apk`                          |
 | 25  | C-25     | `AuthController`             | `src/backend/src/routes/auth.ts`                                                                                                                                                                                                               | Worker `sehati-backend`                    |
 | 26  | C-26     | `AffirmationController`      | `src/backend/src/routes/affirmation.ts` (`affirmationRoutes`)                                                                                                                                                                                  | Worker `sehati-backend`                    |
 | 27  | C-27     | `ReminderController`         | `src/backend/src/routes/affirmation.ts` (`reminderRoutes`)                                                                                                                                                                                     | Worker `sehati-backend`                    |
@@ -319,7 +324,7 @@ Tabel 3.2. Implementasi Modul
 | 33  | C-33     | `Validasi`                   | `src/backend/src/lib/validasi.ts`                                                                                                                                                                                                              | Worker `sehati-backend`                    |
 | 34  | C-34     | `GoogleAuthService`          | `src/backend/src/lib/google.ts`, `src/backend/src/lib/crypto.ts`                                                                                                                                                                               | Worker `sehati-backend`                    |
 | 35  | C-35     | `CloudflareD1Database`       | `src/backend/wrangler.jsonc` (_binding_ `D1`), `src/backend/src/index.ts`                                                                                                                                                                      | Worker `sehati-backend`                    |
-| 36  | C-36     | `HomeView`                   | `src/mobile/src/app/(mahasiswa)/beranda.tsx`, `src/mobile/src/app/admin/index.tsx`, `src/mobile/src/views/beranda/`, `src/mobile/src/lib/muatan.ts`                                                                                            | `sehati-v9.1.apk`                          |
+| 36  | C-36     | `HomeView`                   | `src/mobile/src/app/(mahasiswa)/beranda.tsx`, `src/mobile/src/app/admin/index.tsx`, `src/mobile/src/views/beranda/`, `src/mobile/src/lib/muatan.ts`                                                                                            | `sehati-v10.0.apk`                          |
 
 ## 3.3 Implementasi Antarmuka
 
@@ -329,22 +334,22 @@ Tabel 3.3. Implementasi Antarmuka
 
 | No  | ID Antarmuka | Nama Antarmuka                             | Nama File Fisik                                                                                | Nama File Executable |
 | --- | ------------ | ------------------------------------------ | ---------------------------------------------------------------------------------------------- | -------------------- |
-| 1   | I-01         | Masuk                                      | `src/mobile/src/app/index.tsx`                                                                 | `sehati-v9.1.apk`    |
-| 2   | I-02         | Beranda Mahasiswa                          | `src/mobile/src/app/(mahasiswa)/beranda.tsx`                                                   | `sehati-v9.1.apk`    |
-| 3   | I-03         | Beranda Administrator                      | `src/mobile/src/app/admin/index.tsx`                                                           | `sehati-v9.1.apk`    |
-| 4   | I-04         | Daily Affirmations                         | `src/mobile/src/app/(mahasiswa)/afirmasi.tsx`                                                  | `sehati-v9.1.apk`    |
-| 5   | I-05         | Pengingat Kesehatan                        | `src/mobile/src/app/(mahasiswa)/pengingat.tsx`                                                 | `sehati-v9.1.apk`    |
-| 6   | I-06         | Kalender Terintegrasi                      | `src/mobile/src/app/(mahasiswa)/kalender.tsx`                                                  | `sehati-v9.1.apk`    |
-| 7   | I-07         | Pilih Konsultan                            | `src/mobile/src/app/(mahasiswa)/konsultasi.tsx`                                                | `sehati-v9.1.apk`    |
-| 8   | I-08         | Pilih Sesi dan Konfirmasi                  | `src/mobile/src/app/(mahasiswa)/sesi.tsx`                                                      | `sehati-v9.1.apk`    |
-| 9   | I-09         | FAQ dan Pencarian                          | `src/mobile/src/app/(mahasiswa)/faq.tsx`                                                       | `sehati-v9.1.apk`    |
-| 10  | I-10         | Form Pengajuan Pertanyaan                  | `src/mobile/src/app/(mahasiswa)/pertanyaan.tsx`                                                | `sehati-v9.1.apk`    |
-| 11  | I-11         | Umpan Balik                                | `src/mobile/src/app/(mahasiswa)/umpan-balik.tsx`                                               | `sehati-v9.1.apk`    |
-| 12  | I-12         | Kelola Jadwal Konsultan                    | `src/mobile/src/app/admin/jadwal.tsx`                                                          | `sehati-v9.1.apk`    |
-| 13  | I-13         | Kelola FAQ                                 | `src/mobile/src/app/admin/faq.tsx`, `src/mobile/src/app/admin/faq-form.tsx` (formulir I-13-05) | `sehati-v9.1.apk`    |
-| 14  | I-14         | Tanggapi Umpan Balik                       | `src/mobile/src/app/admin/umpan-balik.tsx`                                                     | `sehati-v9.1.apk`    |
-| 15  | I-15         | Status Server                              | `src/mobile/src/app/admin/status.tsx`                                                          | `sehati-v9.1.apk`    |
-| 16  | -            | Pertanyaan Masuk (tambahan, Administrator) | `src/mobile/src/app/admin/pertanyaan.tsx`                                                      | `sehati-v9.1.apk`    |
+| 1   | I-01         | Masuk                                      | `src/mobile/src/app/index.tsx`                                                                 | `sehati-v10.0.apk`    |
+| 2   | I-02         | Beranda Mahasiswa                          | `src/mobile/src/app/(mahasiswa)/beranda.tsx`                                                   | `sehati-v10.0.apk`    |
+| 3   | I-03         | Beranda Administrator                      | `src/mobile/src/app/admin/index.tsx`                                                           | `sehati-v10.0.apk`    |
+| 4   | I-04         | Daily Affirmations                         | `src/mobile/src/app/(mahasiswa)/afirmasi.tsx`                                                  | `sehati-v10.0.apk`    |
+| 5   | I-05         | Pengingat Kesehatan                        | `src/mobile/src/app/(mahasiswa)/pengingat.tsx`                                                 | `sehati-v10.0.apk`    |
+| 6   | I-06         | Kalender Terintegrasi                      | `src/mobile/src/app/(mahasiswa)/kalender.tsx`                                                  | `sehati-v10.0.apk`    |
+| 7   | I-07         | Pilih Konsultan                            | `src/mobile/src/app/(mahasiswa)/konsultasi.tsx`                                                | `sehati-v10.0.apk`    |
+| 8   | I-08         | Pilih Sesi dan Konfirmasi                  | `src/mobile/src/app/(mahasiswa)/sesi.tsx`                                                      | `sehati-v10.0.apk`    |
+| 9   | I-09         | FAQ dan Pencarian                          | `src/mobile/src/app/(mahasiswa)/faq.tsx`                                                       | `sehati-v10.0.apk`    |
+| 10  | I-10         | Form Pengajuan Pertanyaan                  | `src/mobile/src/app/(mahasiswa)/pertanyaan.tsx`                                                | `sehati-v10.0.apk`    |
+| 11  | I-11         | Umpan Balik                                | `src/mobile/src/app/(mahasiswa)/umpan-balik.tsx`                                               | `sehati-v10.0.apk`    |
+| 12  | I-12         | Kelola Jadwal Konsultan                    | `src/mobile/src/app/admin/jadwal.tsx`                                                          | `sehati-v10.0.apk`    |
+| 13  | I-13         | Kelola FAQ                                 | `src/mobile/src/app/admin/faq.tsx`, `src/mobile/src/app/admin/faq-form.tsx` (formulir I-13-05) | `sehati-v10.0.apk`    |
+| 14  | I-14         | Tanggapi Umpan Balik                       | `src/mobile/src/app/admin/umpan-balik.tsx`                                                     | `sehati-v10.0.apk`    |
+| 15  | I-15         | Status Server                              | `src/mobile/src/app/admin/status.tsx`                                                          | `sehati-v10.0.apk`    |
+| 16  | -            | Pertanyaan Masuk (tambahan, Administrator) | `src/mobile/src/app/admin/pertanyaan.tsx`                                                      | `sehati-v10.0.apk`    |
 
 Komponen antarmuka bersama yang dipakai lintas layar (`AppBar`, `Tombol`, `Banner`, `Lencana`, `TabBar`, dan lain-lain) berada di `src/mobile/src/components/`, dengan token warna, jarak, dan tipografi dari rancangan Figma di `src/mobile/src/theme/`.
 
@@ -358,7 +363,7 @@ Tabel 3.4. File Lain
 | 2   | `src/backend/src/config.ts`                                                                            | Konstanta aplikasi (`BATAS_SESI_HARI`, `KONTEN_BAWAAN`, jenis pengingat dan status) dan pembacaan variabel lingkungan.                                             |
 | 3   | `src/backend/src/lib/errors.ts`, `src/backend/src/lib/http.ts`                                         | Format galat API yang seragam (kode status dan pesan) serta pembacaan _body_ dan _query_ permintaan.                                                               |
 | 4   | `src/backend/src/lib/crypto.ts`                                                                        | Enkripsi dan dekripsi AES-256-GCM untuk token Google yang disimpan.                                                                                                |
-| 5   | `src/backend/wrangler.jsonc`                                                                           | Konfigurasi Worker: nama, _binding_ D1, tiga Cron Trigger, dan variabel `API_BASE_URL`, `GOOGLE_REDIRECT_URI`, `MODE_DEMO`.                                        |
+| 5   | `src/backend/wrangler.jsonc`                                                                           | Konfigurasi Worker: nama, _binding_ D1, tiga Cron Trigger, dan variabel `API_BASE_URL`, `GOOGLE_REDIRECT_URI`. Variabel `MODE_DEMO` untuk login demo dibaca dari `.env`/`.dev.vars` _backend_, bukan dari berkas ini.                                        |
 | 6   | `src/backend/.env.example`                                                                             | Contoh variabel rahasia (`KUNCI_TOKEN`, kredensial Google) tanpa nilai asli.                                                                                       |
 | 7   | `src/backend/migrations/0000_*.sql` s.d. `0004_*.sql`, `migrations/meta/`                              | Migrasi skema D1 yang dihasilkan drizzle-kit dari `schema.ts`.                                                                                                     |
 | 8   | `src/backend/seed/seed.sql`                                                                            | Data uji: akun Mahasiswa dan Administrator demo, konsultan, slot jadwal, dan contoh FAQ.                                                                           |
@@ -382,7 +387,7 @@ Tabel 3.4. File Lain
 
 # BAB 4: Hasil Pengujian
 
-Bab ini melaporkan hasil pengujian P/L pada level unit, integrasi, dan sistem. Pengujian dilakukan pada tag release terakhir Tugas 9. Hasil aktual diisi berdasarkan pengamatan saat pengujian. Kesimpulan diisi `Pass` atau `Fail`, dan untuk `Fail` dilengkapi penyebab serta usulan perbaikan.
+Bab ini melaporkan hasil pengujian P/L pada level unit, integrasi, _use case_, dan KNF. Pengujian dilakukan pada _tag release_ rujukan `v10.0`, yang dibuat setelah dokumen ini dan hasil pengujiannya final. Hasil aktual diisi berdasarkan pengamatan saat pengujian. Kesimpulan diisi `Pass` atau `Fail`, dan untuk `Fail` dilengkapi penyebab serta usulan perbaikan.
 
 ## 4.1 Strategi dan Kedalaman Pengujian Kelas
 
@@ -426,129 +431,589 @@ Tabel 4.1.1. Identifikasi Tingkat Pengujian Kelas
 | C-32     | `ServerStatusController`     | Mendalam    | Memuat logika pemeriksaan status (Algo-021): dua alamat pemeriksaan, batas waktu 5 detik, hanya 2xx dihitung _up_, dan batas kesegaran 30 detik untuk "Periksa Sekarang".                               | C-32-UT01 dst.                              |
 | C-33     | `Validasi`                   | Mendalam    | Memuat seluruh aturan validasi masukan (Algo-023, Algo-025, Algo-026): format waktu, rentang jadwal, isian kosong, format token _push_, ISO 8601, dan _escaping_ pola pencarian.                        | C-33-UT01 dst.                              |
 | C-34     | `GoogleAuthService`          | Mendalam    | Integrasi eksternal dan keamanan: penukaran kode otorisasi (Algo-027), pembacaan identitas dari `id_token`, serta enkripsi AES-256-GCM token Google.                                                    | C-34-UT01 dst.                              |
-| C-35     | `CloudflareD1Database`       | Tidak perlu | Kelas infrastruktur (_binding_ D1 dan Drizzle) tanpa logika aplikasi; teruji secara tidak langsung oleh seluruh pengujian integrasi.                                                                    | - (teruji lewat INT-TC)                     |
+| C-35     | `CloudflareD1Database`       | Tidak perlu | Kelas infrastruktur (_binding_ D1 dan Drizzle) tanpa logika aplikasi; teruji secara tidak langsung oleh seluruh pengujian integrasi.                                                                    | - (teruji lewat INT-TC05, INT-TC06, INT-TC11) |
 | C-36     | `HomeView`                   | Tidak perlu | Layar I-02 dan I-03 yang hanya menampilkan ringkasan data dari _controller_ lain.                                                                                                                       | - (teruji lewat UC-11-TC01)                 |
 
 Ringkasan: 11 kelas Mendalam, 12 kelas Sedang, dan 13 kelas Tidak perlu.
 
 ## 4.2 Pengujian Unit Kelas
 
-Pengujian unit dilakukan pada kelas bertingkat Mendalam dan Sedang. Kelas Mendalam diuji pada seluruh operasi public dengan kasus normal, batas, dan negatif, serta mencapai _coverage_ minimal 70%. Kelas Sedang diuji minimal dengan satu kasus normal dan satu kasus gagal pada operasi public utama.
+Pengujian unit dilakukan pada 23 kelas bertingkat Mendalam dan Sedang pada Tabel 4.1.1. Kelas Mendalam diuji pada operasi public utama dengan kasus normal, batas, dan negatif. Kelas Sedang diuji minimal dengan satu kasus normal dan satu kasus gagal pada operasi public utama. Kelas bertingkat Tidak perlu tidak memiliki pengujian unit tersendiri dan teruji tidak langsung melalui pengujian integrasi dan _use case_.
 
-Cara menjalankan unit test: _[tuliskan perintah, mis. `pytest src/tests/`]_.
+Cara menjalankan unit test: `cd src/backend && bun run test` untuk pengujian _server_, dan `cd src/mobile && bun run test` untuk pengujian _client_. Pemeriksaan tipe dijalankan dengan `bun run typecheck` pada masing-masing direktori.
 
-Lokasi file test: _[path, mis. `src/tests/`]_.
+Lokasi file test: `src/backend/test/` dan `src/backend/src/index.test.ts` untuk _server_, serta `src/mobile/test/` untuk _client_. Konfigurasi Vitest berada pada `src/backend/vitest.config.ts` dan `src/mobile/vitest.config.mts`.
 
-### 4.2.1 Kelas [Nama Kelas 1]
+Cakupan yang dilaporkan adalah cakupan operasi public sebagaimana tercantum pada DPPL, bukan persentase baris kode. Kedua proyek tidak memasang penyedia _coverage_ Vitest, sehingga angka _coverage_ otomatis tidak tersedia. Untuk setiap kelas Mendalam, tabel ringkasan bernomor `4.2.xb` (misalnya Tabel 4.2.1b untuk C-04) merangkum operasi yang diuji dan algoritma yang tercakup; bukti keluaran _test runner_ dicantumkan pada Subbab 4.6.
 
-**ID Kelas:** _[C02]_  
-**Nama Kelas:** _[Pesanan]_  
-**Tingkat:** _[Mendalam]_
+### 4.2.1 Kelas C-04 `SesiAutentikasi`
 
-Tabel 4.2.1. Hasil Pengujian Unit Kelas [C02]
+Tingkat: **Mendalam**. Berkas uji: `src/backend/test/auth.test.ts`, `src/backend/test/scheduler.test.ts`, `src/mobile/test/client.test.ts`, `src/mobile/test/perangkat.test.ts`.
 
-| ID Pengujian | Operasi yang Diuji         | Jenis Kasus | Prosedur/Masukan                                  | Hasil yang Diharapkan                                | Hasil Pengujian  | Kesimpulan  |
-| ------------ | -------------------------- | ----------- | ------------------------------------------------- | ---------------------------------------------------- | ---------------- | ----------- |
-| _C02-UT01_   | _`hitungTotal(): Decimal`_ | _Normal_    | _Pesanan berisi 2 item: 10.000 x 2 dan 5.000 x 1_ | _Total = 25.000_                                     | _[Hasil aktual]_ | _Pass/Fail_ |
-| _C02-UT02_   | _`hitungTotal(): Decimal`_ | _Batas_     | _Pesanan berisi tepat 1 item dengan jumlah 1_     | _Total = harga item tersebut_                        | _[...]_          | _Pass/Fail_ |
-| _C02-UT03_   | _`hitungTotal(): Decimal`_ | _Negatif_   | _Pesanan tanpa item_                              | _Total = 0 atau melempar kesalahan sesuai rancangan_ | _[...]_          | _Pass/Fail_ |
-| _..._        | _..._                      | _..._       | _..._                                             | _..._                                                | _..._            | _..._       |
+Tabel 4.2.1. Hasil Pengujian Unit Kelas C-04
 
-Khusus kelas **Mendalam**:
+| ID Pengujian | Operasi yang Diuji | Jenis Kasus | Prosedur/Masukan | Hasil yang Diharapkan | Hasil Pengujian | Kesimpulan |
+| ------------ | ------------------ | ----------- | ---------------- | --------------------- | --------------- | ---------- |
+| C-04-UT01 | `verifikasiToken()` | Normal | Kirim permintaan dengan token `Bearer` aktif. | Identitas pengguna dikembalikan. | _[Hasil aktual]_ | _Pass/Fail_ |
+| C-04-UT02 | `verifikasiToken()` | Batas | Gunakan sesi yang belum melewati `BATAS_SESI_HARI`. | Sesi masih diterima. | _[Hasil aktual]_ | _Pass/Fail_ |
+| C-04-UT03 | `verifikasiToken()`, `logout()` | Negatif | Gunakan token tidak dikenal, skema bukan `Bearer`, sesi berakhir, atau sesi kedaluwarsa; lalu logout. | Permintaan ditolak, sesi kedaluwarsa diakhiri, dan token setelah logout tidak dapat dipakai. | _[Hasil aktual]_ | _Pass/Fail_ |
+| C-04-UT04 | `daftarkanPerangkat()` | Normal | Daftarkan token push sah pada dua sesi berurutan, lalu coba token tidak sah. | Token tersimpan pada sesi aktif, sesi lain pada perangkat sama diakhiri, dan token tidak sah ditolak. | _[Hasil aktual]_ | _Pass/Fail_ |
 
-Tabel 4.2.1b. Ringkasan Cakupan Kelas [C02]
+Tabel 4.2.1b. Ringkasan Cakupan Kelas C-04
 
-| Informasi                       | Keterangan                                      |
-| ------------------------------- | ----------------------------------------------- |
-| Daftar operasi public pada DPPL | _[op1(), op2(), ...]_                           |
-| Operasi yang diuji              | _[op1(), op2(), ...]_                           |
-| ID Algoritma yang tercakup      | _[Algo-001, ...]_                               |
-| Coverage (wajib ≥ 70%)          | _[% baris / % cabang, alat dan bukti pada 4.6]_ |
+| Informasi | Keterangan |
+| --- | --- |
+| Daftar operasi public pada DPPL | `autentikasiPengguna()`, `verifikasiToken()`, `logout()`, `daftarkanPerangkat()` |
+| Operasi yang diuji | `verifikasiToken()`, `logout()`, `daftarkanPerangkat()`; `autentikasiPengguna()` diuji pada C-25 dan INT-TC01 |
+| ID Algoritma yang tercakup | Algo-001, Algo-002, Algo-003, Algo-030 |
+| Bukti cakupan | Tabel 4.2.1 dan keluaran Vitest pada Subbab 4.6 |
 
-### 4.2.2 Kelas [Nama Kelas 2]
+### 4.2.2 Kelas C-05 `DailyAffirmation`
 
-_[Ulangi pola 4.2.1 untuk setiap kelas bertingkat Mendalam atau Sedang.]_
+Tingkat: **Mendalam**. Berkas uji: `src/backend/test/affirmation.test.ts`, `src/backend/test/scheduler.test.ts`, `src/backend/test/validasi.test.ts`, `src/mobile/test/afirmasi.test.ts`.
+
+Tabel 4.2.2. Hasil Pengujian Unit Kelas C-05
+
+| ID Pengujian | Operasi yang Diuji | Jenis Kasus | Prosedur/Masukan | Hasil yang Diharapkan | Hasil Pengujian | Kesimpulan |
+| ------------ | ------------------ | ----------- | ---------------- | --------------------- | --------------- | ---------- |
+| C-05-UT01 | `aturWaktuKirim()` | Normal | Simpan afirmasi untuk pertama kalinya melalui `PUT /api/affirmation/time`. | Baris baru dibuat dengan konten bawaan `KONTEN_BAWAAN`. | _[Hasil aktual]_ | _Pass/Fail_ |
+| C-05-UT02 | `aturWaktuKirim()` | Batas | Simpan waktu kedua kali, lalu hapus afirmasi dua kali. | Baris yang sama diperbarui; penghapusan pertama menghapus baris dan penghapusan kedua tetap 200. | _[Hasil aktual]_ | _Pass/Fail_ |
+| C-05-UT03 | `kirimAfirmasi()` | Normal | Jalankan tugas dengan afirmasi jatuh tempo dan jam sesuai WIB. | Notifikasi dicatat dan push dikirim ke sesi dengan token perangkat. | _[Hasil aktual]_ | _Pass/Fail_ |
+| C-05-UT04 | `kirimAfirmasi()` | Negatif | Jalankan tugas pada jam yang tidak cocok dan kirim format waktu salah. | Tidak ada pengiriman; format waktu ditolak. | _[Hasil aktual]_ | _Pass/Fail_ |
+
+Tabel 4.2.2b. Ringkasan Cakupan Kelas C-05
+
+| Informasi | Keterangan |
+| --- | --- |
+| Daftar operasi public pada DPPL | `aturWaktuKirim()`, `kirimAfirmasi()`, `ambilAfirmasi()` |
+| Operasi yang diuji | `aturWaktuKirim()`, `kirimAfirmasi()`, `ambilAfirmasi()` |
+| ID Algoritma yang tercakup | Algo-004, Algo-005, Algo-028, Algo-031 |
+| Bukti cakupan | Tabel 4.2.2 dan keluaran Vitest pada Subbab 4.6 |
+
+### 4.2.3 Kelas C-06 `Reminder`
+
+Tingkat: **Mendalam**. Berkas uji: `src/backend/test/affirmation.test.ts`, `src/backend/test/scheduler.test.ts`, `src/mobile/test/pengingat.test.ts`.
+
+Tabel 4.2.3. Hasil Pengujian Unit Kelas C-06
+
+| ID Pengujian | Operasi yang Diuji | Jenis Kasus | Prosedur/Masukan | Hasil yang Diharapkan | Hasil Pengujian | Kesimpulan |
+| ------------ | ------------------ | ----------- | ---------------- | --------------------- | --------------- | ---------- |
+| C-06-UT01 | `aturWaktuKirim()` | Normal | Simpan dan perbarui pengingat untuk setiap jenis. | Tiga jenis selalu dikembalikan; tiap jenis tersimpan dan dapat diperbarui. | _[Hasil aktual]_ | _Pass/Fail_ |
+| C-06-UT02 | `kirimPengingat()` | Normal | Jalankan tugas dengan pengingat jatuh tempo. | Notifikasi dicatat dengan teks sesuai jenis. | _[Hasil aktual]_ | _Pass/Fail_ |
+| C-06-UT03 | `aturWaktuKirim()` | Batas | Hapus satu jenis pengingat, lalu ulangi penghapusan. | Jenis tersebut menjadi null dan penghapusan kedua tetap 200. | _[Hasil aktual]_ | _Pass/Fail_ |
+| C-06-UT04 | `aturWaktuKirim()` | Negatif | Kirim jenis di luar enum atau waktu tidak valid. | Permintaan ditolak. | _[Hasil aktual]_ | _Pass/Fail_ |
+
+Tabel 4.2.3b. Ringkasan Cakupan Kelas C-06
+
+| Informasi | Keterangan |
+| --- | --- |
+| Daftar operasi public pada DPPL | `aturWaktuKirim()`, `kirimPengingat()` |
+| Operasi yang diuji | `aturWaktuKirim()`, `kirimPengingat()` |
+| ID Algoritma yang tercakup | Algo-006, Algo-007, Algo-028 |
+| Bukti cakupan | Tabel 4.2.3 dan keluaran Vitest pada Subbab 4.6 |
+
+### 4.2.4 Kelas C-07 `Notifikasi`
+
+Tingkat: **Mendalam**. Berkas uji: `src/backend/test/scheduler.test.ts`, `src/mobile/test/notifikasi.test.ts`.
+
+Tabel 4.2.4. Hasil Pengujian Unit Kelas C-07
+
+| ID Pengujian | Operasi yang Diuji | Jenis Kasus | Prosedur/Masukan | Hasil yang Diharapkan | Hasil Pengujian | Kesimpulan |
+| ------------ | ------------------ | ----------- | ---------------- | --------------------- | --------------- | ---------- |
+| C-07-UT01 | `kirimNotifikasi()` | Normal | Catat notifikasi afirmasi dan pengingat. | Tepat satu dari `id_affirmation` atau `id_reminder` terisi. | _[Hasil aktual]_ | _Pass/Fail_ |
+| C-07-UT02 | `kirimNotifikasi()` | Batas | Kirim notifikasi kepada lebih dari 100 penerima. | Pengiriman dibagi menjadi _batch_ maksimal 100 pesan. | _[Hasil aktual]_ | _Pass/Fail_ |
+| C-07-UT03 | `kirimNotifikasi()` | Negatif | Token ditolak `DeviceNotRegistered` atau perangkat tidak mendukung push. | Token dikosongkan; notifikasi tetap tercatat dan tidak melempar galat ke pengguna. | _[Hasil aktual]_ | _Pass/Fail_ |
+
+Tabel 4.2.4b. Ringkasan Cakupan Kelas C-07
+
+| Informasi | Keterangan |
+| --- | --- |
+| Daftar operasi public pada DPPL | `kirimNotifikasi()`, `tampilkanNotifikasi()` |
+| Operasi yang diuji | `kirimNotifikasi()`; `tampilkanNotifikasi()` diperiksa melalui UC-01 dan UC-02 pada perangkat |
+| ID Algoritma yang tercakup | Algo-008 |
+| Bukti cakupan | Tabel 4.2.4 dan keluaran Vitest pada Subbab 4.6 |
+
+### 4.2.5 Kelas C-08 `GoogleCalendarService`
+
+Tingkat: **Mendalam**. Berkas uji: `src/backend/test/kalender.test.ts`, `src/backend/test/consultation.test.ts`.
+
+Tabel 4.2.5. Hasil Pengujian Unit Kelas C-08
+
+| ID Pengujian | Operasi yang Diuji | Jenis Kasus | Prosedur/Masukan | Hasil yang Diharapkan | Hasil Pengujian | Kesimpulan |
+| ------------ | ------------------ | ----------- | ---------------- | --------------------- | --------------- | ---------- |
+| C-08-UT01 | `ambilKalender()` | Normal | Ambil _event_ dengan rentang tanggal tertentu. | Hanya _event_ dalam rentang yang dikembalikan; hasil digabung pada kalender. | _[Hasil aktual]_ | _Pass/Fail_ |
+| C-08-UT02 | `ambilKalender()` | Batas | Gunakan rentang sempit yang tidak memuat _event_ contoh. | Tidak ada _event_ di luar rentang yang dikembalikan. | _[Hasil aktual]_ | _Pass/Fail_ |
+| C-08-UT03 | `cekBentrokJadwal()` | Negatif | `freeBusy` melaporkan sibuk; lalu simulasikan layanan gagal. | Bentrok menghasilkan 409 `GOOGLE_CALENDAR_CONFLICT`; kegagalan layanan mengembalikan jadwal lokal disertai peringatan. | _[Hasil aktual]_ | _Pass/Fail_ |
+
+Tabel 4.2.5b. Ringkasan Cakupan Kelas C-08
+
+| Informasi | Keterangan |
+| --- | --- |
+| Daftar operasi public pada DPPL | `ambilKalender()`, `cekBentrokJadwal()` |
+| Operasi yang diuji | `ambilKalender()`, `cekBentrokJadwal()` |
+| ID Algoritma yang tercakup | Algo-009, Algo-010 |
+| Bukti cakupan | Tabel 4.2.5 dan keluaran Vitest pada Subbab 4.6; penyimpanan token Google diuji pada C-34 |
+
+### 4.2.6 Kelas C-09 `KalenderGabungan`
+
+Tingkat: **Mendalam**. Berkas uji: `src/backend/test/kalender.test.ts`, `src/backend/test/consultation.test.ts`, `src/mobile/test/kalender.test.ts`.
+
+Tabel 4.2.6. Hasil Pengujian Unit Kelas C-09
+
+| ID Pengujian | Operasi yang Diuji | Jenis Kasus | Prosedur/Masukan | Hasil yang Diharapkan | Hasil Pengujian | Kesimpulan |
+| ------------ | ------------------ | ----------- | ---------------- | --------------------- | --------------- | ---------- |
+| C-09-UT01 | `gabungkanJadwal()` | Normal | Gabungkan _event_ Google dan slot konsultasi. | Hasil terurut menurut waktu mulai, bukan urutan sumber. | _[Hasil aktual]_ | _Pass/Fail_ |
+| C-09-UT02 | `gabungkanJadwal()`, `tanggalSlot()` | Batas | Sertakan _event_ seharian, _event_ multi-hari, dan sesi milik pengguna. | Tanggal lokal tetap benar, _event_ tampil pada setiap hari yang beririsan, dan penanda `milikSaya` serta nama konsultan sesuai. | _[Hasil aktual]_ | _Pass/Fail_ |
+| C-09-UT03 | `gabungkanJadwal()` | Negatif | Sertakan _event_ tanpa waktu, judul kosong, dan slot yang sudah lewat. | _Event_ tanpa waktu diabaikan, judul pengganti dipakai, dan slot lewat tidak ditampilkan. | _[Hasil aktual]_ | _Pass/Fail_ |
+
+Tabel 4.2.6b. Ringkasan Cakupan Kelas C-09
+
+| Informasi | Keterangan |
+| --- | --- |
+| Daftar operasi public pada DPPL | `gabungkanJadwal()`, `jadwalBentrok()`, `ubahKalender()` |
+| Operasi yang diuji | `gabungkanJadwal()`; `jadwalBentrok()` dan `ubahKalender()` diuji tidak langsung melalui C-11 dan UC-05 |
+| ID Algoritma yang tercakup | Algo-011, Algo-012, Algo-013 |
+| Bukti cakupan | Tabel 4.2.6 dan keluaran Vitest pada Subbab 4.6 |
+
+### 4.2.7 Kelas C-11 `JadwalKonsultasi`
+
+Tingkat: **Mendalam**. Berkas uji: `src/backend/test/jadwal-konsultan.test.ts`, `src/backend/test/consultation.test.ts`, `src/mobile/test/konsultasi.test.ts`.
+
+Tabel 4.2.7. Hasil Pengujian Unit Kelas C-11
+
+| ID Pengujian | Operasi yang Diuji | Jenis Kasus | Prosedur/Masukan | Hasil yang Diharapkan | Hasil Pengujian | Kesimpulan |
+| ------------ | ------------------ | ----------- | ---------------- | --------------------- | --------------- | ---------- |
+| C-11-UT01 | `simpanJadwal()`, `perbaruiJadwal()` | Normal | Simpan slot baru lalu ubah jendela waktunya. | Slot tersimpan berstatus tersedia dan perubahan hanya menyentuh waktu mulai/selesai. | _[Hasil aktual]_ | _Pass/Fail_ |
+| C-11-UT02 | `validasiJadwal()` via C-33 | Batas | Simpan slot yang menempel pada slot lain, bandingkan waktu sebagai waktu, dan edit slot itu sendiri. | Slot yang menempel diterima, perbandingan tidak berbasis teks, dan edit tidak menganggap dirinya bentrok. | _[Hasil aktual]_ | _Pass/Fail_ |
+| C-11-UT03 | `pesanSesi()` | Negatif | Pesan slot terpesan, slot tak dikenal, atau dua sesi pada hari yang sama; jalankan dua pemesanan bersamaan. | Hanya satu pemesanan bersamaan yang berhasil; sisanya ditolak dengan 409 atau 404. | _[Hasil aktual]_ | _Pass/Fail_ |
+| C-11-UT04 | `ambilSesiBerikutnya()` | Normal | Pesan satu sesi lalu minta sesi berikutnya. | Sesi terpesan dikembalikan; tanpa sesi hasilnya null. | _[Hasil aktual]_ | _Pass/Fail_ |
+
+Tabel 4.2.7b. Ringkasan Cakupan Kelas C-11
+
+| Informasi | Keterangan |
+| --- | --- |
+| Daftar operasi public pada DPPL | `ambilKalender()`, `ambilKalender(konsultan)`, `simpanJadwal()`, `perbaruiJadwal()`, `pesanSesi()`, `ambilSesiBerikutnya()` |
+| Operasi yang diuji | `simpanJadwal()`, `perbaruiJadwal()`, `pesanSesi()`, `ambilSesiBerikutnya()`; kedua `ambilKalender()` diuji pada C-28 dan UC-03 |
+| ID Algoritma yang tercakup | Algo-015, Algo-016, Algo-029 |
+| Bukti cakupan | Tabel 4.2.7 dan keluaran Vitest pada Subbab 4.6 |
+
+### 4.2.8 Kelas C-12 `FAQ`
+
+Tingkat: **Sedang**. Berkas uji: `src/backend/test/faq.test.ts`, `src/mobile/test/faq.test.ts`.
+
+Tabel 4.2.8. Hasil Pengujian Unit Kelas C-12
+
+| ID Pengujian | Operasi yang Diuji | Jenis Kasus | Prosedur/Masukan | Hasil yang Diharapkan | Hasil Pengujian | Kesimpulan |
+| ------------ | ------------------ | ----------- | ---------------- | --------------------- | --------------- | ---------- |
+| C-12-UT01 | `cariFAQ()`, `ambilDaftarPertanyaan()` | Normal | Cari FAQ berdasarkan kata kunci dan ubah urutan daftar. | FAQ yang cocok dikembalikan dan urutan A–Z, Z–A, serta Terbaru sesuai parameter. | _[Hasil aktual]_ | _Pass/Fail_ |
+| C-12-UT02 | `cariFAQ()` | Batas | Kirim kata kunci kosong dan urutan tidak dikenal. | Semua FAQ ditampilkan dan urutan kembali ke A–Z. | _[Hasil aktual]_ | _Pass/Fail_ |
+| C-12-UT03 | `cariFAQ()` | Negatif | Gunakan pola LIKE `%`, `_`, dan `!` dalam pencarian. | Pola di-_escape_ sehingga tidak mengubah hasil pencarian. | _[Hasil aktual]_ | _Pass/Fail_ |
+
+### 4.2.9 Kelas C-14 `UmpanBalik`
+
+Tingkat: **Sedang**. Berkas uji: `src/backend/test/feedback-status.test.ts`, `src/mobile/test/umpanBalik.test.ts`.
+
+Tabel 4.2.9. Hasil Pengujian Unit Kelas C-14
+
+| ID Pengujian | Operasi yang Diuji | Jenis Kasus | Prosedur/Masukan | Hasil yang Diharapkan | Hasil Pengujian | Kesimpulan |
+| ------------ | ------------------ | ----------- | ---------------- | --------------------- | --------------- | ---------- |
+| C-14-UT01 | `kirimUmpanBalik()`, `berikanTanggapan()` | Normal | Kirim umpan balik, lalu berikan tanggapan. | Baris tersimpan dan tanggapan tercatat dengan `id_administrator`. | _[Hasil aktual]_ | _Pass/Fail_ |
+| C-14-UT02 | `ambilListUmpanBalik()` | Batas | Minta daftar milik sendiri saat kosong, gunakan `?status` tidak dikenal, dan batasi `limit`. | Daftar kosong dikembalikan, status tidak dikenal diabaikan, dan `limit` dijepit pada batas maksimum. | _[Hasil aktual]_ | _Pass/Fail_ |
+| C-14-UT03 | `ambilListUmpanBalik()` | Negatif | Mahasiswa meminta `GET /api/feedback` dan Administrator meminta `/mine`. | Keduanya ditolak dengan 403. | _[Hasil aktual]_ | _Pass/Fail_ |
+
+### 4.2.10 Kelas C-16 `LoginView`
+
+Tingkat: **Sedang**. Berkas uji: `src/mobile/test/auth.test.ts`, `src/mobile/test/nativeIntent.test.ts`, `src/backend/test/auth.test.ts`.
+
+Tabel 4.2.10. Hasil Pengujian Unit Kelas C-16
+
+| ID Pengujian | Operasi yang Diuji | Jenis Kasus | Prosedur/Masukan | Hasil yang Diharapkan | Hasil Pengujian | Kesimpulan |
+| ------------ | ------------------ | ----------- | ---------------- | --------------------- | --------------- | ---------- |
+| C-16-UT01 | `masukLamanLogin()`, `isiLoginPage()` | Normal | Buka URL otorisasi dari Expo Go dan dari APK produksi. | _Deep link_ memakai `exp://<host>/--/` pada Expo Go dan `sehati://masuk` pada APK. | _[Hasil aktual]_ | _Pass/Fail_ |
+| C-16-UT02 | `tampilkanLoginPage()`, `redirectSystemPath()` | Batas | Berikan `hostUri` tanpa `executionEnvironment`, dan tautan kembali login ke _handler_ native intent. | `hostUri` yang menentukan skema; tautan login tidak diteruskan sebagai rute aplikasi. | _[Hasil aktual]_ | _Pass/Fail_ |
+| C-16-UT03 | `loadPageUtama()`, `showError()` | Negatif | Tutup peramban, balas `access_denied`, dan kirim respons tanpa `code` maupun `error`. | Dua kasus pertama mengembalikan pembatalan; kasus ketiga melempar `ApiError`. | _[Hasil aktual]_ | _Pass/Fail_ |
+
+### 4.2.11 Kelas C-19 `CalendarView`
+
+Tingkat: **Sedang**. Berkas uji: `src/mobile/test/kalender.test.ts`.
+
+Tabel 4.2.11. Hasil Pengujian Unit Kelas C-19
+
+| ID Pengujian | Operasi yang Diuji | Jenis Kasus | Prosedur/Masukan | Hasil yang Diharapkan | Hasil Pengujian | Kesimpulan |
+| ------------ | ------------------ | ----------- | ---------------- | --------------------- | --------------- | ---------- |
+| C-19-UT01 | `bukaPageCalendar()`, `tampilkanKalender()` | Normal | Tampilkan _event_ seharian dengan tanggal lokal. | _Event_ muncul pada tanggal yang benar dan berlabel "Seharian". | _[Hasil aktual]_ | _Pass/Fail_ |
+| C-19-UT02 | `tampilkanKalender()` | Batas | Tampilkan _event_ multi-hari dan tiga sumber _event_. | _Event_ muncul pada setiap hari yang beririsan; penanda membedakan Google, sesi saya, dan slot tersedia. | _[Hasil aktual]_ | _Pass/Fail_ |
+| C-19-UT03 | `showErrorMessage()` | Negatif | Berikan tanggal _event_ tidak valid. | Tanggal ditolak dan tidak merusak tampilan kalender. | _[Hasil aktual]_ | _Pass/Fail_ |
+
+### 4.2.12 Kelas C-21 `ConsultationManagementView`
+
+Tingkat: **Sedang**. Berkas uji: `src/mobile/test/jadwal.test.ts`, `src/mobile/test/konsultasi.test.ts`.
+
+Tabel 4.2.12. Hasil Pengujian Unit Kelas C-21
+
+| ID Pengujian | Operasi yang Diuji | Jenis Kasus | Prosedur/Masukan | Hasil yang Diharapkan | Hasil Pengujian | Kesimpulan |
+| ------------ | ------------------ | ----------- | ---------------- | --------------------- | --------------- | ---------- |
+| C-21-UT01 | `bukaPageKonsultasi()`, `tampilkanSetelanTersimpan()` | Normal | Format tanggal dan jam dalam WIB serta parse jam yang valid. | Tanggal tiga hari berturut-turut dan label jam sesuai WIB. | _[Hasil aktual]_ | _Pass/Fail_ |
+| C-21-UT02 | `perbaruiJadwal()`, `tampilkanKalender()` | Batas | Simpan slot yang menempel pada slot lain dan bandingkan `"9.00"` dengan `"10.00"`. | Perbandingan dilakukan sebagai waktu, bukan teks, dan slot yang menempel diterima. | _[Hasil aktual]_ | _Pass/Fail_ |
+| C-21-UT03 | `showError()` | Negatif | Kirim jam salah, jam selesai sebelum mulai, dan balasan 500 saat menyimpan. | Masukan ditolak per kolom dan banner galat I-12-07 ditampilkan. | _[Hasil aktual]_ | _Pass/Fail_ |
+
+### 4.2.13 Kelas C-24 `ServerStatusView`
+
+Tingkat: **Sedang**. Berkas uji: `src/mobile/test/status.tampilan.test.ts`, `src/mobile/test/status.test.ts`.
+
+Tabel 4.2.13. Hasil Pengujian Unit Kelas C-24
+
+| ID Pengujian | Operasi yang Diuji | Jenis Kasus | Prosedur/Masukan | Hasil yang Diharapkan | Hasil Pengujian | Kesimpulan |
+| ------------ | ------------------ | ----------- | ---------------- | --------------------- | --------------- | ---------- |
+| C-24-UT01 | `tampilkanStatusServer()` | Normal | Tampilkan status Up dan Down. | Lencana dan keterangan sesuai status serta membedakan server dari basis data. | _[Hasil aktual]_ | _Pass/Fail_ |
+| C-24-UT02 | `cekStatusServer()` | Batas | Tampilkan status yang belum pernah dicek dan minta dua baris sekaligus. | Status ditandai "Belum dicek", bukan Down; dua baris dikembalikan dengan `server` lebih dulu dan waktu dalam WIB. | _[Hasil aktual]_ | _Pass/Fail_ |
+| C-24-UT03 | `cekStatusServer()` | Negatif | Salah satu permintaan status gagal. | Galat diteruskan, bukan dianggap sebagai status Down. | _[Hasil aktual]_ | _Pass/Fail_ |
+
+### 4.2.14 Kelas C-25 `AuthController`
+
+Tingkat: **Sedang**. Berkas uji: `src/backend/test/auth.test.ts`, `src/mobile/test/perangkat.test.ts`.
+
+Tabel 4.2.14. Hasil Pengujian Unit Kelas C-25
+
+| ID Pengujian | Operasi yang Diuji | Jenis Kasus | Prosedur/Masukan | Hasil yang Diharapkan | Hasil Pengujian | Kesimpulan |
+| ------------ | ------------------ | ----------- | ---------------- | --------------------- | --------------- | ---------- |
+| C-25-UT01 | `kirimData()` | Normal | Kirim kode otorisasi untuk pengguna baru dan pengguna yang sudah ada. | Pengguna baru dibuat beserta sesi dan token terenkripsi; pengguna lama tidak duplikat. | _[Hasil aktual]_ | _Pass/Fail_ |
+| C-25-UT02 | `tampilkanLoginPage()` | Batas | Kirim parameter `kembali` dan `state` dengan skema selain aplikasi, tanpa host, dan dengan host. | Hanya _deep link_ aplikasi ber-_host_ yang diterima. | _[Hasil aktual]_ | _Pass/Fail_ |
+| C-25-UT03 | `kirimData()` | Negatif | Kode gagal ditukar, body tidak ada, peran demo tidak dikenal, atau `MODE_DEMO` nonaktif. | Permintaan ditolak dan rute demo tidak tersedia. | _[Hasil aktual]_ | _Pass/Fail_ |
+
+### 4.2.15 Kelas C-26 `AffirmationController`
+
+Tingkat: **Sedang**. Berkas uji: `src/backend/test/affirmation.test.ts`, `src/mobile/test/afirmasi.test.ts`.
+
+Tabel 4.2.15. Hasil Pengujian Unit Kelas C-26
+
+| ID Pengujian | Operasi yang Diuji | Jenis Kasus | Prosedur/Masukan | Hasil yang Diharapkan | Hasil Pengujian | Kesimpulan |
+| ------------ | ------------------ | ----------- | ---------------- | --------------------- | --------------- | ---------- |
+| C-26-UT01 | `submitWaktuPengiriman()` | Normal | Simpan waktu afirmasi pertama dan kedua kalinya. | Pertama membuat baris dengan konten bawaan; kedua memperbarui baris yang sama. | _[Hasil aktual]_ | _Pass/Fail_ |
+| C-26-UT02 | `submitWaktuPengiriman()` | Batas | Hapus afirmasi saat belum ada preferensi. | Permintaan tetap 200 dan preferensi tetap kosong. | _[Hasil aktual]_ | _Pass/Fail_ |
+| C-26-UT03 | `submitWaktuPengiriman()`, `ambilAfirmasiHariIni()` | Negatif | Kirim format waktu salah atau minta sebagai Administrator. | Format ditolak dan akses Administrator ditolak dengan 403. | _[Hasil aktual]_ | _Pass/Fail_ |
+
+### 4.2.16 Kelas C-27 `ReminderController`
+
+Tingkat: **Sedang**. Berkas uji: `src/backend/test/affirmation.test.ts`, `src/mobile/test/pengingat.test.ts`.
+
+Tabel 4.2.16. Hasil Pengujian Unit Kelas C-27
+
+| ID Pengujian | Operasi yang Diuji | Jenis Kasus | Prosedur/Masukan | Hasil yang Diharapkan | Hasil Pengujian | Kesimpulan |
+| ------------ | ------------------ | ----------- | ---------------- | --------------------- | --------------- | ---------- |
+| C-27-UT01 | `submitWaktuPengiriman()` | Normal | Atur pengingat untuk masing-masing jenis. | Waktu tersimpan per jenis dan daftar selalu memuat tiga jenis. | _[Hasil aktual]_ | _Pass/Fail_ |
+| C-27-UT02 | `submitWaktuPengiriman()` | Batas | Hapus pengingat tanpa preferensi dan baca daftar awal. | Penghapusan tetap 200; waktu ketiga jenis bernilai null. | _[Hasil aktual]_ | _Pass/Fail_ |
+| C-27-UT03 | `submitWaktuPengiriman()` | Negatif | Kirim jenis di luar enum, waktu tidak valid, atau permintaan Administrator. | Permintaan ditolak. | _[Hasil aktual]_ | _Pass/Fail_ |
+
+### 4.2.17 Kelas C-28 `CalendarController`
+
+Tingkat: **Sedang**. Berkas uji: `src/backend/test/consultation.test.ts`.
+
+Tabel 4.2.17. Hasil Pengujian Unit Kelas C-28
+
+| ID Pengujian | Operasi yang Diuji | Jenis Kasus | Prosedur/Masukan | Hasil yang Diharapkan | Hasil Pengujian | Kesimpulan |
+| ------------ | ------------------ | ----------- | ---------------- | --------------------- | --------------- | ---------- |
+| C-28-UT01 | `tampilkanCalendar()` | Normal | Minta kalender dengan rentang `?dari=` dan `?sampai=`. | _Event_ Google dan jadwal konsultasi digabung dan terurut. | _[Hasil aktual]_ | _Pass/Fail_ |
+| C-28-UT02 | `tampilkanCalendar()` | Batas | Minta kalender setelah pengguna memesan sesi. | Hanya sesi milik sendiri yang tampil dan slot pada hari yang sama disembunyikan. | _[Hasil aktual]_ | _Pass/Fail_ |
+| C-28-UT03 | `tampilkanCalendar()` | Negatif | Simulasikan kegagalan Google Calendar. | Jadwal lokal tetap dikembalikan disertai peringatan. | _[Hasil aktual]_ | _Pass/Fail_ |
+
+### 4.2.18 Kelas C-29 `ConsultationController`
+
+Tingkat: **Mendalam**. Berkas uji: `src/backend/test/consultation.test.ts`, `src/backend/test/jadwal-konsultan.test.ts`, `src/mobile/test/konsultasi.test.ts`.
+
+Tabel 4.2.18. Hasil Pengujian Unit Kelas C-29
+
+| ID Pengujian | Operasi yang Diuji | Jenis Kasus | Prosedur/Masukan | Hasil yang Diharapkan | Hasil Pengujian | Kesimpulan |
+| ------------ | ------------------ | ----------- | ---------------- | --------------------- | --------------- | ---------- |
+| C-29-UT01 | `tampilkanOpsiKonsultasi()`, `submitKonsultan()` | Normal | Ambil daftar konsultan dan slot untuk peran Mahasiswa serta Administrator. | Daftar terurut; Mahasiswa melihat slot tersedia, Administrator melihat pula slot terpesan. | _[Hasil aktual]_ | _Pass/Fail_ |
+| C-29-UT02 | `updateStatusKonsultasi()` | Normal | Pesan slot tersedia lalu minta sesi berikutnya. | Slot menjadi terpesan dan sesi muncul pada `/api/sessions/next`. | _[Hasil aktual]_ | _Pass/Fail_ |
+| C-29-UT03 | `updateStatusKonsultasi()` | Batas | Pesan slot yang sama secara bersamaan dan coba `overrideGoogle` saat pengguna sudah punya sesi sehari. | Tepat satu pemesanan berhasil; `overrideGoogle` tidak menembus aturan satu sesi per hari. | _[Hasil aktual]_ | _Pass/Fail_ |
+| C-29-UT04 | `updateStatusKonsultasi()` | Negatif | Pesan slot terpesan, slot tak dikenal, atau slot yang bentrok dengan Google. | Permintaan ditolak dengan 404/409; Administrator tidak dapat memesan. | _[Hasil aktual]_ | _Pass/Fail_ |
+
+Tabel 4.2.18b. Ringkasan Cakupan Kelas C-29
+
+| Informasi | Keterangan |
+| --- | --- |
+| Daftar operasi public pada DPPL | `tampilkanOpsiKonsultasi()`, `submitKonsultan()`, `updateStatusKonsultasi()`, `ambilSesiBerikutnya()` |
+| Operasi yang diuji | `tampilkanOpsiKonsultasi()`, `submitKonsultan()`, `updateStatusKonsultasi()`, `ambilSesiBerikutnya()` |
+| ID Algoritma yang tercakup | Algo-014, Algo-015, Algo-016, Algo-022, Algo-024, Algo-029 |
+| Bukti cakupan | Tabel 4.2.18 dan keluaran Vitest pada Subbab 4.6 |
+
+### 4.2.19 Kelas C-30 `FAQController`
+
+Tingkat: **Sedang**. Berkas uji: `src/backend/test/faq.test.ts`, `src/mobile/test/faq.test.ts`.
+
+Tabel 4.2.19. Hasil Pengujian Unit Kelas C-30
+
+| ID Pengujian | Operasi yang Diuji | Jenis Kasus | Prosedur/Masukan | Hasil yang Diharapkan | Hasil Pengujian | Kesimpulan |
+| ------------ | ------------------ | ----------- | ---------------- | --------------------- | --------------- | ---------- |
+| C-30-UT01 | `tambahFAQ()`, `ubahFAQ()`, `hapusFAQ()` | Normal | Tambah, ubah, dan hapus FAQ melalui rute `/api/faq`. | Perubahan tersimpan dan langsung tampil pada daftar. | _[Hasil aktual]_ | _Pass/Fail_ |
+| C-30-UT02 | `cariFAQ()` | Batas | Kirim kata kunci kosong dan urutan tidak dikenal. | Semua FAQ ditampilkan dengan urutan A–Z; parameter kosong tidak dikirim dari klien. | _[Hasil aktual]_ | _Pass/Fail_ |
+| C-30-UT03 | `kirimPertanyaan()` | Negatif | Kirim pertanyaan kosong, ajukan sebagai Administrator, dan gunakan batas waktu tidak valid. | Permintaan ditolak. | _[Hasil aktual]_ | _Pass/Fail_ |
+
+### 4.2.20 Kelas C-31 `FeedbackController`
+
+Tingkat: **Sedang**. Berkas uji: `src/backend/test/feedback-status.test.ts`, `src/mobile/test/umpanBalik.test.ts`.
+
+Tabel 4.2.20. Hasil Pengujian Unit Kelas C-31
+
+| ID Pengujian | Operasi yang Diuji | Jenis Kasus | Prosedur/Masukan | Hasil yang Diharapkan | Hasil Pengujian | Kesimpulan |
+| ------------ | ------------------ | ----------- | ---------------- | --------------------- | --------------- | ---------- |
+| C-31-UT01 | `kirimFeedback()`, `kirimTanggapan()` | Normal | Kirim umpan balik lalu tanggapi sebagai Administrator. | Baris tersimpan dan tanggapan tampil pada daftar milik Mahasiswa. | _[Hasil aktual]_ | _Pass/Fail_ |
+| C-31-UT02 | `tampilkanListFeedback()` | Batas | Minta `/mine` saat kosong, gunakan `?status` tidak dikenal, dan batasi `limit`. | Daftar kosong dikembalikan, status diabaikan, dan limit dijepit. | _[Hasil aktual]_ | _Pass/Fail_ |
+| C-31-UT03 | `kirimTanggapan()` | Negatif | Kirim isi kosong dan tanggapi ID tidak dikenal. | Permintaan ditolak dengan galat validasi atau 404. | _[Hasil aktual]_ | _Pass/Fail_ |
+
+### 4.2.21 Kelas C-32 `ServerStatusController`
+
+Tingkat: **Mendalam**. Berkas uji: `src/backend/test/feedback-status.test.ts`, `src/backend/test/scheduler.test.ts`, `src/backend/src/index.test.ts`, `src/mobile/test/status.test.ts`.
+
+Tabel 4.2.21. Hasil Pengujian Unit Kelas C-32
+
+| ID Pengujian | Operasi yang Diuji | Jenis Kasus | Prosedur/Masukan | Hasil yang Diharapkan | Hasil Pengujian | Kesimpulan |
+| ------------ | ------------------ | ----------- | ---------------- | --------------------- | --------------- | ---------- |
+| C-32-UT01 | `tampilkanStatusServer(jenis)` | Normal | Minta status `server` dan `db`, lalu baca riwayatnya. | Kedua jenis memeriksa alamat berbeda; hasil terakhir dan riwayat dikembalikan terurut terbaru. | _[Hasil aktual]_ | _Pass/Fail_ |
+| C-32-UT02 | `tampilkanStatusServer(jenis)` | Batas | Panggil "Periksa Sekarang" sebelum dan sesudah lewat 30 detik, serta minta riwayat dengan `limit`. | Hasil segar dipakai ulang selama 30 detik, probe baru setelahnya, dan `limit` dijepit. | _[Hasil aktual]_ | _Pass/Fail_ |
+| C-32-UT03 | `tampilkanStatusServer(jenis)` | Negatif | Probe gagal, status 3xx, jenis tidak dikenal, atau permintaan refresh dari Mahasiswa. | Status dicatat sebagai down, jenis ditolak dengan 422, dan refresh ditolak dengan 403. | _[Hasil aktual]_ | _Pass/Fail_ |
+
+Tabel 4.2.21b. Ringkasan Cakupan Kelas C-32
+
+| Informasi | Keterangan |
+| --- | --- |
+| Daftar operasi public pada DPPL | `tampilkanStatusServer(jenis)` |
+| Operasi yang diuji | `tampilkanStatusServer(jenis)`; logika probe berada pada `status-probe.ts` dan `scheduler.ts` |
+| ID Algoritma yang tercakup | Algo-020, Algo-021 |
+| Bukti cakupan | Tabel 4.2.21 dan keluaran Vitest pada Subbab 4.6 |
+
+### 4.2.22 Kelas C-33 `Validasi`
+
+Tingkat: **Mendalam**. Berkas uji: `src/backend/test/validasi.test.ts`, `src/backend/test/jadwal-konsultan.test.ts`, `src/mobile/test/jadwal.test.ts`.
+
+Tabel 4.2.22. Hasil Pengujian Unit Kelas C-33
+
+| ID Pengujian | Operasi yang Diuji | Jenis Kasus | Prosedur/Masukan | Hasil yang Diharapkan | Hasil Pengujian | Kesimpulan |
+| ------------ | ------------------ | ----------- | ---------------- | --------------------- | --------------- | ---------- |
+| C-33-UT01 | `validasiWaktu()` | Normal | Masukkan format waktu yang valid. | Format diterima dan dikonversi sesuai aturan WIB. | _[Hasil aktual]_ | _Pass/Fail_ |
+| C-33-UT02 | `validasiJadwal()` | Batas | Masukkan rentang ISO 8601 yang wajar, slot yang menempel, dan penyuntingan slot itu sendiri. | Rentang diterima, slot menempel tidak dianggap bentrok, dan edit tidak bentrok dengan dirinya sendiri. | _[Hasil aktual]_ | _Pass/Fail_ |
+| C-33-UT03 | `validasiInput()`, `validasiKonsultan()` | Negatif | Masukkan isian kosong, konsultan tidak terdaftar, token push tidak sah, dan pola LIKE. | Isian ditolak, ID konsultan ditolak, token ditolak, dan pola LIKE di-_escape_. | _[Hasil aktual]_ | _Pass/Fail_ |
+
+Tabel 4.2.22b. Ringkasan Cakupan Kelas C-33
+
+| Informasi | Keterangan |
+| --- | --- |
+| Daftar operasi public pada DPPL | `validasiWaktu()`, `validasiKonsultan()`, `validasiJadwal()`, `validasiInput()` |
+| Operasi yang diuji | `validasiWaktu()`, `validasiKonsultan()`, `validasiJadwal()`, `validasiInput()` |
+| ID Algoritma yang tercakup | Algo-023, Algo-024, Algo-025, Algo-026 |
+| Bukti cakupan | Tabel 4.2.22 dan keluaran Vitest pada Subbab 4.6 |
+
+### 4.2.23 Kelas C-34 `GoogleAuthService`
+
+Tingkat: **Mendalam**. Berkas uji: `src/backend/test/auth.test.ts`, `src/backend/test/crypto.test.ts`, `src/backend/test/validasi.test.ts`.
+
+Tabel 4.2.23. Hasil Pengujian Unit Kelas C-34
+
+| ID Pengujian | Operasi yang Diuji | Jenis Kasus | Prosedur/Masukan | Hasil yang Diharapkan | Hasil Pengujian | Kesimpulan |
+| ------------ | ------------------ | ----------- | ---------------- | --------------------- | --------------- | ---------- |
+| C-34-UT01 | `validasi(kodeOtorisasi)` | Normal | Tukar kode otorisasi yang sah. | Identitas pengguna diperoleh dan token disimpan terenkripsi. | _[Hasil aktual]_ | _Pass/Fail_ |
+| C-34-UT02 | enkripsi AES-256-GCM | Batas | Enkripsi plaintext yang sama dua kali dan gunakan email kampus serta email non-kampus. | _Ciphertext_ berbeda karena IV acak; NIM diambil hanya untuk domain kampus. | _[Hasil aktual]_ | _Pass/Fail_ |
+| C-34-UT03 | `validasi(kodeOtorisasi)`, dekripsi | Negatif | Ubah _ciphertext_, gunakan kunci salah panjang, kirim payload terlalu pendek, dan gagalkan penukaran kode. | Semua ditolak dan login tidak dibuat. | _[Hasil aktual]_ | _Pass/Fail_ |
+
+Tabel 4.2.23b. Ringkasan Cakupan Kelas C-34
+
+| Informasi | Keterangan |
+| --- | --- |
+| Daftar operasi public pada DPPL | `validasi(kodeOtorisasi)` |
+| Operasi yang diuji | `validasi(kodeOtorisasi)` beserta enkripsi/dekripsi token pada `lib/crypto.ts` |
+| ID Algoritma yang tercakup | Algo-001, Algo-027 |
+| Bukti cakupan | Tabel 4.2.23 dan keluaran Vitest pada Subbab 4.6 |
 
 <br>
 
 ## 4.3 Pengujian Integrasi
 
-Pengujian integrasi memeriksa interaksi antarkomponen yang melewati batas, yaitu _Controller_ ke _Model_, aplikasi ke basis data, dan aplikasi ke sistem eksternal. Daftar antarmuka mengacu pada dokumen DPPL, dengan minimal satu test case untuk setiap antarmuka. Pengujian memakai komponen nyata, bukan _mock_. Apabila ada antarmuka tambahan yang belum didaftarkan pada dokumen DPPL, cantumkan juga.
+Pengujian integrasi memeriksa interaksi antarkomponen yang melewati batas, yaitu _Controller_ ke _Model_, aplikasi ke basis data, aplikasi ke sistem eksternal, dan tugas _cron_ ke API. Antarmuka pengguna I-01 sampai I-15 diuji melalui _use case_ pada Subbab 4.4; Tabel 4.3.1 memuat batas antarkomponen yang diuji pada subbab ini. Pengujian memakai rute Hono dan basis data D1 tiruan di memori yang dibuat dari berkas migrasi, bukan penyimpanan tiruan untuk logika aplikasi. Google OAuth, Google Calendar, dan Expo Push dipanggil melalui batas yang sama dengan kode produksi, tetapi respons layanan pihak ketiga disiapkan pada pengujian karena kredensial produksi tidak dipakai; dengan demikian yang diverifikasi adalah perilaku Sehati, bukan ketersediaan layanan eksternal.
 
 Tabel 4.3.1. Daftar Antarmuka Antarkomponen
 
-| ID Antarmuka | Komponen Asal           | Komponen Tujuan           | Jenis Batas                   | Test Case            |
-| ------------ | ----------------------- | ------------------------- | ----------------------------- | -------------------- |
-| _I-01_       | _KeranjangController_   | _Keranjang (Model)_       | _Controller - Model_          | _INT-TC01, INT-TC02_ |
-| _I-02_       | _Pesanan (Model)_       | _Database_                | _Aplikasi - Basis data_       | _INT-TC03_           |
-| _I-03_       | _PaymentGatewayAdapter_ | _Payment Gateway (dummy)_ | _Aplikasi - Sistem eksternal_ | _INT-TC04, INT-TC05_ |
-| _[I-XX]_     | _[Komponen asal]_       | _[Komponen tujuan]_       | _[Jenis batas]_               | _[ID test case]_     |
-| _..._        | _..._                   | _..._                     | _..._                         | _..._                |
+| ID Batas | Komponen Asal | Komponen Tujuan | Jenis Batas | Test Case |
+| -------- | ------------- | --------------- | ----------- | --------- |
+| INT-A | `AuthController` (C-25) | `Pengguna` dan `SesiAutentikasi` (C-01, C-04) | _Controller_ - _Model_ | INT-TC01 |
+| INT-B | `AffirmationController` dan `ReminderController` (C-26, C-27) | `DailyAffirmation` dan `Reminder` (C-05, C-06) | _Controller_ - _Model_ | INT-TC02 |
+| INT-C | `FAQController` (C-30) | `FAQ` (C-12) | _Controller_ - _Model_ | INT-TC03 |
+| INT-D | `CalendarController` (C-28) | `GoogleCalendarService`, `KalenderGabungan`, `JadwalKonsultasi` (C-08, C-09, C-11) | _Controller_ - _Model_ | INT-TC04 |
+| INT-E | _Middleware_ D1 dan rute kesehatan | Cloudflare D1 (`CloudflareD1Database`, C-35) | Aplikasi - Basis data | INT-TC05 |
+| INT-F | `ConsultationController` (C-29) | `JadwalKonsultasi` (C-11) pada D1 | Aplikasi - Basis data | INT-TC06 |
+| INT-G | Klien API _mobile_ dan `AuthController` | Google OAuth 2.0 | Aplikasi - Sistem eksternal | INT-TC07 |
+| INT-H | `GoogleCalendarService` (C-08) | Google Calendar API | Aplikasi - Sistem eksternal | INT-TC08 |
+| INT-I | `LoginView` (C-16) dan klien perangkat | `SesiAutentikasi` (C-04) dan Expo Push token | Aplikasi - Sistem eksternal | INT-TC09 |
+| INT-J | Penjadwal (`scheduler.ts`) | Expo Push Service | Aplikasi - Sistem eksternal | INT-TC10 |
+| INT-K | Cloudflare Cron Trigger 5 menit | `/health` dan `/health/db` pada Worker sendiri | _Cron_ - API | INT-TC11 |
+| INT-L | Cloudflare Cron Trigger 1 menit dan 12 jam | `Notifikasi`, `StatusServer`, `SesiAutentikasi`, dan Expo Push | _Cron_ - _Model_ dan sistem eksternal | INT-TC12 |
 
 Tabel 4.3.2. Hasil Pengujian Integrasi
 
-| ID Pengujian | ID Antarmuka | Skenario                                    | Prosedur/Masukan                                                         | Hasil yang Diharapkan                                                              | Hasil Pengujian  | Kesimpulan  |
-| ------------ | ------------ | ------------------------------------------- | ------------------------------------------------------------------------ | ---------------------------------------------------------------------------------- | ---------------- | ----------- |
-| _INT-TC01_   | _I-01_       | _Normal: tambah item ke keranjang_          | _Panggil `tambahItem()` melalui KeranjangController dengan produk valid_ | _Item tersimpan pada Keranjang dan tampil pada daftar item_                        | _[Hasil aktual]_ | _Pass/Fail_ |
-| _INT-TC03_   | _I-02_       | _Normal: simpan pesanan_                    | _Buat pesanan, lalu baca ulang langsung dari basis data_                 | _Baris pesanan ada dengan nilai total dan status yang sama_                        | _[...]_          | _Pass/Fail_ |
-| _INT-TC05_   | _I-03_       | _Gagal: gateway mengembalikan status gagal_ | _Kirim otorisasi dengan saldo dummy tidak cukup_                         | _Status pesanan tidak berubah menjadi "Lunas", pesan gagal diteruskan ke pengguna_ | _[...]_          | _Pass/Fail_ |
-| _..._        | _..._        | _..._                                       | _..._                                                                    | _..._                                                                              | _..._            | _..._       |
+| ID Pengujian | ID Batas | Skenario | Prosedur/Masukan | Hasil yang Diharapkan | Hasil Pengujian | Kesimpulan |
+| ------------ | -------- | -------- | ---------------- | --------------------- | --------------- | ---------- |
+| INT-TC01 | INT-A | Login Google pertama dan kedua kali | Kirim `POST /api/auth/google` untuk pengguna baru, lalu ulangi untuk pengguna yang sama. | Login pertama membuat pengguna, sesi, dan token terenkripsi; login kedua memakai pengguna yang ada dan tidak menduplikasi baris. | _[Hasil aktual]_ | _Pass/Fail_ |
+| INT-TC02 | INT-B | Simpan, perbarui, dan nonaktifkan afirmasi | Panggil `PUT /api/affirmation/time` dua kali, lalu `DELETE /api/affirmation`. | Penyimpanan pertama mengisi `KONTEN_BAWAAN`, pembaruan berikutnya mengubah baris yang sama, dan penghapusan menghapus preferensi. | _[Hasil aktual]_ | _Pass/Fail_ |
+| INT-TC03 | INT-C | Tambah FAQ lalu baca kembali | `POST /api/faq`, lalu `GET /api/faq`; coba ubah dan hapus dengan ID tidak dikenal. | FAQ baru langsung tampil pada daftar; permintaan dengan ID tidak dikenal balas 404. | _[Hasil aktual]_ | _Pass/Fail_ |
+| INT-TC04 | INT-D | Gabungkan kalender saat layanan Google gagal | Panggil `GET /api/calendar?dari=...&sampai=...` dengan respons Google tersedia, lalu dengan respons gagal. | Jadwal lokal digabung dengan _event_ Google; saat Google gagal, jadwal lokal tetap tampil disertai peringatan. | _[Hasil aktual]_ | _Pass/Fail_ |
+| INT-TC05 | INT-E | Kesehatan basis data dan pembacaan status | Panggil `GET /health/db` dan `GET /api/status/:jenis` setelah satu siklus pemeriksaan. | `GET /health/db` menjalankan SELECT berhasil; status `server` dan `db` dibaca dari baris terakhir di D1. | _[Hasil aktual]_ | _Pass/Fail_ |
+| INT-TC06 | INT-F | Pemesanan bersamaan pada satu slot | Kirim dua permintaan `POST /api/slots/:id/book` secara bersamaan untuk slot yang sama. | Tepat satu permintaan berhasil; slot menjadi terpesan dan permintaan kedua ditolak. | _[Hasil aktual]_ | _Pass/Fail_ |
+| INT-TC07 | INT-G | Alur kode otorisasi Google | Panggil `/api/auth/google/mulai`, tirakan `/callback`, lalu `POST /api/auth/google`; coba pula _deep link_ tanpa _host_. | Kode diteruskan ke aplikasi dan ditukar di _server_; _deep link_ tanpa _host_ ditolak dengan status 400. | _[Hasil aktual]_ | _Pass/Fail_ |
+| INT-TC08 | INT-H | Bentrok jadwal Google | Buat `freeBusy` melaporkan sibuk, lalu pesan dengan dan tanpa `overrideGoogle`. | Bentrok balas 409 `GOOGLE_CALENDAR_CONFLICT`; dengan `overrideGoogle` pemesanan tetap tersimpan tanpa mengubah kalender Google. | _[Hasil aktual]_ | _Pass/Fail_ |
+| INT-TC09 | INT-I | Pendaftaran token perangkat | Daftarkan satu token pada dua sesi berurutan. | Token tersimpan pada sesi aktif dan sesi lama tidak lagi digunakan untuk perangkat tersebut. | _[Hasil aktual]_ | _Pass/Fail_ |
+| INT-TC10 | INT-J | Pengiriman notifikasi terjadwal | Jalankan penjadwal dengan affirmasi jatuh tempo, token ditolak `DeviceNotRegistered`, dan lebih dari 100 penerima. | Notifikasi tercatat dengan judul "Afirmasi hari ini", dikirim per _batch_ maksimal 100, dan token yang ditolak dikosongkan. | _[Hasil aktual]_ | _Pass/Fail_ |
+| INT-TC11 | INT-K | Pemeriksaan status berkala dan sesuai permintaan | Jalankan tugas 5 menit, lalu `POST /api/status/refresh` sebelum dan setelah lewat 30 detik. | Probe menulis status `server` dan `db`; penyegaran memakai ulang hasil yang lebih muda dari 30 detik dan menjalankan probe baru setelahnya. | _[Hasil aktual]_ | _Pass/Fail_ |
+| INT-TC12 | INT-L | Tugas harian dan pembersihan data | Jalankan tugas 1 menit dengan affirmasi/pengingat jatuh tempo, lalu tugas 12 jam dengan baris lama. | Notifikasi dikirim dan dicatat; baris lama pada `status_server`, `notifikasi`, dan sesi dibersihkan. | _[Hasil aktual]_ | _Pass/Fail_ |
 
 <br>
 
 ## 4.4 Pengujian Use Case
 
-Pengujian use case dilakukan pada seluruh skenario normal dan alternatif sesuai Subbab 4.4 SKPL, dengan minimal satu test case untuk setiap skenario. Kolom ID KF menunjukkan KF yang diverifikasi oleh test case tersebut.
+Pengujian use case dilakukan pada seluruh skenario normal dan alternatif sesuai Subbab 4.4 SKPL, dengan minimal satu test case untuk setiap skenario. Kolom ID KF menunjukkan KF yang diverifikasi oleh test case tersebut. Nomor urut test case mengikuti urutan skenario pada SKPL, sehingga `UC-XX-TC01` adalah skenario normal dan `UC-XX-TC02` dan seterusnya adalah skenario alternatif. Pengujian dilakukan pada perangkat fisik atau Expo Go dengan akun demo, dan hasil aktual diisi setelah pengujian manual.
 
-### 4.4.1 Use Case [Nama Use Case 1]
+### 4.4.1 UC-01 — Menyetel _Daily Affirmations_
 
-**ID Use Case:** _[UC01 sesuai SKPL]_  
-**Nama Use Case:** _[Nama use case sesuai SKPL]_
+Tabel 4.4.1. Hasil Pengujian UC-01
 
-Tabel 4.4.1. Hasil Pengujian Use Case [UC01]
+| ID Pengujian | ID KF | Skenario | Prosedur/Masukan | Hasil yang Diharapkan | Hasil Pengujian | Kesimpulan |
+| ------------ | ----- | -------- | ---------------- | --------------------- | --------------- | ---------- |
+| UC-01-TC01 | KF-01, KF-04 | Normal | Buka I-04, masukkan waktu misalnya 07.00, lalu tekan "Simpan Setelan". | Waktu tampil pada kolom, preferensi tersimpan, dan afirmasi dikirim sesuai jadwal. | _[Hasil aktual]_ | _Pass/Fail_ |
+| UC-01-TC02 | KF-01, KF-04 | Alternatif 1: gagal menyimpan | Ulangi pengaturan dengan permintaan gagal atau jaringan terputus. | Preferensi tidak tersimpan dan pesan galat ditampilkan. | _[Hasil aktual]_ | _Pass/Fail_ |
 
-| ID Pengujian | ID KF  | Skenario                        | Prosedur Pengujian                                                             | Masukan                               | Hasil yang Diharapkan                      | Hasil Pengujian                                                         | Kesimpulan                                      |
-| ------------ | ------ | ------------------------------- | ------------------------------------------------------------------------------ | ------------------------------------- | ------------------------------------------ | ----------------------------------------------------------------------- | ----------------------------------------------- |
-| _UC01-TC01_  | _KF01_ | _Normal_                        | _1. Buka halaman login.<br>2. Masukkan kredensial.<br>3. Klik tombol "Login"._ | _User: rpl@gmail.com<br>Pass: 123456_ | _Pengguna diarahkan ke Halaman Dashboard._ | _Pengguna diarahkan ke Halaman Dashboard sesuai hasil yang diharapkan._ | _Pass_                                          |
-| _UC01-TC02_  | _KF01_ | _Alternatif 1: [Nama skenario]_ | _[Langkah-langkah pengujian]_                                                  | _[Data masukan]_                      | _[Hasil yang diharapkan]_                  | _[Hasil aktual]_                                                        | _[Pass/Fail. Jika Fail: penjelasan dan solusi]_ |
-| _..._        | _..._  | _..._                           | _..._                                                                          | _..._                                 | _..._                                      | _..._                                                                   | _..._                                           |
+### 4.4.2 UC-02 — Menyetel Pengingat Kesehatan
 
-### 4.4.2 Use Case [Nama Use Case 2]
+Tabel 4.4.2. Hasil Pengujian UC-02
 
-_[Lanjutkan untuk seluruh use case dengan pola yang sama, hingga 4.4.N.]_
+| ID Pengujian | ID KF | Skenario | Prosedur/Masukan | Hasil yang Diharapkan | Hasil Pengujian | Kesimpulan |
+| ------------ | ----- | -------- | ---------------- | --------------------- | --------------- | ---------- |
+| UC-02-TC01 | KF-03, KF-04 | Normal | Buka I-05, atur waktu makan, tidur, dan olahraga, lalu simpan. | Waktu tampil per jenis dan preferensi tersimpan. | _[Hasil aktual]_ | _Pass/Fail_ |
+| UC-02-TC02 | KF-03, KF-04 | Alternatif 1: gagal menyimpan | Ulangi pengaturan dengan permintaan gagal. | Preferensi tidak tersimpan dan pesan galat ditampilkan. | _[Hasil aktual]_ | _Pass/Fail_ |
+
+### 4.4.3 UC-03 — Melihat Kalender Terintegrasi
+
+Tabel 4.4.3. Hasil Pengujian UC-03
+
+| ID Pengujian | ID KF | Skenario | Prosedur/Masukan | Hasil yang Diharapkan | Hasil Pengujian | Kesimpulan |
+| ------------ | ----- | -------- | ---------------- | --------------------- | --------------- | ---------- |
+| UC-03-TC01 | KF-02, KF-05, KF-06 | Normal | Buka I-06 dari Beranda dan pilih tanggal. | Kalender menampilkan _event_ pengguna dan jadwal konsultasi dalam satu tampilan. | _[Hasil aktual]_ | _Pass/Fail_ |
+| UC-03-TC02 | KF-02, KF-05, KF-06 | Alternatif 1: gagal mengambil _event_ | Buat pengambilan kalender gagal, lalu tekan "Muat ulang". | Kalender tidak tampil atau kosong, pesan galat dan tombol retry muncul; retry gagal mengulang galat, retry berhasil menampilkan kalender. | _[Hasil aktual]_ | _Pass/Fail_ |
+
+### 4.4.4 UC-04 — Memesan Sesi Konsultasi
+
+Tabel 4.4.4. Hasil Pengujian UC-04
+
+| ID Pengujian | ID KF | Skenario | Prosedur/Masukan | Hasil yang Diharapkan | Hasil Pengujian | Kesimpulan |
+| ------------ | ----- | -------- | ---------------- | --------------------- | --------------- | ---------- |
+| UC-04-TC01 | KF-05, KF-06, KF-07 | Normal | Pada I-07 pilih konsultan, pada I-08 pilih slot, lalu tekan "Konfirmasi". | Kalender gabungan tampil, rincian slot dan tombol Konfirmasi muncul, pemesanan tersimpan. | _[Hasil aktual]_ | _Pass/Fail_ |
+| UC-04-TC02 | KF-05, KF-06 | Alternatif 1: gagal memuat jadwal | Buat pengambilan jadwal gagal, lalu tekan "Muat ulang". | Jadwal tidak tampil, pesan galat dan tombol retry muncul; retry berhasil kembali ke alur normal. | _[Hasil aktual]_ | _Pass/Fail_ |
+| UC-04-TC03 | KF-07 | Alternatif 2: gagal menyimpan pemesanan | Tekan "Konfirmasi" saat penyimpanan gagal, lalu tekan lagi setelah pulih. | Pemesanan tidak tersimpan dan pesan galat muncul; penekanan kedua mencoba ulang penyimpanan. | _[Hasil aktual]_ | _Pass/Fail_ |
+
+### 4.4.5 UC-05 — Mengelola Jadwal Konsultan
+
+Tabel 4.4.5. Hasil Pengujian UC-05
+
+| ID Pengujian | ID KF | Skenario | Prosedur/Masukan | Hasil yang Diharapkan | Hasil Pengujian | Kesimpulan |
+| ------------ | ----- | -------- | ---------------- | --------------------- | --------------- | ---------- |
+| UC-05-TC01 | KF-06, KF-07 | Normal | Administrator membuka I-12, memilih tanggal dan jam, mengubah slot, lalu menyimpan. | Kalender jadwal tampil dan perubahan tersimpan. | _[Hasil aktual]_ | _Pass/Fail_ |
+| UC-05-TC02 | KF-06 | Alternatif 1: gagal memuat jadwal | Buat pengambilan jadwal gagal, lalu tekan "Muat ulang". | Kalender kosong, pesan galat dan tombol retry muncul. | _[Hasil aktual]_ | _Pass/Fail_ |
+| UC-05-TC03 | KF-07 | Alternatif 2: gagal menyimpan perubahan | Simpan perubahan saat permintaan gagal, lalu ulangi setelah pulih. | Perubahan tidak tersimpan dan pesan galat muncul; penyimpanan ulang berhasil. | _[Hasil aktual]_ | _Pass/Fail_ |
+
+### 4.4.6 UC-06 — Melihat FAQ
+
+Tabel 4.4.6. Hasil Pengujian UC-06
+
+| ID Pengujian | ID KF | Skenario | Prosedur/Masukan | Hasil yang Diharapkan | Hasil Pengujian | Kesimpulan |
+| ------------ | ----- | -------- | ---------------- | --------------------- | --------------- | ---------- |
+| UC-06-TC01 | KF-08 | Normal | Masukkan kata kunci pada kolom pencarian I-09. | Pertanyaan dan jawaban yang cocok ditampilkan. | _[Hasil aktual]_ | _Pass/Fail_ |
+| UC-06-TC02 | KF-08 | Alternatif 1: tidak ada hasil | Cari kata kunci yang tidak ada pada FAQ. | Tidak ada pertanyaan dan jawaban ditampilkan; pengguna ditawari mengajukan pertanyaan melalui I-10. | _[Hasil aktual]_ | _Pass/Fail_ |
+
+### 4.4.7 UC-07 — Mengelola FAQ
+
+Tabel 4.4.7. Hasil Pengujian UC-07
+
+| ID Pengujian | ID KF | Skenario | Prosedur/Masukan | Hasil yang Diharapkan | Hasil Pengujian | Kesimpulan |
+| ------------ | ----- | -------- | ---------------- | --------------------- | --------------- | ---------- |
+| UC-07-TC01 | KF-08 | Normal | Administrator menambah, mengubah, dan menghapus FAQ melalui I-13 dan I-13-05. | Penambahan dan perubahan tersimpan; FAQ yang dihapus tidak lagi tampil. | _[Hasil aktual]_ | _Pass/Fail_ |
+| UC-07-TC02 | KF-08 | Alternatif 1: operasi basis data gagal | Ulangi ketiga operasi dengan permintaan gagal. | Tidak ada FAQ yang ditambah, diubah, atau dihapus. | _[Hasil aktual]_ | _Pass/Fail_ |
+
+### 4.4.8 UC-08 — Memberikan Umpan Balik
+
+Tabel 4.4.8. Hasil Pengujian UC-08
+
+| ID Pengujian | ID KF | Skenario | Prosedur/Masukan | Hasil yang Diharapkan | Hasil Pengujian | Kesimpulan |
+| ------------ | ----- | -------- | ---------------- | --------------------- | --------------- | ---------- |
+| UC-08-TC01 | KF-09 | Normal | Mahasiswa mengirim umpan balik melalui I-11. | Umpan balik diterima dan tersimpan. | _[Hasil aktual]_ | _Pass/Fail_ |
+| UC-08-TC02 | KF-09 | Alternatif 1: gagal menyimpan | Kirim umpan balik saat permintaan gagal. | Umpan balik tidak diterima dan tidak tersimpan. | _[Hasil aktual]_ | _Pass/Fail_ |
+
+### 4.4.9 UC-09 — Menanggapi Umpan Balik
+
+Tabel 4.4.9. Hasil Pengujian UC-09
+
+| ID Pengujian | ID KF | Skenario | Prosedur/Masukan | Hasil yang Diharapkan | Hasil Pengujian | Kesimpulan |
+| ------------ | ----- | -------- | ---------------- | --------------------- | --------------- | ---------- |
+| UC-09-TC01 | KF-11 | Normal | Administrator membalas umpan balik pada I-14, lalu Mahasiswa membuka I-11. | Jawaban Administrator tampil pada tampilan Mahasiswa. | _[Hasil aktual]_ | _Pass/Fail_ |
+| UC-09-TC02 | KF-11 | Alternatif 1: jawaban tidak tampil | Simulasikan respons yang tidak dapat ditampilkan. | Tidak ada konten jawaban yang ditampilkan pada tampilan Mahasiswa. | _[Hasil aktual]_ | _Pass/Fail_ |
+
+### 4.4.10 UC-10 — Memantau Status _Server_
+
+Tabel 4.4.10. Hasil Pengujian UC-10
+
+| ID Pengujian | ID KF | Skenario | Prosedur/Masukan | Hasil yang Diharapkan | Hasil Pengujian | Kesimpulan |
+| ------------ | ----- | -------- | ---------------- | --------------------- | --------------- | ---------- |
+| UC-10-TC01 | KF-10 | Normal (tunggal) | Administrator membuka I-15, membaca status `server` lalu `db`, dan menekan "Periksa Sekarang". | Dua status ditampilkan terpisah dengan `server` lebih dulu; keduanya berasal dari probe `/health` dan `/health/db`. Hasil probe ini juga menjadi bahan pengukuran KNF-01. | _[Hasil aktual]_ | _Pass/Fail_ |
+
+### 4.4.11 UC-11 — Masuk Melalui Akun Google
+
+Tabel 4.4.11. Hasil Pengujian UC-11
+
+| ID Pengujian | ID KF | Skenario | Prosedur/Masukan | Hasil yang Diharapkan | Hasil Pengujian | Kesimpulan |
+| ------------ | ----- | -------- | ---------------- | --------------------- | --------------- | ---------- |
+| UC-11-TC01 | KF-12 | Normal | Tekan tombol masuk Google pada I-01 dan selesaikan autentikasi. | Login berhasil dan beranda sesuai peran tampil. | _[Hasil aktual]_ | _Pass/Fail_ |
+| UC-11-TC02 | KF-12 | Alternatif 1: OAuth gagal | Batalkan atau buat autentikasi Google gagal. | Pengguna tidak masuk dan kembali ke I-01. | _[Hasil aktual]_ | _Pass/Fail_ |
+
+### 4.4.12 UC-12 — Form Pengajuan Pertanyaan
+
+Tabel 4.4.12. Hasil Pengujian UC-12
+
+| ID Pengujian | ID KF | Skenario | Prosedur/Masukan | Hasil yang Diharapkan | Hasil Pengujian | Kesimpulan |
+| ------------ | ----- | -------- | ---------------- | --------------------- | --------------- | ---------- |
+| UC-12-TC01 | KF-13 | Normal | Kirim pertanyaan melalui I-10. | Konfirmasi tersimpan ditampilkan dan pertanyaan muncul pada layar Pertanyaan Masuk Administrator. | _[Hasil aktual]_ | _Pass/Fail_ |
+| UC-12-TC02 | KF-13 | Alternatif 1: gagal menyimpan | Kirim pertanyaan saat permintaan gagal. | Pertanyaan tidak tersimpan dan pengguna diberitahu. | _[Hasil aktual]_ | _Pass/Fail_ |
 
 <br>
 
 ## 4.5 Pengujian Kebutuhan Non-Fungsional (KNF)
 
-Setiap KNF pada Tabel 3.2 SKPL diuji secara terukur berdasarkan parameter yang telah didefinisikan. Setiap pengujian memuat target terukur, metode dan alat yang sesuai dengan parameter (misalnya Chrome DevTools untuk _response time_ dan inspeksi basis data untuk _security_), serta hasil aktual berupa angka atau data. KNF yang belum dipenuhi atau tidak diimplementasikan dicantumkan beserta alasan dan rencana perbaikan.
+Setiap KNF pada Tabel 3.2 SKPL diuji dengan target yang dapat diamati. KNF-01 memiliki angka minimum yang dinyatakan eksplisit pada SKPL, yaitu _uptime_ 90%. Untuk KNF-02 sampai KNF-04, SKPL mendefinisikan parameter secara kualitatif; target pada tabel berikut adalah penjabaran terukur dari parameter tersebut dan tidak menambah kebutuhan baru. Hasil aktual berupa angka atau data hasil pengukuran diisi setelah pengujian.
 
 Tabel 4.5. Hasil Pengujian KNF
 
-| ID Pengujian | ID KNF  | Parameter       | Target Terukur                                                        | Metode dan Alat                                            | Hasil Aktual                            | Kesimpulan  |
-| ------------ | ------- | --------------- | --------------------------------------------------------------------- | ---------------------------------------------------------- | --------------------------------------- | ----------- |
-| _KNF01-TC01_ | _KNF01_ | _Reliability_   | _Tidak ada data hilang/ganda saat jaringan putus di tengah transaksi_ | _Simulasi putus koneksi saat bayar, lalu cek status di DB_ | _[Hasil aktual]_                        | _Pass/Fail_ |
-| _KNF02-TC01_ | _KNF02_ | _Security_      | _Password tersimpan sebagai hash, bukan plain-text_                   | _Inspeksi tabel pengguna di DB_                            | _[...]_                                 | _Pass/Fail_ |
-| _KNFXX-TC01_ | _KNFXX_ | _Response time_ | _Halaman tampil ≤ 4 detik_                                            | _Chrome DevTools, 5 kali ukur, ambil rata-rata_            | _[Rata-rata ... detik, maks ... detik]_ | _Pass/Fail_ |
-| _..._        | _..._   | _..._           | _..._                                                                 | _..._                                                      | _..._                                   | _..._       |
+| ID Pengujian | ID KNF | Parameter | Target Terukur | Metode dan Alat | Hasil Aktual | Kesimpulan |
+| ------------ | ------ | --------- | -------------- | --------------- | ------------ | ---------- |
+| KNF-01-TC01 | KNF-01 | _Availability_ | _Uptime_ minimum 90% dalam jendela pengukuran yang ditentukan. | Rasio probe berhasil (status 2xx) terhadap seluruh probe pada `/health` dan `/health/db`; catatan pemeriksaan dapat dibaca lewat UC-10 dan Q-044. | _[Hasil aktual]_ | _Pass/Fail_ |
+| KNF-02-TC01 | KNF-02 | _Security_ | 0 permintaan tanpa autentikasi atau dengan peran yang tidak sesuai dapat diakses. | Kirim permintaan tanpa token dan dengan peran yang salah ke rute terlindungi; amati kode status dan pesan galat. | _[Hasil aktual]_ | _Pass/Fail_ |
+| KNF-02-TC02 | KNF-02 | _Security_ | 100% token Google tersimpan sebagai _ciphertext_ AES-256-GCM, bukan teks biasa. | Inspeksi kolom `token_google` pada basis data D1 dan kode enkripsi di `src/backend/src/lib/crypto.ts`. | _[Hasil aktual]_ | _Pass/Fail_ |
+| KNF-02-TC03 | KNF-02 | _Security_ | Tidak ada kredensial rahasia yang tertanam pada aplikasi _client_. | Periksa `src/mobile/.env.example`, `app.config.ts`, dan hasil _build_ APK untuk nilai rahasia. | _[Hasil aktual]_ | _Pass/Fail_ |
+| KNF-03-TC01 | KNF-03 | _Ergonomy_ | Pengguna dapat menyelesaikan tugas UC-01, UC-02, UC-03, UC-04, UC-06, UC-08, dan UC-12 tanpa bantuan; sebagai ukuran tambahan, tingkat keberhasilan ≥80% dan skor SUS ≥68. | Uji tugas terarah pada perangkat fisik atau Expo Go dengan pengguna perwakilan, dilanjutkan kuesioner SUS. | _[Hasil aktual]_ | _Pass/Fail_ |
+| KNF-04-TC01 | KNF-04 | _Reliability_ | 100% umpan balik yang dikirim tersimpan dan tampil untuk Administrator, dan 100% tanggapan Administrator tampil kembali pada Mahasiswa; 0 data hilang. | Jalankan UC-08 lalu UC-09 secara berurutan dan cocokkan baris `umpanBalik` di basis data dengan tampilan I-11 dan I-14. | _[Hasil aktual]_ | _Pass/Fail_ |
 
 <br>
 
 ## 4.6 Tangkapan Layar dan Bukti Hasil Pengujian
 
-Bukti pengujian dilampirkan sesuai ID Pengujian pada Subbab 4.2 sampai 4.5, berupa tangkapan layar aplikasi, keluaran _test runner_, laporan _coverage_ untuk setiap kelas Mendalam, atau hasil alat ukur.
+Bukti pengujian dilampirkan sesuai ID Pengujian pada Subbab 4.2 sampai 4.5, berupa keluaran _test runner_, tangkapan layar aplikasi, atau hasil alat ukur. Berkas bukti ditempatkan pada folder `docs/M10/assets/` dan dirujuk kembali pada tabel ini. Karena proyek tidak memasang penyedia _coverage_ Vitest, bukti cakupan untuk kelas Mendalam berupa ringkasan operasi dan algoritma pada tabel `4.2.xb` beserta keluaran _test runner_, bukan laporan persentase baris kode.
 
 Tabel 4.6. Bukti Hasil Pengujian
 
-| ID Pengujian          | Bukti Hasil Pengujian                                            |
-| --------------------- | ---------------------------------------------------------------- |
-| _C02-UT01 – C02-UT08_ | _[Sisipkan hasil keluaran unit test]_                            |
-| _C02 (coverage)_      | _[Sisipkan laporan coverage kelas C02]_                          |
-| _INT-TC01_            | _[Sisipkan bukti pengujian integrasi]_                           |
-| _UC01-TC01_           | _[Sisipkan tangkapan layar UC01-TC01 sesuai prosedur pengujian]_ |
-| _UC01-TC02_           | _[Sisipkan tangkapan layar UC01-TC02 sesuai prosedur pengujian]_ |
-| _KNF01-TC01_          | _[Sisipkan bukti pengukuran parameter KNF01-TC01]_               |
-| _..._                 | _..._                                                            |
+| ID Pengujian | Bukti Hasil Pengujian |
+| ------------ | --------------------- |
+| `C-XX-UTYY` pada Subbab 4.2 | _[Sisipkan keluaran `bun run test` untuk `src/backend/` dan `src/mobile/` yang menunjukkan nama kasus uji per kelas]_ |
+| Ringkasan cakupan pada tabel `4.2.xb` | _[Sisipkan daftar operasi public dan algoritma yang tercakup untuk setiap kelas Mendalam]_ |
+| INT-TC01 s.d. INT-TC12 | _[Sisipkan keluaran pengujian integrasi pada `src/backend/test/` dan `src/backend/src/index.test.ts`]_ |
+| UC-01-TC01 s.d. UC-12-TC02 | _[Sisipkan tangkapan layar per ID pengujian, misalnya `UC-04-TC01.png`, pada `docs/M10/assets/`]_ |
+| KNF-01-TC01 s.d. KNF-04-TC01 | _[Sisipkan bukti pengukuran _uptime_, inspeksi keamanan, kuesioner SUS, dan penelusuran umpan balik]_ |
+| Seluruh bukti | _[Tautkan berkas pada `docs/M10/assets/` yang digunakan pada tabel ini]_ |
 
 <br>
 
@@ -573,9 +1038,9 @@ Tabel 5.1. Matriks Kerunutan KF terhadap Implementasi dan Pengujian
 | KF-07 | KNF-04         | UC-04<br>UC-05          | C-08 - `GoogleCalendarService`<br>C-11 - `JadwalKonsultasi`<br>C-20 - `ConsultationBookingView`<br>C-21 - `ConsultationManagementView`<br>C-29 - `ConsultationController`<br>C-33 - `Validasi`    | `src/backend/src/routes/consultation.ts`<br>`src/backend/src/lib/jadwal-konsultasi.ts`<br>`src/backend/src/lib/validasi.ts`<br>`src/backend/src/lib/google.ts`<br>`src/mobile/src/app/(mahasiswa)/sesi.tsx`<br>`src/mobile/src/app/admin/jadwal.tsx`<br>`src/mobile/src/lib/jadwal.ts`                                                                                                                      | UC-04-TC01, UC-04-TC02, UC-04-TC03<br>UC-05-TC01, UC-05-TC02, UC-05-TC03                           | C-08-UT01 dst., C-11-UT01 dst., C-21-UT01 dst., C-29-UT01 dst., C-33-UT01 dst.<br>INT-TC (rute `/api/slots`, `/api/sessions`)<br>KNF-04-TC01 |
 | KF-08 | KNF-03         | UC-06<br>UC-07          | C-12 - `FAQ`<br>C-22 - `FAQView`<br>C-30 - `FAQController`<br>C-33 - `Validasi`                                                                                                                   | `src/backend/src/routes/faq.ts`<br>`src/backend/src/db/queries.ts`<br>`src/backend/src/lib/validasi.ts`<br>`src/mobile/src/app/(mahasiswa)/faq.tsx`<br>`src/mobile/src/app/admin/faq.tsx`<br>`src/mobile/src/app/admin/faq-form.tsx`<br>`src/mobile/src/api/faq.ts`                                                                                                                                         | UC-06-TC01, UC-06-TC02<br>UC-07-TC01, UC-07-TC02                                                   | C-12-UT01 dst., C-30-UT01 dst., C-33-UT01 dst.<br>INT-TC (rute `/api/faq`)<br>KNF-03-TC01                                                    |
 | KF-09 | KNF-03, KNF-04 | UC-08                   | C-14 - `UmpanBalik`<br>C-23 - `FeedbackView`<br>C-31 - `FeedbackController`<br>C-33 - `Validasi`                                                                                                  | `src/backend/src/routes/feedback.ts`<br>`src/backend/src/db/queries.ts`<br>`src/mobile/src/app/(mahasiswa)/umpan-balik.tsx`<br>`src/mobile/src/api/umpan-balik.ts`                                                                                                                                                                                                                                          | UC-08-TC01, UC-08-TC02                                                                             | C-14-UT01 dst., C-31-UT01 dst., C-33-UT01 dst.<br>INT-TC (rute `/api/feedback`)<br>KNF-03-TC01, KNF-04-TC01                                  |
-| KF-10 | KNF-01         | UC-10                   | C-15 - `StatusServer`<br>C-24 - `ServerStatusView`<br>C-32 - `ServerStatusController`                                                                                                             | `src/backend/src/routes/status.ts`<br>`src/backend/src/lib/status-probe.ts`<br>`src/backend/src/jobs/scheduler.ts`<br>`src/mobile/src/app/admin/status.tsx`<br>`src/mobile/src/lib/status.ts`<br>`src/mobile/src/api/status.ts`                                                                                                                                                                             | UC-10-TC01                                                                                         | C-24-UT01 dst., C-32-UT01 dst.<br>INT-TC (rute `/api/status`, tugas _cron_ status)<br>KNF-01-TC01                                            |
+| KF-10 | KNF-01         | UC-10                   | C-15 - `StatusServer`<br>C-24 - `ServerStatusView`<br>C-32 - `ServerStatusController`                                                                                                             | `src/backend/src/routes/status.ts`<br>`src/backend/src/lib/status-probe.ts`<br>`src/backend/src/jobs/scheduler.ts`<br>`src/mobile/src/app/admin/status.tsx`<br>`src/mobile/src/lib/status.ts`<br>`src/mobile/src/api/status.ts`                                                                                                                                                                             | UC-10-TC01                                                                                         | C-24-UT01 dst., C-32-UT01 dst.<br>INT-TC (rute `/api/status/:jenis`, `/api/status/refresh`, `/api/status/history`, tugas _cron_ status)<br>KNF-01-TC01                                            |
 | KF-11 | KNF-04         | UC-09                   | C-14 - `UmpanBalik`<br>C-23 - `FeedbackView`<br>C-31 - `FeedbackController`<br>C-33 - `Validasi`                                                                                                  | `src/backend/src/routes/feedback.ts`<br>`src/backend/src/db/queries.ts`<br>`src/mobile/src/app/admin/umpan-balik.tsx`<br>`src/mobile/src/api/umpan-balik.ts`                                                                                                                                                                                                                                                | UC-09-TC01, UC-09-TC02                                                                             | C-14-UT01 dst., C-31-UT01 dst., C-33-UT01 dst.<br>INT-TC (rute `/api/feedback/:id/response`)<br>KNF-04-TC01                                  |
-| KF-12 | KNF-02         | UC-11                   | C-01 - `Pengguna`<br>C-02 - `Mahasiswa`<br>C-03 - `Administrator`<br>C-04 - `SesiAutentikasi`<br>C-16 - `LoginView`<br>C-25 - `AuthController`<br>C-34 - `GoogleAuthService`<br>C-36 - `HomeView` | `src/backend/src/routes/auth.ts`<br>`src/backend/src/middleware/auth.ts`<br>`src/backend/src/lib/google.ts`<br>`src/backend/src/lib/crypto.ts`<br>`src/backend/src/db/schema.ts`<br>`src/mobile/src/app/index.tsx`<br>`src/mobile/src/api/auth.ts`<br>`src/mobile/src/api/sesi.ts`<br>`src/mobile/src/lib/sesi.tsx`<br>`src/mobile/src/app/(mahasiswa)/beranda.tsx`<br>`src/mobile/src/app/admin/index.tsx` | UC-11-TC01, UC-11-TC02                                                                             | C-04-UT01 dst., C-16-UT01 dst., C-25-UT01 dst., C-34-UT01 dst.<br>INT-TC (rute `/api/auth`)<br>KNF-02-TC01, KNF-02-TC02, KNF-02-TC03         |
+| KF-12 | KNF-02         | UC-11                   | C-01 - `Pengguna`<br>C-02 - `Mahasiswa`<br>C-03 - `Administrator`<br>C-04 - `SesiAutentikasi`<br>C-16 - `LoginView`<br>C-25 - `AuthController`<br>C-34 - `GoogleAuthService`<br>C-36 - `HomeView` | `src/backend/src/routes/auth.ts`<br>`src/backend/src/middleware/auth.ts`<br>`src/backend/src/lib/google.ts`<br>`src/backend/src/lib/crypto.ts`<br>`src/backend/src/db/schema.ts`<br>`src/mobile/src/app/index.tsx`<br>`src/mobile/src/api/auth.ts`<br>`src/mobile/src/api/sesi.ts`<br>`src/mobile/src/lib/sesi.tsx`<br>`src/mobile/src/app/(mahasiswa)/beranda.tsx`<br>`src/mobile/src/app/admin/index.tsx` | UC-11-TC01, UC-11-TC02                                                                             | C-04-UT01 dst., C-16-UT01 dst., C-25-UT01 dst., C-34-UT01 dst.<br>INT-TC (rute `/api/auth/google/mulai`, `/api/auth/google`, `/api/auth/demo`)<br>KNF-02-TC01, KNF-02-TC02, KNF-02-TC03         |
 | KF-13 | KNF-03         | UC-12                   | C-13 - `PengajuanPertanyaan`<br>C-22 - `FAQView`<br>C-30 - `FAQController`<br>C-33 - `Validasi`                                                                                                   | `src/backend/src/routes/questions.ts`<br>`src/backend/src/db/queries.ts`<br>`src/backend/src/lib/validasi.ts`<br>`src/mobile/src/app/(mahasiswa)/pertanyaan.tsx`<br>`src/mobile/src/app/admin/pertanyaan.tsx`<br>`src/mobile/src/api/faq.ts`                                                                                                                                                                | UC-12-TC01, UC-12-TC02                                                                             | C-30-UT01 dst., C-33-UT01 dst.<br>INT-TC (rute `/api/questions`)<br>KNF-03-TC01                                                              |
 
 Kelas C-35 `CloudflareD1Database` tidak dicantumkan per KF karena dipakai oleh seluruh KF yang menyimpan data. Kelas ini diwujudkan oleh _binding_ D1 pada `src/backend/wrangler.jsonc` dan _middleware_ Drizzle pada `src/backend/src/index.ts`, serta teruji secara tidak langsung melalui seluruh _test case_ integrasi.
