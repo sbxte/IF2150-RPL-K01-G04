@@ -1006,7 +1006,7 @@ Tabel 4.5. Hasil Pengujian KNF
 
 ## 4.6 Tangkapan Layar dan Bukti Hasil Pengujian
 
-Bukti pengujian dilampirkan sesuai ID Pengujian pada Subbab 4.2 sampai 4.5, berupa keluaran _test runner_, tangkapan layar aplikasi, atau hasil alat ukur. Berkas bukti ditempatkan pada folder `docs/M10/assets/` dan dirujuk kembali pada tabel ini. Karena proyek tidak memasang penyedia _coverage_ Vitest, bukti cakupan untuk kelas Mendalam berupa ringkasan operasi dan algoritma pada tabel `4.2.xb` beserta keluaran _test runner_, bukan laporan persentase baris kode.
+Bukti pengujian dilampirkan sesuai ID Pengujian pada Subbab 4.2 sampai 4.5, berupa keluaran _test runner_, tangkapan layar aplikasi, atau hasil alat ukur. Berkas bukti ditempatkan pada folder `docs/M10/assets/` dan dirujuk kembali pada tabel ini; tangkapan layar pengujian _use case_ berada pada `docs/M10/assets/Iphone-Tests/`. Karena proyek tidak memasang penyedia _coverage_ Vitest, bukti cakupan untuk kelas Mendalam berupa ringkasan operasi dan algoritma pada tabel `4.2.xb` beserta keluaran _test runner_, bukan laporan persentase baris kode.
 
 Tabel 4.6. Bukti Hasil Pengujian
 
@@ -1015,9 +1015,34 @@ Tabel 4.6. Bukti Hasil Pengujian
 | `C-XX-UTYY` pada Subbab 4.2 | _[Sisipkan keluaran `bun run test` untuk `src/backend/` dan `src/mobile/` yang menunjukkan nama kasus uji per kelas]_ |
 | Ringkasan cakupan pada tabel `4.2.xb` | _[Sisipkan daftar operasi public dan algoritma yang tercakup untuk setiap kelas Mendalam]_ |
 | INT-TC01 s.d. INT-TC12 | _[Sisipkan keluaran pengujian integrasi pada `src/backend/test/` dan `src/backend/src/index.test.ts`]_ |
-| UC-01-TC01 s.d. UC-12-TC02 | _[Sisipkan tangkapan layar per ID pengujian, misalnya `UC-04-TC01.png`, pada `docs/M10/assets/`]_ |
-| KNF-01-TC01 s.d. KNF-04-TC01 | _[Sisipkan bukti pengukuran _uptime_, inspeksi keamanan, kuesioner SUS, dan penelusuran umpan balik]_ |
-| Seluruh bukti | _[Tautkan berkas pada `docs/M10/assets/` yang digunakan pada tabel ini]_ |
+| UC-01-TC01 | <img src="./assets/Iphone-Tests/IMG_1833.PNG" alt="UC-01-TC01" width="140"> |
+| UC-01-TC02 | <img src="./assets/Iphone-Tests/IMG_1834.PNG" alt="UC-01-TC02" width="140"> |
+| UC-02-TC01 | <img src="./assets/Iphone-Tests/IMG_1835.PNG" alt="UC-02-TC01" width="140"> |
+| UC-02-TC02 | <img src="./assets/Iphone-Tests/IMG_1836.PNG" alt="UC-02-TC02" width="140"> |
+| UC-03-TC01 | <img src="./assets/Iphone-Tests/IMG_1837.PNG" alt="UC-03-TC01" width="140"> |
+| UC-03-TC02 | <img src="./assets/Iphone-Tests/IMG_1838.PNG" alt="UC-03-TC02" width="140"> <img src="./assets/Iphone-Tests/IMG_1839.PNG" alt="UC-03-TC02" width="140"> |
+| UC-04-TC01 | _[Belum ada tangkapan layar]_ |
+| UC-04-TC02 | <img src="./assets/Iphone-Tests/IMG_1840.PNG" alt="UC-04-TC02" width="140"> <img src="./assets/Iphone-Tests/IMG_1841.PNG" alt="UC-04-TC02" width="140"> <img src="./assets/Iphone-Tests/IMG_1842.PNG" alt="UC-04-TC02" width="140"> <img src="./assets/Iphone-Tests/IMG_1843.PNG" alt="UC-04-TC02" width="140"> <img src="./assets/Iphone-Tests/IMG_1844.PNG" alt="UC-04-TC02" width="140"> |
+| UC-04-TC03 | _[Belum ada tangkapan layar]_ |
+| UC-05-TC01 | <img src="./assets/Iphone-Tests/IMG_1856.PNG" alt="UC-05-TC01" width="140"> <img src="./assets/Iphone-Tests/IMG_1857.PNG" alt="UC-05-TC01" width="140"> |
+| UC-05-TC02 | _[Belum ada tangkapan layar]_ |
+| UC-05-TC03 | <img src="./assets/Iphone-Tests/IMG_1858.PNG" alt="UC-05-TC03" width="140"> |
+| UC-06-TC01 | <img src="./assets/Iphone-Tests/IMG_1845.PNG" alt="UC-06-TC01" width="140"> |
+| UC-06-TC02 | <img src="./assets/Iphone-Tests/IMG_1846.PNG" alt="UC-06-TC02" width="140"> |
+| UC-07-TC01 | <img src="./assets/Iphone-Tests/IMG_1861.PNG" alt="UC-07-TC01" width="140"> <img src="./assets/Iphone-Tests/IMG_1863.PNG" alt="UC-07-TC01" width="140"> |
+| UC-07-TC02 | <img src="./assets/Iphone-Tests/IMG_1859.PNG" alt="UC-07-TC02" width="140"> <img src="./assets/Iphone-Tests/IMG_1860.PNG" alt="UC-07-TC02" width="140"> <img src="./assets/Iphone-Tests/IMG_1862.PNG" alt="UC-07-TC02" width="140"> <img src="./assets/Iphone-Tests/IMG_1864.PNG" alt="UC-07-TC02" width="140"> |
+| UC-08-TC01 | <img src="./assets/Iphone-Tests/IMG_1849.PNG" alt="UC-08-TC01" width="140"> |
+| UC-08-TC02 | <img src="./assets/Iphone-Tests/IMG_1850.PNG" alt="UC-08-TC02" width="140"> |
+| UC-09-TC01 | <img src="./assets/Iphone-Tests/IMG_1852.PNG" alt="UC-09-TC01" width="140"> <img src="./assets/Iphone-Tests/IMG_1854.PNG" alt="UC-09-TC01" width="140"> |
+| UC-09-TC02 | <img src="./assets/Iphone-Tests/IMG_1855.PNG" alt="UC-09-TC02" width="140"> |
+| UC-10-TC01 | <img src="./assets/Iphone-Tests/IMG_1865.PNG" alt="UC-10-TC01" width="140"> |
+| UC-11-TC01 | _[Belum ada tangkapan layar]_ |
+| UC-11-TC02 | _[Belum ada tangkapan layar]_ |
+| UC-12-TC01 | _[Belum ada tangkapan layar]_ |
+| UC-12-TC02 | <img src="./assets/Iphone-Tests/IMG_1847.PNG" alt="UC-12-TC02" width="140"> <img src="./assets/Iphone-Tests/IMG_1848.PNG" alt="UC-12-TC02" width="140"> |
+| KNF-04-TC01 | <img src="./assets/Iphone-Tests/IMG_1849.PNG" alt="KNF-04-TC01" width="140"> <img src="./assets/Iphone-Tests/IMG_1852.PNG" alt="KNF-04-TC01" width="140"> <img src="./assets/Iphone-Tests/IMG_1854.PNG" alt="KNF-04-TC01" width="140"> |
+| KNF-01-TC01 s.d. KNF-03-TC01 | _[Sisipkan bukti pengukuran _uptime_, inspeksi keamanan, dan kuesioner SUS]_ |
+| Seluruh bukti | Tangkapan layar UC dan KNF-04 diambil pada iPhone dan disimpan di `docs/M10/assets/Iphone-Tests/`. _[Tautkan berkas bukti lain yang digunakan pada tabel ini]_ |
 
 <br>
 
